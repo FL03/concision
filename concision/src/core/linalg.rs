@@ -1,10 +1,10 @@
 /*
-    Appellation: linalg
-    Context:
-    Creator: FL03 <jo3mccain@icloud.com>
-    Description:
-        ... Summary ...
- */
+   Appellation: linalg
+   Context:
+   Creator: FL03 <jo3mccain@icloud.com>
+   Description:
+       ... Summary ...
+*/
 
 pub trait MatrixSpec: Sized {
     type Data;

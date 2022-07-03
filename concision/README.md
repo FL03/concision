@@ -1,10 +1,14 @@
-# Algae
+# Concision
 
-This crate was created to serve as a collection of useful algorithms for a variety of different workflows.
+## Overview
+This crate is designed to support a number of robust operations pertaining to data-science, machine-learning, and AI.
 
 ## Getting Started
 
-    git clone https://github.com/FL03/algae.git
-    cargo test --all-features
-
 ### Examples
+    
+    use consison;
+    
+    fn main() {
+        println!("Welcome")
+    }
