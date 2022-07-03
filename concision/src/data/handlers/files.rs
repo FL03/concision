@@ -8,9 +8,10 @@
 pub use specifications::*;
 pub use utils::*;
 
-pub enum FileExtensions<Address = String> {
-    Csv(Address),
-    Json(Address)
+/// A collection of file extensions with variable a data type; defaults to String
+pub enum FileExtensions<Data = String> {
+    Csv(Data),
+    Json(Data),
 }
 
 #[derive(Clone, Debug, Hash, PartialEq, serde::Deserialize, serde::Serialize)]

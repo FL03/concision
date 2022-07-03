@@ -1,10 +1,10 @@
 /*
-    Appellation: matrices
-    Context:
-    Creator: FL03 <jo3mccain@icloud.com>
-    Description:
-        ... Summary ...
- */
+   Appellation: matrices
+   Context:
+   Creator: FL03 <jo3mccain@icloud.com>
+   Description:
+       ... Summary ...
+*/
 
 #[cfg(test)]
 mod tests {

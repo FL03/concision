@@ -5,10 +5,7 @@
    Description:
        ... Summary ...
 */
-pub use crate::core::math::algebra::{
-    fields::*,
-    matrices::*
-};
+pub use crate::core::math::algebra::{fields::*, matrices::*};
 
 mod fields;
 mod matrices;
