@@ -1,0 +1,48 @@
+# Environments
+/**/.idea
+/**/.vscode/
+
+# Files and File Extensions
+/**/config/local.*
+
+*.bk
+*.bk.*
+
+*.db
+*.db.*
+
+*.lock
+*.lock.*
+*-lock.*
+
+*.log
+*.log.*
+
+*.env
+*.env.*
+!*.env.example
+
+*.whl
+*.whl.*
+
+*.zip
+*.zip.*
+
+
+# Nodejs
+/**/build/
+/**/node_modules/
+
+# Python
+/**/__pycache__/
+/**/dist/
+/**/venv/
+
+# Rust
+/**/debug/
+/**/target/
+
+# Svelte
+/**/.DS_STORE/
+/**/__sapper__/
+/**/.svelte-kit/

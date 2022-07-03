@@ -1,0 +1,24 @@
+[package]
+authors = ["FL03 <jo3mccain@icloud.com>"]
+description = "Concision is a data-science toolkit for building robust, data-centric applications in Rust"
+edition = "2021"
+keywords = ["data-science", "sdk"]
+license = "MIT"
+name = "concision"
+readme = "README.md"
+repository = "https://github.com/FL03/concision"
+version = "0.1.0" # TODO - Update the cargo package version
+
+[features]
+default = []
+
+[lib]
+bench = false
+crate-type = ["cdylib", "rlib"]
+test = true
+
+[dependencies]
+
+serde = { features = ["derive"], version = ">=1.0.137" }
+
+[build-dependencies]
