@@ -5,6 +5,7 @@
    Description:
        Algae is intended to be a collection of optimized algorithms
 */
-pub use crate::core::*;
+pub use crate::{core::*, data::*};
 
 mod core;
+mod data;

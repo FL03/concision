@@ -18,19 +18,17 @@ jobs:
       - uses: actions/checkout@v3
       - name: Login
         run: cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-  test:
-    env:
-      CRATE: concision
+  test-workspace:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Test
-        run: cargo test --all-features --package $CRATE  --verbose --color $CARGO_TERM_COLOR
+        run: cargo test --all-features --workspace --verbose --color $CARGO_TERM_COLOR
   crate:
     env:
       CRATE: concision
     runs-on: ubuntu-latest
-    needs: [ login, test ]
+    needs: [ login, test-workspace ]
     steps:
       - uses: actions/checkout@v3
       - name: Build and Push
