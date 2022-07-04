@@ -5,10 +5,19 @@
    Description:
        ... Summary ...
 */
-pub use crate::data::{contexts::*, models::*, schemas::*, structures::*, utils::*};
+pub use crate::data::{
+    appellations::*,
+    contexts::*,
+    handlers::*,
+    models::*,
+    schemas::*,
+    structures::*,
+    utils::*
+};
 
+mod appellations;
 mod contexts;
-pub mod handlers;
+mod handlers;
 mod models;
 mod schemas;
 mod structures;

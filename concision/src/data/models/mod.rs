@@ -6,6 +6,8 @@
        ... Summary ...
 */
 
+pub mod forms;
+
 #[cfg(test)]
 mod tests {
     #[test]
