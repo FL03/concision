@@ -7,10 +7,7 @@ license = "MIT"
 name = "concision-derive"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
-version = "0.1.8" # TODO - Update the cargo package version
-
-[features]
-default = []
+version = "0.1.9" # TODO - Update the cargo package version
 
 [lib]
 proc-macro = true
@@ -20,8 +17,6 @@ test = false
 proc-macro2 = "1.0.40"
 quote = "1.0.20"
 syn = { features = ["full"], version = "1.0.98" }
-
-[build-dependencies]
 
 [dev-dependencies.concision]
 path = "../concision"
