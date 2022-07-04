@@ -5,14 +5,8 @@
    Description:
        ... Summary ...
 */
+pub use crate::core::{clients::*, common::*, math::*};
 
-pub mod linalg;
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn simple() {
-        let f = |x: usize| x.pow(x.try_into().unwrap());
-        assert_eq!(f(2), 4)
-    }
-}
+mod clients;
+mod common;
+mod math;

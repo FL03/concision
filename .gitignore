@@ -1,32 +1,44 @@
+# Docker
+**/.docker/data/
+
 # Environments
 /**/.idea
 /**/.vscode/
 
 # Files and File Extensions
-/**/config/local.*
+**/config.*
+**/*.config.*
+!**/default.config.*
 
-*.bk
-*.bk.*
+**/*.bk
+**/*.bk.*
 
-*.db
-*.db.*
+**/*.csv
+**/*.csv.*
 
-*.lock
-*.lock.*
-*-lock.*
+**/*.db
+**/*.db.*
 
-*.log
-*.log.*
+**/*.db-*.*
 
-*.env
-*.env.*
-!*.env.example
+**/*.env
+**/*.env.*
 
-*.whl
-*.whl.*
+**/!*.env.example
 
-*.zip
-*.zip.*
+**/*.lock
+**/*.lock.*
+
+**/*-lock.*
+
+**/*.log
+**/*.log.*
+
+**/*.whl
+**/*.whl.*
+
+**/*.zip
+**/*.zip.*
 
 
 # Nodejs
