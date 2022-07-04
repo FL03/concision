@@ -6,13 +6,7 @@
        ... Summary ...
 */
 pub use crate::data::{
-    appellations::*,
-    contexts::*,
-    handlers::*,
-    models::*,
-    schemas::*,
-    structures::*,
-    utils::*
+    appellations::*, contexts::*, handlers::*, models::*, schemas::*, structures::*, utils::*,
 };
 
 mod appellations;
