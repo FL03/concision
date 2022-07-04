@@ -8,3 +8,11 @@ updates:
     directory: /concision
     schedule:
       interval: daily
+  - package-ecosystem: cargo
+    directory: /concision-derive
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /concision-macros
+    schedule:
+      interval: daily

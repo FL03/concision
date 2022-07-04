@@ -7,6 +7,8 @@
 */
 pub use common::*;
 pub use math::*;
+pub use visualizers::*;
 
 mod common;
 mod math;
+mod visualizers;
