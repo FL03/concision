@@ -27,14 +27,13 @@ impl std::fmt::Display for FileHandler {
 
 mod specifications {
 
-    pub trait FileSpec<
-        Addr = String,
-        Cache = bool,
-        Cont = Vec<String>,
-        Data = String
-    > {
-        fn aggregate(&self, address: Addr) -> Cont where Self: Sized;
-        fn create(&self, address: Addr, data: Data) -> std::io::Result<std::fs::File> where Self: Sized;
+    pub trait FileSpec<Addr = String, Cache = bool, Cont = Vec<String>, Data = String> {
+        fn aggregate(&self, address: Addr) -> Cont
+        where
+            Self: Sized;
+        fn create(&self, address: Addr, data: Data) -> std::io::Result<std::fs::File>
+        where
+            Self: Sized;
     }
 }
 

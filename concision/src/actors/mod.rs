@@ -7,8 +7,6 @@
        of complex, dynamic computational models equipped with a standard interface enabling for
        compatibility and usability
 */
-pub use crate::actors::{
-    actor::*
-};
+pub use crate::actors::actor::*;
 
 mod actor;

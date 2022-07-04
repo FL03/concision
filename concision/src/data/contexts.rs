@@ -1,20 +1,23 @@
 /*
-    Appellation: contexts
-    Context:
-    Creator: FL03 <jo3mccain@icloud.com>
-    Description:
-        ... Summary ...
- */
-
+   Appellation: contexts
+   Context:
+   Creator: FL03 <jo3mccain@icloud.com>
+   Description:
+       ... Summary ...
+*/
 
 pub trait Contextual<
     Actor = String,
     Config = config::ConfigBuilder<config::builder::DefaultState>,
-    Data = String
-    > {
-
-    fn authenticate(&self, actor: Actor) -> Actor where Self: Sized;
-    fn constructor(&self, actor: Actor, config: Config, data: Data) -> Config where Self: Sized;
+    Data = String,
+>
+{
+    fn authenticate(&self, actor: Actor) -> Actor
+    where
+        Self: Sized;
+    fn constructor(&self, actor: Actor, config: Config, data: Data) -> Config
+    where
+        Self: Sized;
 }
 
 #[cfg(test)]
