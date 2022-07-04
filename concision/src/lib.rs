@@ -5,9 +5,9 @@
    Description:
        Algae is intended to be a collection of optimized algorithms
 */
-pub use crate::{actors::*, containers::*, core::*, data::*};
+pub use crate::{actors::*, clients::*, core::*, data::*};
 
 mod actors;
-mod containers;
+mod clients;
 mod core;
 mod data;
