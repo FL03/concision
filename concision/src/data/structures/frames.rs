@@ -1,12 +1,10 @@
 /*
-   Appellation: mod
-   Context:
-   Creator: FL03 <jo3mccain@icloud.com>
-   Description:
-       ... Summary ...
-*/
-
-mod frames;
+    Appellation: frames
+    Context:
+    Creator: FL03 <jo3mccain@icloud.com>
+    Description:
+        ... Summary ...
+ */
 
 #[cfg(test)]
 mod tests {

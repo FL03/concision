@@ -30,6 +30,16 @@ impl<Key, Data> Container<Key, Data> {
     }
 }
 
+impl std::fmt::Display for Container {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Container(id={:#?}, hash={:#?}, key={:#?}, data={:#?})",
+            self.id, self.hash, self.key, self.data
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[test]

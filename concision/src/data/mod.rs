@@ -5,9 +5,18 @@
    Description:
        ... Summary ...
 */
-pub use crate::data::{contexts::*, primitives::*};
+pub use crate::data::{contexts::*, utils::*};
 
 mod contexts;
 pub mod handlers;
-mod primitives;
 mod structures;
+
+mod utils {
+    pub fn timestamp_local() -> crate::Dates {
+        crate::Dates::Standard(chrono::Local::now().timestamp())
+    }
+
+    pub fn timestamp_utc() -> crate::Dates {
+        crate::Dates::Standard(chrono::Utc::now().timestamp())
+    }
+}
