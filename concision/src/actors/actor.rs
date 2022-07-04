@@ -5,6 +5,18 @@
    Description:
        ... Summary ...
 */
+pub use specifications::*;
+
+mod specifications {
+
+    type DSConfigBuilder = config::ConfigBuilder<config::builder::DefaultState>;
+
+    pub trait Actor<Conf = DSConfigBuilder, Data = Vec<String>> {
+        fn constructor(&self, config: Conf, data: Data) -> Self
+        where
+            Self: Sized;
+    }
+}
 
 #[cfg(test)]
 mod tests {

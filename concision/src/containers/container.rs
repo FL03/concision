@@ -5,6 +5,7 @@
    Description:
        ... Summary ...
 */
+pub use specs::*;
 
 #[derive(Clone, Debug, Hash, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct Container<Key = String, Data = String> {
@@ -15,17 +16,12 @@ pub struct Container<Key = String, Data = String> {
 }
 
 impl<Key, Data> Container<Key, Data> {
-    pub fn constructor(
-        id: crate::Ids,
-        hash: Vec<u8>,
-        key: Key,
-        data: Vec<Data>,
-    ) -> Self {
+    pub fn constructor(id: crate::Ids, hash: Vec<u8>, key: Key, data: Vec<Data>) -> Self {
         Self {
             id,
             hash,
             key,
-            data
+            data,
         }
     }
 }
@@ -40,10 +36,21 @@ impl std::fmt::Display for Container {
     }
 }
 
+mod specs {
+    pub trait ContainerSpec<Data = Vec<String>> {
+        fn constructor(&self, data: Data) -> Self
+        where
+            Self: Sized;
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
     fn test() {
+        let container: Box<dyn ContainerSpec>;
         let f = |x: usize| x.pow(x.try_into().unwrap());
         assert_eq!(f(2), 4)
     }

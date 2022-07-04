@@ -10,3 +10,23 @@
 pub use crate::actors::actor::*;
 
 mod actor;
+
+pub enum AutomataStates {
+    Aggregating,
+    Computing,
+    Determining,
+    Terminating,
+}
+
+pub trait Automata<Alpha, Beta, Lambda, Gamma, Dirac> {
+    fn constructor(
+        &self,
+        alpha: Alpha,
+        beta: Beta,
+        lambda: Lambda,
+        gamma: Gamma,
+        dirac: Dirac,
+    ) -> Self
+    where
+        Self: Sized;
+}

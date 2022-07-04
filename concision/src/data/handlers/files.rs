@@ -46,6 +46,13 @@ mod utils {
         Ok(file)
     }
 
+    pub fn walk_dir(pattern: &str) -> Vec<std::path::PathBuf> {
+        glob::glob(pattern)
+            .unwrap()
+            .map(|path| path.ok().unwrap())
+            .collect()
+    }
+
     pub fn read_file(source: String) -> std::io::Result<String> {
         let mut file = std::fs::File::open(source)?;
         let mut contents = String::new();
@@ -56,10 +63,19 @@ mod utils {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     #[test]
     fn test() {
-        let a: Box<dyn super::FileSpec>;
+        let a: Box<dyn FileSpec>;
+        let f = |x: usize, y: usize| x.pow(y.try_into().unwrap());
+        assert_eq!(f(10, 2), 100)
+    }
+
+    #[test]
+    fn test_walker() {
+        let pattern = "**/.github/**";
+        let discoveries = walk_dir(&pattern);
         let f = |x: usize, y: usize| x.pow(y.try_into().unwrap());
         assert_eq!(f(10, 2), 100)
     }
