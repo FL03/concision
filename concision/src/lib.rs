@@ -3,11 +3,19 @@
    Context: library
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
-       Algae is intended to be a collection of optimized algorithms
+       Concision is a robust framework for creating powerful data-centric applications in Rust.
 */
-pub use crate::{actors::*, containers::*, core::*, data::*};
+#[doc(inline)]
+#[cfg(feature = "default")]
+pub use crate::{actors::*, clients::*, core::*, data::*};
+#[doc(inline)]
+#[cfg(feature = "derive")]
+pub use concision_derive::*;
+#[doc(inline)]
+#[cfg(feature = "macros")]
+pub use concision_macros::*;
 
 mod actors;
-mod containers;
+mod clients;
 mod core;
 mod data;

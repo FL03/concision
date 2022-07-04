@@ -5,6 +5,8 @@ default-members = [
 
 members = [
     "concision",
+    "derive",
+    "macros"
 ]
 
 [profile.dev]

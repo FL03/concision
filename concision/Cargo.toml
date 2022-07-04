@@ -7,10 +7,14 @@ license = "MIT"
 name = "concision"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
-version = "0.1.5" # TODO - Update the cargo package version
+version = "0.1.6" # TODO - Update the cargo package version
 
 [features]
-default = []
+default = ["external"]
+external = ["bson/default", "bson/chrono-0_4", "bson/serde_with", "serde/derive"]
+full = ["default", "derive", "macros"]
+derive = ["concision-derive"]
+macros = ["concision-macros"]
 
 [lib]
 bench = false
@@ -27,4 +31,12 @@ log = "0.4.17"
 once_cell = "1.12.0"
 serde = { features = ["derive"], version = ">=1.0.137" }
 
-[build-dependencies]
+[dependencies.concision-derive]
+optional = true
+path = "../derive"
+version = "0.1.6"
+
+[dependencies.concision-macros]
+optional = true
+path = "../macros"
+version = "0.1.6"

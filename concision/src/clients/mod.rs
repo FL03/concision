@@ -1,10 +1,12 @@
 /*
-   Appellation: clients
+   Appellation: containers
    Context:
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...
 */
+
+mod connections;
 
 #[derive(Clone, Debug, Hash, PartialEq, serde::Deserialize, serde::Serialize)]
 pub enum Databases {
@@ -34,13 +36,4 @@ pub enum Connections {
 pub struct Client {
     pub address: String,
     pub name: String,
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test() {
-        let f = |x: usize| x.pow(x.try_into().unwrap());
-        assert_eq!(f(2), 4)
-    }
 }

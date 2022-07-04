@@ -7,26 +7,14 @@
        of complex, dynamic computational models equipped with a standard interface enabling for
        compatibility and usability
 */
-pub use crate::actors::actor::*;
+pub use actor::*;
+pub use aggregators::*;
+pub use automata::*;
+pub use converters::*;
+pub use transformers::*;
 
 mod actor;
-
-pub enum AutomataStates {
-    Aggregating,
-    Computing,
-    Determining,
-    Terminating,
-}
-
-pub trait Automata<Alpha, Beta, Lambda, Gamma, Dirac> {
-    fn constructor(
-        &self,
-        alpha: Alpha,
-        beta: Beta,
-        lambda: Lambda,
-        gamma: Gamma,
-        dirac: Dirac,
-    ) -> Self
-    where
-        Self: Sized;
-}
+mod aggregators;
+mod automata;
+mod converters;
+mod transformers;
