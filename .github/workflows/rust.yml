@@ -28,7 +28,7 @@ jobs:
     env:
       CRATE: concision-derive
     runs-on: ubuntu-latest
-    needs: [ login, test-workspace ]
+    needs: [ login ]
     steps:
       - uses: actions/checkout@v3
       - name: Build and Push
@@ -37,7 +37,7 @@ jobs:
     env:
       CRATE: concision-macros
     runs-on: ubuntu-latest
-    needs: [ login, test-workspace ]
+    needs: [ login ]
     steps:
       - uses: actions/checkout@v3
       - name: Build and Push
@@ -46,7 +46,7 @@ jobs:
     env:
       CRATE: concision
     runs-on: ubuntu-latest
-    needs: [ derive, macros, login, test-workspace ]
+    needs: [ login, test-workspace ]
     steps:
       - uses: actions/checkout@v3
       - name: Build and Push

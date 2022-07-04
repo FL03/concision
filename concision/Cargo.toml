@@ -7,7 +7,7 @@ license = "MIT"
 name = "concision"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
-version = "0.1.6" # TODO - Update the cargo package version
+version = "0.1.7" # TODO - Update the cargo package version
 
 [features]
 default = ["external"]
@@ -34,9 +34,9 @@ serde = { features = ["derive"], version = ">=1.0.137" }
 [dependencies.concision-derive]
 optional = true
 path = "../derive"
-version = "0.1.6"
+version = ">=0.1.6"
 
 [dependencies.concision-macros]
 optional = true
 path = "../macros"
-version = "0.1.6"
+version = ">=0.1.6"
