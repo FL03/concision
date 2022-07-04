@@ -6,6 +6,17 @@
        ... Summary ...
 */
 
+#[derive(Clone, Debug, Hash, PartialEq, serde::Deserialize, serde::Serialize)]
+pub struct Matrix<DType = usize> {
+    pub data: Vec<Vec<DType>>
+}
+
+pub trait Matrices<Data: Sized = f32>: Sized {
+
+    fn constructor(args: Vec<Data>) -> Self where Self: Sized;
+
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
