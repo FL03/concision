@@ -7,5 +7,5 @@
 */
 pub use crate::calculus::{derivative::*, stochastic::*};
 
-mod stochastic;
 mod derivative;
+mod stochastic;

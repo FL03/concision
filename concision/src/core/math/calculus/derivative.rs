@@ -1,10 +1,10 @@
 /*
-    Appellation: derivative
-    Context:
-    Creator: FL03 <jo3mccain@icloud.com>
-    Description:
-        ... Summary ...
- */
+   Appellation: derivative
+   Context:
+   Creator: FL03 <jo3mccain@icloud.com>
+   Description:
+       ... Summary ...
+*/
 
 #[cfg(test)]
 mod tests {
