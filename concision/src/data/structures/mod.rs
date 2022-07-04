@@ -1,16 +1,12 @@
 /*
-   Appellation: primitives
+   Appellation: mod
    Context:
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...
 */
 
-mod constants {}
-
-mod types {}
-
-mod utils {}
+mod frames;
 
 #[cfg(test)]
 mod tests {

@@ -16,6 +16,13 @@ where
     Standard(i64),
 }
 
+#[derive(Clone, Debug, Hash, PartialEq, serde::Deserialize, serde::Serialize)]
+pub enum Ids {
+    ContentId(String),
+    ObjectId(bson::oid::ObjectId),
+    Standard(u8),
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

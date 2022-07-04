@@ -26,14 +26,14 @@ impl std::fmt::Display for FileHandler {
 }
 
 mod specifications {
-    pub trait FileSpec: Sized {
-        type Address;
-        type Container;
-        type Data;
 
-        fn aggregate(&self, sources: Self::Address) -> Self::Container
+    pub trait FileSpec<Addr = String, Cache = bool, Cont = Vec<String>, Data = String> {
+        fn aggregate(&self, address: Addr) -> Cont
         where
-            Self::Container: Sized;
+            Self: Sized;
+        fn create(&self, address: Addr, data: Data) -> std::io::Result<std::fs::File>
+        where
+            Self: Sized;
     }
 }
 
@@ -59,6 +59,7 @@ mod tests {
 
     #[test]
     fn test() {
+        let a: Box<dyn super::FileSpec>;
         let f = |x: usize, y: usize| x.pow(y.try_into().unwrap());
         assert_eq!(f(10, 2), 100)
     }
