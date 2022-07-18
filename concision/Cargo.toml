@@ -1,18 +1,19 @@
 [package]
 authors = ["FL03 <jo3mccain@icloud.com>"]
-description = "Concision is a data-science toolkit for building robust, data-centric applications in Rust"
+categories = []
+description = "Concision is a complete data-science toolkit written in Rust"
 edition = "2021"
+homepage = "https://scattered-systems.github.io/concision"
 keywords = ["data-science", "toolkit"]
 license = "MIT"
 name = "concision"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
-version = "0.1.9" # TODO - Update the cargo package version
+version = "0.1.10" # TODO - Update the cargo package version
 
 [features]
-default = ["external"]
-external = ["bson/default", "bson/chrono-0_4", "bson/serde_with", "serde/derive"]
-full = ["default", "derive", "macros"]
+default = []
+full = ["derive", "macros"]
 derive = ["concision-derive"]
 macros = ["concision-macros"]
 
@@ -34,9 +35,10 @@ serde = { features = ["derive"], version = ">=1.0.137" }
 [dependencies.concision-derive]
 optional = true
 path = "../derive"
-version = ">=0.1.6"
+version = ">=0.1.10"
 
 [dependencies.concision-macros]
 optional = true
 path = "../macros"
-version = ">=0.1.6"
+version = ">=0.1.10"
+

@@ -1,13 +1,15 @@
 [package]
 authors = ["FL03 <jo3mccain@icloud.com>"]
-description = "Concision is a data-science toolkit for building robust, data-centric applications in Rust"
+categories = []
+description = "Procedural Macros created for Concision, a complete data-science toolkit written in Rust"
 edition = "2021"
-keywords = ["derive", "macros"]
+homepage = "https://scattered-systems.github.io/concision"
+keywords = ["macros"]
 license = "MIT"
 name = "concision-macros"
 readme = "README.md"
-repository = "https://github.com/FL03/concision"
-version = "0.1.9" # TODO - Update the cargo package version
+repository = "https://github.com/scattered-systems/concision"
+version = "0.1.10" # TODO - Update the cargo package version
 
 [lib]
 proc-macro = true
