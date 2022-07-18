@@ -1,12 +1,9 @@
 /*
-   Appellation: containers
-   Context:
+   Appellation: containers <module>
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...
 */
-
-mod connections;
 
 #[derive(Clone, Debug, Hash, PartialEq, serde::Deserialize, serde::Serialize)]
 pub enum Databases {

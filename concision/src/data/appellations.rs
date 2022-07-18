@@ -1,6 +1,5 @@
 /*
-   Appellation: appellations
-   Context: module
+   Appellation: appellations <module>
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        An appellation is defined as a name or title or as the act of giving something a name or

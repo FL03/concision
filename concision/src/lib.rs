@@ -1,13 +1,12 @@
 /*
-   Appellation: concision
-   Context: library
+   Appellation: concision <library>
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        Concision is a robust framework for creating powerful data-centric applications in Rust.
 */
 #[doc(inline)]
 #[cfg(feature = "default")]
-pub use crate::{actors::*, clients::*, core::*, data::*};
+pub use crate::{actors::*, components::*, core::*, data::*};
 #[doc(inline)]
 #[cfg(feature = "derive")]
 pub use concision_derive::*;
@@ -16,6 +15,6 @@ pub use concision_derive::*;
 pub use concision_macros::*;
 
 mod actors;
-mod clients;
+mod components;
 mod core;
 mod data;

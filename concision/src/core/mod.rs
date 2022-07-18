@@ -1,14 +1,13 @@
 /*
-   Appellation: core
-   Context: module
+   Appellation: core <module>
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...
 */
-pub use common::*;
 pub use math::*;
+pub use primitives::*;
 pub use visualizers::*;
 
-mod common;
 mod math;
+mod primitives;
 mod visualizers;
