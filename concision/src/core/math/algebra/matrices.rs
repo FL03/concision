@@ -1,6 +1,5 @@
 /*
-   Appellation: matrices
-   Context:
+   Appellation: matrices <module>
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...

@@ -1,6 +1,5 @@
 /*
-   Appellation: files
-   Context:
+   Appellation: files <module>
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...
@@ -42,8 +41,7 @@ mod utils {
     use std::io::prelude::*;
 
     pub fn create_file(source: String) -> std::io::Result<std::fs::File> {
-        let mut file = std::fs::File::create(source)?;
-        Ok(file)
+        Ok(std::fs::File::create(source)?)
     }
 
     pub fn walk_dir(pattern: &str) -> Vec<std::path::PathBuf> {
@@ -64,13 +62,6 @@ mod utils {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test() {
-        let a: Box<dyn FileSpec>;
-        let f = |x: usize, y: usize| x.pow(y.try_into().unwrap());
-        assert_eq!(f(10, 2), 100)
-    }
 
     #[test]
     fn test_walker() {

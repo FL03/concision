@@ -1,0 +1,15 @@
+/*
+   Appellation: common
+   Context:
+   Creator: FL03 <jo3mccain@icloud.com>
+   Description:
+       ... Summary ...
+*/
+pub use constants::*;
+pub use types::*;
+
+/// Collection of constants used throughout the system
+mod constants {}
+
+/// Collection of types used throughout the system
+mod types {}

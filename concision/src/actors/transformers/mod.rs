@@ -1,6 +1,5 @@
 /*
-   Appellation: transformers
-   Context:
+   Appellation: transformers <module>
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...
