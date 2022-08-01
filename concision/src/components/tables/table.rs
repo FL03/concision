@@ -20,8 +20,8 @@ pub struct Table<T> {
 
 impl<T> Table<T> {
     pub fn new(shape: (usize, usize)) -> Self {
-        let mut data = Vec::<T>::with_capacity(shape.0);
-        for i in 0..shape.1 {
+        let mut data = Vec::<Vec<T>>::with_capacity(shape.0);
+        for _ in 0..shape.1 {
             data.push(Vec::<T>::with_capacity(shape.1))
         }
         Self { data, shape }
@@ -49,8 +49,8 @@ mod tests {
 
     #[test]
     fn test_table_shape() {
-        let actual = Table::default();
-        let expected = Table::new((3, 3));
+        let actual = Table::<f64>::default();
+        let expected = Table::<f64>::new((3, 3));
         println!("{:#?}", actual.clone());
         assert_eq!(actual, expected)
     }
