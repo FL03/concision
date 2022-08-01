@@ -1,8 +1,9 @@
 /*
-   Appellation: containers <module>
+   Appellation: tables <module>
    Creator: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...
 */
-pub mod points;
-pub mod tables;
+pub use table::*;
+
+mod table;

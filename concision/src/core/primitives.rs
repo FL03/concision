@@ -5,31 +5,11 @@
    Description:
        ... Summary ...
 */
+pub use constants::*;
+pub use types::*;
 
-#[derive(Clone, Debug, Hash, PartialEq)]
-pub enum Dates<Tz = chrono::Utc>
-where
-    Tz: chrono::TimeZone,
-{
-    Objective(bson::DateTime),
-    Relative(chrono::DateTime<Tz>),
-    Standard(i64),
-}
+/// Collection of constants used throughout the system
+mod constants {}
 
-#[derive(Clone, Debug, Hash, PartialEq, serde::Deserialize, serde::Serialize)]
-pub enum Ids {
-    ContentId(String),
-    ObjectId(bson::oid::ObjectId),
-    Standard(u8),
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn test() {
-        let date: Dates = Dates::Standard(chrono::Utc::now().timestamp());
-        println!("timestamp: {:#?}", &date);
-        assert_eq!(date, date)
-    }
-}
+/// Collection of types used throughout the system
+mod types {}
