@@ -12,7 +12,6 @@ members = [
 [profile.dev]
 opt-level = 0
 debug = true
-split-debuginfo = '...'  # Platform-specific.
 debug-assertions = true
 overflow-checks = true
 lto = false
@@ -24,7 +23,6 @@ rpath = false
 [profile.release]
 opt-level = 3
 debug = false
-split-debuginfo = '...'  # Platform-specific.
 debug-assertions = false
 overflow-checks = false
 lto = false

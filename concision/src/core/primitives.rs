@@ -1,15 +1,16 @@
 /*
-   Appellation: common
-   Context:
-   Creator: FL03 <jo3mccain@icloud.com>
+   Appellation: primitives <module>
+   Contributors: FL03 <jo3mccain@icloud.com>
    Description:
        ... Summary ...
 */
-pub use constants::*;
-pub use types::*;
+pub use self::{constants::*, statics::*, types::*};
 
 /// Collection of constants used throughout the system
-mod constants {}
+pub(crate) mod constants {}
+
+/// Collection of static references used throughout
+pub(crate) mod statics {}
 
 /// Collection of types used throughout the system
-mod types {}
+pub(crate) mod types {}

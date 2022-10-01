@@ -12,7 +12,7 @@ written in Rust and designed to support the creation of enterprise-grade, data d
 
 ### Building from the source
 
-    git clone https://github.com/scattered-systems/concision
+    git clone https://gitlab.com/pzzld/packages/crates/concision
 
 ### Commands
 

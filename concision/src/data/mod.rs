@@ -4,6 +4,5 @@
    Description:
        ... Summary ...
 */
-pub mod handlers;
-pub mod models;
-pub mod schemas;
+
+pub mod proofs;

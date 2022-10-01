@@ -1,10 +1,8 @@
 /*
-   Appellation: calculus <module>
-   Creator: FL03 <jo3mccain@icloud.com>
-   Description:
-       ... Summary ...
+    Appellation: calculus <module>
+    Contributors: FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)
+    Description:
+        ... Summary ...
 */
-pub use crate::calculus::{derivative::*, stochastic::*};
 
-mod derivative;
-mod stochastic;
+pub mod derivatives;
