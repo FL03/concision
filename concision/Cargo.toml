@@ -28,7 +28,7 @@ test = true
 
 [dependencies]
 scsys = "0.1.17"
-serde = { default-features = false, features = ["derive"], version = "1.0.145" }
+serde = { features = ["derive"], version = "1.0.145" }
 strum = { features = ["derive"], version = "0.24.1" }
 
 [dependencies.concision-derive]
