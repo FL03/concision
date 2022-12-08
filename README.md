@@ -1,9 +1,9 @@
 # Concision
 
-[![Clippy Analysis](https://github.com/scattered-systems/concision/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/scattered-systems/concision/actions/workflows/rust-clippy.yml)
+[![Clippy](https://github.com/scattered-systems/concision/actions/workflows/clippy.yml/badge.svg)](https://github.com/scattered-systems/concision/actions/workflows/clippy.yml)
 [![Rust](https://github.com/scattered-systems/concision/actions/workflows/rust.yml/badge.svg)](https://github.com/scattered-systems/concision/actions/workflows/rust.yml)
 
-## Overview
+***
 
 Inspired by the myriad of data science libraries created for Python, concision is a complete data-science toolkit
 written in Rust and designed to support the creation of enterprise-grade, data driven applications.
@@ -12,8 +12,37 @@ written in Rust and designed to support the creation of enterprise-grade, data d
 
 ### Building from the source
 
-    git clone https://gitlab.com/pzzld/packages/crates/concision
+Start by cloning the repository
 
-### Commands
+```bash
+git clone https://github.com/scattered-systems/concision
+```
 
-    cargo test --all-features
+```bash
+cargo build --release --workspace
+cargo test --all --all-features --release
+```
+
+## Usage
+
+```rust
+    use concision as cnc;
+
+    fn main() {
+        let a = "";
+
+        println!("{:?}", a);
+    }
+```
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+* [Apache-2.0](https://choosealicense.com/licenses/apache-2.0/)
+* [MIT](https://choosealicense.com/licenses/mit/)

@@ -1,11 +1,11 @@
 [package]
-authors = ["FL03 <jo3mccain@icloud.com>"]
+authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems (https://github.com/scattered-systems"]
 categories = []
 description = "Concision is a complete data-science toolkit written in Rust"
 edition = "2021"
 homepage = "https://scattered-systems.github.io/concision"
 keywords = ["data-science", "toolkit"]
-license = "MIT"
+license = "Apache-2.0"
 name = "concision"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
@@ -27,16 +27,10 @@ test = true
 [build-dependencies]
 
 [dependencies]
-scsys = "0.1.17"
-serde = { features = ["derive"], version = "1.0.145" }
+scsys = { features = ["full"], version = "0.1.36" }
+serde = { features = ["derive"], version = "1.0.149" }
+serde_json = "1.0.89"
 strum = { features = ["derive"], version = "0.24.1" }
 
-[dependencies.concision-derive]
-optional = true
-path = "../derive"
-version = "0.1.11"
-
-[dependencies.concision-macros]
-optional = true
-path = "../macros"
-version = "0.1.11"
+concision-derive = { features = [], optional = true, path = "../derive", version = "0.1.11" }
+concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.11" }
