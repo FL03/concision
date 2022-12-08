@@ -1,8 +1,7 @@
 /*
     Appellation: factorials <module>
-    Contributors: FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)
-    Description:
-        ... Summary ...
+    Contrib: FL03 <jo3mccain@icloud.com>
+    Description: ... Summary ...
 */
 use std::{
     ops::{Mul, Sub},
@@ -11,11 +10,11 @@ use std::{
 };
 
 #[derive(Clone, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Factorial<T: Clone + FromStr + ToString + Mul<Output=T> + Sub<Output=T>>(pub T);
+pub struct Factorial<T: Clone + FromStr + ToString + Mul<Output = T> + Sub<Output = T>>(T);
 
-impl<T: Clone + FromStr + ToString + Mul<Output=T> + Sub<Output=T>> Factorial<T>
-    where
-        <T as FromStr>::Err: std::fmt::Debug,
+impl<T: Clone + FromStr + ToString + Mul<Output = T> + Sub<Output = T>> Factorial<T>
+where
+    <T as FromStr>::Err: std::fmt::Debug,
 {
     pub fn new(data: T) -> Self {
         Self(Self::compute(data))
@@ -28,12 +27,16 @@ impl<T: Clone + FromStr + ToString + Mul<Output=T> + Sub<Output=T>> Factorial<T>
             _ => Self::compute(data.clone() - b) * data,
         }
     }
+    pub fn data(&self) -> &T {
+        &self.0
+    }
     pub fn from_args(data: Vec<T>) -> Vec<Self> {
         data.iter()
             .map(|i| Self::new(i.clone()))
             .collect::<Vec<Self>>()
     }
 }
+
 
 pub fn factorial(data: usize) -> usize {
     match data {
@@ -48,6 +51,6 @@ mod tests {
 
     #[test]
     fn test_factorial() {
-        assert_eq!(Factorial::new(0).0, 1)
+        assert_eq!(Factorial::new(0).data().clone(), 1)
     }
 }

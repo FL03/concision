@@ -1,10 +1,9 @@
 /*
     Appellation: vectors <module>
-    Contributors: FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)
-    Description:
-        ... Summary ...
+    Contrib: FL03 <jo3mccain@icloud.com>
+    Description: ... Summary ...
 */
-use crate::math::{Im, OrdPair, Re};
+use crate::num::{Im, OrdPair, Re};
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct VectorSpace<T>(pub Vec<T>);

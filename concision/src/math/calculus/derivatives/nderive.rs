@@ -1,26 +1,24 @@
 /*
     Appellation: num <module>
-    Contributors: FL03 <jo3mccain@icloud.com> (https://gitlab.com/FL03)
-    Description:
-        ... Summary ...
+    Contrib: FL03 <jo3mccain@icloud.com>
+    Description: ... Summary ...
 */
-use crate::math::Numerical;
 use serde::{Deserialize, Serialize};
 use strum::{EnumString, EnumVariantNames};
 
 #[derive(
-Clone,
-Copy,
-Debug,
-Default,
-Deserialize,
-EnumString,
-EnumVariantNames,
-Eq,
-Hash,
-PartialEq,
-PartialOrd,
-Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deserialize,
+    EnumString,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    PartialEq,
+    PartialOrd,
+    Serialize,
 )]
 #[strum(serialize_all = "snake_case")]
 pub enum DerivativeMode {

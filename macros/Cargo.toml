@@ -5,18 +5,21 @@ description = "Procedural Macros created for Concision, a complete data-science 
 edition = "2021"
 homepage = "https://scattered-systems.github.io/concision"
 keywords = ["macros"]
-license = "MIT"
+license = "Apache-2.0"
 name = "concision-macros"
 repository = "https://github.com/scattered-systems/concision"
 version = "0.1.11" # TODO - Update the cargo package version
 
 [lib]
+crate-type = ["cdylib", "rlib"]
 test = false
 
 [dependencies]
-proc-macro2 = "1.0.46"
+proc-macro2 = "1.0.47"
 quote = "1.0.21"
-syn = { features = ["full"], version = "1.0.101" }
+syn = { features = ["full"], version = "1.0.105" }
 
 [dev-dependencies.concision]
 path = "../concision"
+
+[target.wasm32-unknown-unknown]
