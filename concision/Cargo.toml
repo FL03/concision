@@ -8,7 +8,7 @@ keywords = ["data-science", "scsys", "toolkit"]
 license = "Apache-2.0"
 name = "concision"
 repository = "https://github.com/scattered-systems/concision"
-version = "0.1.11" # TODO - Update the cargo package version
+version = "0.1.12" # TODO - Update the cargo package version
 
 [features]
 default = ["core"]

@@ -1,14 +1,14 @@
 [package]
-authors = ["FL03 <jo3mccain@icloud.com>"]
+authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems (https://github.com/scattered-systems)"]
 categories = []
 description = "Derive macros created for Consision, a complete data-science toolkit written in Rust"
 edition = "2021"
 homepage = "https://scattered-systems.github.io/concision"
-keywords = ["derive", "macros"]
+keywords = ["derive", "macros", "scsys"]
 license = "Apache-2.0"
 name = "concision-derive"
 repository = "https://github.com/scattered-systems/concision"
-version = "0.1.11" # TODO - Update the cargo package version
+version = "0.1.12" # TODO - Update the cargo package version
 
 [lib]
 proc-macro = true
