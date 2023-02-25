@@ -21,7 +21,13 @@ use std::ops::{Add, Div, Mul, Sub};
 
 /// [Numerical] is a basic trait describing numerical objects
 pub trait Numerical:
-    Add<Output = Self> + Div<Output = Self> + Mul<Output = Self> + Sub<Output = Self> + Clone + Copy + Sized
+    Add<Output = Self>
+    + Div<Output = Self>
+    + Mul<Output = Self>
+    + Sub<Output = Self>
+    + Clone
+    + Copy
+    + Sized
 {
 }
 

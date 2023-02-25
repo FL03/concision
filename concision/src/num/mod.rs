@@ -8,7 +8,6 @@ pub mod complex;
 
 use crate::Numerical;
 
-
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct OrdPair<T: Numerical>((Re<T>, Re<T>));
 

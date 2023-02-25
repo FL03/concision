@@ -37,7 +37,6 @@ where
     }
 }
 
-
 pub fn factorial(data: usize) -> usize {
     match data {
         0 | 1 => 1,

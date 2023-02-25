@@ -1,4 +1,3 @@
-
 extern crate concision;
 
 use concision::num::complex::C;
@@ -13,6 +12,6 @@ fn main() {
     let c = C::from((1.0, 1.0));
     let res = square(c);
     assert_eq!(res.clone(), C::from((0.0, 2.0)));
-    
+
     println!("{:?}", res);
 }
