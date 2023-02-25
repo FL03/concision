@@ -6,38 +6,20 @@
 
 pub mod complex;
 
-use std::ops::{Add, Div, Mul, Sub};
+use crate::Numerical;
 
-pub enum Z {
-    Signed,
-    Unsigned,
-}
-
-pub enum Numbers {
-    Integer,
-    Float,
-}
-
-pub struct Point<T>(T);
-
-pub trait BaseObject: Clone + Sized {}
-
-pub trait Numerical<T>:
-    Add<Output = T> + Div<Output = T> + Mul<Output = T> + Sub<Output = T> + Sized
-{
-}
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct OrdPair<T: Numerical<T>>((Re<T>, Re<T>));
+pub struct OrdPair<T: Numerical>((Re<T>, Re<T>));
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Re<T: Numerical<T>>(T);
+pub struct Re<T: Numerical>(T);
 
-impl<T: Numerical<T>> Re<T> {
+impl<T: Numerical> Re<T> {
     pub fn new(data: T) -> Self {
         Self(data)
     }
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Im<T: Numerical<T>>(Re<T>);
+pub struct Im<T: Numerical>(Re<T>);

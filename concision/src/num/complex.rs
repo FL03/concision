@@ -3,6 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
     Description: ... Summary ...
 */
+use crate::Numerical;
 use serde::{Deserialize, Serialize};
 use std::{
     convert::From,
@@ -10,15 +11,15 @@ use std::{
 };
 
 // Define a trait for complex numbers.
-pub trait Complex {
-    fn new(re: f64, im: f64) -> Self;
-    fn re(&self) -> f64;
-    fn im(&self) -> f64;
+pub trait Complex<T: Numerical> {
+    fn build(re: T, im: T) -> Self;
+    fn re(&self) -> T;
+    fn im(&self) -> T;
 }
 
 // Implement the Complex trait for the tuple (f64, f64).
-impl Complex for (f64, f64) {
-    fn new(re: f64, im: f64) -> Self {
+impl Complex<f64> for (f64, f64) {
+    fn build(re: f64, im: f64) -> Self {
         (re, im)
     }
 
@@ -32,51 +33,54 @@ impl Complex for (f64, f64) {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]
-pub struct C {
-    pub re: f64,
-    pub im: f64,
-}
+pub struct C<T: Numerical = f64>(T, T);
 
-impl Complex for C {
-    fn new(re: f64, im: f64) -> Self {
-        Self { re, im }
-    }
-    fn re(&self) -> f64 {
-        self.re
-    }
-    fn im(&self) -> f64 {
-        self.im
+impl<T: Numerical> C<T> {
+    pub fn new(a: T, b: T) -> Self {
+        Self(a, b)
     }
 }
 
-impl From<(f64, f64)> for C {
-    fn from(data: (f64, f64)) -> Self {
+impl<T: Numerical> Complex<T> for C<T> {
+    fn build(re: T, im: T) -> Self {
+        Self(re, im)
+    }
+    fn re(&self) -> T {
+        self.0
+    }
+    fn im(&self) -> T {
+        self.1
+    }
+}
+
+impl<T: Numerical> From<(T, T)> for C<T> {
+    fn from(data: (T, T)) -> Self {
         Self::new(data.0, data.1)
     }
 }
 
-impl From<C> for (f64, f64) {
-    fn from(data: C) -> (f64, f64) {
-        (data.re, data.im)
+impl<T: Numerical> From<C<T>> for (T, T) {
+    fn from(data: C<T>) -> (T, T) {
+        (data.re(), data.im())
     }
 }
 
 // Implement the Add and Mul traits for complex numbers.
-impl Add for C {
+impl<T: Numerical> Add for C<T> {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Self::from((self.re + other.re, self.im + other.im))
+        Self::from((self.re() + other.re(), self.im() + other.im()))
     }
 }
 
-impl Mul for C {
+impl<T: Numerical> Mul for C<T> {
     type Output = Self;
 
     fn mul(self, other: Self) -> Self {
         Self::from((
-            self.re * other.re - self.im * other.im,
-            self.re * other.im + self.im * other.re,
+            self.re() * other.re() - self.im() * other.im(),
+            self.re() * other.im() + self.im() * other.re(),
         ))
     }
 }
@@ -85,7 +89,7 @@ impl Mul for C {
 mod tests {
     use super::*;
     // Define a holomorphic function that squares its input.
-    fn square<T: Complex + Mul<Output = T> + Clone>(z: T) -> T {
+    fn square<T: Numerical>(z: C<T>) -> C<T> {
         z.clone() * z
     }
 

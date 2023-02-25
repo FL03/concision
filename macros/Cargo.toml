@@ -1,14 +1,15 @@
 [package]
-authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems (https://github.com/scattered-systems)"]
-categories = []
-description = "Procedural Macros created for Concision, a complete data-science toolkit written in Rust"
-edition = "2021"
-homepage = "https://scattered-systems.github.io/concision"
-keywords = ["macros", "scsys"]
-license = "Apache-2.0"
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
 name = "concision-macros"
-repository = "https://github.com/scattered-systems/concision"
-version = "0.1.12" # TODO - Update the cargo package version
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
 
 [lib]
 crate-type = ["cdylib", "rlib"]

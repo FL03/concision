@@ -1,14 +1,15 @@
 [package]
-authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems (https://github.com/scattered-systems)"]
-categories = []
-description = "Concision is a complete data-science toolkit written in Rust"
-edition = "2021"
-homepage = "https://scattered-systems.github.io/concision"
-keywords = ["data-science", "scsys", "toolkit"]
-license = "Apache-2.0"
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
 name = "concision"
-repository = "https://github.com/scattered-systems/concision"
-version = "0.1.12" # TODO - Update the cargo package version
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
 
 [features]
 default = ["core"]
@@ -26,10 +27,11 @@ test = true
 [build-dependencies]
 
 [dependencies]
-scsys = { features = [], version = "0.1.36" }
-serde = { features = ["derive"], version = "1.0.149" }
-serde_json = "1.0.89"
-strum = { features = ["derive"], version = "0.24.1" }
+scsys = { features = [], version = "0.1.41" }
+serde = { features = ["derive"], version = "1" }
+serde_json = "1"
+smart-default = "0.6"
+strum = { features = ["derive"], version = "0.24" }
 
 concision-derive = { features = [], optional = true, path = "../derive", version = "0.1.12" }
 concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.12" }

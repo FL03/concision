@@ -1,8 +1,11 @@
-use concision::num::complex::{C, Complex};
-use std::ops::Mul;
+
+extern crate concision;
+
+use concision::num::complex::C;
+use concision::Numerical;
 
 // Define a holomorphic function that squares its input.
-fn square<T: Complex + Mul<Output = T> + Clone>(z: T) -> T {
+fn square<T: Numerical>(z: C<T>) -> C<T> {
     z.clone() * z
 }
 
