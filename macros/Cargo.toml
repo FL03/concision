@@ -16,9 +16,9 @@ crate-type = ["cdylib", "rlib"]
 test = false
 
 [dependencies]
-proc-macro2 = "1.0.47"
-quote = "1.0.21"
-syn = { features = ["full"], version = "1.0.105" }
+proc-macro2 = "1"
+quote = "1"
+syn = { features = ["full"], version = "1" }
 
 [dev-dependencies.concision]
 path = "../concision"
