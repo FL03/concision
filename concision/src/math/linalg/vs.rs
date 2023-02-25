@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
     Description: ... Summary ...
 */
-use crate::num::{Im, OrdPair, Re};
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct VectorSpace<T>(pub Vec<T>);

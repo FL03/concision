@@ -12,14 +12,14 @@ use std::{
 
 // Define a trait for complex numbers.
 pub trait Complex<T: Numerical> {
-    fn build(re: T, im: T) -> Self;
+    fn new(re: T, im: T) -> Self;
     fn re(&self) -> T;
     fn im(&self) -> T;
 }
 
 // Implement the Complex trait for the tuple (f64, f64).
 impl Complex<f64> for (f64, f64) {
-    fn build(re: f64, im: f64) -> Self {
+    fn new(re: f64, im: f64) -> Self {
         (re, im)
     }
 
@@ -35,14 +35,8 @@ impl Complex<f64> for (f64, f64) {
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]
 pub struct C<T: Numerical = f64>(T, T);
 
-impl<T: Numerical> C<T> {
-    pub fn new(a: T, b: T) -> Self {
-        Self(a, b)
-    }
-}
-
 impl<T: Numerical> Complex<T> for C<T> {
-    fn build(re: T, im: T) -> Self {
+    fn new(re: T, im: T) -> Self {
         Self(re, im)
     }
     fn re(&self) -> T {
