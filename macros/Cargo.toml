@@ -17,7 +17,7 @@ test = false
 [dependencies]
 proc-macro2 = "1.0.47"
 quote = "1.0.21"
-syn = { features = ["full"], version = "1.0.105" }
+syn = { features = ["full"], version = "2.0.4" }
 
 [dev-dependencies.concision]
 path = "../concision"
