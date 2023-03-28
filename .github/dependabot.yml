@@ -13,10 +13,14 @@ updates:
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /concision-derive
+    directory: /core
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /concision-macros
+    directory: /derive
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /macros
     schedule:
       interval: daily

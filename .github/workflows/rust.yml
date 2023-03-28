@@ -58,6 +58,7 @@ jobs:
     strategy:
       matrix:
         package:
+          - concision-core
           - concision-derive
           - concision-macros
     steps:
