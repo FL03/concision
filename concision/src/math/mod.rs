@@ -7,5 +7,6 @@ pub use self::factorials::*;
 
 pub mod calculus;
 pub mod linalg;
+pub mod statistics;
 
-pub(crate) mod factorials;
+mod factorials;

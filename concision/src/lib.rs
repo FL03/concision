@@ -6,6 +6,8 @@
 */
 #[doc(inline)]
 pub use crate::{primitives::*, utils::*};
+#[cfg(feature = "core")]
+pub use concision_core as core;
 #[cfg(feature = "derive")]
 pub use concision_derive::*;
 #[cfg(feature = "macros")]

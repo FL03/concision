@@ -6,19 +6,31 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-derive"
+name = "concision-core"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
+[features]
+default = []
+
+wasm = []
+
 [lib]
-proc-macro = true
-test = false
+crate-type = ["cdylib", "rlib"]
+test = true
+
+[build-dependencies]
 
 [dependencies]
-proc-macro2 = "1"
-quote = "1"
-syn = { features = ["full"], version = "1" }
+ndarray = { features = ["blas", "serde-1"], version = "0.15" }
+num = { features = [], version = "0.4" }
+serde.workspace = true
+serde_json.workspace = true
+smart-default.workspace = true
+strum.workspace = true
+
+[dev-dependencies]
 
 [package.metadata.docs.rs]
 all-features = true

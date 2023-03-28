@@ -20,7 +20,10 @@ proc-macro2 = "1"
 quote = "1"
 syn = { features = ["full"], version = "1" }
 
-[dev-dependencies.concision]
-path = "../concision"
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
 
 [target.wasm32-unknown-unknown]
+
+[target.wasm32-wasi]

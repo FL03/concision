@@ -15,23 +15,34 @@ version.workspace = true
 default = ["core"]
 full = ["core", "derive", "macros"]
 
-core = []
+core = ["concision-core/default"]
 derive = ["concision-derive"]
 macros = ["concision-macros"]
 
 [lib]
-bench = false
 crate-type = ["cdylib", "rlib"]
 test = true
 
 [build-dependencies]
 
 [dependencies]
-scsys = { features = [], version = "0.1.41" }
-serde = { features = ["derive"], version = "1" }
-serde_json = "1"
-smart-default = "0.6"
-strum = { features = ["derive"], version = "0.24" }
+ndarray = { features = ["blas", "serde-1"], version = "0.15" }
+num = { features = [], version = "0.4" }
+serde.workspace = true
+serde_json.workspace = true
+smart-default.workspace = true
+strum.workspace = true
 
+concision-core = { features = [], optional = true, path = "../core", version = "0.1.12" }
 concision-derive = { features = [], optional = true, path = "../derive", version = "0.1.12" }
 concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.12" }
+
+[dev-dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
+[target.wasm32-unknown-unknown]
+
+[target.wasm32-wasi]
