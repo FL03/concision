@@ -16,8 +16,8 @@ pub use concision_macros::*;
 pub mod math;
 pub mod num;
 
-pub(crate) mod primitives;
-pub(crate) mod utils;
+mod primitives;
+mod utils;
 
 use std::ops::{Add, Div, Mul, Sub};
 

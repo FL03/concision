@@ -11,7 +11,9 @@ mod deviation;
 
 /// Covariance is the average of the products of the deviations from the mean.
 pub fn covariance(x: Vec<f64>, y: Vec<f64>) -> f64 {
-    x.iter().zip(y.iter()).map(|(&x, &y)| x * y).sum::<f64>() / x.len() as f64
+    let dx = deviation(&x, mean(&x));
+    let dy = deviation(&y, mean(&y));
+    dx.iter().zip(dy.iter()).map(|(&x, &y)| x * y).sum::<f64>() / dx.len() as f64
 }
 /// Deviation is the distance from the mean.
 pub fn deviation(x: &[f64], mean: f64) -> Vec<f64> {

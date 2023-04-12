@@ -3,47 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
     Description: ... Summary ...
 */
-use serde::{Deserialize, Serialize};
-use strum::{EnumString, EnumVariantNames};
 
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Deserialize,
-    EnumString,
-    EnumVariantNames,
-    Eq,
-    Hash,
-    PartialEq,
-    PartialOrd,
-    Serialize,
-)]
-#[strum(serialize_all = "snake_case")]
-pub enum DerivativeMode {
-    Backwards,
-    #[default]
-    Central,
-    Forwards,
-}
-
-impl DerivativeMode {
-    pub fn execute<T>(&self, data: T, func: &dyn Fn(T) -> T) {
-        match self {
-            Self::Backwards => {}
-            Self::Central => {}
-            Self::Forwards => {}
-        }
-    }
-}
-
-pub fn central(x: Vec<f64>, f: &dyn Fn(f64) -> f64, h: f64) -> Vec<f64> {
-    let mut res = Vec::new();
-    for i in x {
-        res.push((f(i.clone() + h) - f(i - h)) / h);
-    }
-    res
+pub fn central<T: Copy + num::Num>(x: T, f: Box<dyn Fn(T) -> T>, h: T) -> T {
+    (f(x + h) - f(x)) / h
 }
 
 #[cfg(test)]
@@ -51,8 +13,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test() {
-        let f = |x: f64| x.powf(x);
-        assert_eq!(f(2.0), 4.0)
+    fn test_central() {
+        let f = |x: f64| x * x;
+        let res = central(5.0, Box::new(f), 0.001);
+        assert_eq!(res.round(), 10.0);
     }
 }

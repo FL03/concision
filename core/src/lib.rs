@@ -1,10 +1,11 @@
 /*
-   Appellation: concision <library>
+   Appellation: core <library>
    Contrib: FL03 <jo3mccain@icloud.com>
-   Description:
-       Concision is a robust framework for creating powerful data-centric applications in Rust.
+   Description: Implements the core functionality of the concision. Concision is an advanced data-science and machine-learning crate written in pure Rust and optimized for WASM environments.
 */
 pub use self::{primitives::*, utils::*};
 
 mod primitives;
 mod utils;
+
+pub mod linstep;
