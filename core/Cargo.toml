@@ -17,7 +17,9 @@ default = []
 wasm = []
 
 [lib]
+bench = true
 crate-type = ["cdylib", "rlib"]
+doctest = false
 test = true
 
 [build-dependencies]

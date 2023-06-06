@@ -10,7 +10,8 @@ on:
     branches-ignore: [ "beta*", "dev*", "next*" ]
     tags: [ "nightly*",  "v*.*.*" ]
   release:
-      types: [created]
+  repository_dispatch:
+    types: [ rust-publish ]
   schedule:
     - cron: "30 9 * * *" # 9:30am UTC
   workflow_dispatch:

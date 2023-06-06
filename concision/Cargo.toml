@@ -20,7 +20,9 @@ derive = ["concision-derive"]
 macros = ["concision-macros"]
 
 [lib]
+bench = true
 crate-type = ["cdylib", "rlib"]
+doctest = false
 test = true
 
 [build-dependencies]
