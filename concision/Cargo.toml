@@ -29,7 +29,7 @@ test = true
 scsys = { features = [], version = "0.1.36" }
 serde = { features = ["derive"], version = "1.0.149" }
 serde_json = "1.0.89"
-strum = { features = ["derive"], version = "0.24.1" }
+strum = { features = ["derive"], version = "0.25.0" }
 
 concision-derive = { features = [], optional = true, path = "../derive", version = "0.1.11" }
 concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.11" }
