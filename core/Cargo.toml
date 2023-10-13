@@ -14,7 +14,6 @@ version.workspace = true
 [features]
 default = []
 
-wasm = []
 
 [lib]
 bench = true

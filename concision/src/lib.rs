@@ -1,11 +1,13 @@
 /*
    Appellation: concision <library>
    Contrib: FL03 <jo3mccain@icloud.com>
-   Description:
-       Concision is a robust framework for creating powerful data-centric applications in Rust.
 */
+//! # Concision
+//!
+//! Concision aims to be a complete machine learning library written in pure Rust.
+//!
 #[doc(inline)]
-pub use crate::{primitives::*, utils::*};
+pub use crate::{primitives::*, specs::*, utils::*};
 #[cfg(feature = "core")]
 pub use concision_core as core;
 #[cfg(feature = "derive")]
@@ -14,29 +16,25 @@ pub use concision_derive::*;
 pub use concision_macros::*;
 
 pub mod math;
+pub mod nn;
 pub mod num;
 
-mod primitives;
-mod utils;
+pub(crate) mod primitives;
+pub(crate) mod specs;
+pub(crate) mod utils;
 
-use std::ops::{Add, Div, Mul, Sub};
+pub mod prelude {
+    pub use crate::math::*;
+    pub use crate::nn::*;
+    pub use crate::num::*;
+    pub use crate::primitives::*;
+    pub use crate::specs::*;
+    pub use crate::utils::*;
 
-/// [Numerical] is a basic trait describing numerical objects
-pub trait Numerical:
-    Add<Output = Self>
-    + Div<Output = Self>
-    + Mul<Output = Self>
-    + Sub<Output = Self>
-    + Clone
-    + Copy
-    + Sized
-{
+    #[cfg(feature = "core")]
+    pub use concision_core::prelude::*;
+    #[cfg(feature = "derive")]
+    pub use concision_derive::*;
+    #[cfg(feature = "macros")]
+    pub use concision_macros::*;
 }
-
-impl Numerical for f32 {}
-
-impl Numerical for f64 {}
-
-impl Numerical for i64 {}
-
-impl Numerical for usize {}

@@ -11,10 +11,11 @@ repository = "https://github.com/FL03/concision"
 version = "0.1.12" # TODO - Update the cargo package version
 
 [workspace.dependencies]
+anyhow = "1"
 serde = { features = ["derive"], version = "1" }
 serde_json = "1"
 smart-default = "0.7"
-strum = { features = ["derive"], version = "0.24" }
+strum = { features = ["derive"], version = "0.25" }
 
 [workspace]
 default-members = [
@@ -27,6 +28,8 @@ members = [
     "derive",
     "macros"
 ]
+
+resolver = "2"
 
 [profile.dev]
 opt-level = 0

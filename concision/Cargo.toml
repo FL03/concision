@@ -13,11 +13,21 @@ version.workspace = true
 
 [features]
 default = ["core"]
-full = ["core", "derive", "macros"]
 
-core = ["concision-core/default"]
-derive = ["concision-derive"]
-macros = ["concision-macros"]
+full = ["core", "derive"]
+
+core = [
+    "concision-core/default"
+]
+
+derive = [
+    "concision-derive",
+    "macros",
+]
+
+macros = [
+    "concision-macros"
+]
 
 [lib]
 bench = true

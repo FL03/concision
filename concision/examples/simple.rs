@@ -1,7 +1,7 @@
 extern crate concision;
 
 use concision::num::complex::C;
-use concision::Numerical;
+use concision::prelude::Numerical;
 
 // Define a holomorphic function that squares its input.
 fn square<T: Numerical>(z: C<T>) -> C<T> {

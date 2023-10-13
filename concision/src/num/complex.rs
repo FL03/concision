@@ -1,9 +1,8 @@
 /*
     Appellation: complex <num>
     Contrib: FL03 <jo3mccain@icloud.com>
-    Description: ... Summary ...
 */
-use crate::Numerical;
+use crate::core::Numerical;
 use serde::{Deserialize, Serialize};
 use std::{
     convert::From,

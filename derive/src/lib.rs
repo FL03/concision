@@ -1,10 +1,5 @@
 /*
-   Appellation: concision-derive <library>
-   Creator: FL03 <jo3mccain@icloud.com>
-   Description:
-       Derive macros for concision, a robust data-science toolkit for creating powerful Rust apps.
+   Appellation: concision-Derive <library>
+   Contrib: FL03 <jo3mccain@icloud.com>
 */
-
-extern crate proc_macro2;
-extern crate quote;
-extern crate syn;
+//! # Concision Derive

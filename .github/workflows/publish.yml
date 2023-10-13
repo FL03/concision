@@ -1,0 +1,37 @@
+name: Publish
+
+env:
+  CARGO_TERM_COLOR: always
+
+on:
+  release:
+    types: [ created ]
+  workflow_dispatch:
+    inputs:
+      publish:
+        default: true
+        description: 'Publish'
+        required: true
+        type: boolean
+
+jobs:
+  features:
+    name: Publish (features)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        feature: [ core, derive, macros ]
+    env:
+      PACKAGE_NAME: ${{ github.event.repository.name }}-${{ matrix.feature }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish (${{env.PACKAGE_NAME}})
+        run: cargo publish --all-features -v -p ${{ env.PACKAGE_NAME }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+  publish:
+    name: Publish (sdk)
+    needs: features
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish (sdk)
+        run: cargo publish --all-features -v -p ${{ github.event.repository.name }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
