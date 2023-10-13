@@ -1,9 +1,8 @@
 /*
-    Appellation: linear <module>
+    Appellation: linear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
-    Description: ... Summary ...
 */
-use crate::math::statistics::{covariance, deviation, mean, variance};
+use crate::statistics::{covariance, deviation, mean, variance};
 
 pub struct LinearRegression {
     pub slope: f64,

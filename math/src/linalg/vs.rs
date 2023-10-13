@@ -1,7 +1,6 @@
 /*
-    Appellation: vectors <module>
+    Appellation: vs <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
-    Description: ... Summary ...
 */
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]

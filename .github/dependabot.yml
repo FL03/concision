@@ -24,3 +24,11 @@ updates:
     directory: /macros
     schedule:
       interval: daily
+  - package-ecosystem: cargo
+    directory: /math
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /ml/nn
+    schedule:
+      interval: daily

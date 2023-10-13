@@ -6,14 +6,13 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-core"
+name = "concision-math"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
 default = []
-
 
 [lib]
 bench = true
@@ -24,6 +23,10 @@ test = true
 [build-dependencies]
 
 [dependencies]
+concision-core.workspace = true
+
+ndarray.workspace = true
+num.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true

@@ -1,13 +1,9 @@
 /*
-    Appellation: factorials <module>
+    Appellation: factorials <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
-    Description: ... Summary ...
 */
-use std::{
-    ops::{Mul, Sub},
-    str::FromStr,
-    string::ToString,
-};
+use std::ops::{Mul, Sub};
+use std::str::FromStr;
 
 #[derive(Clone, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Factorial<T: Clone + FromStr + ToString + Mul<Output = T> + Sub<Output = T>>(T);
@@ -37,11 +33,11 @@ where
     }
 }
 
-pub fn factorial(data: usize) -> usize {
-    match data {
-        0 | 1 => 1,
-        _ => factorial(data - 1) * data,
+pub fn factorial<T: Copy + num::Num + PartialEq + num::One + num::Zero>(data: T) -> T {
+    if data.is_zero() || data.is_one() {
+        return T::one();
     }
+    factorial(data - T::one()) * data
 }
 
 #[cfg(test)]
@@ -50,6 +46,9 @@ mod tests {
 
     #[test]
     fn test_factorial() {
-        assert_eq!(Factorial::new(0).data().clone(), 1)
+        assert_eq!(Factorial::new(0).data().clone(), 1);
+        assert_eq!(factorial(3), 6);
+        assert_eq!(factorial(4.0), 24.0);
+        assert_eq!(factorial(5.0), 120.0);
     }
 }

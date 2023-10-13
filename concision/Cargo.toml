@@ -12,9 +12,17 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = ["core"]
+default = [
+    "core", 
+    "math",
+]
 
-full = ["core", "derive"]
+full = [
+    "core", 
+    "derive", 
+    "math", 
+    "nn"
+]
 
 core = [
     "concision-core/default"
@@ -29,6 +37,14 @@ macros = [
     "concision-macros"
 ]
 
+math = [
+    "concision-math"
+]
+
+nn = [
+    "concision-nn"
+]
+
 [lib]
 bench = true
 crate-type = ["cdylib", "rlib"]
@@ -38,16 +54,11 @@ test = true
 [build-dependencies]
 
 [dependencies]
-ndarray = { features = ["blas", "serde-1"], version = "0.15" }
-num = { features = [], version = "0.4" }
-serde.workspace = true
-serde_json.workspace = true
-smart-default.workspace = true
-strum.workspace = true
-
 concision-core = { features = [], optional = true, path = "../core", version = "0.1.12" }
 concision-derive = { features = [], optional = true, path = "../derive", version = "0.1.12" }
 concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.12" }
+concision-math = { features = [], optional = true, path = "../math", version = "0.1.12" }
+concision-nn = { features = [], optional = true, path = "../ml/nn", version = "0.1.12" }
 
 [dev-dependencies]
 
