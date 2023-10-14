@@ -9,4 +9,9 @@ pub use self::utils::*;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
 
+pub trait Activate<T> {
+
+    fn activate(&mut self, args: &[T]) -> T;
+}
+
 pub(crate) mod utils {}

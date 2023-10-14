@@ -9,4 +9,6 @@ pub(crate) mod neuron;
 
 pub mod activate;
 
+pub trait Weight {}
+
 pub(crate) mod utils {}
