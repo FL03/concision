@@ -2,22 +2,20 @@
     Appellation: arithmetic <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use std::ops::{self, Add, Div, Mul, Neg, Sub};
+use std::ops;
 
-pub trait Addition<T>: Add<Output = T> + ops::AddAssign + Sized {}
+pub trait Addition<T>: ops::Add<Output = T> + ops::AddAssign<T> + Sized {}
 
-impl<T> Addition<T> for T where T: Add<Output = Self> + ops::AddAssign + Sized {}
+impl<T> Addition<T> for T where T: ops::Add<Output = Self> + ops::AddAssign<T> + Sized {}
 
-pub trait Division: Div<Output = Self> + ops::DivAssign + Sized {}
+pub trait Division<T>: ops::Div<Output = T> + ops::DivAssign<T> + Sized {}
 
-impl<T> Division for T where T: Div<Output = Self> + ops::DivAssign + Sized {}
+impl<T> Division<T> for T where T: ops::Div<Output = Self> + ops::DivAssign + Sized {}
 
-pub trait Multiplication: Mul<Output = Self> + ops::MulAssign + Sized {}
+pub trait Multiplication<T>: ops::Mul<Output = T> + ops::MulAssign<T> + Sized {}
 
-impl<T> Multiplication for T where T: Mul<Output = Self> + ops::MulAssign + Sized {}
+impl<T> Multiplication<T> for T where T: ops::Mul<Output = Self> + ops::MulAssign + Sized {}
 
-pub trait Subtraction: Sub<Output = Self> + ops::SubAssign + Sized {}
+pub trait Subtraction<T>: ops::Sub<Output = T> + ops::SubAssign<T> + Sized {}
 
-impl<T> Subtraction for T where T: Sub<Output = Self> + ops::SubAssign + Sized {}
-
-pub trait Negative: Neg<Output = Self> + Sized {}
+impl<T> Subtraction<T> for T where T: ops::Sub<Output = Self> + ops::SubAssign + Sized {}

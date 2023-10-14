@@ -1,10 +1,21 @@
 /*
-    Appellation: vs <mod>
+    Appellation: space <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct VectorSpace<T>(pub Vec<T>);
+pub trait Subspace: VectorSpace {
+
+}
+
+pub struct Space<T> {
+    pub data: Vec<T>,
+    pub shape: Vec<usize>,
+}
+
+pub trait VectorSpace {
+    type Dim;
+
+}
 
 #[cfg(test)]
 mod tests {

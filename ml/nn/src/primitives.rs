@@ -4,11 +4,14 @@
 */
 pub use self::{constants::*, statics::*, types::*};
 
-pub(crate) mod constants {}
+pub(crate) mod constants {
+    pub const DEFAULT_BUFFER: usize = 1024;
+}
 
-mod statics {}
+pub(crate) mod statics {}
 
 pub(crate) mod types {
 
+    pub type BoxedFunction<T> = Box<dyn Fn(T) -> T>;
     
 }
