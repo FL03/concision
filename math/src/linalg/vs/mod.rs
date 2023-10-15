@@ -3,12 +3,12 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Vector Space
-//! 
-//! A vector space is defined to be a set V, whose elements are called vectors, on which are defined two operations, 
+//!
+//! A vector space is defined to be a set V, whose elements are called vectors, on which are defined two operations,
 //! called addition and multiplication by scalars (real numbers), subject to the ten axioms listed below.
-//! 
+//!
 //! ## Axioms
-//! 
+//!
 //! 1. Closure under addition
 //! 2. Closure under scalar multiplication
 //! 3. Commutativity of addition
@@ -22,8 +22,6 @@
 pub use self::{space::*, utils::*};
 
 pub(crate) mod space;
-
-
 
 pub(crate) mod utils {}
 

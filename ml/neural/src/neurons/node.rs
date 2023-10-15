@@ -15,7 +15,10 @@ pub struct Node {
 impl Node {
     pub fn new(neuron: Neuron) -> Self {
         let shape = neuron.weights().shape();
-        Self { data: Array1::default([shape[0]]), neuron }
+        Self {
+            data: Array1::default([shape[0]]),
+            neuron,
+        }
     }
 
     pub fn data(&self) -> &Array1<f64> {
@@ -44,15 +47,18 @@ impl Node {
     }
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::neurons::activate::{heavyside, ActivationFn};
     use ndarray::array;
 
-    fn _artificial(args: &[f64], bias: Option<f64>, rho: ActivationFn<f64>, weights: &Array1<f64>) -> f64 {
+    fn _artificial(
+        args: &[f64],
+        bias: Option<f64>,
+        rho: ActivationFn<f64>,
+        weights: &Array1<f64>,
+    ) -> f64 {
         let data = Array1::from(args.to_vec());
         rho(data.dot(weights) - bias.unwrap_or_default())
     }

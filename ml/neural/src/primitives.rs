@@ -13,5 +13,4 @@ pub(crate) mod statics {}
 pub(crate) mod types {
 
     pub type BoxedFunction<T> = Box<dyn Fn(T) -> T>;
-    
 }

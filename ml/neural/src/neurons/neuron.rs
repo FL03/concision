@@ -49,11 +49,9 @@ impl Neuron {
         self.bias = bias;
     }
 
-
     pub fn set_weights(&mut self, weights: Array1<f64>) {
         self.weights = weights;
     }
-
 }
 
 #[cfg(test)]
@@ -62,7 +60,12 @@ mod tests {
     use crate::neurons::activate::heavyside;
     use ndarray::array;
 
-    fn _artificial(args: &[f64], bias: Option<f64>, rho: ActivationFn<f64>, weights: &Array1<f64>) -> f64 {
+    fn _artificial(
+        args: &[f64],
+        bias: Option<f64>,
+        rho: ActivationFn<f64>,
+        weights: &Array1<f64>,
+    ) -> f64 {
         let data = Array1::from(args.to_vec());
         rho(data.dot(weights) - bias.unwrap_or_default())
     }

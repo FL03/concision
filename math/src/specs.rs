@@ -7,7 +7,10 @@ pub trait RoundTo {
     fn round_to(&self, decimals: usize) -> Self;
 }
 
-impl<T> RoundTo for T where T: num::Float {
+impl<T> RoundTo for T
+where
+    T: num::Float,
+{
     fn round_to(&self, decimals: usize) -> Self {
         let val = T::from(self.clone()).expect("Failed to convert to type T");
         let factor = T::from(10).expect("").powi(decimals as i32);

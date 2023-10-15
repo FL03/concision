@@ -3,9 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-pub trait Subspace: VectorSpace {
-
-}
+pub trait Subspace: VectorSpace {}
 
 pub struct Space<T> {
     pub data: Vec<T>,
@@ -14,7 +12,6 @@ pub struct Space<T> {
 
 pub trait VectorSpace {
     type Dim;
-
 }
 
 #[cfg(test)]
