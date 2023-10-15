@@ -33,7 +33,7 @@ members = [
     "derive",
     "macros",
     "math",
-    "ml/nn",
+    "ml/*",
 ]
 
 resolver = "2"
