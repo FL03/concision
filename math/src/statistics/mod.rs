@@ -1,33 +1,47 @@
 /*
     Appellation: statistics <module>
     Contrib: FL03 <jo3mccain@icloud.com>
-    Description: ... Summary ...
 */
-pub use self::deviation::*;
+//! # statistics
+pub use self::{deviation::*, utils::*};
 
 pub mod regression;
 
-mod deviation;
+pub(crate) mod deviation;
 
-/// Covariance is the average of the products of the deviations from the mean.
-pub fn covariance(x: Vec<f64>, y: Vec<f64>) -> f64 {
-    let dx = deviation(&x, mean(&x));
-    let dy = deviation(&y, mean(&y));
-    dx.iter().zip(dy.iter()).map(|(&x, &y)| x * y).sum::<f64>() / dx.len() as f64
+pub trait Statistics<T: num::Float + std::iter::Sum> {}
+
+pub trait Mean<T: num::Float + std::iter::Sum>:
+    Clone + IntoIterator<Item = T> + ExactSizeIterator
+{
+    fn mean(&self) -> T {
+        self.clone().into_iter().sum::<T>() / T::from(self.len()).unwrap()
+    }
 }
-/// Deviation is the distance from the mean.
-pub fn deviation(x: &[f64], mean: f64) -> Vec<f64> {
-    x.iter().map(|&x| x - mean).collect()
-}
-/// Mean is the average of the data.
-pub fn mean(x: &[f64]) -> f64 {
-    x.iter().sum::<f64>() / x.len() as f64
-}
-/// Variance is the average of the squared deviations from the mean.
-pub fn variance(x: Vec<f64>) -> f64 {
-    let mean = mean(&x);
-    let dev = deviation(&x, mean);
-    dev.iter().map(|&x| x * x).sum::<f64>() / dev.len() as f64
+
+pub(crate) mod utils {
+    use std::iter::Sum;
+
+    /// Covariance is the average of the products of the deviations from the mean.
+    pub fn covariance<T: num::Float + Sum>(x: Vec<T>, y: Vec<T>) -> T {
+        let dx = deviation(&x);
+        let dy = deviation(&y);
+        dx.iter().zip(dy.iter()).map(|(&x, &y)| x * y).sum::<T>() / T::from(dx.len()).unwrap()
+    }
+    /// Deviation is the distance from the mean.
+    pub fn deviation<T: num::Float + Sum>(x: &[T]) -> Vec<T> {
+        let mean = mean(x);
+        x.iter().map(|&x| x - mean).collect()
+    }
+    /// Mean is the average of the data.
+    pub fn mean<T: num::Float + Sum>(x: &[T]) -> T {
+        x.iter().cloned().sum::<T>() / T::from(x.len()).unwrap()
+    }
+    /// Variance is the average of the squared deviations from the mean.
+    pub fn variance<T: num::Float + Sum>(x: &[T]) -> T {
+        let dev = deviation(&x);
+        dev.iter().map(|&x| x * x).sum::<T>() / T::from(dev.len()).unwrap()
+    }
 }
 
 #[cfg(test)]
@@ -44,8 +58,7 @@ mod tests {
     #[test]
     fn test_deviation() {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let mean = mean(&x);
-        assert_eq!(deviation(&x, mean), vec![-2.0, -1.0, 0.0, 1.0, 2.0]);
+        assert_eq!(deviation(&x), vec![-2.0, -1.0, 0.0, 1.0, 2.0]);
     }
 
     #[test]
@@ -57,6 +70,6 @@ mod tests {
     #[test]
     fn test_variance() {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        assert_eq!(variance(x), 2.0);
+        assert_eq!(variance(&x), 2.0);
     }
 }

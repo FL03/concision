@@ -12,8 +12,8 @@ pub struct LinearRegression {
 impl LinearRegression {
     pub fn new(x: &[f64], y: &[f64]) -> LinearRegression {
         let (x_mean, y_mean) = (mean(x), mean(y));
-        let (x_dev, y_dev) = (deviation(x, x_mean), deviation(y, y_mean));
-        let slope = covariance(x_dev.clone(), y_dev) / variance(x_dev);
+        let (x_dev, y_dev) = (deviation(x), deviation(y));
+        let slope = covariance(x_dev.clone(), y_dev) / variance(&x_dev);
         let intercept = y_mean - slope * x_mean;
         LinearRegression { slope, intercept }
     }

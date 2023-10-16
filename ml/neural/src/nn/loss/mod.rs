@@ -10,12 +10,26 @@
 
 pub use self::utils::*;
 
+pub mod regress;
+
 pub trait Loss {
     fn loss(&self, pred: f64, target: f64) -> f64;
 }
 
 pub(crate) mod utils {
     use ndarray::Array1;
+
+    pub fn mae(pred: Array1<f64>, target: Array1<f64>) -> f64 {
+        if pred.shape() != target.shape() {
+            panic!(
+                "Mismatched shapes: {:?} and {:?}",
+                pred.shape(),
+                target.shape()
+            );
+        }
+        let n = pred.len() as f64;
+        (target - pred).mapv(|x| x.abs()).sum() / n
+    }
 
     pub fn mse(pred: Array1<f64>, target: Array1<f64>) -> f64 {
         if pred.shape() != target.shape() {
