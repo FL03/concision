@@ -18,8 +18,6 @@ pub trait Loss {
     fn loss(&self, pred: &[f64], target: &[f64]) -> f64;
 }
 
-
-
 pub(crate) mod utils {
     use ndarray::Array1;
 

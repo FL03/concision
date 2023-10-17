@@ -44,7 +44,9 @@ impl Regression for LinearRegression {
     }
 
     fn predict(&self, args: &[Self::Item]) -> Vec<Self::Item> {
-        args.iter().map(|&x| self.slope * x + self.intercept).collect()
+        args.iter()
+            .map(|&x| self.slope * x + self.intercept)
+            .collect()
     }
 }
 

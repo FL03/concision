@@ -19,6 +19,8 @@ pub use concision_macros::*;
 pub use concision_math as math;
 #[cfg(feature = "nn")]
 pub use concision_nn as nn;
+#[cfg(feature = "transformers")]
+pub use concision_transformers as transformers;
 
 pub mod prelude {
     #[cfg(feature = "core")]
@@ -33,4 +35,6 @@ pub mod prelude {
     pub use concision_math::prelude::*;
     #[cfg(feature = "nn")]
     pub use concision_nn::prelude::*;
+    #[cfg(feature = "transformers")]
+    pub use concision_transformers::prelude::*;
 }

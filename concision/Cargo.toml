@@ -21,7 +21,7 @@ full = [
     "core", 
     "derive", 
     "math", 
-    "neural"
+    "ml",
 ]
 
 core = [
@@ -45,8 +45,17 @@ math = [
     "concision-math"
 ]
 
+ml = [
+    "neural",
+    "transformers"
+]
+
 neural = [
     "concision-neural"
+]
+
+transformers = [
+    "concision-transformers"
 ]
 
 [lib]
@@ -64,6 +73,7 @@ concision-derive = { features = [], optional = true, path = "../derive", version
 concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.12" }
 concision-math = { features = [], optional = true, path = "../math", version = "0.1.12" }
 concision-neural = { features = [], optional = true, path = "../ml/neural", version = "0.1.12" }
+concision-transformers = { features = [], optional = true, path = "../ml/transformers", version = "0.1.12" }
 
 [dev-dependencies]
 

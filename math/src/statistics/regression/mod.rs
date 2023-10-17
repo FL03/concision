@@ -16,5 +16,4 @@ pub trait Regression {
     fn predict(&self, args: &[Self::Item]) -> Vec<Self::Item>;
 }
 
-
 pub(crate) mod utils {}

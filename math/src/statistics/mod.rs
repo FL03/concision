@@ -49,19 +49,9 @@ where
     }
 }
 
-impl<T> Statistics<T> for Vec<T>
-where
-    T: num::Float + std::iter::Sum,
-    Self: Clone + IntoIterator<Item = T>,
-{
-}
+impl<T> Statistics<T> for Vec<T> where T: num::Float + std::iter::Sum {}
 
-impl<T> Statistics<T> for ndarray::Array1<T>
-where
-    T: num::Float + std::iter::Sum,
-    Self: Clone + IntoIterator<Item = T>,
-{
-}
+impl<T> Statistics<T> for ndarray::Array1<T> where T: num::Float + std::iter::Sum {}
 
 pub(crate) mod utils {
     use std::iter::Sum;
