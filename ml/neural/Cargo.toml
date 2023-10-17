@@ -26,6 +26,7 @@ test = true
 [dependencies]
 concision-core.workspace = true
 
+anyhow.workspace = true
 ndarray.workspace = true
 num.workspace = true
 serde.workspace = true

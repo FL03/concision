@@ -17,6 +17,10 @@ updates:
     schedule:
       interval: daily
   - package-ecosystem: cargo
+    directory: /data
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
     directory: /derive
     schedule:
       interval: daily

@@ -30,6 +30,7 @@ default-members = [
 members = [
     "concision",
     "core",
+    "data",
     "derive",
     "macros",
     "math",

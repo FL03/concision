@@ -14,9 +14,8 @@ version.workspace = true
 [features]
 default = []
 
-
 [lib]
-bench = true
+bench = false
 crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
@@ -26,6 +25,7 @@ test = true
 [dependencies]
 anyhow.workspace = true
 chrono = "0.4"
+num.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true

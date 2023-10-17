@@ -46,3 +46,18 @@ impl StandardDeviation {
         self.variance
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::prelude::{RoundTo, Statistics};
+
+    #[test]
+    fn test_std() {
+        let x = vec![1.0, 2.0, 4.0, 9.0, 3.0, 4.0, 5.0];
+        let sd = StandardDeviation::new(&x);
+
+        assert_eq!(x.std().round_to(5), sd.deviation().round_to(5));
+    }
+}

@@ -4,11 +4,6 @@
 */
 use std::ops::{self, Range};
 
-pub fn round(num: f64, decimals: usize) -> f64 {
-    let factor = 10.0_f64.powi(decimals as i32);
-    (num * factor).round() / factor
-}
-
 fn calculate_step<T: ops::Div<Output = T> + ops::Sub<Output = T>>(
     bounds: Range<T>,
     capacity: T,
@@ -87,17 +82,6 @@ impl Linspace {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_rounding() {
-        let val = 1.23456789;
-        assert_eq!(round(val, 3), 1.235);
-        assert_eq!(round(val, 4), 1.2346);
-        assert_eq!(round(val, 5), 1.23457);
-        assert_eq!(round(val, 6), 1.234568);
-        assert_eq!(round(val, 7), 1.2345679);
-        assert_eq!(round(val, 8), 1.23456789);
-    }
 
     #[test]
     fn test_linspace_simple() {

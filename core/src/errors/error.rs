@@ -27,6 +27,7 @@ use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
 pub enum Errors {
     Async,
     Connection,
+
     #[default]
     Error(String),
     Execution,
@@ -34,6 +35,7 @@ pub enum Errors {
     Process,
     Runtime,
     Syntax,
+    Unknown,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -95,8 +97,44 @@ impl std::fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
+impl From<Errors> for Error {
+    fn from(err: Errors) -> Self {
+        Self::new(err, String::new())
+    }
+}
+
+impl From<&str> for Error {
+    fn from(err: &str) -> Self {
+        Self::new(Errors::Unknown, err.to_string())
+    }
+}
+
+impl From<String> for Error {
+    fn from(err: String) -> Self {
+        Self::new(Errors::Unknown, err)
+    }
+}
+
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Self {
         Self::new(Errors::IO, err.to_string())
+    }
+}
+
+impl From<std::num::ParseFloatError> for Error {
+    fn from(err: std::num::ParseFloatError) -> Self {
+        Self::new(Errors::Syntax, err.to_string())
+    }
+}
+
+impl From<std::num::ParseIntError> for Error {
+    fn from(err: std::num::ParseIntError) -> Self {
+        Self::new(Errors::Syntax, err.to_string())
+    }
+}
+
+impl From<anyhow::Error> for Error {
+    fn from(err: anyhow::Error) -> Self {
+        Self::new(Errors::Unknown, err.to_string())
     }
 }
