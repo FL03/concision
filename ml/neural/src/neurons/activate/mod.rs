@@ -5,7 +5,9 @@
 //! # activate
 //!
 //! This module contains the activation functions for the neurons.
-pub use self::utils::*;
+pub use self::{softmax::*, utils::*};
+
+pub(crate) mod softmax;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
 

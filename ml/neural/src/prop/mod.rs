@@ -7,9 +7,4 @@
 //! This module describes the propagation of data through a neural network.
 pub use self::utils::*;
 
-
-
-pub(crate) mod utils {
-
-
-}
+pub(crate) mod utils {}

@@ -7,9 +7,7 @@ pub use self::{decoder::*, utils::*};
 
 pub(crate) mod decoder;
 
-pub trait Decode {
-    
-}
+pub trait Decode {}
 
 pub(crate) mod utils {}
 

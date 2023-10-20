@@ -4,15 +4,23 @@
 */
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub struct AttentionHead {
+    keys: Vec<f32>,
+    queries: Vec<f32>,
+    values: Vec<f32>,
     pos: usize,
 }
 
 impl AttentionHead {
     pub fn new() -> Self {
-        Self { pos: 0 }
+        Self {
+            keys: Vec::new(),
+            queries: Vec::new(),
+            values: Vec::new(),
+            pos: 0,
+        }
     }
 }
 
