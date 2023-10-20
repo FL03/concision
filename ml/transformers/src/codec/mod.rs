@@ -1,12 +1,14 @@
 /*
-   Appellation: attention <mod>
+   Appellation: codec <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Attention
-pub use self::{decode::*, encode::*, utils::*};
+//! # Codec
+pub use self::utils::*;
 
-pub(crate) mod decode;
-pub(crate) mod encode;
+pub mod decode;
+pub mod encode;
+
+pub trait Codec {}
 
 pub(crate) mod utils {}
 

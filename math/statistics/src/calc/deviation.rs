@@ -51,7 +51,8 @@ impl StandardDeviation {
 mod tests {
     use super::*;
 
-    use crate::prelude::{RoundTo, Statistics};
+    use crate::prelude::Statistics;
+    use concision_num::RoundTo;
 
     #[test]
     fn test_std() {

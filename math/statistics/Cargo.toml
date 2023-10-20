@@ -6,7 +6,7 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-math"
+name = "concision-statistics"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
@@ -33,6 +33,7 @@ smart-default.workspace = true
 strum.workspace = true
 
 [dev-dependencies]
+concision-num = { features = [],  path = "../num", version = "0.1.12" }
 rand = "0.8"
 
 [package.metadata.docs.rs]

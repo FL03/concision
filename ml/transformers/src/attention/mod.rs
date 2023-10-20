@@ -7,6 +7,8 @@ pub use self::{head::*, utils::*};
 
 pub(crate) mod head;
 
+pub trait Attention {}
+
 pub(crate) mod utils {}
 
 #[cfg(test)]

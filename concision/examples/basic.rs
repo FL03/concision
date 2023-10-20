@@ -1,6 +1,6 @@
 extern crate concision;
 
-use concision::math::num::complex::C;
+use concision::math::prelude::complex::C;
 use concision::prelude::Numerical;
 
 // Define a holomorphic function that squares its input.

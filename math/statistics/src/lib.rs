@@ -1,22 +1,24 @@
 /*
-   Appellation: transformers <library>
+   Appellation: concision-statistics <lib>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Concision Transformers
+//! # concision-statistics
+
 pub use self::{primitives::*, specs::*, utils::*};
+
+pub mod calc;
+pub mod regression;
+
+// pub(crate) use concision_num as num;
 
 pub(crate) mod primitives;
 pub(crate) mod specs;
 pub(crate) mod utils;
 
-pub mod attention;
-pub mod codec;
-pub mod transform;
-
 pub mod prelude {
-    pub use crate::attention::*;
-    pub use crate::codec::*;
-    pub use crate::transform::*;
+
+    pub use crate::calc::*;
+    pub use crate::regression::*;
 
     pub use crate::primitives::*;
     pub use crate::specs::*;

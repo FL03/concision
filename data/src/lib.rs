@@ -10,9 +10,11 @@ pub(crate) mod specs;
 pub(crate) mod utils;
 
 pub mod df;
+pub mod flows;
 
 pub mod prelude {
     pub use crate::df::*;
+    pub use crate::flows::*;
 
     pub use crate::primitives::*;
     pub use crate::specs::*;

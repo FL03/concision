@@ -33,7 +33,7 @@ members = [
     "data",
     "derive",
     "macros",
-    "math",
+    "math/*",
     "ml/*",
 ]
 

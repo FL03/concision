@@ -5,12 +5,10 @@
 pub use self::{constants::*, statics::*, types::*};
 
 /// Collection of constants used throughout the system
-pub(crate) mod constants {
-    pub const DEFAULT_EMBEDDING_SIZE: usize = 512;
-}
+mod constants {}
 
 /// Collection of static references used throughout
-pub(crate) mod statics {}
+mod statics {}
 
 /// Collection of types used throughout the system
-pub(crate) mod types {}
+mod types {}

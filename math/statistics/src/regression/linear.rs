@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Regression;
-use crate::statistics::{covariance, deviation, mean, variance};
+use crate::calc::{covariance, deviation, mean, variance};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
 pub struct LinearRegression {
