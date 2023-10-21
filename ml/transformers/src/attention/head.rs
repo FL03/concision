@@ -5,21 +5,24 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]
+pub struct Weights {
+    key: Vec<f64>,
+    query: Vec<f64>,
+    value: Vec<f64>,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub struct AttentionHead {
-    keys: Vec<f32>,
-    queries: Vec<f32>,
-    values: Vec<f32>,
-    pos: usize,
+    data: Vec<f64>,
+    dim: usize,
 }
 
 impl AttentionHead {
-    pub fn new() -> Self {
+    pub fn new(dim: usize) -> Self {
         Self {
-            keys: Vec::new(),
-            queries: Vec::new(),
-            values: Vec::new(),
-            pos: 0,
+            data: Vec::new(),
+            dim,
         }
     }
 }

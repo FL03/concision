@@ -24,6 +24,7 @@ test = true
 [build-dependencies]
 
 [dependencies]
+concision-neural = { path = "../neural" }
 anyhow.workspace = true
 ndarray.workspace = true
 num.workspace = true

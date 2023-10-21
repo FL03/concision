@@ -13,6 +13,8 @@ pub mod attention;
 pub mod codec;
 pub mod transform;
 
+pub(crate) use concision_neural as neural;
+
 pub mod prelude {
     pub use crate::attention::*;
     pub use crate::codec::*;
