@@ -11,6 +11,12 @@ pub struct Weights {
     value: Vec<f64>,
 }
 
+pub struct AttentionParams {
+    pub(crate) depth: usize, // embedding size
+    pub(crate) heads: usize, // number of attention heads
+    pub(crate) dropout: f64,
+}
+
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub struct AttentionHead {
