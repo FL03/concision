@@ -2,7 +2,7 @@
     Appellation: neuron <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::activate::ActivationFn;
+use super::activate::{ActivationFn, Activator};
 use ndarray::prelude::Array1;
 
 /// Artificial Neuron
@@ -27,14 +27,7 @@ impl Neuron {
     }
 
     pub fn compute(&self, args: &Array1<f64>) -> f64 {
-        let dot = args.dot(&self.weights);
-        self.rho()(dot - self.bias())
-    }
-
-    pub fn process(&self, args: impl AsRef<[f64]>) -> f64 {
-        let data = Array1::from(args.as_ref().to_vec());
-        let dot = data.dot(&self.weights);
-        self.rho()(dot - self.bias())
+        self.rho()(args.dot(&self.weights) - self.bias())
     }
 
     pub fn rho(&self) -> ActivationFn<f64> {
@@ -57,37 +50,36 @@ impl Neuron {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::neurons::activate::heavyside;
+    use crate::neurons::activate::{Activator, Heavyside};
     use ndarray::array;
 
     fn _artificial(
-        args: &[f64],
+        args: &Array1<f64>,
         bias: Option<f64>,
-        rho: ActivationFn<f64>,
+        rho: impl Activator<f64>,
         weights: &Array1<f64>,
     ) -> f64 {
-        let data = Array1::from(args.to_vec());
-        rho(data.dot(weights) - bias.unwrap_or_default())
+        rho.activate(args.dot(weights) - bias.unwrap_or_default())
     }
 
     #[test]
     fn test_neuron() {
         let bias = 0.0;
 
-        let a_data = [10.0, 10.0, 6.0, 1.0, 8.0];
+        let a_data = array![10.0, 10.0, 6.0, 1.0, 8.0];
         let a_weights = array![2.0, 1.0, 10.0, 1.0, 7.0];
-        let a = Neuron::new(heavyside, bias, a_weights.clone());
+        let a = Neuron::new(Heavyside::rho, bias, a_weights.clone());
 
-        let exp = _artificial(&a_data, Some(bias), heavyside, &a_weights);
-        assert_eq!(a.process(&a_data), exp);
+        let exp = _artificial(&a_data, Some(bias), Heavyside, &a_weights);
+        assert_eq!(a.compute(&a_data), exp);
 
-        let b_data = [0.0, 9.0, 3.0, 5.0, 3.0];
+        let b_data = array![0.0, 9.0, 3.0, 5.0, 3.0];
         let b_weights = array![2.0, 8.0, 8.0, 0.0, 3.0];
 
-        let b = Neuron::new(heavyside, bias, b_weights.clone());
+        let b = Neuron::new(Heavyside::rho, bias, b_weights.clone());
 
-        let exp = _artificial(&b_data, Some(bias), heavyside, &b_weights);
-        assert_eq!(b.process(&b_data), exp);
+        let exp = _artificial(&b_data, Some(bias), Heavyside, &b_weights);
+        assert_eq!(b.compute(&b_data), exp);
 
         // assert_eq!(a.dot() + b.dot(), 252.0);
     }

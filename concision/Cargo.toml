@@ -14,11 +14,13 @@ version.workspace = true
 [features]
 default = [
     "core",
+    "data",
     "ml",
 ]
 
 full = [
     "core", 
+    "data",
     "derive",
     "ml",
 ]

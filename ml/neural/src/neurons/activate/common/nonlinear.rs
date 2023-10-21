@@ -1,5 +1,5 @@
 /*
-    Appellation: softmax <mod>
+    Appellation: nonlinear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::Array1;
@@ -8,12 +8,26 @@ pub fn softmax<T>(args: Array1<T>) -> Array1<T>
 where
     T: num::Float,
 {
-    let mut res = Array1::zeros(args.len());
     let denom = args.mapv(|x| x.exp()).sum();
-    for (i, x) in args.iter().enumerate() {
-        res[i] = x.exp() / denom;
+    args.mapv(|x| x.exp() / denom)
+}
+
+pub struct Softmax {
+    args: Array1<f64>,
+}
+
+impl Softmax {
+    pub fn new(args: Array1<f64>) -> Self {
+        Self { args }
     }
-    res
+
+    pub(crate) fn denom(&self) -> f64 {
+        self.args.mapv(|x| x.exp()).sum()
+    }
+
+    pub fn compute(&self) -> Array1<f64> {
+        self.args.mapv(|x| x.exp() / self.denom())
+    }
 }
 
 #[cfg(test)]

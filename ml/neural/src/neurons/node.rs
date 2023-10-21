@@ -50,37 +50,36 @@ impl Node {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::neurons::activate::{heavyside, ActivationFn};
+    use crate::neurons::activate::{Activator, Heavyside};
     use ndarray::array;
 
     fn _artificial(
-        args: &[f64],
+        args: &Array1<f64>,
         bias: Option<f64>,
-        rho: ActivationFn<f64>,
+        rho: impl Activator<f64>,
         weights: &Array1<f64>,
     ) -> f64 {
-        let data = Array1::from(args.to_vec());
-        rho(data.dot(weights) - bias.unwrap_or_default())
+        rho.activate(args.dot(weights) - bias.unwrap_or_default())
     }
 
     #[test]
     fn test_node() {
         let bias = 0.0;
 
-        let a_data = [10.0, 10.0, 6.0, 1.0, 8.0];
+        let a_data = array![10.0, 10.0, 6.0, 1.0, 8.0];
         let a_weights = array![2.0, 1.0, 10.0, 1.0, 7.0];
-        let a = Neuron::new(heavyside, bias, a_weights.clone());
-        let node_a = Node::new(a.clone()).with_data(Array1::from(a_data.to_vec()));
+        let a = Neuron::new(Heavyside::rho, bias, a_weights.clone());
+        let node_a = Node::new(a.clone()).with_data(a_data.clone());
 
-        let exp = _artificial(&a_data, Some(bias), heavyside, &a_weights);
+        let exp = _artificial(&a_data, Some(bias), Heavyside, &a_weights);
         assert_eq!(node_a.process(), exp);
 
-        let b_data = [0.0, 9.0, 3.0, 5.0, 3.0];
+        let b_data = array![0.0, 9.0, 3.0, 5.0, 3.0];
         let b_weights = array![2.0, 8.0, 8.0, 0.0, 3.0];
 
-        let b = Neuron::new(heavyside, bias, b_weights.clone());
-        let node_b = Node::new(b.clone()).with_data(Array1::from(b_data.to_vec()));
-        let exp = _artificial(&b_data, Some(bias), heavyside, &b_weights);
+        let b = Neuron::new(Heavyside::rho, bias, b_weights.clone());
+        let node_b = Node::new(b.clone()).with_data(b_data.clone());
+        let exp = _artificial(&b_data, Some(bias), Heavyside, &b_weights);
         assert_eq!(node_b.process(), exp);
 
         assert_eq!(node_a.dot() + node_b.dot(), 252.0);

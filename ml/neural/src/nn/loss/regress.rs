@@ -45,3 +45,29 @@ impl Loss for HuberLoss {
         loss / pred.len() as f64
     }
 }
+
+pub struct MeanAbsoluteError;
+
+impl Loss for MeanAbsoluteError {
+    fn loss(&self, pred: &[f64], target: &[f64]) -> f64 {
+        let mut res = 0.0;
+        for (p, t) in pred.iter().zip(target.iter()) {
+            res += (p - t).abs();
+        }
+        res /= pred.len() as f64;
+        res
+    }
+}
+
+pub struct MeanSquaredError;
+
+impl Loss for MeanSquaredError {
+    fn loss(&self, pred: &[f64], target: &[f64]) -> f64 {
+        let mut res = 0.0;
+        for (p, t) in pred.iter().zip(target.iter()) {
+            res += (p - t).powi(2);
+        }
+        res /= pred.len() as f64;
+        res
+    }
+}

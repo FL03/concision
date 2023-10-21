@@ -5,27 +5,26 @@
 //! # activate
 //!
 //! This module contains the activation functions for the neurons.
-pub use self::{softmax::*, utils::*};
+pub use self::{common::*, utils::*};
 
-pub(crate) mod softmax;
+pub(crate) mod common;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
 
-pub trait Activate<T> {
-    fn activate(&mut self) -> T;
+pub trait Activable<T> {
+    fn activate(&self, args: &ndarray::Array1<T>) -> T;
 }
 
-pub trait ActivateWith<T> {
-    fn activate_with(&mut self, args: &[T]) -> T;
+pub trait ActivateMethod<T> {
+    fn activate(&self, x: T) -> T;
 }
 
-pub(crate) mod utils {
-
-    pub fn heavyside(x: f64) -> f64 {
-        if x > 0.0 {
-            1.0
-        } else {
-            0.0
-        }
+pub trait Activator<T> {
+    fn activate(&self, x: T) -> T {
+        Self::rho(x)
     }
+
+    fn rho(x: T) -> T;
 }
+
+pub(crate) mod utils {}
