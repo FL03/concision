@@ -29,10 +29,10 @@ updates:
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /math
+    directory: /ml/neural
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /ml/nn
+    directory: /ml/transformers
     schedule:
       interval: daily

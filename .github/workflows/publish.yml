@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        feature: [ nn ]
+        feature: [ neural, transformers ]
     env:
       PACKAGE_NAME: ${{ github.event.repository.name }}-${{ matrix.feature }}
     steps:

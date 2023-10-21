@@ -35,7 +35,7 @@ smart-default.workspace = true
 strum.workspace = true
 
 [dev-dependencies]
-concision-math = { features = [], path = "../../math/math", version = "0.1.12" }
+computare.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

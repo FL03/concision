@@ -13,6 +13,8 @@ version = "0.1.12" # TODO - Update the cargo package version
 [workspace.dependencies]
 concision-core = { path = "core", version = "0.1.12" }
 
+computare = { features = ["full"], branch = "v0.1.0", git = "https://github.com/FL03/computare", version = "0.1.0" }
+
 anyhow = "1"
 lazy_static = "1"
 ndarray = { features = ["serde-1"], version = "0.15" }
@@ -33,7 +35,6 @@ members = [
     "data",
     "derive",
     "macros",
-    "math/*",
     "ml/*",
 ]
 

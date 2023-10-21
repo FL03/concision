@@ -19,7 +19,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use concision_math::prelude::RoundTo;
+    use computare::prelude::RoundTo;
 
     #[test]
     fn test_softmax() {

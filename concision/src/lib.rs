@@ -15,8 +15,6 @@ pub use concision_data as data;
 pub use concision_derive::*;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
-#[cfg(feature = "math")]
-pub use concision_math as math;
 #[cfg(feature = "nn")]
 pub use concision_nn as nn;
 #[cfg(feature = "transformers")]
@@ -31,8 +29,6 @@ pub mod prelude {
     pub use concision_derive::*;
     #[cfg(feature = "macros")]
     pub use concision_macros::*;
-    #[cfg(feature = "math")]
-    pub use concision_math::prelude::*;
     #[cfg(feature = "nn")]
     pub use concision_nn::prelude::*;
     #[cfg(feature = "transformers")]
