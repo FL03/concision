@@ -15,4 +15,7 @@ pub use self::{embedding::*, utils::*};
 
 pub(crate) mod embedding;
 
+pub mod context;
+pub mod words;
+
 pub(crate) mod utils {}

@@ -13,17 +13,17 @@ where
     T: num::Float + 'static,
 {
     type Activator: Activator<T>;
+    //
+    fn activate(&self, args: &Array2<T>) -> Array2<T> {
+        let z = args.dot(self.weights()) - self.bias();
+        z.mapv(|x| self.activator().activate(x))
+    }
+
+    fn activator(&self) -> &Self::Activator;
 
     fn bias(&self) -> &Array2<T>;
 
     fn weights(&self) -> &Array2<T>;
-
-    fn activator(&self) -> &Self::Activator;
-
-    fn activate(&self, args: &Array2<T>) -> Array2<T> {
-        let z = args.dot(self.weights()) + self.bias();
-        z.mapv(|x| self.activator().activate(x))
-    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]

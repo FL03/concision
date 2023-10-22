@@ -3,15 +3,19 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::neural::prelude::activate::{Activator, Softmax};
-use ndarray::Array1;
+use ndarray::{s, Array3, Array2};
 use serde::{Deserialize, Serialize};
 
-fn _attention(query: &Array1<f64>, key: &Array1<f64>, value: &Array1<f64>) -> Array1<f64> {
-    let dk = query.shape()[0] as f64;
+fn _attention(qkv: &Array3<f64>) -> Array2<f64> {
+    let query = qkv.slice(s![0, .., ..]).to_owned();
+    let key = qkv.slice(s![1, .., ..]).to_owned();
+    let value = qkv.slice(s![2, .., ..]).to_owned();
+    let dk = qkv.shape()[1] as f64;
 
-    let inner = (query.clone() * key.t().clone()) / dk.sqrt();
-    value * Softmax::rho(inner)
+    let inner = (query * key.t()) / dk.sqrt();
+    Softmax::rho(inner) * value
 }
+
 
 pub struct AttentionDim {
     pub attention: usize, // The dimension of the key, query, and value vectors

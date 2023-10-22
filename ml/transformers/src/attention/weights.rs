@@ -10,9 +10,6 @@ pub type WeightsArray = ndarray::Array2<f64>;
 
 pub type WeightDim = Dim<[usize; 2]>;
 
-fn compute_head_size(depth: usize, heads: usize) -> usize {
-    depth / heads
-}
 
 #[derive(
     Clone,
@@ -45,16 +42,7 @@ pub enum Weights {
     Value,
 }
 
-impl ndarray::Dimension for Weights {
-    const NDIM: usize = 3;
 
-    fn ndim(&self) -> usize {
-        3
-    }
-    fn shape(&self) -> ndarray::IxDyn {
-        ndarray::IxDyn(&[1])
-    }
-}
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]
 pub struct Weight {
@@ -66,6 +54,7 @@ pub struct Weight {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::str::FromStr;
 
     #[test]
     fn test_attention_weights() {

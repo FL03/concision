@@ -5,9 +5,9 @@
 //! # Propagation
 //!
 //! This module describes the propagation of data through a neural network.
-pub use self::{kinds::*, propagation::*, utils::*};
+pub use self::{modes::*, propagation::*, utils::*};
 
-pub(crate) mod kinds;
+pub(crate) mod modes;
 pub(crate) mod propagation;
 
 pub(crate) mod utils {}

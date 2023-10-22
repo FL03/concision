@@ -11,10 +11,12 @@ pub(crate) mod utils;
 
 pub mod df;
 pub mod flows;
+pub mod tensors;
 
 pub mod prelude {
     pub use crate::df::*;
     pub use crate::flows::*;
+    pub use crate::tensors::*;
 
     pub use crate::primitives::*;
     pub use crate::specs::*;

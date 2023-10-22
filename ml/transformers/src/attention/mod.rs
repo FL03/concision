@@ -3,9 +3,10 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Attention
-pub use self::{head::*, utils::*};
+pub use self::{head::*, utils::*, weights::*,};
 
 pub(crate) mod head;
+pub(crate) mod weights;
 
 pub type AttentionArray<T> = ndarray::Array2<T>;
 
