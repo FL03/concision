@@ -3,8 +3,28 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::LayerType;
+use crate::neurons::activate::Activator;
 use crate::neurons::Node;
+use ndarray::Array2;
 use std::ops;
+
+pub trait L<T>
+where
+    T: num::Float + 'static,
+{
+    type Activator: Activator<T>;
+
+    fn bias(&self) -> &Array2<T>;
+
+    fn weights(&self) -> &Array2<T>;
+
+    fn activator(&self) -> &Self::Activator;
+
+    fn activate(&self, args: &Array2<T>) -> Array2<T> {
+        let z = args.dot(self.weights()) + self.bias();
+        z.mapv(|x| self.activator().activate(x))
+    }
+}
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Layer {

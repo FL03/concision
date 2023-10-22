@@ -2,19 +2,43 @@
    Appellation: head <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::neural::prelude::activate::{Activator, Softmax};
+use ndarray::Array1;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]
-pub struct Weights {
-    key: Vec<f64>,
-    query: Vec<f64>,
-    value: Vec<f64>,
+fn compute_attention(query: &Array1<f64>, key: &Array1<f64>, value: &Array1<f64>) -> Array1<f64> {
+    let dk = query.shape()[0] as f64;
+
+    let inner = (query.clone() * key.t().clone()) / dk.sqrt();
+    value * Softmax::rho(inner)
+}
+
+pub struct AttentionDim {
+    pub attention: usize, // The dimension of the key, query, and value vectors
+    pub heads: usize,     // The number of attention heads
+    pub model: usize,     // The dimension of the model (embedding size)
+}
+
+impl AttentionDim {
+    pub fn new(attention: usize, heads: usize, model: usize) -> Self {
+        Self {
+            attention,
+            heads,
+            model,
+        }
+    }
+
+    pub fn linear(model: usize, heads: usize) -> Self {
+        Self {
+            attention: model / heads,
+            heads,
+            model,
+        }
+    }
 }
 
 pub struct AttentionParams {
-    pub(crate) depth: usize, // embedding size
-    pub(crate) heads: usize, // number of attention heads
-    pub(crate) dropout: f64,
+    pub dim: AttentionDim,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, PartialOrd, Serialize)]

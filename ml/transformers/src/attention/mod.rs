@@ -7,6 +7,8 @@ pub use self::{head::*, utils::*};
 
 pub(crate) mod head;
 
+pub type AttentionArray<T> = ndarray::Array2<T>;
+
 pub trait Attention {}
 
 pub(crate) mod utils {}

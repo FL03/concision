@@ -5,5 +5,5 @@
 use crate::layers::Layer;
 
 pub struct NeuralNetwork {
-    pub(crate) layers: Vec<Layer>,
+    pub layers: Vec<Layer>,
 }

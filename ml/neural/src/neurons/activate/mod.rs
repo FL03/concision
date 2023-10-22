@@ -5,14 +5,15 @@
 //! # activate
 //!
 //! This module contains the activation functions for the neurons.
-pub use self::{common::*, utils::*};
+pub use self::{binary::*, nonlinear::*, utils::*};
 
-pub(crate) mod common;
+pub(crate) mod binary;
+pub(crate) mod nonlinear;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
 
 pub trait Activable<T> {
-    fn activate(&self, args: &ndarray::Array1<T>) -> T;
+    fn activate(&self, rho: impl Activator<T>) -> T;
 }
 
 pub trait ActivateMethod<T> {
