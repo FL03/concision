@@ -6,7 +6,7 @@ use crate::neural::prelude::activate::{Activator, Softmax};
 use ndarray::Array1;
 use serde::{Deserialize, Serialize};
 
-fn compute_attention(query: &Array1<f64>, key: &Array1<f64>, value: &Array1<f64>) -> Array1<f64> {
+fn _attention(query: &Array1<f64>, key: &Array1<f64>, value: &Array1<f64>) -> Array1<f64> {
     let dk = query.shape()[0] as f64;
 
     let inner = (query.clone() * key.t().clone()) / dk.sqrt();
