@@ -2,39 +2,31 @@
    Appellation: head <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::prelude::activate::{Activator, Softmax};
-use ndarray::{s, Array3, Array2};
 use serde::{Deserialize, Serialize};
 
-fn _attention(qkv: &Array3<f64>) -> Array2<f64> {
-    let query = qkv.slice(s![0, .., ..]).to_owned();
-    let key = qkv.slice(s![1, .., ..]).to_owned();
-    let value = qkv.slice(s![2, .., ..]).to_owned();
-    let dk = qkv.shape()[1] as f64;
-
-    let inner = (query * key.t()) / dk.sqrt();
-    Softmax::rho(inner) * value
-}
 
 
 pub struct AttentionDim {
     pub attention: usize, // The dimension of the key, query, and value vectors
+    pub batch: usize,     // The batch size
     pub heads: usize,     // The number of attention heads
     pub model: usize,     // The dimension of the model (embedding size)
 }
 
 impl AttentionDim {
-    pub fn new(attention: usize, heads: usize, model: usize) -> Self {
+    pub fn new(attention: usize, batch: usize, heads: usize, model: usize) -> Self {
         Self {
             attention,
+            batch,
             heads,
             model,
         }
     }
 
-    pub fn linear(model: usize, heads: usize) -> Self {
+    pub fn linear(batch: usize, model: usize, heads: usize) -> Self {
         Self {
             attention: model / heads,
+            batch,
             heads,
             model,
         }

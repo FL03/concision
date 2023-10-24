@@ -18,4 +18,8 @@ pub(crate) mod embedding;
 pub mod context;
 pub mod words;
 
+pub trait Embed {
+
+}
+
 pub(crate) mod utils {}
