@@ -19,7 +19,7 @@ pub mod context;
 pub mod words;
 
 pub trait Embed {
-
+    fn embed(&self) -> Embedding;
 }
 
 pub(crate) mod utils {}

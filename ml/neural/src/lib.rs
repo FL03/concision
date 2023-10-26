@@ -3,6 +3,10 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # concision-neural
+//!
+//! This library implements the neural network primitives and specifications.
+//!
+#![feature(fn_traits)]
 pub use self::{primitives::*, specs::*, utils::*};
 
 pub(crate) mod primitives;

@@ -18,7 +18,7 @@ where
         let z = args.dot(self.weights()) - self.bias();
         z.mapv(|x| self.activator().activate(x))
     }
-
+    
     fn activator(&self) -> &Self::Activator;
 
     fn bias(&self) -> &Array2<T>;

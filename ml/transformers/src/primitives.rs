@@ -13,13 +13,10 @@ pub(crate) mod constants {
     pub const DEFAULT_ATTENTION_HEAD_SIZE: usize = 64;
 
     pub const DEFAULT_SAMPLE_SIZE: usize = 10000;
-
-    
 }
 
 /// Collection of static references used throughout
-pub(crate) mod statics {
-}
+pub(crate) mod statics {}
 
 /// Collection of types used throughout the system
 pub(crate) mod types {}

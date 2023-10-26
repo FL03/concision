@@ -25,6 +25,7 @@ test = true
 
 [dependencies]
 anyhow.workspace = true
+finalfusion = "0.18"
 ndarray.workspace = true
 num.workspace = true
 serde.workspace = true
