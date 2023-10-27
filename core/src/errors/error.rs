@@ -27,11 +27,13 @@ use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
 pub enum Errors {
     Async,
     Connection,
-
+    Data,
+    Dimension,
     #[default]
     Error(String),
     Execution,
     IO,
+    Null,
     Process,
     Runtime,
     Syntax,
@@ -136,5 +138,11 @@ impl From<std::num::ParseIntError> for Error {
 impl From<anyhow::Error> for Error {
     fn from(err: anyhow::Error) -> Self {
         Self::new(Errors::Unknown, err.to_string())
+    }
+}
+
+impl From<ndarray::ShapeError> for Error {
+    fn from(err: ndarray::ShapeError) -> Self {
+        Self::new(Errors::Dimension, err.to_string())
     }
 }

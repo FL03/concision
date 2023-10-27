@@ -2,51 +2,24 @@
    Appellation: context <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::params::QKV;
 use ndarray::{Array2, IntoDimension, Ix2};
 use serde::{Deserialize, Serialize};
 use std::ops;
-use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
 
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Deserialize,
-    Display,
-    EnumIs,
-    EnumIter,
-    EnumString,
-    EnumVariantNames,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    Serialize,
-)]
-#[repr(usize)]
-#[serde(rename_all = "lowercase")]
-#[strum(serialize_all = "lowercase")]
-pub enum QKV {
-    #[serde(alias = "k")]
-    Key,
-    #[default]
-    #[serde(alias = "q")]
-    Query,
-    #[serde(alias = "v")]
-    Value,
+pub trait LinearLayer {
+    fn matmul(&self, data: &Array2<f64>) -> Array2<f64>;
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
-pub struct Context {
+pub struct AttentionSpace {
     dim: Ix2,
     pub key: Array2<f64>,
     pub query: Array2<f64>,
     pub value: Array2<f64>,
 }
 
-impl Context {
+impl AttentionSpace {
     pub fn new<D>(dim: D) -> Self
     where
         D: IntoDimension<Dim = Ix2>,
@@ -68,20 +41,38 @@ impl Context {
         self.query.dot(&self.key.t())
     }
 
-    pub fn with_weight(&mut self, query: &Array2<f64>, key: &Array2<f64>, value: &Array2<f64>) {
+    pub fn qkv(&self) -> (Array2<f64>, Array2<f64>, Array2<f64>) {
+        (self.query.clone(), self.key.clone(), self.value.clone())
+    }
+
+    pub fn set_weight(&mut self, qkv: QKV, weight: Array2<f64>) {
+        match qkv {
+            QKV::Key => self.key = weight,
+            QKV::Query => self.query = weight,
+            QKV::Value => self.value = weight,
+        }
+    }
+
+    pub fn set_weights(&mut self, qkv: impl IntoIterator<Item = QKV>, weight: Array2<f64>) {
+        for qkv in qkv {
+            self.set_weight(qkv, weight.clone());
+        }
+    }
+
+    pub fn with_weight(mut self, query: &Array2<f64>, key: &Array2<f64>, value: &Array2<f64>) {
         self.key = key.clone();
         self.query = query.clone();
         self.value = value.clone();
     }
 }
 
-impl std::fmt::Display for Context {
+impl std::fmt::Display for AttentionSpace {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{}", serde_json::to_string(self).unwrap())
     }
 }
 
-impl<D> From<D> for Context
+impl<D> From<D> for AttentionSpace
 where
     D: IntoDimension<Dim = Ix2>,
 {
@@ -97,13 +88,13 @@ where
     }
 }
 
-impl From<Context> for (Array2<f64>, Array2<f64>, Array2<f64>) {
-    fn from(context: Context) -> Self {
+impl From<AttentionSpace> for (Array2<f64>, Array2<f64>, Array2<f64>) {
+    fn from(context: AttentionSpace) -> Self {
         (context.key, context.query, context.value)
     }
 }
 
-impl ops::Index<QKV> for Context {
+impl ops::Index<QKV> for AttentionSpace {
     type Output = Array2<f64>;
 
     fn index(&self, index: QKV) -> &Self::Output {
@@ -116,7 +107,7 @@ impl ops::Index<QKV> for Context {
     }
 }
 
-impl ops::IndexMut<QKV> for Context {
+impl ops::IndexMut<QKV> for AttentionSpace {
     fn index_mut(&mut self, index: QKV) -> &mut Self::Output {
         match index {
             QKV::Key => &mut self.key,
@@ -126,31 +117,43 @@ impl ops::IndexMut<QKV> for Context {
     }
 }
 
-impl ops::Mul<&Array2<f64>> for Context {
+impl ops::Mul<Array2<f64>> for AttentionSpace {
+    type Output = Self;
+
+    fn mul(self, rhs: Array2<f64>) -> Self::Output {
+        let mut ctx = self.clone();
+        ctx.key = ctx.key.dot(&rhs);
+        ctx.query = ctx.query.dot(&rhs);
+        ctx.value = ctx.value.dot(&rhs);
+        ctx
+    }
+}
+
+impl ops::Mul<&Array2<f64>> for AttentionSpace {
     type Output = Self;
 
     fn mul(self, rhs: &Array2<f64>) -> Self::Output {
-        let mut context = self.clone();
-        context.key = context.key.dot(rhs);
-        context.query = context.query.dot(rhs);
-        context.value = context.value.dot(rhs);
-        context
+        let mut ctx = self.clone();
+        ctx.key = ctx.key.dot(rhs);
+        ctx.query = ctx.query.dot(rhs);
+        ctx.value = ctx.value.dot(rhs);
+        ctx
     }
 }
 
-impl ops::Mul<&Array2<f64>> for &Context {
-    type Output = Context;
+impl ops::Mul<&Array2<f64>> for &AttentionSpace {
+    type Output = AttentionSpace;
 
     fn mul(self, rhs: &Array2<f64>) -> Self::Output {
-        let mut context = self.clone();
-        context.key = context.key.dot(rhs);
-        context.query = context.query.dot(rhs);
-        context.value = context.value.dot(rhs);
-        context
+        let mut ctx = self.clone();
+        ctx.key = ctx.key.dot(rhs);
+        ctx.query = ctx.query.dot(rhs);
+        ctx.value = ctx.value.dot(rhs);
+        ctx
     }
 }
 
-impl ops::MulAssign<Array2<f64>> for Context {
+impl ops::MulAssign<Array2<f64>> for AttentionSpace {
     fn mul_assign(&mut self, rhs: Array2<f64>) {
         self.key = self.key.dot(&rhs);
         self.query = self.query.dot(&rhs);
@@ -158,7 +161,7 @@ impl ops::MulAssign<Array2<f64>> for Context {
     }
 }
 
-impl ops::MulAssign<&Array2<f64>> for Context {
+impl ops::MulAssign<&Array2<f64>> for AttentionSpace {
     fn mul_assign(&mut self, rhs: &Array2<f64>) {
         self.key = self.key.dot(rhs);
         self.query = self.query.dot(rhs);
@@ -166,16 +169,10 @@ impl ops::MulAssign<&Array2<f64>> for Context {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::str::FromStr;
-
-    #[test]
-    fn test_attention_weights() {
-        let w = QKV::Key;
-        assert_eq!(w.to_string(), "key");
-        assert_eq!(QKV::Key, QKV::from_str("key").unwrap());
-        assert_eq!(QKV::Key, QKV::from_str("k").unwrap());
+impl ops::MulAssign<&Array2<f64>> for &mut AttentionSpace {
+    fn mul_assign(&mut self, rhs: &Array2<f64>) {
+        self.key = self.key.dot(rhs);
+        self.query = self.query.dot(rhs);
+        self.value = self.value.dot(rhs);
     }
 }

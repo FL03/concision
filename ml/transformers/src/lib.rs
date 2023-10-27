@@ -14,6 +14,7 @@ pub mod codec;
 pub mod ffn;
 pub mod transform;
 
+pub(crate) use concision_core as core;
 pub(crate) use concision_neural as neural;
 
 pub mod prelude {
