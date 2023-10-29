@@ -2,49 +2,58 @@
     Appellation: layer <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::LayerType;
+use super::{Features, LayerType};
 use crate::neurons::activate::Activator;
-use crate::neurons::Node;
 use ndarray::prelude::{Array1, Array2};
-use std::ops;
+use num::Float;
 
-pub trait L<T>
-where
-    T: num::Float + 'static,
-{
-    type Activator: Activator<T>;
+pub trait L<T: Float> {
     //
-    fn activate(&self, args: &Array2<T>) -> Array2<T> {
-        let z = args.dot(self.weights()) - self.bias();
-        z.mapv(|x| self.activator().activate(x))
+    fn process(&self, args: &Array2<T>, rho: impl Activator<T>) -> Array2<T> where T: 'static {
+        let z = args.dot(self.weights()) + self.bias();
+        z.mapv(|x| rho.activate(x))
     }
 
-    fn activator(&self) -> &Self::Activator;
-
-    fn bias(&self) -> &Array2<T>;
+    fn bias(&self) -> &Array1<T>;
 
     fn weights(&self) -> &Array2<T>;
 }
 
+pub trait Linear<T: Float> {
+    fn linear(&self, data: &Array2<T>) -> Array2<T> where T: 'static;
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Layer {
-    bias: Array1<f64>,
+    bias: Option<Array1<f64>>,
+    features: Features,
     layer: LayerType,
-    nodes: usize,
     weights: Array2<f64>,
 }
 
 impl Layer {
-    pub fn new(layer: LayerType,) -> Self {
-        Self { layer, nodes }
+    pub fn new(inputs: usize, outputs: usize, bias: bool, layer: LayerType) -> Self {
+        let features = Features::new(inputs, outputs);
+        let bias = if bias {
+            Some(Array1::ones(outputs))
+        } else {
+            None
+        };
+        let weights = Array2::ones((features.inputs(), features.outputs()));
+
+        Self { bias, features, layer, weights }
+    }
+
+    pub fn bias(&self) -> &Option<Array1<f64>> {
+        &self.bias
     }
 
     pub fn layer(&self) -> &LayerType {
         &self.layer
     }
 
-    pub fn nodes(&self) -> &[Node] {
-        &self.nodes
+    pub fn features(&self) -> Features {
+        self.features
     }
 
     pub fn set_layer(&mut self, layer: LayerType) {
@@ -52,51 +61,5 @@ impl Layer {
     }
 }
 
-impl AsRef<[Node]> for Layer {
-    fn as_ref(&self) -> &[Node] {
-        &self.nodes
-    }
-}
 
-impl AsMut<[Node]> for Layer {
-    fn as_mut(&mut self) -> &mut [Node] {
-        &mut self.nodes
-    }
-}
 
-impl IntoIterator for Layer {
-    type Item = Node;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.nodes.into_iter()
-    }
-}
-
-impl ops::Index<usize> for Layer {
-    type Output = Node;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.nodes[index]
-    }
-}
-
-impl ops::IndexMut<usize> for Layer {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.nodes[index]
-    }
-}
-
-impl ops::Index<ops::Range<usize>> for Layer {
-    type Output = [Node];
-
-    fn index(&self, index: ops::Range<usize>) -> &Self::Output {
-        &self.nodes[index]
-    }
-}
-
-impl ops::IndexMut<ops::Range<usize>> for Layer {
-    fn index_mut(&mut self, index: ops::Range<usize>) -> &mut Self::Output {
-        &mut self.nodes[index]
-    }
-}

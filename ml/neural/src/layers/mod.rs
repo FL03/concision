@@ -3,8 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Layers
-pub use self::{kinds::*, layer::*, utils::*};
+pub use self::{features::*, kinds::*, layer::*, utils::*};
 
+pub(crate) mod features;
 pub(crate) mod kinds;
 pub(crate) mod layer;
 

@@ -28,8 +28,11 @@ concision-core.workspace = true
 
 anyhow.workspace = true
 ndarray.workspace = true
+ndarray-rand.workspace = true
+ndarray-stats.workspace = true
 num.workspace = true
 petgraph.workspace = true
+rand.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true

@@ -1,5 +1,5 @@
 /*
-   Appellation: split <mod>
+   Appellation: merge <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::{Array2, Array3, Array4};
