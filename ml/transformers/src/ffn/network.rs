@@ -2,26 +2,31 @@
    Appellation: network <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::FFNParams;
+use crate::data::linear::LinearLayer;
 use crate::neural::neurons::activate::{Activator, ReLU};
-use ndarray::{Array1, Array2};
+use ndarray::prelude::Array2;
+use serde::{Deserialize, Serialize};
 
-/// All vectors have a dimension of (nodes, elem)
-pub fn ffn(data: Array2<f64>, bias: Array2<f64>, weights: Array2<f64>) -> Array2<f64> {
-    let a = data.dot(&weights) + bias.clone();
-    ReLU::rho(a).dot(&weights) + bias
-}
-
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct FFN {
-    bias: Array2<f64>,
-    weights: Array2<f64>,
+    input: LinearLayer,
+    output: LinearLayer,
+    pub params: FFNParams,
 }
 
 impl FFN {
-    pub fn new(bias: Array2<f64>, weights: Array2<f64>) -> Self {
-        Self { bias, weights }
+    pub fn new(model: usize, network: Option<usize>) -> Self {
+        let params = FFNParams::new(model, network.unwrap_or(crate::NETWORK_SIZE));
+        let layer = LinearLayer::new(params.model, params.network);
+        Self {
+            input: layer.clone(),
+            output: layer,
+            params,
+        }
     }
 
-    pub fn forward(&self, data: Array2<f64>) -> Array2<f64> {
-        ffn(data, self.bias.clone(), self.weights.clone())
+    pub fn forward(&self, data: &Array2<f64>) -> Array2<f64> {
+        self.output.linear(&ReLU::rho(self.input.linear(data)))
     }
 }

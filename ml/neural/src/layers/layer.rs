@@ -5,7 +5,7 @@
 use super::LayerType;
 use crate::neurons::activate::Activator;
 use crate::neurons::Node;
-use ndarray::Array2;
+use ndarray::prelude::{Array1, Array2};
 use std::ops;
 
 pub trait L<T>
@@ -28,12 +28,14 @@ where
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Layer {
+    bias: Array1<f64>,
     layer: LayerType,
-    nodes: Vec<Node>,
+    nodes: usize,
+    weights: Array2<f64>,
 }
 
 impl Layer {
-    pub fn new(layer: LayerType, nodes: Vec<Node>) -> Self {
+    pub fn new(layer: LayerType,) -> Self {
         Self { layer, nodes }
     }
 

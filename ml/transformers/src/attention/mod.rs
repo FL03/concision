@@ -8,39 +8,42 @@
 //!
 //!
 
-pub use self::{head::*, reps::*, utils::*};
+pub use self::{head::*, utils::*, weights::*};
 
 pub(crate) mod head;
-pub(crate) mod reps;
+pub(crate) mod weights;
 
 pub mod multi;
-pub mod ops;
 pub mod params;
 
-use ndarray::{Array, Array2};
-use std::ops::MulAssign;
+use crate::prelude::BaseDim;
+use crate::core::prelude::BoxResult;
 
-pub type BaseDim = ndarray::Dim<[usize; 4]>;
+use ndarray::Dimension;
+use ndarray::prelude::{Array, Ix2};
+use num::Float;
 
 /// (batch, sample, seq, model)
 pub type InputArray<T> = Array<T, BaseDim>;
 
-pub type AttentionArray<T> = Array2<T>;
+pub type AttentionArray<T> = Array<T, Ix2>;
 
-pub trait Attention {
-    type Head: HeadSpace;
+pub trait Attention<T: Float> {
+    type Dim: Dimension;
+    type Score;
 
-    fn head(&self) -> &Self::Head;
+    fn attention(&mut self, data: &Array<T, Ix2>) -> BoxResult<&Array<T, Ix2>>;
 }
 
-pub trait HeadSpace: MulAssign<Array2<f64>> {
-    fn query(&self) -> &Array2<f64>;
-    fn key(&self) -> &Array2<f64>;
-    fn value(&self) -> &Array2<f64>;
+pub trait Head<T: Float> {
+
+    fn query(&self) -> &Array<T, Ix2>;
+    fn key(&self) -> &Array<T, Ix2>;
+    fn value(&self) -> &Array<T, Ix2>;
 }
 
-pub trait Context<T: num::Float> {
-    type Dim: ndarray::Dimension;
+pub trait Spaces<T: Float> {
+    type Dim: Dimension;
 
     fn query(&self) -> &Array<T, Self::Dim>;
     fn key(&self) -> &Array<T, Self::Dim>;
@@ -48,11 +51,11 @@ pub trait Context<T: num::Float> {
 }
 
 pub(crate) mod utils {
-    use super::ops::Split;
+    use crate::ops::Split;
     use crate::neural::prelude::activate::{Activator, Softmax};
-    use ndarray::ShapeError;
     use ndarray::prelude::{Array2, Array3};
-
+    use ndarray::{ScalarOperand, ShapeError};
+    use num::Float;
 
     pub fn linear_layer<T: num::Float + 'static>(
         data: &Array2<T>,
@@ -62,15 +65,15 @@ pub(crate) mod utils {
         data.dot(weights).split(heads)
     }
 
-    pub fn compute_attention(
-        query: &Array2<f64>,
-        key: &Array2<f64>,
-        value: &Array2<f64>,
-        mask: Option<Array2<f64>>,
-    ) -> Array2<f64> {
+    pub fn compute_attention<T: Float + ScalarOperand>(
+        query: &Array2<T>,
+        key: &Array2<T>,
+        value: &Array2<T>,
+        mask: Option<Array2<T>>,
+    ) -> Array2<T> {
         let (seq, dk) = query.dim();
-        let mask = mask.unwrap_or_else(|| Array2::<f64>::zeros((seq, seq)));
-        let scale = 1.0 / (dk as f64).sqrt();
+        let mask = mask.unwrap_or_else(|| Array2::<T>::zeros((seq, seq)));
+        let scale = T::one() / (T::from(dk).unwrap()).sqrt();
         Softmax::rho((query.dot(&key.t()) + mask) * scale).dot(value)
     }
 }

@@ -10,10 +10,12 @@ pub(crate) mod specs;
 pub(crate) mod utils;
 
 pub mod errors;
+pub mod states;
 pub mod step;
 
 pub mod prelude {
     pub use crate::errors::*;
+    pub use crate::states::*;
     pub use crate::step::*;
 
     pub use crate::primitives::*;

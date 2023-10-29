@@ -6,42 +6,46 @@ pub use self::{attention::*, utils::*};
 
 pub(crate) mod attention;
 
+use crate::ops::Split;
 use crate::attention::params::MultiShape;
-use crate::attention::AttentionHead;
-// use crate::core::concat_iter;
-use ndarray::prelude::{Array2, Array4};
-use ndarray::{concatenate, Axis};
+use crate::attention::Weight;
+use crate::core::prelude::BoxResult;
+use ndarray::prelude::{Array2, Array3};
+use ndarray::ScalarOperand;
+use num::Float;
 
-pub trait MultiHead {
+pub trait MultiHead<T>
+where
+    T: Float + ScalarOperand,
+{
+    fn attention(&mut self, data: &Array2<T>) -> BoxResult<Array2<T>> {
+        let weighted = self.weights() * data;
+        let (q, k, v) = weighted.split(self.dim().heads())?;
+        let score = utils::multihead(&q, &k, &v, Some(self.mask().clone()))?;
+        Ok(score)
+    }
+    
     fn dim(&self) -> MultiShape;
 
-    fn attention(&self) -> &[AttentionHead];
+    fn mask(&self) -> &Array2<T>;
 
-    fn heads_mut(&mut self) -> &mut [AttentionHead];
+    fn multihead(&self) -> &Array3<T>;
 
-    fn process(&mut self, data: &Array2<f64>);
+    fn multihead_mut(&mut self) -> &mut Array3<T>;
 
-    fn score(&mut self, data: &Array2<f64>) -> Array2<f64> {
-        let scores = self
-            .attention()
-            .iter()
-            .map(|head| head.score())
-            .collect::<Vec<_>>();
-        let mut score: Array2<f64> = scores[0].clone();
-        for i in 1..scores.len() {
-            score = concatenate!(Axis(0), score, scores[i].clone());
-        }
-        score
-    }
+    fn weights(&self) -> &Weight<T>;
+
+    
 }
 
 pub(crate) mod utils {
     use crate::attention::compute_attention;
-    use crate::attention::ops::Merge;
+    use crate::ops::Merge;
     use ndarray::prelude::{Array2, Array3, Array4};
-    use ndarray::{s, ShapeError};
+    use ndarray::{s, ScalarOperand, ShapeError};
+    use num::Float;
 
-    pub fn multihead(
+    pub fn batched_multihead(
         query: &Array4<f64>,
         key: &Array4<f64>,
         value: &Array4<f64>,
@@ -58,6 +62,29 @@ pub(crate) mod utils {
                 let head = compute_attention(&q, &k, &v, Some(mask.clone()));
                 score.slice_mut(s![i, h, .., ..]).assign(&head);
             }
+        }
+        score.merge()
+    }
+
+    pub fn multihead<T>(
+        query: &Array3<T>,
+        key: &Array3<T>,
+        value: &Array3<T>,
+        mask: Option<Array2<T>>,
+    ) -> Result<Array2<T>, ShapeError>
+    where
+        T: Float + ScalarOperand,
+    {
+        let (heads, seq, _) = query.dim();
+        let mask = mask.unwrap_or_else(|| Array2::<T>::zeros((seq, seq)));
+        let mut score = Array3::<T>::zeros(query.dim());
+        for h in 0..heads {
+            let pos = s![h, .., ..];
+            let q = query.slice(pos).to_owned();
+            let k = key.slice(pos).to_owned();
+            let v = value.slice(pos).to_owned();
+            let head = compute_attention(&q, &k, &v, Some(mask.clone()));
+            score.slice_mut(s![h, .., ..]).assign(&head);
         }
         score.merge()
     }

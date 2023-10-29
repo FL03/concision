@@ -3,9 +3,11 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Encode
-pub use self::{encoder::*, utils::*};
+pub use self::{encoder::*, params::*, stack::*, utils::*};
 
 pub(crate) mod encoder;
+pub(crate) mod params;
+pub(crate) mod stack;
 
 pub trait Encode {}
 

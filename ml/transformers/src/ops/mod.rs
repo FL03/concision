@@ -2,9 +2,10 @@
    Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{merge::*, split::*, utils::*};
+pub use self::{merge::*, norm::*, split::*, utils::*};
 
 pub(crate) mod merge;
+pub(crate) mod norm;
 pub(crate) mod split;
 
 pub(crate) mod utils {
@@ -42,12 +43,7 @@ pub(crate) mod utils {
     where
         T: Clone,
     {
-        let (batch, n, seq, query) = (
-            heads.shape()[0],
-            heads.shape()[1],
-            heads.shape()[2],
-            heads.shape()[3],
-        );
+        let (batch, n, seq, query) = heads.dim();
         let mut tmp = heads.clone();
         // swap the head and sequence axes
         tmp.swap_axes(1, 2);
@@ -84,7 +80,9 @@ mod tests {
 
         let a = split_batch(&data, 2).unwrap();
         assert_eq!(a.shape(), &dim_split);
+        assert_eq!(&a, &data.split(2).unwrap());
         let b = merge_batch(&a).unwrap();
         assert_eq!(b.shape(), &dim_input);
+        assert_eq!(&b, &data);
     }
 }

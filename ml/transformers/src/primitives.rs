@@ -4,19 +4,30 @@
 */
 pub use self::{constants::*, statics::*, types::*};
 
-/// Collection of constants used throughout the system
 pub(crate) mod constants {
-    pub const DEFAULT_EMBEDDING_SIZE: usize = 512;
-
-    pub const DEFAULT_ATTENTION_HEADS: usize = 8;
-
-    pub const DEFAULT_ATTENTION_HEAD_SIZE: usize = 64;
-
-    pub const DEFAULT_SAMPLE_SIZE: usize = 10000;
+    /// The default dropout rate
+    pub const DROPOUT: f64 = 0.1;
+    /// The default number of heads in the multi-head attention layer
+    pub const HEADS: usize = 8;
+    /// The default dimension of the model (embedding size)
+    pub const MODEL_SIZE: usize = 512;
+    /// The default dimension of the feed-forward network
+    pub const NETWORK_SIZE: usize = 2048;
+    /// The default number of samples to draw from the attention distribution
+    pub const SAMPLES: usize = 10000;
 }
 
-/// Collection of static references used throughout
-pub(crate) mod statics {}
+pub(crate) mod statics {
+    use super::constants::*;
+    use lazy_static::lazy_static;
 
-/// Collection of types used throughout the system
-pub(crate) mod types {}
+    lazy_static!{
+        /// The default dimensions of the query, key, and value tensors w/r/2 a single head
+        pub static ref QUERY_SIZE: usize = MODEL_SIZE / HEADS;
+    }
+}
+
+pub(crate) mod types {
+    /// The dimension of all inputs and outputs for each layer of the model (batch, seq, model)
+    pub type BaseDim = ndarray::Ix3;
+}

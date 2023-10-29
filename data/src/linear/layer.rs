@@ -2,22 +2,45 @@
    Appellation: layer <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::Features;
+use ndarray::prelude::{Array1, Array2};
+use num::Float;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
-#[serde(rename_all = "lowercase")]
-pub struct Layer {
-    data: Vec<String>,
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+pub struct LinearLayer<T = f64> {
+    bias: Array1<T>,
+    pub params: Features,
+    weights: Array2<T>,
 }
 
-impl Layer {
-    pub fn new() -> Self {
-        Self { data: Vec::new() }
+impl<T> LinearLayer<T>
+where
+    T: Float,
+{
+    pub fn new(inputs: usize, outputs: usize) -> Self {
+        let params = Features::new(inputs, outputs);
+        let weights = Array2::ones((params.input, params.output));
+        let bias = Array1::ones(params.output);
+        Self {
+            bias,
+            params,
+            weights,
+        }
     }
-}
 
-impl std::fmt::Display for Layer {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", serde_json::to_string(self).unwrap())
+    pub fn bias(&self) -> &Array1<T> {
+        &self.bias
+    }
+
+    pub fn linear(&self, data: &Array2<T>) -> Array2<T>
+    where
+        T: 'static,
+    {
+        data.dot(&self.weights.t()) + &self.bias
+    }
+
+    pub fn weights(&self) -> &Array2<T> {
+        &self.weights
     }
 }

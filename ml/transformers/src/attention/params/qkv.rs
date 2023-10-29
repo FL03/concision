@@ -39,8 +39,6 @@ pub enum QKV {
     Value,
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
