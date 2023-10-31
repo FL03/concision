@@ -9,7 +9,10 @@ use num::Float;
 
 pub trait L<T: Float> {
     //
-    fn process(&self, args: &Array2<T>, rho: impl Activator<T>) -> Array2<T> where T: 'static {
+    fn process(&self, args: &Array2<T>, rho: impl Activator<T>) -> Array2<T>
+    where
+        T: 'static,
+    {
         let z = args.dot(self.weights()) + self.bias();
         z.mapv(|x| rho.activate(x))
     }
@@ -20,7 +23,9 @@ pub trait L<T: Float> {
 }
 
 pub trait Linear<T: Float> {
-    fn linear(&self, data: &Array2<T>) -> Array2<T> where T: 'static;
+    fn linear(&self, data: &Array2<T>) -> Array2<T>
+    where
+        T: 'static;
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -41,7 +46,12 @@ impl Layer {
         };
         let weights = Array2::ones((features.inputs(), features.outputs()));
 
-        Self { bias, features, layer, weights }
+        Self {
+            bias,
+            features,
+            layer,
+            weights,
+        }
     }
 
     pub fn bias(&self) -> &Option<Array1<f64>> {
@@ -60,6 +70,3 @@ impl Layer {
         self.layer = layer;
     }
 }
-
-
-

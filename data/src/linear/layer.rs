@@ -7,8 +7,6 @@ use ndarray::prelude::{Array1, Array2};
 use num::Float;
 use serde::{Deserialize, Serialize};
 
-
-
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct LinearLayer<T = f64> {
     bias: Array1<T>,

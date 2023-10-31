@@ -2,15 +2,15 @@
    Appellation: multi <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{attention::*, utils::*};
+pub use self::{attention::*, params::*, utils::*};
 
 pub(crate) mod attention;
+pub(crate) mod params;
 
-use crate::ops::Split;
-use crate::attention::params::MultiShape;
 use crate::attention::Weight;
 use crate::core::prelude::BoxResult;
-use ndarray::prelude::{Array2, Array3};
+use crate::ops::Split;
+use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
 use num::Float;
 
@@ -20,22 +20,16 @@ where
 {
     fn attention(&mut self, data: &Array2<T>) -> BoxResult<Array2<T>> {
         let weighted = self.weights() * data;
-        let (q, k, v) = weighted.split(self.dim().heads())?;
+        let (q, k, v) = weighted.split(self.params().heads())?;
         let score = utils::multihead(&q, &k, &v, Some(self.mask().clone()))?;
         Ok(score)
     }
-    
-    fn dim(&self) -> MultiShape;
+
+    fn params(&self) -> MultiHeadParams;
 
     fn mask(&self) -> &Array2<T>;
 
-    fn multihead(&self) -> &Array3<T>;
-
-    fn multihead_mut(&mut self) -> &mut Array3<T>;
-
     fn weights(&self) -> &Weight<T>;
-
-    
 }
 
 pub(crate) mod utils {

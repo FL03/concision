@@ -4,7 +4,6 @@
 */
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub struct State {
@@ -16,7 +15,11 @@ pub struct State {
 impl State {
     pub fn new(kind: impl ToString, message: String) -> Self {
         let ts = crate::now();
-        Self { kind: kind.to_string(), message, ts }
+        Self {
+            kind: kind.to_string(),
+            message,
+            ts,
+        }
     }
 
     pub fn kind(&self) -> &str {

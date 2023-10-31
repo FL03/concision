@@ -16,11 +16,11 @@ pub(crate) mod weights;
 pub mod multi;
 pub mod params;
 
-use crate::prelude::BaseDim;
 use crate::core::prelude::BoxResult;
+use crate::prelude::BaseDim;
 
-use ndarray::Dimension;
 use ndarray::prelude::{Array, Ix2};
+use ndarray::Dimension;
 use num::Float;
 
 /// (batch, sample, seq, model)
@@ -36,7 +36,6 @@ pub trait Attention<T: Float> {
 }
 
 pub trait Head<T: Float> {
-
     fn query(&self) -> &Array<T, Ix2>;
     fn key(&self) -> &Array<T, Ix2>;
     fn value(&self) -> &Array<T, Ix2>;
@@ -51,8 +50,8 @@ pub trait Spaces<T: Float> {
 }
 
 pub(crate) mod utils {
-    use crate::ops::Split;
     use crate::neural::prelude::activate::{Activator, Softmax};
+    use crate::ops::Split;
     use ndarray::prelude::{Array2, Array3};
     use ndarray::{ScalarOperand, ShapeError};
     use num::Float;

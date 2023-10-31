@@ -5,6 +5,7 @@
 use super::FFNParams;
 use crate::data::linear::LinearLayer;
 use crate::neural::neurons::activate::{Activator, ReLU};
+use crate::neural::prelude::Forward;
 use ndarray::prelude::Array2;
 use serde::{Deserialize, Serialize};
 
@@ -25,8 +26,12 @@ impl FFN {
             params,
         }
     }
+}
 
-    pub fn forward(&self, data: &Array2<f64>) -> Array2<f64> {
+impl Forward<Array2<f64>> for FFN {
+    type Output = Array2<f64>;
+
+    fn forward(&self, data: &Array2<f64>) -> Self::Output {
         self.output.linear(&ReLU::rho(self.input.linear(data)))
     }
 }

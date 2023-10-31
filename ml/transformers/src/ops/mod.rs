@@ -2,10 +2,9 @@
    Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{merge::*, norm::*, split::*, utils::*};
+pub use self::{merge::*, split::*, utils::*};
 
 pub(crate) mod merge;
-pub(crate) mod norm;
 pub(crate) mod split;
 
 pub(crate) mod utils {

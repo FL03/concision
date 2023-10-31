@@ -14,9 +14,12 @@ pub(crate) mod specs;
 pub(crate) mod utils;
 
 pub mod arch;
+pub mod bias;
 pub mod layers;
+pub mod models;
 pub mod neurons;
 pub mod nn;
+pub mod ops;
 pub mod prop;
 
 // pub(crate) use concision_core as core;
@@ -25,6 +28,7 @@ pub mod prelude {
     pub use crate::layers::*;
     pub use crate::neurons::*;
     pub use crate::nn::*;
+    pub use crate::ops::*;
     pub use crate::prop::*;
 
     pub use crate::primitives::*;

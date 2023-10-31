@@ -2,21 +2,23 @@
    Appellation: weights <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::ops::Split;
 use super::params::QKV;
+use crate::ops::Split;
 
 use ndarray::prelude::{Array, Array2, Array3};
 use ndarray::{IntoDimension, Ix2};
 use num::Float;
 use serde::{Deserialize, Serialize};
-use strum::IntoEnumIterator;
 use std::ops;
-
+use strum::IntoEnumIterator;
 
 pub type WeightTensor<T = f64> = Array<T, Ix2>; // (seq, model)
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
-pub struct Weight<T = f64> where T: Float {
+pub struct Weight<T = f64>
+where
+    T: Float,
+{
     dim: Ix2,
     pub key: Array2<T>,
     pub query: Array2<T>,
@@ -56,7 +58,7 @@ impl std::fmt::Display for Weight {
 impl<D, T> From<D> for Weight<T>
 where
     D: IntoDimension<Dim = Ix2>,
-    T: Float
+    T: Float,
 {
     fn from(dim: D) -> Self {
         let dim = dim.into_dimension();

@@ -6,12 +6,12 @@ use crate::{HEADS, MODEL_SIZE};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
-pub struct EncoderParams {
+pub struct MultiHeadParams {
     pub heads: usize,
     pub model: usize,
 }
 
-impl EncoderParams {
+impl MultiHeadParams {
     pub fn new(heads: usize, model: usize) -> Self {
         Self { heads, model }
     }
@@ -29,8 +29,20 @@ impl EncoderParams {
     }
 }
 
-impl Default for EncoderParams {
+impl Default for MultiHeadParams {
     fn default() -> Self {
         Self::new(HEADS, MODEL_SIZE)
+    }
+}
+
+impl From<MultiHeadParams> for (usize, usize) {
+    fn from(params: MultiHeadParams) -> Self {
+        (params.heads, params.model)
+    }
+}
+
+impl From<MultiHeadParams> for [usize; 2] {
+    fn from(params: MultiHeadParams) -> Self {
+        [params.heads, params.model]
     }
 }

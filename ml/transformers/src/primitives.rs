@@ -21,7 +21,7 @@ pub(crate) mod statics {
     use super::constants::*;
     use lazy_static::lazy_static;
 
-    lazy_static!{
+    lazy_static! {
         /// The default dimensions of the query, key, and value tensors w/r/2 a single head
         pub static ref QUERY_SIZE: usize = MODEL_SIZE / HEADS;
     }

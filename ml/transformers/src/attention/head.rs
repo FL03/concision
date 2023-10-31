@@ -5,8 +5,8 @@
 use super::params::{HeadShape, QKV};
 use super::{Head, Weight};
 use crate::neural::neurons::activate::{Activator, Softmax};
-use ndarray::ScalarOperand;
 use ndarray::prelude::Array2;
+use ndarray::ScalarOperand;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
