@@ -5,10 +5,12 @@
 use ndarray::prelude::{Array, Ix1};
 use ndarray_rand::rand_distr::Bernoulli;
 use ndarray_rand::RandomExt;
+use num::Float;
+use serde::{Deserialize, Serialize};
 
 pub fn dropout<T>(array: &Array<T, Ix1>, p: f64) -> Array<T, Ix1>
 where
-    T: num::Float,
+    T: Float,
 {
     // Create a Bernoulli distribution for dropout
     let distribution = Bernoulli::new(p).unwrap();
@@ -19,4 +21,28 @@ where
 
     // Element-wise multiplication to apply dropout
     array * mask
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, PartialOrd, Serialize)]
+pub struct Dropout {
+    p: f64,
+}
+
+impl Dropout {
+    pub fn new(p: f64) -> Self {
+        Self { p }
+    }
+
+    pub fn apply<T>(&self, array: &Array<T, Ix1>) -> Array<T, Ix1>
+    where
+        T: Float,
+    {
+        dropout(array, self.p)
+    }
+}
+
+impl Default for Dropout {
+    fn default() -> Self {
+        Self::new(0.5)
+    }
 }

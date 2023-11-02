@@ -8,7 +8,7 @@ use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
 use num::Float;
 
-pub trait Bias<T: Float + SampleUniform> {
+pub trait Biased<T: Float + SampleUniform> {
     fn init_uniform(features: usize) -> Array1<T> {
         let k = (T::from(features).unwrap()).sqrt();
         let uniform = Uniform::new(-k, k);

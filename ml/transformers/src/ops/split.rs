@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::{Array2, Array3, Array4};
-use ndarray::{Dimension, ShapeError};
+use ndarray::ShapeError;
 
 // pub fn split<D: Dimension, T: Clone>(param: &Array<T, D>, heads: usize) -> Result<Array3<T>, ShapeError> {
 //     let mut dim = param.dim()

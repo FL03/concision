@@ -51,18 +51,9 @@ pub trait Spaces<T: Float> {
 
 pub(crate) mod utils {
     use crate::neural::prelude::activate::{Activator, Softmax};
-    use crate::ops::Split;
-    use ndarray::prelude::{Array2, Array3};
-    use ndarray::{ScalarOperand, ShapeError};
+    use ndarray::prelude::Array2;
+    use ndarray::ScalarOperand;
     use num::Float;
-
-    pub fn linear_layer<T: num::Float + 'static>(
-        data: &Array2<T>,
-        weights: &Array2<T>,
-        heads: usize,
-    ) -> Result<Array3<T>, ShapeError> {
-        data.dot(weights).split(heads)
-    }
 
     pub fn compute_attention<T: Float + ScalarOperand>(
         query: &Array2<T>,

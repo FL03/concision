@@ -11,13 +11,14 @@ pub(crate) mod network;
 
 use crate::layers::Layer;
 use crate::Trainable;
+use num::Float;
 
-pub trait NeuralNet: Trainable {
+pub trait NeuralNet<T: Float>: Trainable {
     fn depth(&self) -> usize {
         self.layers().len()
     }
 
-    fn layers(&self) -> &[Layer];
+    fn layers(&self) -> &[Layer<T>];
 }
 
 pub(crate) mod utils {}

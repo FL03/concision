@@ -3,8 +3,12 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Features, LayerType};
+use crate::bias::Bias;
 use crate::neurons::activate::Activator;
+use crate::prop::Forward;
+
 use ndarray::prelude::{Array1, Array2};
+use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 
 pub trait L<T: Float> {
@@ -29,20 +33,20 @@ pub trait Linear<T: Float> {
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct Layer {
-    bias: Option<Array1<f64>>,
+pub struct Layer<T: Float = f64> {
+    bias: Bias<T>,
     features: Features,
     layer: LayerType,
-    weights: Array2<f64>,
+    weights: Array2<T>,
 }
 
-impl Layer {
-    pub fn new(inputs: usize, outputs: usize, bias: bool, layer: LayerType) -> Self {
+impl<T: Float> Layer<T> {
+    pub fn new(inputs: usize, outputs: usize, bias: bool, layer: LayerType) -> Self where T: SampleUniform {
         let features = Features::new(inputs, outputs);
         let bias = if bias {
-            Some(Array1::ones(outputs))
+            Bias::biased(outputs)
         } else {
-            None
+            Bias::default()
         };
         let weights = Array2::ones((features.inputs(), features.outputs()));
 
@@ -54,7 +58,7 @@ impl Layer {
         }
     }
 
-    pub fn bias(&self) -> &Option<Array1<f64>> {
+    pub fn bias(&self) -> &Bias<T> {
         &self.bias
     }
 
@@ -68,5 +72,17 @@ impl Layer {
 
     pub fn set_layer(&mut self, layer: LayerType) {
         self.layer = layer;
+    }
+
+    pub fn weights(&self) -> &Array2<T> {
+        &self.weights
+    }
+}
+
+impl<T: Float + 'static> Forward<Array2<T>> for Layer<T> {
+    type Output = Array2<T>;
+
+    fn forward(&self, data: &Array2<T>) -> Self::Output {
+        data.dot(&self.weights().t()) + self.bias()
     }
 }
