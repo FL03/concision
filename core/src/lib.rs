@@ -9,10 +9,14 @@ pub(crate) mod primitives;
 pub(crate) mod specs;
 pub(crate) mod utils;
 
-pub mod linspace;
+pub mod errors;
+pub mod states;
+pub mod step;
 
 pub mod prelude {
-    pub use crate::linspace::*;
+    pub use crate::errors::*;
+    pub use crate::states::*;
+    pub use crate::step::*;
 
     pub use crate::primitives::*;
     pub use crate::specs::*;

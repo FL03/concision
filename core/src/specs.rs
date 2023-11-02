@@ -2,24 +2,51 @@
     Appellation: specs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use std::ops::{Add, Div, Mul, Sub};
+use num::{Num, One};
+use std::ops::MulAssign;
 
-/// [Numerical] is a basic trait describing numerical objects
-pub trait Numerical:
-    Add<Output = Self>
-    + Div<Output = Self>
-    + Mul<Output = Self>
-    + Sub<Output = Self>
-    + Clone
-    + Copy
-    + Sized
-{
+pub trait Pair<A, B> {
+    fn pair(&self) -> (A, B);
 }
 
-impl Numerical for f32 {}
+impl<A, B, T> Pair<A, B> for T
+where
+    T: Clone + Into<(A, B)>,
+{
+    fn pair(&self) -> (A, B) {
+        self.clone().into()
+    }
+}
 
-impl Numerical for f64 {}
+pub trait Product {
+    type Item: Num;
 
-impl Numerical for i64 {}
+    fn product(&self) -> Self::Item;
+}
 
-impl Numerical for usize {}
+impl<I, T> Product for I
+where
+    I: Clone + IntoIterator<Item = T>,
+    T: One + Num + MulAssign<T>,
+{
+    type Item = T;
+
+    fn product(&self) -> Self::Item {
+        let mut res = T::one();
+        for i in self.clone().into_iter() {
+            res *= i;
+        }
+        res
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_product() {
+        let args = vec![2, 4, 6];
+        assert_eq!(args.product(), 48);
+    }
+}

@@ -7,18 +7,20 @@ on:
     branches-ignore: [ "beta*", "dev*", "next*" ]
     tags: [ "nightly*",  "v*.*.*" ]
   release:
-      types: [created]
+  repository_dispatch:
+    types: [ analysis ]
   schedule:
-    - cron: "30 9 * * *" # 9:30am UTC
+    - cron: "30 21 * * *" # 9:30pm UTC
   workflow_dispatch:
+
+permissions:
+  actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status 
+  contents: read
+  security-events: write
 
 jobs:
   clippy:
     name: Clippy
-    permissions:
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status 
-      contents: read
-      security-events: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

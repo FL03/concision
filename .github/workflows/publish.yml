@@ -1,7 +1,12 @@
 name: Publish
 
+concurrency: 
+  cancel-in-progress: true
+  group: ${{ github.event.repository.name }}
+
 env:
   CARGO_TERM_COLOR: always
+  CRATE_BASENAME: ${{ github.event.repository.name }}
 
 on:
   release:
@@ -14,6 +19,12 @@ on:
         required: true
         type: boolean
 
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+  statuses: write
+
 jobs:
   features:
     name: Publish (features)
@@ -21,6 +32,18 @@ jobs:
     strategy:
       matrix:
         feature: [ core, derive, macros ]
+    env:
+      PACKAGE_NAME: ${{ github.event.repository.name }}-${{ matrix.feature }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish (${{env.PACKAGE_NAME}})
+        run: cargo publish --all-features -v -p ${{ env.PACKAGE_NAME }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+  dependents:
+    name: Publish (dependents)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        feature: [ neural, transformers ]
     env:
       PACKAGE_NAME: ${{ github.event.repository.name }}-${{ matrix.feature }}
     steps:

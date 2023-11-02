@@ -14,9 +14,8 @@ version.workspace = true
 [features]
 default = []
 
-
 [lib]
-bench = true
+bench = false
 crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
@@ -24,8 +23,10 @@ test = true
 [build-dependencies]
 
 [dependencies]
-ndarray = { features = ["blas", "serde-1"], version = "0.15" }
-num = { features = [], version = "0.4" }
+anyhow.workspace = true
+chrono = "0.4"
+ndarray.workspace = true
+num.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true
