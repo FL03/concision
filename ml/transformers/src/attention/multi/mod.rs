@@ -35,7 +35,7 @@ pub(crate) mod utils {
     use crate::attention::attention;
     use crate::neural::prelude::Mask;
     use crate::ops::Merge;
-    use ndarray::prelude::{Array2, Array3, Array4, Axis, azip, s};
+    use ndarray::prelude::{s, Array2, Array3, Array4};
     use ndarray::{ScalarOperand, ShapeError};
     use num::Float;
 
@@ -69,8 +69,7 @@ pub(crate) mod utils {
     where
         T: Float + ScalarOperand,
     {
-        let (heads, seq, dk) = query.dim();
-        println!("heads: {}, seq: {}, query: {}", heads, seq, dk);
+        let (heads, _, _) = query.dim();
         let mut score = Array3::<T>::zeros(query.dim());
         for h in 0..heads {
             let pos = s![h, .., ..];
@@ -78,13 +77,9 @@ pub(crate) mod utils {
             let k = key.slice(pos).to_owned();
             let v = value.slice(pos).to_owned();
             let head = attention(&q, &k, &v, mask.clone().into());
-            println!("head dim: {:?}", &head.shape());
             score.slice_mut(s![h, .., ..]).assign(&head);
         }
-        
-        let score = score.merge()?;
-        println!("score: {:?}", &score.shape());
-        Ok(score)
+        score.merge()
     }
 }
 
@@ -93,17 +88,16 @@ mod tests {
     use super::*;
     use crate::neural::prelude::Mask;
 
-
     #[test]
-    fn test_multihead() {
+    fn test_multihead_shape() {
         let (heads, seq, model) = (8, 10, 512);
         let data = Array2::<f64>::zeros((seq, model));
-        let _weights = Weight::<f64>::new((model, model));
-        let _params = MultiHeadParams::new(heads, model);
 
-        let mask: Mask<f64> = Array2::<f64>::zeros((seq, seq)).into();
+        let mask = Mask::<f64>::masked(seq).into();
         let attention = MultiHeadAttention::new(heads, model);
-        let score = attention.attention(&data, &mask).expect("Failed to compute attention");
-        assert_eq!(score, Array2::<f64>::zeros((10, model)));
+        let score = attention
+            .attention(&data, &mask)
+            .expect("Failed to compute attention");
+        assert_eq!(score.dim(), (seq, model));
     }
 }

@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Activate;
-use ndarray::{Dimension, RemoveAxis, ScalarOperand};
 use ndarray::prelude::{Array, Array1, Axis};
+use ndarray::{Dimension, RemoveAxis, ScalarOperand};
 use num::{Float, Zero};
 use serde::{Deserialize, Serialize};
 
@@ -71,16 +71,16 @@ where
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
+)]
 pub struct Softmax {
     axis: Option<usize>,
 }
 
 impl Softmax {
     pub fn new(axis: Option<usize>) -> Self {
-        Self {
-            axis
-        }
+        Self { axis }
     }
 }
 

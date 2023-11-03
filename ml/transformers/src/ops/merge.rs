@@ -2,8 +2,8 @@
    Appellation: merge <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array2, Array3, Array4, Axis};
-use ndarray::ShapeError;
+use ndarray::prelude::{Array2, Array3, Array4};
+use ndarray::{Order, ShapeError};
 
 pub trait Merge<T> {
     type Error;
@@ -11,25 +11,20 @@ pub trait Merge<T> {
     fn merge(&self) -> Result<T, Self::Error>;
 }
 
-impl<T> Merge<Array2<T>> for Array3<T> where T: Clone {
+impl<T> Merge<Array2<T>> for Array3<T>
+where
+    T: Clone,
+{
     type Error = ShapeError;
 
     fn merge(&self) -> Result<Array2<T>, Self::Error> {
-        if self.ndim() < 3 {
-            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape));
-        }
-        let axes = (self.ndim() - 3, self.ndim() - 2, self.ndim() - 1);
-
+        let (heads, seq, query) = self.dim();
         let mut tmp = self.clone();
         // swap the head and sequence axes
-        tmp.swap_axes(axes.0, axes.1);
+        tmp.swap_axes(0, 1);
         // reshape the qkv matrix into a 2d array
-        if tmp.merge_axes(Axis(axes.1), Axis(axes.2)) {
-            let res = tmp.remove_axis(Axis(axes.1));
-            Ok(res)
-        } else {
-            Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape))
-        }
+        let res = tmp.to_shape(((seq, heads * query), Order::ColumnMajor))?;
+        Ok(res.to_owned())
     }
 }
 
@@ -42,6 +37,7 @@ impl<T: Clone> Merge<Array3<T>> for Array4<T> {
         // swap the head and sequence axes
         tmp.swap_axes(1, 2);
         // reshape the qkv matrix into a 2d array
-        tmp.into_shape((batch, seq, heads * query))
+        let res = tmp.to_shape(((batch, seq, heads * query), Order::ColumnMajor))?;
+        Ok(res.to_owned())
     }
 }

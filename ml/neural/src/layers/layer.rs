@@ -56,8 +56,11 @@ impl<T: Float> Layer<T> {
     }
 }
 
-impl<T> Layer<T> where T: Float + SampleUniform {
-        pub fn biased(inputs: usize, outputs: usize, layer: LayerType) -> Self
+impl<T> Layer<T>
+where
+    T: Float + SampleUniform,
+{
+    pub fn biased(inputs: usize, outputs: usize, layer: LayerType) -> Self
     where
         T: SampleUniform,
     {

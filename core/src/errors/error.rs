@@ -154,4 +154,3 @@ impl From<serde_json::Error> for Error {
         Self::new(Errors::Syntax, err.to_string())
     }
 }
-

@@ -32,8 +32,6 @@ impl<T: Float> AttentionHead<T> {
         self.dim
     }
 
-    
-
     pub fn mask_mut(&mut self) -> &mut Array2<T> {
         &mut self.mask
     }

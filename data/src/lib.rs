@@ -11,7 +11,6 @@ pub(crate) mod utils;
 
 pub mod df;
 pub mod flows;
-pub mod linear;
 pub mod tensors;
 
 pub mod prelude {

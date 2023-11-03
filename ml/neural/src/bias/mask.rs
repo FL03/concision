@@ -9,8 +9,8 @@ use ndarray_rand::RandomExt;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use strum::EnumIs;
 use std::ops;
+use strum::EnumIs;
 
 #[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]
 pub enum Mask<T: Float = f64> {
@@ -28,9 +28,11 @@ impl<T: Float> Mask<T> {
     }
 }
 
-impl<T: Float> Mask<T> where T: Float + SampleUniform {
-    pub fn masked(size: usize) -> Self
-    {
+impl<T: Float> Mask<T>
+where
+    T: Float + SampleUniform,
+{
+    pub fn masked(size: usize) -> Self {
         let ds = (T::from(size).unwrap()).sqrt();
         let dist = Uniform::new(-ds, ds);
         let mask = Array2::<T>::random((size, size), dist);
@@ -38,9 +40,11 @@ impl<T: Float> Mask<T> where T: Float + SampleUniform {
     }
 }
 
-impl<T: Float> From<usize> for Mask<T> where T: Float + SampleUniform {
-    fn from(size: usize) -> Self
-    {
+impl<T: Float> From<usize> for Mask<T>
+where
+    T: Float + SampleUniform,
+{
+    fn from(size: usize) -> Self {
         let ds = (T::from(size).unwrap()).sqrt();
         let dist = Uniform::new(-ds, ds);
         let mask = Array2::<T>::random((size, size), dist);

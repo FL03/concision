@@ -4,29 +4,26 @@
 */
 use super::{multihead, MultiHeadParams};
 use crate::attention::Weight;
-use crate::neural::prelude::{ Mask};
+use crate::neural::layers::linear::LinearLayer;
+use crate::neural::prelude::Mask;
 use crate::ops::Split;
-use ndarray::{ScalarOperand, ShapeError};
 use ndarray::prelude::Array2;
+use ndarray::{ScalarOperand, ShapeError};
+use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct MultiHeadAttention<T: Float = f64> {
+    linear: LinearLayer<T>,
     params: MultiHeadParams,
     weights: Weight<T>,
 }
 
-impl<T: Float> MultiHeadAttention<T> {
-    pub fn new(heads: usize, model: usize) -> Self {
-        let params = MultiHeadParams::new(heads, model);
-        let weights = Weight::new((model, model));
-        Self {
-            params,
-            weights,
-        }
-    }
-
+impl<T> MultiHeadAttention<T>
+where
+    T: Float,
+{
     pub fn params(&self) -> MultiHeadParams {
         self.params
     }
@@ -36,12 +33,31 @@ impl<T: Float> MultiHeadAttention<T> {
     }
 }
 
-impl<T: Float + ScalarOperand> MultiHeadAttention<T> {
+impl<T> MultiHeadAttention<T>
+where
+    T: Float + SampleUniform,
+{
+    pub fn new(heads: usize, model: usize) -> Self {
+        let params = MultiHeadParams::new(heads, model);
+        let weights = Weight::new((model, model));
+        Self {
+            linear: LinearLayer::new(model, model),
+            params,
+            weights,
+        }
+    }
+}
+
+impl<T> MultiHeadAttention<T>
+where
+    T: Float + ScalarOperand,
+{
     pub fn attention(&self, data: &Array2<T>, mask: &Mask<T>) -> Result<Array2<T>, ShapeError> {
         let weighted = data * self.weights();
         let (q, k, v) = weighted.split(self.params().heads())?;
         let score = multihead(&q, &k, &v, mask)?;
-        Ok(score)
+        let res = self.linear.linear(&score);
+        Ok(res)
     }
 }
 

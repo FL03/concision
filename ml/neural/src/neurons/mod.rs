@@ -16,7 +16,7 @@ pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {
-    use super::activate::{Activate, Softmax, softmax};
+    use super::activate::{softmax, Activate, Softmax};
     use super::*;
     use ndarray::{array, Array1};
 

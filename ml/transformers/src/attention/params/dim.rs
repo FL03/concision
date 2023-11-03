@@ -11,8 +11,8 @@
 //! - `heads`: The number of attention heads
 //! - `model`: The dimension of the model (embedding size)
 use crate::{HEADS, MODEL_SIZE, QUERY_SIZE};
-use ndarray::IntoDimension;
 use ndarray::prelude::{Ix3, Ix4};
+use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
 
 pub trait Batched {
@@ -30,8 +30,6 @@ impl Batched for Ix4 {
         self[0]
     }
 }
-
-
 
 pub enum AttentionDims {
     Base(BaseShape),       // a 3d matrix (batch, seq, model)
@@ -90,7 +88,6 @@ impl BaseShape {
         self.seq
     }
 }
-
 
 impl IntoDimension for BaseShape {
     type Dim = ndarray::Ix3;

@@ -2,8 +2,8 @@
     Appellation: specs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use ndarray::prelude::Array;
 use ndarray::{Dimension, ShapeError};
-use ndarray::prelude::{Array};
 use num::{Num, One, Zero};
 use std::ops::MulAssign;
 
@@ -44,7 +44,6 @@ where
     }
 }
 
-
 trait Matmul<T, D>
 where
     T: Num,
@@ -76,8 +75,6 @@ where
 
 //         let mut iter_self = self.iter();
 //         let mut iter_other = other.iter();
-
-        
 
 //         for mut row_result in result.outer_iter_mut() {
 //             for mut col_other in other.inner_iter() {

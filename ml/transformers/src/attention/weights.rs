@@ -2,8 +2,8 @@
    Appellation: weights <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Weights;
 use super::params::QKV;
+use super::Weights;
 use crate::ops::Split;
 
 use ndarray::prelude::{Array, Array2, Array3};
@@ -14,8 +14,6 @@ use std::ops;
 use strum::IntoEnumIterator;
 
 pub type WeightTensor<T = f64> = Array<T, Ix2>; // (seq, model)
-
-
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Weight<T = f64>
@@ -100,8 +98,6 @@ impl<T: Float> From<Weight<T>> for (Array2<T>, Array2<T>, Array2<T>) {
         (context.key, context.query, context.value)
     }
 }
-
-
 
 impl<T: Float> ops::Index<QKV> for Weight<T> {
     type Output = Array2<T>;

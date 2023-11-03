@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::FFNParams;
-use crate::data::linear::LinearLayer;
+use crate::neural::layers::linear::LinearLayer;
 use crate::neural::neurons::activate::{Activate, ReLU};
 use crate::neural::prelude::Forward;
 use ndarray::prelude::Array2;
@@ -32,6 +32,7 @@ impl Forward<Array2<f64>> for FFN {
     type Output = Array2<f64>;
 
     fn forward(&self, data: &Array2<f64>) -> Self::Output {
-        self.output.linear(&Activate::activate(&ReLU, self.input.linear(data)))
+        self.output
+            .linear(&Activate::activate(&ReLU, self.input.linear(data)))
     }
 }

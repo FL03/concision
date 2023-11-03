@@ -20,7 +20,6 @@ impl<T> LinearLayer<T>
 where
     T: Float,
 {
-    
     pub fn bias(&self) -> &Bias<T> {
         &self.bias
     }
@@ -37,7 +36,10 @@ where
     }
 }
 
-impl<T> LinearLayer<T> where T: Float + SampleUniform {
+impl<T> LinearLayer<T>
+where
+    T: Float + SampleUniform,
+{
     pub fn new(inputs: usize, outputs: usize) -> Self {
         let params = Features::new(inputs, outputs);
         let weights = Array2::ones((inputs, outputs));

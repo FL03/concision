@@ -12,7 +12,10 @@ use crate::weights::Weighted;
 use ndarray::prelude::Array2;
 use num::Float;
 
-pub trait LinearTransformation<T> where T: Float {
+pub trait LinearTransformation<T>
+where
+    T: Float,
+{
     fn linear(&self, data: &Array2<T>) -> Array2<T>;
 }
 
@@ -39,7 +42,6 @@ pub(crate) mod utils {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -50,6 +52,5 @@ mod tests {
         let data = Array2::<f64>::ones((inputs, outputs));
         let layer = LinearLayer::new(inputs, outputs);
         let linear = layer.linear(&data);
-
     }
 }

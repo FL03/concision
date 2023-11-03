@@ -9,8 +9,8 @@ use ndarray_rand::RandomExt;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use strum::EnumIs;
 use std::ops;
+use strum::EnumIs;
 
 fn _generate_bias<T: Float + SampleUniform>(size: usize) -> Array1<T> {
     let ds = (T::from(size).unwrap()).sqrt();
@@ -34,9 +34,11 @@ impl<T: Float> Bias<T> {
     }
 }
 
-impl<T: Float> Bias<T> where T: Float + SampleUniform {
-    pub fn biased(size: usize) -> Self
-    {
+impl<T: Float> Bias<T>
+where
+    T: Float + SampleUniform,
+{
+    pub fn biased(size: usize) -> Self {
         let bias = _generate_bias(size);
         Self::Biased(bias)
     }
