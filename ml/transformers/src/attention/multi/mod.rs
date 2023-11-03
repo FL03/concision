@@ -9,6 +9,7 @@ pub(crate) mod params;
 
 use crate::attention::Weight;
 use crate::core::prelude::BoxResult;
+use crate::neural::prelude::Mask;
 use crate::ops::Split;
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
@@ -18,25 +19,24 @@ pub trait MultiHead<T>
 where
     T: Float + ScalarOperand,
 {
-    fn attention(&mut self, data: &Array2<T>) -> BoxResult<Array2<T>> {
-        let weighted = self.weights() * data;
+    fn attention(&mut self, data: &Array2<T>, mask: &Mask<T>) -> BoxResult<Array2<T>> {
+        let weighted = data * self.weights();
         let (q, k, v) = weighted.split(self.params().heads())?;
-        let score = utils::multihead(&q, &k, &v, Some(self.mask().clone()))?;
+        let score = utils::multihead(&q, &k, &v, mask)?;
         Ok(score)
     }
 
     fn params(&self) -> MultiHeadParams;
 
-    fn mask(&self) -> &Array2<T>;
-
     fn weights(&self) -> &Weight<T>;
 }
 
 pub(crate) mod utils {
-    use crate::attention::compute_attention;
+    use crate::attention::attention;
+    use crate::neural::prelude::Mask;
     use crate::ops::Merge;
-    use ndarray::prelude::{Array2, Array3, Array4};
-    use ndarray::{s, ScalarOperand, ShapeError};
+    use ndarray::prelude::{Array2, Array3, Array4, Axis, azip, s};
+    use ndarray::{ScalarOperand, ShapeError};
     use num::Float;
 
     pub fn batched_multihead(
@@ -53,7 +53,7 @@ pub(crate) mod utils {
                 let q = query.slice(s![i, h, .., ..]).to_owned();
                 let k = key.slice(s![i, h, .., ..]).to_owned();
                 let v = value.slice(s![i, h, .., ..]).to_owned();
-                let head = compute_attention(&q, &k, &v, Some(mask.clone()));
+                let head = attention(&q, &k, &v, Some(mask.clone()));
                 score.slice_mut(s![i, h, .., ..]).assign(&head);
             }
         }
@@ -64,25 +64,46 @@ pub(crate) mod utils {
         query: &Array3<T>,
         key: &Array3<T>,
         value: &Array3<T>,
-        mask: Option<Array2<T>>,
+        mask: &Mask<T>,
     ) -> Result<Array2<T>, ShapeError>
     where
         T: Float + ScalarOperand,
     {
-        let (heads, seq, _) = query.dim();
-        let mask = mask.unwrap_or_else(|| Array2::<T>::zeros((seq, seq)));
+        let (heads, seq, dk) = query.dim();
+        println!("heads: {}, seq: {}, query: {}", heads, seq, dk);
         let mut score = Array3::<T>::zeros(query.dim());
         for h in 0..heads {
             let pos = s![h, .., ..];
             let q = query.slice(pos).to_owned();
             let k = key.slice(pos).to_owned();
             let v = value.slice(pos).to_owned();
-            let head = compute_attention(&q, &k, &v, Some(mask.clone()));
+            let head = attention(&q, &k, &v, mask.clone().into());
+            println!("head dim: {:?}", &head.shape());
             score.slice_mut(s![h, .., ..]).assign(&head);
         }
-        score.merge()
+        
+        let score = score.merge()?;
+        println!("score: {:?}", &score.shape());
+        Ok(score)
     }
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+    use crate::neural::prelude::Mask;
+
+
+    #[test]
+    fn test_multihead() {
+        let (heads, seq, model) = (8, 10, 512);
+        let data = Array2::<f64>::zeros((seq, model));
+        let _weights = Weight::<f64>::new((model, model));
+        let _params = MultiHeadParams::new(heads, model);
+
+        let mask: Mask<f64> = Array2::<f64>::zeros((seq, seq)).into();
+        let attention = MultiHeadAttention::new(heads, model);
+        let score = attention.attention(&data, &mask).expect("Failed to compute attention");
+        assert_eq!(score, Array2::<f64>::zeros((10, model)));
+    }
+}

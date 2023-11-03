@@ -19,9 +19,10 @@ pub mod params;
 use crate::core::prelude::BoxResult;
 use crate::prelude::BaseDim;
 
-use ndarray::prelude::{Array, Ix2};
-use ndarray::Dimension;
+use ndarray::prelude::{Array, Array2, Ix2};
+use ndarray::{Dimension, ScalarOperand};
 use num::Float;
+use std::ops::Mul;
 
 /// (batch, sample, seq, model)
 pub type InputArray<T> = Array<T, BaseDim>;
@@ -29,16 +30,37 @@ pub type InputArray<T> = Array<T, BaseDim>;
 pub type AttentionArray<T> = Array<T, Ix2>;
 
 pub trait Attention<T: Float> {
-    type Dim: Dimension;
-    type Score;
+    fn attention(&self, data: &Array2<T>) -> BoxResult<Array2<T>>
+    where
+        T: ScalarOperand,
+    {
+        // let (seq, model) = data.dim();
 
-    fn attention(&mut self, data: &Array<T, Ix2>) -> BoxResult<&Array<T, Ix2>>;
+        let q = self.query().dot(data);
+        let k = self.key().dot(data);
+        let v = self.value().dot(data);
+
+        let score = attention(&q, &k, &v, Some(self.mask().clone()));
+        Ok(score)
+    }
+
+    fn key(&self) -> &Array2<T>;
+
+    fn mask(&self) -> &Array2<T>;
+
+    fn query(&self) -> &Array2<T>;
+
+    fn value(&self) -> &Array2<T>;
 }
 
 pub trait Head<T: Float> {
-    fn query(&self) -> &Array<T, Ix2>;
-    fn key(&self) -> &Array<T, Ix2>;
-    fn value(&self) -> &Array<T, Ix2>;
+    fn key(&self) -> &Array2<T>;
+
+    fn mask(&self) -> &Array2<T>;
+
+    fn query(&self) -> &Array2<T>;
+
+    fn value(&self) -> &Array2<T>;
 }
 
 pub trait Spaces<T: Float> {
@@ -49,13 +71,25 @@ pub trait Spaces<T: Float> {
     fn value(&self) -> &Array<T, Self::Dim>;
 }
 
+pub trait Weights<T: Float>: Mul<Array2<T>, Output = Self> {
+    fn key(&self) -> &Array2<T>;
+
+    fn query(&self) -> &Array2<T>;
+
+    fn value(&self) -> &Array2<T>;
+
+    fn qkv(&self) -> (&Array2<T>, &Array2<T>, &Array2<T>) {
+        (self.query(), self.key(), self.value())
+    }
+}
+
 pub(crate) mod utils {
-    use crate::neural::prelude::activate::{Activator, Softmax};
+    use crate::neural::prelude::{Activate, Softmax};
     use ndarray::prelude::Array2;
     use ndarray::ScalarOperand;
     use num::Float;
 
-    pub fn compute_attention<T: Float + ScalarOperand>(
+    pub fn attention<T: Float + ScalarOperand>(
         query: &Array2<T>,
         key: &Array2<T>,
         value: &Array2<T>,
@@ -64,7 +98,10 @@ pub(crate) mod utils {
         let (seq, dk) = query.dim();
         let mask = mask.unwrap_or_else(|| Array2::<T>::zeros((seq, seq)));
         let scale = T::one() / (T::from(dk).unwrap()).sqrt();
-        Softmax::rho((query.dot(&key.t()) + mask) * scale).dot(value)
+        let softmax = Softmax::new(Some(1));
+        softmax
+            .activate((query.dot(&key.t()) + mask) * scale)
+            .dot(value)
     }
 }
 

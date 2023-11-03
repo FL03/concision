@@ -2,12 +2,15 @@
     Appellation: nonlinear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Activator;
-use ndarray::prelude::{Array, Array1};
+use super::Activate;
+use ndarray::{Dimension, RemoveAxis, ScalarOperand};
+use ndarray::prelude::{Array, Array1, Axis};
+use num::{Float, Zero};
+use serde::{Deserialize, Serialize};
 
 pub fn softmax<T>(args: Array1<T>) -> Array1<T>
 where
-    T: num::Float,
+    T: Float,
 {
     let denom = args.mapv(|x| x.exp()).sum();
     args.mapv(|x| x.exp() / denom)
@@ -16,7 +19,7 @@ where
 pub struct ReLU;
 
 impl ReLU {
-    pub fn compute<T: PartialOrd + num::Zero>(x: T) -> T {
+    pub fn compute<T: PartialOrd + Zero>(x: T) -> T {
         if x > T::zero() {
             x
         } else {
@@ -25,12 +28,12 @@ impl ReLU {
     }
 }
 
-impl<T, D> Activator<Array<T, D>> for ReLU
+impl<T, D> Activate<Array<T, D>> for ReLU
 where
-    D: ndarray::Dimension,
-    T: num::Float,
+    D: Dimension,
+    T: Float,
 {
-    fn rho(x: Array<T, D>) -> Array<T, D> {
+    fn activate(&self, x: Array<T, D>) -> Array<T, D> {
         x.mapv(|x| Self::compute(x))
     }
 }
@@ -38,36 +41,63 @@ where
 pub struct Sigmoid;
 
 impl Sigmoid {
-    pub fn compute<T: num::Float>(x: T) -> T {
+    pub fn compute<T: Float>(x: T) -> T {
         T::one() / (T::one() + (-x).exp())
     }
 }
 
-impl<T, D> Activator<Array<T, D>> for Sigmoid
+impl<T, D> Activate<Array<T, D>> for Sigmoid
 where
-    D: ndarray::Dimension,
-    T: num::Float,
+    D: Dimension,
+    T: Float,
 {
-    fn rho(x: Array<T, D>) -> Array<T, D> {
+    fn activate(&self, x: Array<T, D>) -> Array<T, D> {
         x.mapv(|x| Self::compute(x))
     }
 }
-pub struct Softmax;
 
-impl Softmax {
-    pub fn new() -> Self {
-        Self
+pub fn softmax_axis<T, D>(args: Array<T, D>, axis: Option<usize>) -> Array<T, D>
+where
+    T: Float + ScalarOperand,
+    D: Dimension + RemoveAxis,
+{
+    let exp = args.mapv(|x| x.exp());
+    if let Some(axis) = axis {
+        let denom = exp.sum_axis(Axis(axis));
+        exp / denom
+    } else {
+        let denom = exp.sum();
+        exp / denom
     }
 }
 
-impl<T, D> Activator<Array<T, D>> for Softmax
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+pub struct Softmax {
+    axis: Option<usize>,
+}
+
+impl Softmax {
+    pub fn new(axis: Option<usize>) -> Self {
+        Self {
+            axis
+        }
+    }
+}
+
+impl<T, D> Activate<Array<T, D>> for Softmax
 where
-    D: ndarray::Dimension,
-    T: num::Float,
+    D: Dimension + RemoveAxis,
+    T: Float + ScalarOperand,
 {
-    fn rho(x: Array<T, D>) -> Array<T, D> {
-        let denom = x.mapv(|x| x.exp()).sum();
-        x.mapv(|x| x.exp() / denom)
+    fn activate(&self, x: Array<T, D>) -> Array<T, D> {
+        let exp = x.mapv(|x| x.exp());
+        if let Some(axis) = self.axis {
+            let denom = exp.sum_axis(Axis(axis));
+            exp / denom
+        } else {
+            let denom = exp.sum();
+            exp / denom
+        }
     }
 }
 
@@ -81,7 +111,8 @@ mod tests {
     fn test_softmax() {
         let exp = array![0.09003057, 0.24472847, 0.66524096];
         let args = array![1.0, 2.0, 3.0];
-        let res = Softmax::rho(args).mapv(|i| i.round_to(8));
+
+        let res = Activate::activate(&Softmax::new(None), args).mapv(|i| i.round_to(8));
         assert_eq!(res, exp);
     }
 }

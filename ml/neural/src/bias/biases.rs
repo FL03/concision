@@ -2,13 +2,14 @@
     Appellation: bias <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::Dimension;
 use ndarray::prelude::{Array, Array1};
+use ndarray::Dimension;
 use ndarray_rand::rand_distr::{uniform::SampleUniform, Uniform};
 use ndarray_rand::RandomExt;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
+use strum::EnumIs;
 use std::ops;
 
 fn _generate_bias<T: Float + SampleUniform>(size: usize) -> Array1<T> {
@@ -17,7 +18,7 @@ fn _generate_bias<T: Float + SampleUniform>(size: usize) -> Array1<T> {
     Array1::<T>::random(size, dist)
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, SmartDefault)]
+#[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]
 pub enum Bias<T: Float = f64> {
     Biased(Array1<T>),
     #[default]
@@ -25,14 +26,6 @@ pub enum Bias<T: Float = f64> {
 }
 
 impl<T: Float> Bias<T> {
-    pub fn biased(size: usize) -> Self
-    where
-        T: SampleUniform,
-    {
-        let bias = _generate_bias(size);
-        Self::Biased(bias)
-    }
-
     pub fn forward(&self, data: &Array1<T>) -> Array1<T> {
         match self {
             Self::Biased(bias) => data + bias,
@@ -41,7 +34,18 @@ impl<T: Float> Bias<T> {
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<Array<T, D>> for Bias<T> where Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>> {
+impl<T: Float> Bias<T> where T: Float + SampleUniform {
+    pub fn biased(size: usize) -> Self
+    {
+        let bias = _generate_bias(size);
+        Self::Biased(bias)
+    }
+}
+
+impl<D: Dimension, T: Float> ops::Add<Array<T, D>> for Bias<T>
+where
+    Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
+{
     type Output = Array<T, D>;
 
     fn add(self, rhs: Array<T, D>) -> Self::Output {
@@ -52,7 +56,10 @@ impl<D: Dimension, T: Float> ops::Add<Array<T, D>> for Bias<T> where Array<T, D>
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<&Array<T, D>> for Bias<T> where Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>> {
+impl<D: Dimension, T: Float> ops::Add<&Array<T, D>> for Bias<T>
+where
+    Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
+{
     type Output = Array<T, D>;
 
     fn add(self, rhs: &Array<T, D>) -> Self::Output {
@@ -63,7 +70,10 @@ impl<D: Dimension, T: Float> ops::Add<&Array<T, D>> for Bias<T> where Array<T, D
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<Bias<T>> for Array<T, D> where Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>> {
+impl<D: Dimension, T: Float> ops::Add<Bias<T>> for Array<T, D>
+where
+    Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
+{
     type Output = Array<T, D>;
 
     fn add(self, bias: Bias<T>) -> Self::Output {
@@ -74,7 +84,10 @@ impl<D: Dimension, T: Float> ops::Add<Bias<T>> for Array<T, D> where Array<T, D>
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<&Bias<T>> for Array<T, D> where Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>> {
+impl<D: Dimension, T: Float> ops::Add<&Bias<T>> for Array<T, D>
+where
+    Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
+{
     type Output = Array<T, D>;
 
     fn add(self, bias: &Bias<T>) -> Self::Output {
@@ -84,7 +97,3 @@ impl<D: Dimension, T: Float> ops::Add<&Bias<T>> for Array<T, D> where Array<T, D
         }
     }
 }
-
-
-
-

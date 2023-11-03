@@ -4,35 +4,14 @@
 */
 use super::{Features, LayerType};
 use crate::bias::Bias;
-use crate::neurons::activate::Activator;
 use crate::prop::Forward;
 
-use ndarray::prelude::{Array1, Array2};
+use ndarray::prelude::Array2;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
+use serde::{Deserialize, Serialize};
 
-pub trait L<T: Float> {
-    //
-    fn process(&self, args: &Array2<T>, rho: impl Activator<T>) -> Array2<T>
-    where
-        T: 'static,
-    {
-        let z = args.dot(self.weights()) + self.bias();
-        z.mapv(|x| rho.activate(x))
-    }
-
-    fn bias(&self) -> &Array1<T>;
-
-    fn weights(&self) -> &Array2<T>;
-}
-
-pub trait Linear<T: Float> {
-    fn linear(&self, data: &Array2<T>) -> Array2<T>
-    where
-        T: 'static;
-}
-
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Layer<T: Float = f64> {
     bias: Bias<T>,
     features: Features,
@@ -41,17 +20,15 @@ pub struct Layer<T: Float = f64> {
 }
 
 impl<T: Float> Layer<T> {
-    pub fn new(inputs: usize, outputs: usize, bias: bool, layer: LayerType) -> Self where T: SampleUniform {
+    pub fn new(inputs: usize, outputs: usize, layer: LayerType) -> Self
+    where
+        T: SampleUniform,
+    {
         let features = Features::new(inputs, outputs);
-        let bias = if bias {
-            Bias::biased(outputs)
-        } else {
-            Bias::default()
-        };
         let weights = Array2::ones((features.inputs(), features.outputs()));
 
         Self {
-            bias,
+            bias: Bias::default(),
             features,
             layer,
             weights,
@@ -76,6 +53,23 @@ impl<T: Float> Layer<T> {
 
     pub fn weights(&self) -> &Array2<T> {
         &self.weights
+    }
+}
+
+impl<T> Layer<T> where T: Float + SampleUniform {
+        pub fn biased(inputs: usize, outputs: usize, layer: LayerType) -> Self
+    where
+        T: SampleUniform,
+    {
+        let features = Features::new(inputs, outputs);
+        let weights = Array2::ones((features.inputs(), features.outputs()));
+
+        Self {
+            bias: Bias::biased(outputs),
+            features,
+            layer,
+            weights,
+        }
     }
 }
 

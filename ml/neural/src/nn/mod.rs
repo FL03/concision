@@ -13,7 +13,7 @@ use crate::layers::Layer;
 use crate::Trainable;
 use num::Float;
 
-pub trait NeuralNet<T: Float>: Trainable {
+pub trait NeuralNet<T: Float = f64>: Trainable<T> {
     fn depth(&self) -> usize {
         self.layers().len()
     }

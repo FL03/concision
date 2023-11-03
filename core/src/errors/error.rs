@@ -26,6 +26,7 @@ use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
 #[strum(serialize_all = "lowercase")]
 pub enum Errors {
     Async,
+    Codec,
     Connection,
     Data,
     Dimension,
@@ -34,6 +35,7 @@ pub enum Errors {
     Execution,
     IO,
     Null,
+    Parse,
     Process,
     Runtime,
     Syntax,
@@ -125,13 +127,13 @@ impl From<std::io::Error> for Error {
 
 impl From<std::num::ParseFloatError> for Error {
     fn from(err: std::num::ParseFloatError) -> Self {
-        Self::new(Errors::Syntax, err.to_string())
+        Self::new(Errors::Parse, err.to_string())
     }
 }
 
 impl From<std::num::ParseIntError> for Error {
     fn from(err: std::num::ParseIntError) -> Self {
-        Self::new(Errors::Syntax, err.to_string())
+        Self::new(Errors::Parse, err.to_string())
     }
 }
 
@@ -146,3 +148,10 @@ impl From<ndarray::ShapeError> for Error {
         Self::new(Errors::Dimension, err.to_string())
     }
 }
+
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Self {
+        Self::new(Errors::Syntax, err.to_string())
+    }
+}
+

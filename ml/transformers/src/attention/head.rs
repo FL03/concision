@@ -4,7 +4,7 @@
 */
 use super::params::{HeadShape, QKV};
 use super::{Head, Weight};
-use crate::neural::neurons::activate::{Activator, Softmax};
+use crate::neural::neurons::activate::{Activate, Softmax};
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
 use num::Float;
@@ -19,7 +19,7 @@ pub struct AttentionHead<T: Float> {
     weights: Weight<T>,
 }
 
-impl<T: Float + ScalarOperand> AttentionHead<T> {
+impl<T: Float> AttentionHead<T> {
     pub fn new(dim: HeadShape) -> Self {
         Self {
             dim,
@@ -28,23 +28,11 @@ impl<T: Float + ScalarOperand> AttentionHead<T> {
         }
     }
 
-    pub fn attention(&mut self, data: &Array2<T>) -> Array2<T> {
-        // multiply the data by the wieghted query, key, and value matrices, respectively
-        let weighted = self.weights.clone() * data;
-        let (q, k, v) = weighted.qkv();
-
-        // compute the attention score
-        let inner = (q.dot(&k.t()) + self.mask.clone()) * self.scale();
-        Softmax::rho(inner).dot(&v)
-    }
-
     pub fn dim(&self) -> HeadShape {
         self.dim
     }
 
-    pub fn mask(&self) -> &Array2<T> {
-        &self.mask
-    }
+    
 
     pub fn mask_mut(&mut self) -> &mut Array2<T> {
         &mut self.mask
@@ -52,6 +40,10 @@ impl<T: Float + ScalarOperand> AttentionHead<T> {
 
     pub fn scale(&self) -> T {
         T::one() / T::from(self.dim.query_size()).unwrap().sqrt()
+    }
+
+    pub fn weights(&self) -> &Weight<T> {
+        &self.weights
     }
 
     pub fn set_mask(&mut self, mask: Array2<T>) {
@@ -64,13 +56,29 @@ impl<T: Float + ScalarOperand> AttentionHead<T> {
     }
 }
 
-impl<T: Float> Head<T> for AttentionHead<T> {
-    fn query(&self) -> &Array2<T> {
-        &self.weights.query
-    }
+impl<T: Float + ScalarOperand> AttentionHead<T> {
+    pub fn attention(&mut self, data: &Array2<T>) -> Array2<T> {
+        // multiply the data by the wieghted query, key, and value matrices, respectively
+        let weighted = data * self.weights();
+        let (q, k, v) = weighted.qkv();
 
+        // compute the attention score
+        let inner = (q.dot(&k.t()) + self.mask.clone()) * self.scale();
+        Activate::activate(&Softmax::default(), inner).dot(&v)
+    }
+}
+
+impl<T: Float> Head<T> for AttentionHead<T> {
     fn key(&self) -> &Array2<T> {
         &self.weights.key
+    }
+
+    fn mask(&self) -> &Array2<T> {
+        &self.mask
+    }
+
+    fn query(&self) -> &Array2<T> {
+        &self.weights.query
     }
 
     fn value(&self) -> &Array2<T> {

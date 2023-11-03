@@ -2,7 +2,7 @@
    Appellation: merge <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array2, Array3, Array4};
+use ndarray::prelude::{Array2, Array3, Array4, Axis};
 use ndarray::ShapeError;
 
 pub trait Merge<T> {
@@ -11,16 +11,25 @@ pub trait Merge<T> {
     fn merge(&self) -> Result<T, Self::Error>;
 }
 
-impl<T: Clone> Merge<Array2<T>> for Array3<T> {
+impl<T> Merge<Array2<T>> for Array3<T> where T: Clone {
     type Error = ShapeError;
 
     fn merge(&self) -> Result<Array2<T>, Self::Error> {
-        let (heads, seq, query) = self.dim();
+        if self.ndim() < 3 {
+            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape));
+        }
+        let axes = (self.ndim() - 3, self.ndim() - 2, self.ndim() - 1);
+
         let mut tmp = self.clone();
         // swap the head and sequence axes
-        tmp.swap_axes(0, 1);
+        tmp.swap_axes(axes.0, axes.1);
         // reshape the qkv matrix into a 2d array
-        tmp.into_shape((seq, heads * query))
+        if tmp.merge_axes(Axis(axes.1), Axis(axes.2)) {
+            let res = tmp.remove_axis(Axis(axes.1));
+            Ok(res)
+        } else {
+            Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape))
+        }
     }
 }
 

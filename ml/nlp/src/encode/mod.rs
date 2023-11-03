@@ -6,8 +6,8 @@ pub use self::utils::*;
 
 pub mod positional;
 
-use ndarray::Dimension;
 use ndarray::prelude::{Array, Array2};
+use ndarray::Dimension;
 
 pub trait Encode<T> {
     type Output;

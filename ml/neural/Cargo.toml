@@ -28,6 +28,7 @@ concision-core.workspace = true
 
 anyhow.workspace = true
 ndarray.workspace = true
+# ndarray-linalg.workspace = true
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
 num.workspace = true

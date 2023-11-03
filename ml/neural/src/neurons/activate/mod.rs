@@ -5,41 +5,34 @@
 //! # activate
 //!
 //! This module contains the activation functions for the neurons.
-pub use self::{binary::*, nonlinear::*, utils::*};
+pub use self::{activator::*, binary::*, nonlinear::*, utils::*};
 
+pub(crate) mod activator;
 pub(crate) mod binary;
 pub(crate) mod nonlinear;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
 
-pub struct Linear;
+pub struct LinearActivation;
 
-impl Linear {
-    pub fn act() -> ActivationFn {
+impl LinearActivation {
+    pub fn method<T>() -> ActivationFn<T> {
         |x| x
     }
 }
 
-impl<T> Activator<T> for Linear {
-    fn rho(x: T) -> T {
-        x
+impl<T> Activate<T> for LinearActivation {
+    fn activate(&self, x: T) -> T {
+        Self::method()(x)
     }
+}
+
+pub trait ActivationMethod {
+    fn method_name(&self) -> &str;
 }
 
 pub trait Activate<T> {
     fn activate(&self, x: T) -> T;
-}
-
-pub trait ActivateMethod<T> {
-    fn method() -> fn(T) -> T;
-}
-
-pub trait Activator<T> {
-    fn activate(&self, x: T) -> T {
-        Self::rho(x)
-    }
-
-    fn rho(x: T) -> T;
 }
 
 impl<F, T> Activate<T> for F
