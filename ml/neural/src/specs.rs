@@ -2,7 +2,7 @@
     Appellation: specs <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Array1, Array2};
+use ndarray::prelude::{Array, Array2};
 use ndarray::{Dimension, IntoDimension};
 use ndarray_rand::rand_distr as dist;
 use ndarray_rand::rand_distr::uniform::SampleUniform;

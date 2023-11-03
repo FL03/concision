@@ -52,5 +52,6 @@ mod tests {
         let data = Array2::<f64>::ones((inputs, outputs));
         let layer = LinearLayer::new(inputs, outputs);
         let linear = layer.linear(&data);
+        assert_eq!(linear.dim(), (inputs, outputs));
     }
 }
