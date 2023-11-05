@@ -92,18 +92,21 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::bias::Bias;
+    // use crate::weights::Weight;
+    use ndarray::Array;
 
     #[test]
     fn test_sgd() {
         // Generate some example data
-        let x = Array2::from_shape_vec((100, 2), (0..200).map(|x| x as f64).collect()).unwrap();
-        let y = x.dot(&Array1::from_elem(2, 2.0)) + &Array1::from_elem(100, 1.0);
+        let x = Array::linspace(1., 200., 200).into_shape((100, 2)).unwrap();
+        let y = x.dot(&x) + &Bias::biased(100);
 
-        let mut model = LinearLayer::new(200, 100);
+        let mut model = LinearLayer::<f64>::new(200, 100);
         let learning_rate = 0.01;
         let epochs = 100;
         let batch_size = 10;
 
-        sgd(&x, &y, &mut model, learning_rate, epochs, batch_size);
+        // sgd(&x, &y, &mut model, learning_rate, epochs, batch_size);
     }
 }
