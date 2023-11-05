@@ -19,9 +19,10 @@ fn sgd(
     learning_rate: f64,
     epochs: usize,
     batch_size: usize,
-) {
+) -> Array1<f64> {
     let n_samples = x.shape()[0];
     let input_size = x.shape()[1];
+    let mut losses = Array1::<f64>::zeros(epochs);
 
     for epoch in 0..epochs {
         let mut rng = rand::thread_rng();
@@ -45,9 +46,12 @@ fn sgd(
             gradient /= batch_size as f64;
             model.update_with_gradient(&gradient, learning_rate);
         }
+        let loss = mse(&model.forward(x), y).unwrap();
+        losses[epoch] = loss;
 
         // println!("Epoch {}: Loss = {}", epoch, mse(&model.forward(x), y).unwrap());
     }
+    losses
 }
 
 pub struct StochasticGradientDescent<T = f64>
