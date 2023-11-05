@@ -2,7 +2,8 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::{concatenate, Array, Axis, RemoveAxis};
+use ndarray::prelude::{Array, Axis};
+use ndarray::{concatenate, RemoveAxis};
 // use num::Float;
 
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
@@ -17,6 +18,7 @@ where
     }
     out
 }
+
 pub fn now() -> u128 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)

@@ -15,6 +15,7 @@ pub(crate) mod utils;
 
 pub mod arch;
 pub mod bias;
+pub mod grad;
 pub mod layers;
 pub mod models;
 pub mod neurons;

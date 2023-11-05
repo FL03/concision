@@ -24,6 +24,10 @@ impl<T> MultiHeadAttention<T>
 where
     T: Float,
 {
+    pub fn linear(&self) -> &LinearLayer<T> {
+        &self.linear
+    }
+
     pub fn params(&self) -> MultiHeadParams {
         self.params
     }
@@ -39,7 +43,7 @@ where
 {
     pub fn new(heads: usize, model: usize) -> Self {
         let params = MultiHeadParams::new(heads, model);
-        let weights = Weight::new((model, model));
+        let weights = Weight::uniform((model, model));
         Self {
             linear: LinearLayer::new(model, model),
             params,
@@ -56,7 +60,7 @@ where
         let weighted = data * self.weights();
         let (q, k, v) = weighted.split(self.params().heads())?;
         let score = multihead(&q, &k, &v, mask)?;
-        let res = self.linear.linear(&score);
+        let res = self.linear().linear(&score);
         Ok(res)
     }
 }

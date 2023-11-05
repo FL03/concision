@@ -7,6 +7,7 @@ use super::{Head, Weight};
 use crate::neural::neurons::activate::{Activate, Softmax};
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
+use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
@@ -20,14 +21,6 @@ pub struct AttentionHead<T: Float> {
 }
 
 impl<T: Float> AttentionHead<T> {
-    pub fn new(dim: HeadShape) -> Self {
-        Self {
-            dim,
-            mask: Array2::zeros((dim.sequence(), dim.sequence())),
-            weights: Weight::new(dim),
-        }
-    }
-
     pub fn dim(&self) -> HeadShape {
         self.dim
     }
@@ -51,6 +44,19 @@ impl<T: Float> AttentionHead<T> {
     pub fn with_mask(mut self, mask: Array2<T>) -> Self {
         self.mask = mask;
         self
+    }
+}
+
+impl<T> AttentionHead<T>
+where
+    T: Float + SampleUniform,
+{
+    pub fn new(dim: HeadShape) -> Self {
+        Self {
+            dim,
+            mask: Array2::zeros((dim.sequence(), dim.sequence())),
+            weights: Weight::uniform(dim),
+        }
     }
 }
 

@@ -2,18 +2,47 @@
    Appellation: weights <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+//! # Weights
+//!
+//! ## Overview
+//!
+//! The `weights` module provides a `Weight` struct that is used to
+//! group the `key`, `query`, and `value` matrices leveraged by the
+//! attention mechanism.
+//!
+//! ## Dimensionality
+//!
+//! Each of the `key`, `query`, and `value` weight tensors are
+//! initialized as square matrices (model, model)
+//!
+//!     - W(model, model)
+//!     - Q/K/V(seq, model) * W(model, model) = (seq, model)
+//!     - Split(Q/K/V) = (heads, seq, model/heads) = (heads, seq, query)
+//!     - Q(seq, model) * Key(seq, model)^T = (seq, seq)
+//!     - (seq, seq) + Mask(seq, seq) = (seq, seq)
+//!     - (seq, seq) * V(seq, model) = (seq, model)
+//!
+//!
+//!
 use super::params::QKV;
 use super::Weights;
+use crate::neural::GenerateRandom;
 use crate::ops::Split;
-
-use ndarray::prelude::{Array, Array2, Array3};
-use ndarray::{IntoDimension, Ix2};
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Array2, Array3, Ix2};
+use ndarray::IntoDimension;
+use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
 use strum::IntoEnumIterator;
 
 pub type WeightTensor<T = f64> = Array<T, Ix2>; // (seq, model)
+
+pub enum AttentionTensor<T = f64> {
+    Embedding(Array2<T>),
+    Multihead(Array3<T>),
+}
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Weight<T = f64>
@@ -27,9 +56,22 @@ where
 }
 
 impl<T: Float> Weight<T> {
+    pub fn dim(&self) -> Ix2 {
+        self.dim
+    }
+
+    pub fn qkv(&self) -> (Array2<T>, Array2<T>, Array2<T>) {
+        self.clone().into()
+    }
+}
+
+impl<T> Weight<T>
+where
+    T: Default + Float,
+{
     pub fn new(dim: impl IntoDimension<Dim = Ix2>) -> Self {
         let dim = dim.into_dimension();
-        let arr = Array2::ones(dim);
+        let arr = Array2::default(dim);
         Self {
             dim,
             key: arr.clone(),
@@ -37,13 +79,26 @@ impl<T: Float> Weight<T> {
             value: arr,
         }
     }
+}
 
-    pub fn dim(&self) -> Ix2 {
-        self.dim
+impl<T> Weight<T>
+where
+    T: Float + SampleUniform,
+{
+    pub fn uniform(dim: impl IntoDimension<Dim = Ix2>) -> Self {
+        let dim = dim.into_dimension();
+        Self {
+            dim: dim.clone(),
+            key: Array2::uniform(1, dim.clone()),
+            query: Array2::uniform(1, dim.clone()),
+            value: Array2::uniform(1, dim),
+        }
     }
-
-    pub fn qkv(&self) -> (Array2<T>, Array2<T>, Array2<T>) {
-        self.clone().into()
+    pub fn init_uniform(mut self) -> Self {
+        self.key = Array2::uniform(1, self.dim);
+        self.query = Array2::uniform(1, self.dim);
+        self.value = Array2::uniform(1, self.dim);
+        self
     }
 }
 
@@ -99,6 +154,18 @@ impl<T: Float> From<Weight<T>> for (Array2<T>, Array2<T>, Array2<T>) {
     }
 }
 
+impl<T: Float + 'static> Dot<Array2<T>> for Weight<T> {
+    type Output = Self;
+
+    fn dot(&self, rhs: &Array2<T>) -> Self::Output {
+        let mut ctx = self.clone();
+        for qkv in QKV::iter() {
+            ctx[qkv] = ctx[qkv].dot(rhs);
+        }
+        ctx
+    }
+}
+
 impl<T: Float> ops::Index<QKV> for Weight<T> {
     type Output = Array2<T>;
 
@@ -120,18 +187,6 @@ impl<T: Float> ops::IndexMut<QKV> for Weight<T> {
             Query => &mut self.query,
             Value => &mut self.value,
         }
-    }
-}
-
-impl<T: Float + 'static> ndarray::linalg::Dot<Array2<T>> for Weight<T> {
-    type Output = Self;
-
-    fn dot(&self, rhs: &Array2<T>) -> Self::Output {
-        let mut ctx = self.clone();
-        for qkv in QKV::iter() {
-            ctx[qkv] = ctx[qkv].dot(rhs);
-        }
-        ctx
     }
 }
 

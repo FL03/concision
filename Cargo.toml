@@ -40,6 +40,7 @@ members = [
     "data",
     "derive",
     "macros",
+    "optim",
     "ml/*",
 ]
 

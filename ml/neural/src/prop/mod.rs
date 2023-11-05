@@ -13,9 +13,10 @@ pub(crate) mod propagation;
 // pub mod forward;
 
 pub trait Backward<T> {
+    type Params;
     type Output;
 
-    fn backward(&mut self, args: &T) -> Self::Output;
+    fn backward(&mut self, args: &T, params: &Self::Params) -> Self::Output;
 }
 
 pub trait Forward<T> {
