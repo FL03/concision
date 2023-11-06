@@ -45,6 +45,7 @@ macros = [
 ml = [
     "neural",
     "nlp",
+    "optim",
     "transformers",
 ]
 
@@ -54,6 +55,10 @@ neural = [
 
 nlp = [
     "concision-nlp"
+]
+
+optim = [
+    "concision-optim",
 ]
 
 transformers = [
@@ -76,6 +81,7 @@ concision-macros = { features = [], optional = true, path = "../macros", version
 
 concision-neural = { features = [], optional = true, path = "../ml/neural", version = "0.1.12" }
 concision-nlp = { features = [], optional = true, path = "../ml/nlp", version = "0.1.12" }
+concision-optim = { features = [], optional = true, path = "../ml/optim", version = "0.1.12" }
 concision-transformers = { features = [], optional = true, path = "../ml/transformers", version = "0.1.12" }
 
 [dev-dependencies]

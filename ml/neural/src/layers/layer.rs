@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Features, LayerType};
-use crate::bias::Bias;
+use crate::params::Bias;
 use crate::prop::Forward;
 
 use ndarray::prelude::Array2;

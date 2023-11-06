@@ -34,7 +34,7 @@ impl<T: Float> Bias<T> {
     }
 }
 
-impl<T: Float> Bias<T>
+impl<T> Bias<T>
 where
     T: Float + SampleUniform,
 {
@@ -44,8 +44,43 @@ where
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<Array<T, D>> for Bias<T>
+impl<T> From<Array1<T>> for Bias<T>
 where
+    T: Float,
+{
+    fn from(bias: Array1<T>) -> Self {
+        Self::Biased(bias)
+    }
+}
+
+impl<T> From<Option<Array1<T>>> for Bias<T>
+where
+    T: Float,
+{
+    fn from(bias: Option<Array1<T>>) -> Self {
+        match bias {
+            Some(bias) => Self::Biased(bias),
+            None => Self::Unbiased,
+        }
+    }
+}
+
+impl<T> From<Bias<T>> for Option<Array1<T>>
+where
+    T: Float,
+{
+    fn from(bias: Bias<T>) -> Self {
+        match bias {
+            Bias::Biased(bias) => Some(bias),
+            Bias::Unbiased => None,
+        }
+    }
+}
+
+impl<D, T> ops::Add<Array<T, D>> for Bias<T>
+where
+    D: Dimension,
+    T: Float,
     Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -58,8 +93,10 @@ where
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<&Array<T, D>> for Bias<T>
+impl<D, T> ops::Add<&Array<T, D>> for Bias<T>
 where
+    D: Dimension,
+    T: Float,
     Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;

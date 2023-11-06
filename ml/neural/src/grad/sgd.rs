@@ -6,13 +6,15 @@
 //!
 //!
 use crate::layers::linear::LinearLayer;
-use crate::nn::loss::mse;
+use crate::loss::mse;
 use crate::prelude::Forward;
 use ndarray::prelude::{s, Array1, Array2};
-use num::Float;
+use ndarray::ScalarOperand;
+use num::{Float, FromPrimitive};
 use rand::seq::SliceRandom;
+use std::ops::DivAssign;
 
-fn sgd(
+pub fn sgd(
     x: &Array2<f64>,
     y: &Array1<f64>,
     model: &mut LinearLayer,
@@ -20,27 +22,22 @@ fn sgd(
     epochs: usize,
     batch_size: usize,
 ) -> Array1<f64> {
-    let n_samples = x.shape()[0];
-    let input_size = x.shape()[1];
+    let (samples, _inputs) = x.dim();
+    let mut indices: Vec<usize> = (0..samples).collect();
     let mut losses = Array1::<f64>::zeros(epochs);
 
     for epoch in 0..epochs {
-        let mut rng = rand::thread_rng();
-        let mut indices: Vec<usize> = (0..n_samples).collect();
-        indices.shuffle(&mut rng);
-
-        for batch_start in (0..n_samples).step_by(batch_size) {
-            let batch_end = (batch_start + batch_size).min(n_samples);
+        indices.shuffle(&mut rand::thread_rng());
+        for batch_start in (0..samples).step_by(batch_size) {
+            let batch_end = (batch_start + batch_size).min(samples);
             let mut gradient = Array2::zeros(x.dim());
 
             for i in batch_start..batch_end {
-                let sample_index = indices[i];
-                let input = x.slice(s![sample_index, ..]).to_owned();
+                let idx = indices[i];
+                let input = x.slice(s![idx, ..]).to_owned();
                 let prediction = model.forward(&input);
-                let error = prediction - y[sample_index];
-                gradient
-                    .slice_mut(s![sample_index, ..])
-                    .assign(&(input * error));
+                let error = prediction - y[idx];
+                gradient.slice_mut(s![idx, ..]).assign(&(input * error));
             }
 
             gradient /= batch_size as f64;
@@ -49,7 +46,7 @@ fn sgd(
         let loss = mse(&model.forward(x), y).unwrap();
         losses[epoch] = loss;
 
-        // println!("Epoch {}: Loss = {}", epoch, mse(&model.forward(x), y).unwrap());
+        println!("Epoch {}: Loss = {}", epoch, loss);
     }
     losses
 }
@@ -60,7 +57,7 @@ where
 {
     batch_size: usize,
     epochs: usize,
-    learning_rate: f64,
+    gamma: T, // learning rate
     model: LinearLayer<T>,
 }
 
@@ -68,44 +65,92 @@ impl<T> StochasticGradientDescent<T>
 where
     T: Float,
 {
-    pub fn new(
-        model: LinearLayer<T>,
-        learning_rate: f64,
-        epochs: usize,
-        batch_size: usize,
-    ) -> Self {
+    pub fn new(batch_size: usize, epochs: usize, gamma: T, model: LinearLayer<T>) -> Self {
         Self {
             batch_size,
             epochs,
-            learning_rate,
+            gamma,
             model,
         }
     }
 
-    pub fn train(&mut self, x: &Array2<T>, y: &Array1<T>) {}
+    pub fn batch_size(&self) -> usize {
+        self.batch_size
+    }
+
+    pub fn epochs(&self) -> usize {
+        self.epochs
+    }
+
+    pub fn gamma(&self) -> T {
+        self.gamma
+    }
 
     pub fn model(&self) -> &LinearLayer<T> {
         &self.model
     }
 }
 
+impl<T> StochasticGradientDescent<T>
+where
+    T: DivAssign + Float + FromPrimitive + ScalarOperand + std::fmt::Debug,
+{
+    pub fn sgd(&mut self, x: &Array2<T>, y: &Array1<T>) -> Array1<T>
+    where
+        T: std::ops::DivAssign,
+    {
+        let (samples, _inputs) = x.dim();
+        let mut indices: Vec<usize> = (0..samples).collect();
+        let mut losses = Array1::<T>::zeros(self.epochs);
+
+        for epoch in 0..self.epochs {
+            indices.shuffle(&mut rand::thread_rng());
+            for batch_start in (0..samples).step_by(self.batch_size) {
+                let batch_end = (batch_start + self.batch_size).min(samples);
+                let mut gradient = Array2::zeros(x.dim());
+
+                for i in batch_start..batch_end {
+                    let idx = indices[i];
+                    let input = x.slice(s![idx, ..]).to_owned();
+                    let prediction = self.model.forward(&input);
+                    let error = prediction - y[idx];
+                    gradient.slice_mut(s![idx, ..]).assign(&(input * error));
+                }
+
+                gradient /= T::from(self.batch_size).unwrap();
+                self.model.update_with_gradient(&gradient, self.gamma);
+
+                println!("Gadient:\n{:?}", &gradient);
+            }
+            let loss = mse(&self.model.forward(x), y).unwrap();
+            losses[epoch] = loss;
+
+            println!("Epoch {}: Loss = {:?}", epoch, loss);
+        }
+        losses
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::bias::Bias;
-    // use crate::weights::Weight;
-    use ndarray::Array;
+    use crate::GenerateRandom;
+    use ndarray::prelude::{Array, Array1};
 
     #[test]
     fn test_sgd() {
-        // Generate some example data
-        let x = Array::linspace(1., 200., 200).into_shape((100, 2)).unwrap();
-        let y = x.dot(&x) + &Bias::biased(100);
+        let (samples, inputs) = (100, 2);
+        let shape = (samples, inputs);
 
-        let mut model = LinearLayer::<f64>::new(200, 100);
-        let learning_rate = 0.01;
-        let epochs = 100;
-        let batch_size = 10;
+        let (batch_size, epochs, gamma) = (10, 2, 0.01);
+        // Generate some example data
+        let x = Array::linspace(1., 200., 200).into_shape(shape).unwrap();
+        let y = Array1::<f64>::uniform(0, 100);
+
+        let model = LinearLayer::<f64>::new(inputs, 3);
+
+        let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
+        sgd.sgd(&x, &y);
 
         // sgd(&x, &y, &mut model, learning_rate, epochs, batch_size);
     }

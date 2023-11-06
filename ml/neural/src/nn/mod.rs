@@ -5,8 +5,6 @@
 //! # Neural Network
 pub use self::{network::*, utils::*};
 
-pub mod loss;
-
 pub(crate) mod network;
 
 use crate::layers::Layer;

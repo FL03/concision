@@ -4,7 +4,7 @@
 */
 
 use crate::layers::linear::LinearLayer;
-use crate::nn::loss::mse;
+use crate::loss::mse;
 use crate::prelude::Forward;
 use ndarray::prelude::{s, Array1, Array2};
 

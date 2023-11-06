@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::layers::Features;
-use crate::prelude::{Bias, Forward};
+use crate::prelude::{Bias, Forward, GenerateRandom};
 use ndarray::prelude::{Array1, Array2};
 use ndarray::ScalarOperand;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -68,7 +68,7 @@ where
 {
     pub fn new(inputs: usize, outputs: usize) -> Self {
         let params = Features::new(inputs, outputs);
-        let weights = Array2::ones((inputs, outputs));
+        let weights = Array2::uniform(1, (outputs, inputs));
         let bias = Bias::biased(outputs);
         Self {
             bias,

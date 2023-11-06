@@ -1,14 +1,23 @@
 /*
-   Appellation: weights <mod>
+   Appellation: params <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Weights
-pub use self::{utils::*, weight::*};
+//! # Parameters
+//!
+//! ## Overview
+//!
+pub use self::{bias::*, utils::*, weight::*};
 
+pub(crate) mod bias;
 pub(crate) mod weight;
 
 use ndarray::prelude::Array2;
 use num::Float;
+
+pub trait Biased<T: Float = f64> {
+    fn bias(&self) -> &Bias<T>;
+    fn bias_mut(&mut self) -> &mut Bias<T>;
+}
 
 pub trait Weighted<T = f64>
 where

@@ -7,8 +7,7 @@ pub use self::{layer::*, utils::*};
 
 pub(crate) mod layer;
 
-use crate::bias::Biased;
-use crate::weights::Weighted;
+use crate::params::{Biased, Weighted};
 use ndarray::prelude::Array2;
 use num::Float;
 
