@@ -9,7 +9,7 @@ fn main() -> anyhow::Result<()> {
 
     let n = samples * inputs;
 
-    let (batch_size, epochs, gamma) = (10, 10, 0.01);
+    let (batch_size, epochs, gamma) = (20, 4, 0.01);
     // Generate some example data
     let base = Array::linspace(1., n as f64, n);
     let x = base.clone().into_shape(shape).unwrap();

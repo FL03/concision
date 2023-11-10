@@ -119,12 +119,15 @@ where
                     let prediction = self.model.forward(&input); // (1, outputs)
                     let error = &prediction - y[idx];
                     gradient += &(&input * &error.t()).t();
+                    
                 }
 
                 gradient /= T::from(self.batch_size).unwrap();
                 self.model.update_with_gradient(&gradient.t().to_owned(), self.gamma);
 
                 println!("Gradient:\n{:?}", &gradient);
+                // let loss = mse(&self.model.forward(x), y).unwrap();
+                // println!("Epoch: {:?}\nLoss:\n{:?}", &epoch, &loss);
                 losses[epoch] += gradient.mean().unwrap_or_default();
             }
             losses[epoch] /= T::from(self.batch_size).unwrap();

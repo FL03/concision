@@ -113,11 +113,11 @@ where
 
 impl<T> Forward<T> for LinearLayer<T>
 where
-    T: Float + ScalarOperand + Mul<T, Output = T>,
+    T: Float + ScalarOperand,
 {
     type Output = Array2<T>;
 
     fn forward(&self, data: &T) -> Self::Output {
-        self.weights().t().to_owned() * data.clone() + self.bias().clone()
+        &self.weights().t().to_owned() * data.clone() + self.bias().clone()
     }
 }
