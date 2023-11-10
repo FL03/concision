@@ -6,6 +6,7 @@ use super::{Features, LayerType};
 use crate::params::Bias;
 use crate::prop::Forward;
 
+use ndarray::ScalarOperand;
 use ndarray::prelude::Array2;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -76,7 +77,7 @@ where
     }
 }
 
-impl<T: Float + 'static> Forward<Array2<T>> for Layer<T> {
+impl<T> Forward<Array2<T>> for Layer<T> where T: Float + ScalarOperand + 'static {
     type Output = Array2<T>;
 
     fn forward(&self, data: &Array2<T>) -> Self::Output {

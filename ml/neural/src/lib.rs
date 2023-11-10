@@ -14,8 +14,6 @@ pub(crate) mod specs;
 pub(crate) mod utils;
 
 pub mod arch;
-pub mod cost;
-pub mod grad;
 pub mod layers;
 pub mod loss;
 pub mod masks;
@@ -26,16 +24,15 @@ pub mod ops;
 pub mod params;
 pub mod prop;
 
-// pub(crate) use concision_core as core;
+pub(crate) use concision_core as core;
 
 pub mod prelude {
     pub use crate::arch::*;
-    pub use crate::cost::*;
     pub use crate::layers::*;
     pub use crate::loss::*;
     pub use crate::masks::*;
     pub use crate::neurons::activate::*;
-    pub use crate::neurons::{Neuron, Node, Weight};
+    pub use crate::neurons::{Neuron, Node};
     pub use crate::nn::*;
     pub use crate::ops::*;
     pub use crate::params::*;

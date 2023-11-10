@@ -26,7 +26,7 @@
 //!
 use super::params::QKV;
 use super::Weights;
-use crate::neural::GenerateRandom;
+use crate::core::GenerateRandom;
 use crate::ops::Split;
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array2, Array3, Ix2};

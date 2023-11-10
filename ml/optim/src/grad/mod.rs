@@ -9,8 +9,12 @@ pub(crate) mod descent;
 
 pub mod sgd;
 
-pub trait Descent<T> {
-    fn descent(&self, params: &[f64], grads: &[f64]) -> Vec<f64>;
+use num::Float;
+
+pub trait Descent<T: Float = f64> {
+    type Params;
+
+    fn descent(&self, ) -> Vec<f64>;
 }
 
 pub trait LearningRate {
@@ -18,9 +22,24 @@ pub trait LearningRate {
 }
 
 pub trait Momentum {
-    fn mu(&self) -> f64;
+
+    fn mu(&self) -> f64; // Momentum Rate
 
     fn nestrov(&self) -> bool;
+
+    fn tau(&self) -> f64; // Momentum Damper
+}
+
+pub trait Nesterov {
+    fn nestrov(&self) -> bool;
+}
+
+pub trait Decay {
+    fn lambda(&self) -> f64; // Decay Rate
+}
+
+pub trait Dampener {
+    fn tau(&self) -> f64; // Momentum Damper
 }
 
 pub struct DescentParams {

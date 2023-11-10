@@ -10,7 +10,6 @@ pub(crate) mod node;
 
 pub mod activate;
 
-pub trait Weight {}
 
 pub(crate) mod utils {}
 

@@ -2,24 +2,28 @@
    Appellation: layer <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::core::prelude::GenerateRandom;
 use crate::layers::Features;
-use crate::prelude::{Bias, Forward, GenerateRandom};
-use ndarray::prelude::{Array1, Array2};
-use ndarray::ScalarOperand;
+use crate::prelude::{Bias, Forward};
+
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Array2};
+use ndarray::{Dimension, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
+use std::ops::{Add, Mul};
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct LinearLayer<T: Float = f64> {
     bias: Bias<T>,
-    pub params: Features,
+    pub features: Features,
     weights: Array2<T>,
 }
 
 impl<T> LinearLayer<T>
 where
-    T: Float,
+    T: Float + ScalarOperand,
 {
     pub fn bias(&self) -> &Bias<T> {
         &self.bias
@@ -29,12 +33,19 @@ where
         &mut self.bias
     }
 
-    pub fn params(&self) -> &Features {
-        &self.params
+    pub fn features(&self) -> &Features {
+        &self.features
     }
 
-    pub fn params_mut(&mut self) -> &mut Features {
-        &mut self.params
+    pub fn features_mut(&mut self) -> &mut Features {
+        &mut self.features
+    }
+
+    pub fn fit(&mut self, data: &Array2<T>) -> Array2<T>
+    where
+        T: 'static,
+    {
+        self.linear(data)
     }
 
     pub fn linear(&self, data: &Array2<T>) -> Array2<T>
@@ -57,7 +68,7 @@ where
     }
 
     pub fn with_params(mut self, params: Features) -> Self {
-        self.params = params;
+        self.features = params;
         self
     }
 }
@@ -67,12 +78,12 @@ where
     T: Float + SampleUniform,
 {
     pub fn new(inputs: usize, outputs: usize) -> Self {
-        let params = Features::new(inputs, outputs);
+        let features = Features::new(inputs, outputs);
         let weights = Array2::uniform(1, (outputs, inputs));
         let bias = Bias::biased(outputs);
         Self {
             bias,
-            params,
+            features,
             weights,
         }
     }
@@ -87,24 +98,26 @@ where
     }
 }
 
-impl<T> Forward<Array1<T>> for LinearLayer<T>
+impl<T, D> Forward<Array<T, D>> for LinearLayer<T>
 where
+    D: Dimension,
     T: Float + ScalarOperand,
+    Array<T, D>: Add<Bias<T>, Output = Array<T, D>> + Dot<Array2<T>, Output = Array<T, D>>,
 {
-    type Output = Array1<T>;
+    type Output = Array<T, D>;
 
-    fn forward(&self, data: &Array1<T>) -> Self::Output {
-        data.dot(&self.weights().t()) + self.bias()
+    fn forward(&self, data: &Array<T, D>) -> Self::Output {
+        data.dot(&self.weights().t().to_owned()) + self.bias().clone()
     }
 }
 
-impl<T> Forward<Array2<T>> for LinearLayer<T>
+impl<T> Forward<T> for LinearLayer<T>
 where
-    T: Float + ScalarOperand,
+    T: Float + ScalarOperand + Mul<T, Output = T>,
 {
     type Output = Array2<T>;
 
-    fn forward(&self, data: &Array2<T>) -> Self::Output {
-        data.dot(&self.weights().t()) + self.bias()
+    fn forward(&self, data: &T) -> Self::Output {
+        self.weights().t().to_owned() * data.clone() + self.bias().clone()
     }
 }

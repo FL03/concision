@@ -9,7 +9,7 @@ use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Uniform};
 use ndarray_rand::RandomExt;
 use num::Float;
 
-pub trait GenerateRandom<T = f64>
+pub trait InitRandom<T = f64>
 where
     T: Float + SampleUniform,
 {
@@ -25,12 +25,12 @@ where
 
     fn uniform(axis: usize, dim: impl IntoDimension<Dim = Self::Dim>) -> Array<T, Self::Dim> {
         let dim = dim.into_dimension();
-        let k = (T::from(dim[axis]).unwrap()).sqrt();
+        let k = (T::one() / T::from(dim[axis]).unwrap()).sqrt();
         Array::random(dim, Uniform::new(-k, k))
     }
 }
 
-impl<T, D> GenerateRandom<T> for Array<T, D>
+impl<T, D> InitRandom<T> for Array<T, D>
 where
     T: Float + SampleUniform,
     D: Dimension,

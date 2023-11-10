@@ -3,10 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-use crate::layers::linear::LinearLayer;
-use crate::loss::mse;
-use crate::prelude::Forward;
-use ndarray::prelude::{s, Array1, Array2};
+use crate::neural::layers::linear::LinearLayer;
+use crate::neural::prelude::Forward;
+use ndarray::prelude::{Array1, Array2};
 
 fn gradient_descent(
     x: &Array2<f64>,

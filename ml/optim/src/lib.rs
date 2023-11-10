@@ -12,6 +12,10 @@ pub(crate) mod utils;
 pub(crate) use concision_core as core;
 pub(crate) use concision_neural as neural;
 
+pub mod cost;
+pub mod grad;
+pub mod optimizer;
+
 pub mod prelude {
 
     pub use crate::primitives::*;

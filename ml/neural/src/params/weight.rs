@@ -29,7 +29,8 @@ where
     T: Float + SampleUniform,
 {
     pub fn uniform(m: usize, n: usize) -> Array2<T> {
-        let dk = (T::from(m).unwrap()).sqrt();
+        let k = T::one() / T::from(m).unwrap();
+        let dk = k.sqrt();
         let dist = Uniform::new(-dk, dk);
         Array2::random((m, n), dist)
     }

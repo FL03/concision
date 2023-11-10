@@ -8,6 +8,7 @@ pub use self::{layer::*, utils::*};
 pub(crate) mod layer;
 
 use crate::params::{Biased, Weighted};
+use ndarray::ScalarOperand;
 use ndarray::prelude::Array2;
 use num::Float;
 
@@ -21,7 +22,7 @@ where
 impl<S, T> LinearTransformation<T> for S
 where
     S: Biased<T> + Weighted<T>,
-    T: Float + 'static,
+    T: Float + ScalarOperand + 'static,
 {
     fn linear(&self, data: &Array2<T>) -> Array2<T> {
         data.dot(&self.weights().t()) + self.bias()

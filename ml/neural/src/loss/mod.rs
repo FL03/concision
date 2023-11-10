@@ -14,9 +14,35 @@ pub(crate) mod kinds;
 
 pub mod regress;
 
-pub trait Loss {
-    fn loss(&self, pred: &[f64], target: &[f64]) -> f64;
+use ndarray::{Dimension, ScalarOperand};
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Array1};
+use num::{Float, FromPrimitive};
+use std::ops;
+
+pub trait Loss<T: Float = f64> {
+
+    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T;
 }
+
+pub struct MSE;
+
+impl MSE {
+    pub fn partial_slope<T, D>(data: &Array<T, D>, bias: &Array1<T>, slope: &Array<T, D>, target: &Array1<T>) -> Option<T>
+    where
+        D: Dimension,
+        T: Float + FromPrimitive + ScalarOperand,
+        Array<T, D>: Dot<Array<T, D>>,
+        <Array<T, D> as Dot<Array<T, D>>>::Output: ops::Add<Array1<T>, Output = Array<T, D>> + ops::Sub<Array1<T>, Output = Array<T, D>> + ops::Mul<T, Output = Array<T, D>>,
+        Array1<T>: ops::Sub<Array<T, D>, Output = Array<T, D>>,
+    {
+        let predicted = data.dot(&slope.t().to_owned()) + bias.clone();
+        let inner = data.dot(&(target.clone() - predicted)) * (- T::from(2).unwrap());
+        inner.mean()
+    }
+}
+
+
 
 pub(crate) mod utils {
     use ndarray::prelude::{Array, Array1};
@@ -41,4 +67,6 @@ pub(crate) mod utils {
     {
         (target.clone() - pred.clone()).mapv(|x| x.powi(2)).mean()
     }
+
+    
 }

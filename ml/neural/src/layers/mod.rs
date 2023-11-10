@@ -17,6 +17,13 @@ use ndarray::prelude::{Array1, Array2};
 use num::Float;
 
 pub trait L<T: Float> {
+    fn forward_slice(&self, args: &Array2<T>, rho: impl Activate<T>) -> Array2<T>
+    where
+        T: 'static,
+    {
+        let z = args.dot(self.weights()) + self.bias();
+        z.mapv(|x| rho.activate(x))
+    }
     //
     fn process(&self, args: &Array2<T>, rho: impl Activate<T>) -> Array2<T>
     where

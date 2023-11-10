@@ -3,6 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Loss;
+use ndarray::{Dimension, ScalarOperand};
+use ndarray::prelude::{Array, Array1};
+use num::Float;
+use std::ops;
 
 pub enum RegressiveLoss {
     Huber(HuberLoss),
@@ -11,63 +15,65 @@ pub enum RegressiveLoss {
     Other(String),
 }
 
-pub struct HuberLoss {
-    delta: f64,
+pub struct HuberLoss<T: Float = f64> {
+    delta: T,
 }
 
-impl HuberLoss {
-    pub fn new(delta: f64) -> Self {
+impl<T> HuberLoss<T> where T: Float {
+    pub fn new(delta: T) -> Self {
         Self { delta }
     }
 
-    pub fn delta(&self) -> f64 {
+    pub fn delta(&self) -> T {
         self.delta
     }
 
-    pub fn set_delta(&mut self, delta: f64) {
+    pub fn set_delta(&mut self, delta: T) {
         self.delta = delta;
     }
 }
 
-impl Loss for HuberLoss {
-    fn loss(&self, pred: &[f64], target: &[f64]) -> f64 {
-        let mut loss = 0.0;
-        for (x, y) in pred.iter().zip(target.iter()) {
+impl<T> Loss<T> for HuberLoss<T> where T: Float + ops::AddAssign {
+
+    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
+        let half = T::from(0.5).unwrap();
+        let mut loss = T::zero();
+        for (x, y) in pred.iter().cloned().zip(target.iter().cloned()) {
             let diff = x - y;
-            if diff.abs() <= self.delta {
+            if diff.abs() <= self.delta() {
                 // If the difference is sufficiently small, use the squared error.
-                loss += 0.5 * diff.powi(2);
+                loss += half * diff.powi(2);
             } else {
                 // Otherwise, use a variant of the absolute error.
-                loss += self.delta * (diff.abs() - 0.5 * self.delta);
+                loss += self.delta * (diff.abs() - half * self.delta);
             }
         }
-        loss / pred.len() as f64
+        loss / T::from(pred.len()).unwrap()
     }
 }
 
 pub struct MeanAbsoluteError;
 
-impl Loss for MeanAbsoluteError {
-    fn loss(&self, pred: &[f64], target: &[f64]) -> f64 {
-        let mut res = 0.0;
-        for (p, t) in pred.iter().zip(target.iter()) {
+impl<T> Loss<T> for MeanAbsoluteError where T: Float + ops::AddAssign + ops::DivAssign {
+    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
+        let mut res = T::zero();
+        for (p, t) in pred.iter().cloned().zip(target.iter().cloned()) {
             res += (p - t).abs();
         }
-        res /= pred.len() as f64;
+        res /= T::from(pred.len()).unwrap();
         res
     }
 }
 
 pub struct MeanSquaredError;
 
-impl Loss for MeanSquaredError {
-    fn loss(&self, pred: &[f64], target: &[f64]) -> f64 {
-        let mut res = 0.0;
-        for (p, t) in pred.iter().zip(target.iter()) {
+impl<T> Loss<T> for MeanSquaredError where T: Float + ops::AddAssign + ops::DivAssign {
+    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
+        let mut res = T::zero();
+        for (p, t) in pred.iter().cloned().zip(target.iter().cloned()) {
             res += (p - t).powi(2);
         }
-        res /= pred.len() as f64;
+        res /= T::from(pred.len()).unwrap();
         res
     }
 }

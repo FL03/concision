@@ -25,4 +25,10 @@ pub trait Forward<T> {
     fn forward(&self, args: &T) -> Self::Output;
 }
 
+pub trait ForwardIter<T> {
+    type Output;
+
+    fn forward_iter(&self, args: &T) -> Self::Output;
+}
+
 pub(crate) mod utils {}

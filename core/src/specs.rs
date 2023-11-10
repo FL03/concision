@@ -3,7 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::Array;
-use ndarray::{Dimension, ShapeError};
+use ndarray::{Dimension, IntoDimension, ShapeError};
+use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Uniform};
+use ndarray_rand::RandomExt;
+use num::Float;
 use num::{Num, One, Zero};
 use std::ops::MulAssign;
 
@@ -93,6 +97,51 @@ where
 //         self.raw_dim()
 //     }
 // }
+
+
+
+pub trait GenerateRandom<T = f64>
+where
+    T: Float + SampleUniform,
+{
+    type Dim: Dimension;
+
+    fn bernoulli(
+        dim: impl IntoDimension<Dim = Self::Dim>,
+        p: Option<f64>,
+    ) -> Result<Array<bool, Self::Dim>, BernoulliError> {
+        let dist = Bernoulli::new(p.unwrap_or(0.5))?;
+        Ok(Array::random(dim.into_dimension(), dist))
+    }
+
+    fn uniform(axis: usize, dim: impl IntoDimension<Dim = Self::Dim>) -> Array<T, Self::Dim> {
+        let dim = dim.into_dimension();
+        let k = (T::one() / T::from(dim[axis]).unwrap()).sqrt();
+        Array::random(dim, Uniform::new(-k, k))
+    }
+}
+
+impl<T, D> GenerateRandom<T> for Array<T, D>
+where
+    T: Float + SampleUniform,
+    D: Dimension,
+{
+    type Dim = D;
+
+    fn bernoulli(
+        dim: impl IntoDimension<Dim = Self::Dim>,
+        p: Option<f64>,
+    ) -> Result<Array<bool, Self::Dim>, BernoulliError> {
+        let dist = Bernoulli::new(p.unwrap_or(0.5))?;
+        Ok(Array::random(dim.into_dimension(), dist))
+    }
+
+    fn uniform(axis: usize, dim: impl IntoDimension<Dim = Self::Dim>) -> Array<T, Self::Dim> {
+        let dim = dim.into_dimension();
+        let k = (T::from(dim[axis]).unwrap()).sqrt();
+        Array::random(dim, Uniform::new(-k, k))
+    }
+}
 
 #[cfg(test)]
 mod tests {

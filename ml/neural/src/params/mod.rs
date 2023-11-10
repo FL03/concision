@@ -14,6 +14,10 @@ pub(crate) mod weight;
 use ndarray::prelude::Array2;
 use num::Float;
 
+pub trait Parameter {
+    
+}
+
 pub trait Biased<T: Float = f64> {
     fn bias(&self) -> &Bias<T>;
     fn bias_mut(&mut self) -> &mut Bias<T>;
