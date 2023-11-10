@@ -115,17 +115,16 @@ where
 
                 for i in batch_start..batch_end {
                     let idx = indices[i];
-                    let input = x.slice(s![idx, ..]).to_owned(); // (1, inputs)
+                    let input = x.slice(s![idx, ..]).to_shape((1, inputs)).expect("").to_owned(); // (1, inputs)
                     let prediction = self.model.forward(&input); // (1, outputs)
-                    println!("Predicted Shape:\n{:?}", &prediction.shape());
                     let error = &prediction - y[idx];
-                    gradient += input.dot(&error);
+                    gradient += &(&input * &error.t()).t();
                 }
 
                 gradient /= T::from(self.batch_size).unwrap();
-                self.model.update_with_gradient(&gradient, self.gamma);
+                self.model.update_with_gradient(&gradient.t().to_owned(), self.gamma);
 
-                println!("Gadient:\n{:?}", &gradient);
+                println!("Gradient:\n{:?}", &gradient);
                 losses[epoch] += gradient.mean().unwrap_or_default();
             }
             losses[epoch] /= T::from(self.batch_size).unwrap();
