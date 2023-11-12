@@ -24,6 +24,8 @@ pub trait Loss<T: Float = f64> {
     fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T;
 }
 
+// pub type LinearWeightGradient<T = f64> = fn()
+
 pub struct MSE;
 
 impl MSE {

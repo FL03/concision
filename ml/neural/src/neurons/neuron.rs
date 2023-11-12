@@ -8,17 +8,13 @@ use ndarray::prelude::Array1;
 /// Artificial Neuron
 #[derive(Clone, Debug, PartialEq)]
 pub struct Neuron {
-    activation: ActivationFn<Array1<f64>>,
-    bias: Array1<f64>,
+    activation: ActivationFn<f64>,
+    bias: f64,
     weights: Array1<f64>,
 }
 
 impl Neuron {
-    pub fn new(
-        activation: ActivationFn<Array1<f64>>,
-        bias: Array1<f64>,
-        weights: Array1<f64>,
-    ) -> Self {
+    pub fn new(activation: ActivationFn<f64>, bias: f64, weights: Array1<f64>) -> Self {
         Self {
             activation,
             bias,
@@ -26,15 +22,15 @@ impl Neuron {
         }
     }
 
-    pub fn bias(&self) -> &Array1<f64> {
+    pub fn bias(&self) -> &f64 {
         &self.bias
     }
 
-    pub fn compute(&self, args: &Array1<f64>) -> Array1<f64> {
-        self.rho()(args.dot(&self.weights) - self.bias())
+    pub fn process(&self, args: &Array1<f64>) -> f64 {
+        self.rho()(args.dot(&self.weights.t()) + self.bias())
     }
 
-    pub fn rho(&self) -> ActivationFn<Array1<f64>> {
+    pub fn rho(&self) -> ActivationFn<f64> {
         self.activation
     }
 
@@ -42,7 +38,7 @@ impl Neuron {
         &self.weights
     }
 
-    pub fn set_bias(&mut self, bias: Array1<f64>) {
+    pub fn set_bias(&mut self, bias: f64) {
         self.bias = bias;
     }
 

@@ -7,7 +7,7 @@ use crate::layers::Features;
 use crate::prelude::{Bias, Forward};
 
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array2};
+use ndarray::prelude::{Array, Array1, Array2};
 use ndarray::{Dimension, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -25,11 +25,11 @@ impl<T> LinearLayer<T>
 where
     T: Float,
 {
-    pub fn new(bias: Bias<T>, features: Features, weights: Array2<T>) -> Self {
+    pub fn new(features: Features) -> Self {
         Self {
-            bias,
+            bias: Array1::zeros(features.outputs()).into(),
             features,
-            weights,
+            weights: Array2::zeros(features.out_by_in()),
         }
     }
 
@@ -83,10 +83,18 @@ impl<T> LinearLayer<T>
 where
     T: Float + SampleUniform,
 {
-    pub fn init(mut self) -> Self {
+    pub fn init_bias(mut self) -> Self {
         let (inputs, outputs) = self.features().in_by_out();
-        self.bias = Bias::biased(outputs);
-        self.weights = Array2::uniform(1, (outputs, inputs));
+        let dk = (T::one() / T::from(inputs).unwrap()).sqrt();
+        self.bias = ndarray::Array1::uniform_between(dk, outputs).into();
+        self
+    }
+
+    pub fn init_weight(mut self) -> Self {
+        let (inputs, outputs) = self.features().in_by_out();
+        let dk = (T::one() / T::from(inputs).unwrap()).sqrt();
+        self.bias = ndarray::Array1::uniform_between(dk, outputs).into();
+        self.weights = Array2::uniform_between(dk, (outputs, inputs));
         self
     }
 
@@ -120,18 +128,29 @@ where
         data.dot(&self.weights.t()) + &self.bias
     }
 
+    pub fn update_params_gradient(&mut self, bias: &Array1<T>, weights: &Array2<T>, lr: T) {
+        // self.bias = self.bias() + bias * lr;
+        self.weights = self.weights() - weights * lr;
+    }
+
     pub fn update_with_gradient(&mut self, gradient: &Array2<T>, lr: T) {
-        self.weights = self.weights() + gradient * lr;
+        self.weights = &self.weights - gradient * lr;
+    }
+
+    pub fn apply_gradient(&mut self, gradient: &Array1<T>, lr: T) {
+        self.weights = &self.weights - gradient * lr;
     }
 }
 
-impl<T, D> Forward<Array<T, D>> for LinearLayer<T>
+impl<S, T, D> Forward<Array<T, D>> for LinearLayer<T>
 where
     D: Dimension,
+    S: Dimension,
     T: Float + ScalarOperand,
-    Array<T, D>: Add<Bias<T>, Output = Array<T, D>> + Dot<Array2<T>, Output = Array<T, D>>,
+    Array<T, D>: Add<Bias<T>, Output = Array<T, S>> + Dot<Array2<T>, Output = Array<T, S>>,
+    Array<T, S>: Add<Bias<T>, Output = Array<T, S>>,
 {
-    type Output = Array<T, D>;
+    type Output = Array<T, S>;
 
     fn forward(&self, data: &Array<T, D>) -> Self::Output {
         data.dot(&self.weights().t().to_owned()) + self.bias().clone()

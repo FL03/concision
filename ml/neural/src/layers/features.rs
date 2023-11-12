@@ -18,6 +18,10 @@ impl Features {
         Self { inputs, outputs }
     }
 
+    pub fn uniform_scale<T: num::Float>(&self) -> T {
+        (T::one() / T::from(self.inputs).unwrap()).sqrt()
+    }
+
     pub fn inputs(&self) -> usize {
         self.inputs
     }

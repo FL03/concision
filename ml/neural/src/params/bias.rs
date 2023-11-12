@@ -121,6 +121,23 @@ where
     }
 }
 
+impl<T, D> ops::Add<Array<T, D>> for &Bias<T>
+where
+    D: Dimension,
+    T: Float + ScalarOperand,
+    Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
+{
+    type Output = Array<T, D>;
+
+    fn add(self, rhs: Array<T, D>) -> Self::Output {
+        match self.clone() {
+            Bias::Biased(bias) => rhs + bias,
+            Bias::Unbiased => rhs,
+            Bias::Value(value) => &rhs + value,
+        }
+    }
+}
+
 impl<T, D> ops::Add<&Array<T, D>> for Bias<T>
 where
     D: Dimension,

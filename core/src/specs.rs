@@ -121,6 +121,10 @@ where
         let k = (T::one() / T::from(dim[axis]).unwrap()).sqrt();
         Array::random(dim, Uniform::new(-k, k))
     }
+
+    fn uniform_between(dk: T, dim: impl IntoDimension<Dim = Self::Dim>) -> Array<T, Self::Dim> {
+        Array::random(dim, Uniform::new(-dk, dk))
+    }
 }
 
 impl<T, D> GenerateRandom<T> for Array<T, D>

@@ -33,8 +33,8 @@ impl Node {
         &self.neuron
     }
 
-    pub fn process(&self) -> Array1<f64> {
-        self.neuron.compute(&self.data)
+    pub fn process(&self) -> f64 {
+        self.neuron.process(&self.data)
     }
 
     pub fn set_data(&mut self, data: Array1<f64>) {
