@@ -19,7 +19,7 @@ pub struct FFN {
 impl FFN {
     pub fn new(model: usize, network: Option<usize>) -> Self {
         let params = FFNParams::new(model, network.unwrap_or(crate::NETWORK_SIZE));
-        let layer = LinearLayer::new(params.model, params.network);
+        let layer = LinearLayer::new_biased(params.model, params.network);
         Self {
             input: layer.clone(),
             output: layer,

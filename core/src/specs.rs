@@ -7,11 +7,16 @@ use ndarray::{Dimension, IntoDimension, ShapeError};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Uniform};
 use ndarray_rand::RandomExt;
-use num::Float;
-use num::{Num, One, Zero};
-use std::ops::MulAssign;
+use num::traits::NumOps;
+use num::{Float, Num, One, Zero};
+use std::ops;
 
 pub trait BinaryNum: One + Zero {}
+
+pub trait NumOpsAssign:
+    Num + NumOps + Sized + ops::AddAssign + ops::DivAssign + ops::MulAssign + ops::SubAssign
+{
+}
 
 pub trait Pair<A, B> {
     fn pair(&self) -> (A, B);
@@ -26,20 +31,19 @@ where
     }
 }
 
-pub trait Product {
-    type Item: Num;
-
-    fn product(&self) -> Self::Item;
+pub trait Product<T = f64>
+where
+    T: Num,
+{
+    fn product(&self) -> T;
 }
 
-impl<I, T> Product for I
+impl<I, T> Product<T> for I
 where
     I: Clone + IntoIterator<Item = T>,
-    T: One + Num + MulAssign<T>,
+    T: One + Num + ops::MulAssign<T>,
 {
-    type Item = T;
-
-    fn product(&self) -> Self::Item {
+    fn product(&self) -> T {
         let mut res = T::one();
         for i in self.clone().into_iter() {
             res *= i;
@@ -97,8 +101,6 @@ where
 //         self.raw_dim()
 //     }
 // }
-
-
 
 pub trait GenerateRandom<T = f64>
 where

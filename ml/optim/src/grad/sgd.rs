@@ -8,7 +8,7 @@
 use crate::neural::layers::linear::LinearLayer;
 use crate::neural::prelude::{mse, Forward};
 // use crate::prelude::ObjectiveFn;
-use ndarray::prelude::{s, Array1, Array2};
+use ndarray::prelude::{s, Array1, Array2, Axis};
 use ndarray::ScalarOperand;
 use num::{Float, FromPrimitive};
 use rand::seq::SliceRandom;
@@ -18,43 +18,75 @@ pub fn sgd(
     x: &Array2<f64>,
     y: &Array1<f64>,
     model: &mut LinearLayer,
-    learning_rate: f64,
     epochs: usize,
+    learning_rate: f64,
     batch_size: usize,
-) -> Array1<f64> {
+) -> anyhow::Result<Array1<f64>> {
+    let layer = model.clone();
+    let features = layer.features();
     let (samples, _inputs) = x.dim();
     let mut indices: Vec<usize> = (0..samples).collect();
     let mut losses = Array1::<f64>::zeros(epochs);
 
     for epoch in 0..epochs {
         indices.shuffle(&mut rand::thread_rng());
-        for batch_start in (0..samples).step_by(batch_size) {
-            let batch_end = (batch_start + batch_size).min(samples);
-            let mut gradient = Array2::zeros(x.dim());
+        let pos = &indices[..batch_size];
 
-            for i in batch_start..batch_end {
+        let xs = x.select(Axis(0), pos);
+        let ys = y.select(Axis(0), pos);
+
+        let pred = model.forward(&xs);
+        let error = &pred - &ys;
+        let grad_w = xs.dot(&error.t()).sum() * (-2.0 / batch_size as f64);
+        let grad_b = error.sum() * (-2.0 / batch_size as f64);
+
+        for batch in (0..samples).step_by(batch_size) {
+            let mut gradient = Array2::zeros((features.outputs(), features.inputs()));
+
+            for i in batch..(batch + batch_size).min(samples) {
                 let idx = indices[i];
-                let input = x.slice(s![idx, ..]).to_owned();
-                let prediction = model.forward(&input);
-                let error = prediction - y[idx];
-                gradient.slice_mut(s![idx, ..]).assign(&(input * error));
-            }
 
+                let input = x
+                    .slice(s![idx, ..])
+                    .to_shape((1, features.inputs()))?
+                    .to_owned(); // (1, inputs)
+                let prediction = model.forward(&input); // (1, outputs)
+
+                let inner = y[idx] - &prediction;
+                let partial_w = -2.0 * input.dot(&inner).mean().unwrap();
+                let partial_b = -2.0 * inner.mean().unwrap();
+                // let mut weights = model.weights_mut().slice_mut(s![])
+                // model.set_weights(weights)
+
+                let cost = mse(&prediction, y).unwrap();
+                losses[epoch] += cost;
+                // let error = &prediction - y[idx];
+                println!("Cost:\t{:?}", &cost);
+                gradient += &(input * cost);
+            }
             gradient /= batch_size as f64;
             model.update_with_gradient(&gradient, learning_rate);
-        }
-        let loss = mse(&model.forward(x), y).unwrap();
-        losses[epoch] = loss;
 
-        println!("Epoch {}: Loss = {}", epoch, loss);
+            println!("Gradient:\n{:?}", &gradient);
+        }
+        losses /= batch_size as f64;
     }
-    losses
+
+    Ok(losses)
 }
 
-pub trait Objective<T> {
-    type Model;
+pub struct Sgd {
+    batch_size: usize,
+    gamma: f64, // learning rate
+    model: LinearLayer,
+}
 
-    fn objective(&self, x: &Array2<T>, y: &Array1<T>) -> Array1<T>;
+impl Iterator for Sgd {
+    type Item = Array1<f64>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        None
+    }
 }
 
 pub struct StochasticGradientDescent<T = f64>
@@ -99,7 +131,13 @@ where
 
 impl<T> StochasticGradientDescent<T>
 where
-    T: Default + Float + FromPrimitive + ScalarOperand + std::fmt::Debug + ops::AddAssign + ops::DivAssign,
+    T: Default
+        + Float
+        + FromPrimitive
+        + ScalarOperand
+        + std::fmt::Debug
+        + ops::AddAssign
+        + ops::DivAssign,
 {
     pub fn sgd(&mut self, x: &Array2<T>, y: &Array1<T>) -> Array1<T> {
         let (samples, inputs) = x.dim();
@@ -115,15 +153,19 @@ where
 
                 for i in batch_start..batch_end {
                     let idx = indices[i];
-                    let input = x.slice(s![idx, ..]).to_shape((1, inputs)).expect("").to_owned(); // (1, inputs)
+                    let input = x
+                        .slice(s![idx, ..])
+                        .to_shape((1, inputs))
+                        .expect("")
+                        .to_owned(); // (1, inputs)
                     let prediction = self.model.forward(&input); // (1, outputs)
                     let error = &prediction - y[idx];
                     gradient += &(&input * &error.t()).t();
-                    
                 }
 
                 gradient /= T::from(self.batch_size).unwrap();
-                self.model.update_with_gradient(&gradient.t().to_owned(), self.gamma);
+                self.model
+                    .update_with_gradient(&gradient.t().to_owned(), self.gamma);
 
                 println!("Gradient:\n{:?}", &gradient);
                 // let loss = mse(&self.model.forward(x), y).unwrap();
@@ -152,10 +194,28 @@ mod tests {
         let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
         let y = Array1::<f64>::uniform(0, 100);
 
-        let model = LinearLayer::<f64>::new(inputs, 5);
+        let model = LinearLayer::<f64>::new_biased(inputs, 5);
 
         let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
         sgd.sgd(&x, &y);
+
+        // sgd(&x, &y, &mut model, learning_rate, epochs, batch_size);
+    }
+
+    #[test]
+    fn test_stochastic() {
+        let (samples, inputs) = (20, 5);
+        let shape = (samples, inputs);
+
+        let (batch_size, epochs, gamma) = (10, 1, 0.01);
+        // Generate some example data
+        let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
+        let y = Array1::<f64>::uniform(0, 100);
+
+        let mut model = LinearLayer::<f64>::new_biased(inputs, 5);
+
+        let grad = sgd(&x, &y, &mut model, epochs, gamma, batch_size);
+        assert!(grad.is_ok());
 
         // sgd(&x, &y, &mut model, learning_rate, epochs, batch_size);
     }

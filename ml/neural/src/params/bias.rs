@@ -2,21 +2,19 @@
     Appellation: bias <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::generate_uniform_arr;
 use ndarray::prelude::{Array, Array1};
 use ndarray::{Dimension, ScalarOperand};
-use ndarray_rand::rand_distr::{uniform::SampleUniform, Uniform};
-use ndarray_rand::RandomExt;
+use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use std::ops;
 use strum::EnumIs;
 
-fn _generate_bias<T: Float + SampleUniform>(size: usize) -> Array1<T> {
-    let k = T::one() / T::from(size).unwrap();
-    let dk = k.sqrt();
-    let dist = Uniform::new(-dk, dk);
-    Array1::<T>::random(size, dist)
+pub struct Belief<T: Float = f64> {
+    pub bias: Bias<T>,
+    pub features: usize,
 }
 
 #[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]
@@ -27,7 +25,23 @@ pub enum Bias<T: Float = f64> {
     Value(T),
 }
 
-impl<T> Bias<T> where T: Float + ScalarOperand {
+impl<T> Bias<T>
+where
+    T: Float,
+{
+    pub fn update_at(&mut self, index: usize, value: T) {
+        match self {
+            Self::Biased(bias) => bias[index] = value,
+            Self::Unbiased => (),
+            Self::Value(bias) => *bias = value,
+        }
+    }
+}
+
+impl<T> Bias<T>
+where
+    T: Float + ScalarOperand,
+{
     pub fn forward(&self, data: &Array1<T>) -> Array1<T> {
         match self {
             Self::Biased(bias) => data + bias,
@@ -42,12 +56,15 @@ where
     T: Float + SampleUniform,
 {
     pub fn biased(size: usize) -> Self {
-        let bias = _generate_bias(size);
+        let bias = generate_uniform_arr(0, size);
         Self::Biased(bias)
     }
 }
 
-impl<T> From<T> for Bias<T> where T: Float {
+impl<T> From<T> for Bias<T>
+where
+    T: Float,
+{
     fn from(value: T) -> Self {
         Self::Value(value)
     }
@@ -154,7 +171,6 @@ where
         }
     }
 }
-
 
 impl<T, D> ops::Sub<Array<T, D>> for Bias<T>
 where

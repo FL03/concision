@@ -45,7 +45,7 @@ where
         let params = MultiHeadParams::new(heads, model);
         let weights = Weight::uniform((model, model));
         Self {
-            linear: LinearLayer::new(model, model),
+            linear: LinearLayer::new_biased(model, model),
             params,
             weights,
         }

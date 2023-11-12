@@ -1,4 +1,3 @@
-
 use concision_neural::layers::linear::LinearLayer;
 use concision_optim::grad::sgd::StochasticGradientDescent;
 use ndarray::prelude::Array;
@@ -15,7 +14,7 @@ fn main() -> anyhow::Result<()> {
     let x = base.clone().into_shape(shape).unwrap();
     let y = base.clone().into_shape(n).unwrap() + 1.0;
 
-    let model = LinearLayer::<f64>::new(inputs, 8);
+    let model = LinearLayer::<f64>::new_biased(inputs, 8);
 
     let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
     let losses = sgd.sgd(&x, &y);

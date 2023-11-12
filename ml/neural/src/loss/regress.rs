@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Loss;
-use ndarray::{Dimension, ScalarOperand};
 use ndarray::prelude::{Array, Array1};
+use ndarray::{Dimension, ScalarOperand};
 use num::Float;
 use std::ops;
 
@@ -19,7 +19,10 @@ pub struct HuberLoss<T: Float = f64> {
     delta: T,
 }
 
-impl<T> HuberLoss<T> where T: Float {
+impl<T> HuberLoss<T>
+where
+    T: Float,
+{
     pub fn new(delta: T) -> Self {
         Self { delta }
     }
@@ -33,8 +36,10 @@ impl<T> HuberLoss<T> where T: Float {
     }
 }
 
-impl<T> Loss<T> for HuberLoss<T> where T: Float + ops::AddAssign {
-
+impl<T> Loss<T> for HuberLoss<T>
+where
+    T: Float + ops::AddAssign,
+{
     fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
         let half = T::from(0.5).unwrap();
         let mut loss = T::zero();
@@ -54,7 +59,10 @@ impl<T> Loss<T> for HuberLoss<T> where T: Float + ops::AddAssign {
 
 pub struct MeanAbsoluteError;
 
-impl<T> Loss<T> for MeanAbsoluteError where T: Float + ops::AddAssign + ops::DivAssign {
+impl<T> Loss<T> for MeanAbsoluteError
+where
+    T: Float + ops::AddAssign + ops::DivAssign,
+{
     fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
         let mut res = T::zero();
         for (p, t) in pred.iter().cloned().zip(target.iter().cloned()) {
@@ -67,7 +75,10 @@ impl<T> Loss<T> for MeanAbsoluteError where T: Float + ops::AddAssign + ops::Div
 
 pub struct MeanSquaredError;
 
-impl<T> Loss<T> for MeanSquaredError where T: Float + ops::AddAssign + ops::DivAssign {
+impl<T> Loss<T> for MeanSquaredError
+where
+    T: Float + ops::AddAssign + ops::DivAssign,
+{
     fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
         let mut res = T::zero();
         for (p, t) in pred.iter().cloned().zip(target.iter().cloned()) {

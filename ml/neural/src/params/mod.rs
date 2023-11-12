@@ -11,16 +11,33 @@ pub use self::{bias::*, utils::*, weight::*};
 pub(crate) mod bias;
 pub(crate) mod weight;
 
-use ndarray::prelude::Array2;
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Array2, Ix2};
+use ndarray::Dimension;
 use num::Float;
 
-pub trait Parameter {
-    
+pub enum ParameterShapes {
+    Thick { features: usize, outputs: usize },
 }
 
-pub trait Biased<T: Float = f64> {
+pub trait Parameter {}
+
+pub trait Biased<T = f64>
+where
+    T: Float,
+{
     fn bias(&self) -> &Bias<T>;
     fn bias_mut(&mut self) -> &mut Bias<T>;
+}
+
+pub trait W<T = f64, D = Ix2>
+where
+    Self: Dot<Array<T, D>>,
+    D: Dimension,
+    T: Float,
+{
+    fn weights(&self) -> &Self;
+    fn weights_mut(&mut self) -> &Self;
 }
 
 pub trait Weighted<T = f64>

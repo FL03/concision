@@ -25,6 +25,32 @@ impl Features {
     pub fn outputs(&self) -> usize {
         self.outputs
     }
+
+    pub fn set_inputs(&mut self, inputs: usize) {
+        self.inputs = inputs;
+    }
+
+    pub fn set_outputs(&mut self, outputs: usize) {
+        self.outputs = outputs;
+    }
+
+    pub fn with_inputs(mut self, inputs: usize) -> Self {
+        self.inputs = inputs;
+        self
+    }
+
+    pub fn with_outputs(mut self, outputs: usize) -> Self {
+        self.outputs = outputs;
+        self
+    }
+
+    pub fn in_by_out(&self) -> (usize, usize) {
+        (self.inputs, self.outputs)
+    }
+
+    pub fn out_by_in(&self) -> (usize, usize) {
+        (self.outputs, self.inputs)
+    }
 }
 
 impl std::fmt::Display for Features {
@@ -59,8 +85,23 @@ impl From<Features> for [usize; 2] {
     }
 }
 
+impl From<[usize; 2]> for Features {
+    fn from(features: [usize; 2]) -> Self {
+        Self {
+            inputs: features[0],
+            outputs: features[1],
+        }
+    }
+}
+
 impl From<Features> for (usize, usize) {
     fn from(features: Features) -> Self {
         (features.inputs, features.outputs)
+    }
+}
+
+impl From<(usize, usize)> for Features {
+    fn from((inputs, outputs): (usize, usize)) -> Self {
+        Self { inputs, outputs }
     }
 }

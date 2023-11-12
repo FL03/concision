@@ -14,32 +14,39 @@ use num::Float;
 pub trait Descent<T: Float = f64> {
     type Params;
 
-    fn descent(&self, ) -> Vec<f64>;
+    fn descent(&self) -> Vec<f64>;
 }
 
-pub trait LearningRate {
-    fn gamma(&self) -> f64;
+pub trait LearningRate<T = f64>
+where
+    T: Float,
+{
+    fn gamma(&self) -> T;
 }
 
-pub trait Momentum {
+pub trait Momentum<T = f64>
+where
+    T: Float,
+{
+    fn mu(&self) -> T; // Momentum Rate
+}
 
-    fn mu(&self) -> f64; // Momentum Rate
-
+pub trait Nesterov: Momentum {
     fn nestrov(&self) -> bool;
-
-    fn tau(&self) -> f64; // Momentum Damper
 }
 
-pub trait Nesterov {
-    fn nestrov(&self) -> bool;
+pub trait Decay<T = f64>
+where
+    T: Float,
+{
+    fn lambda(&self) -> T; // Decay Rate
 }
 
-pub trait Decay {
-    fn lambda(&self) -> f64; // Decay Rate
-}
-
-pub trait Dampener {
-    fn tau(&self) -> f64; // Momentum Damper
+pub trait Dampener<T = f64>
+where
+    T: Float,
+{
+    fn tau(&self) -> T; // Momentum Damper
 }
 
 pub struct DescentParams {

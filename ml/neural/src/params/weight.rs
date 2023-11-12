@@ -9,6 +9,8 @@ use ndarray_rand::RandomExt;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
+pub enum WeightShape {}
+
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Weight<T = f64> {
     weights: Array2<T>,
