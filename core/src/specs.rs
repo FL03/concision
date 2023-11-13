@@ -3,7 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::Array;
-use ndarray::{Dimension, IntoDimension, ShapeError};
+use ndarray::{Dimension, IntoDimension, NdFloat, ShapeError};
+// use ndarray::linalg::Dot;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Uniform};
 use ndarray_rand::RandomExt;
@@ -147,6 +148,14 @@ where
         let k = (T::from(dim[axis]).unwrap()).sqrt();
         Array::random(dim, Uniform::new(-k, k))
     }
+}
+
+pub trait Mean {}
+
+pub trait Stats<T = f64>
+where
+    T: NdFloat,
+{
 }
 
 #[cfg(test)]

@@ -3,9 +3,10 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Linear Layer
-pub use self::{layer::*, utils::*};
+pub use self::{layer::*, regress::*, utils::*};
 
 pub(crate) mod layer;
+pub(crate) mod regress;
 
 use crate::params::{Biased, Weighted};
 use ndarray::prelude::Array2;

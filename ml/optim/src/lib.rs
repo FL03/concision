@@ -17,6 +17,7 @@ pub mod grad;
 pub mod optimizer;
 
 pub mod prelude {
+    pub use crate::grad::*;
 
     pub use crate::primitives::*;
     pub use crate::specs::*;

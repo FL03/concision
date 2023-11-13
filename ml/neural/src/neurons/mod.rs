@@ -16,6 +16,7 @@ pub(crate) mod utils {}
 mod tests {
     use super::activate::{softmax, Activate, Softmax};
     use super::*;
+    // use lazy_static::lazy_static;
     use ndarray::{array, Array1};
 
     fn _artificial(
@@ -33,11 +34,13 @@ mod tests {
     fn test_neuron() {
         let bias = 0.0;
 
-        let data = array![10.0, 10.0, 6.0, 1.0, 8.0];
+        let data = array![[10.0, 10.0, 6.0, 1.0, 8.0]];
         let weights = array![2.0, 1.0, 10.0, 1.0, 7.0];
-        let neuron = Neuron::new(|x| x, bias.clone(), weights.clone());
+        let neuron = Neuron::new(5)
+            .with_rho(softmax)
+            .with_weights(weights.clone());
 
-        let exp = data.clone().dot(&weights) + bias;
+        let exp = softmax(data.clone().dot(&weights) + bias);
 
         assert_eq!(exp, neuron.process(&data));
     }
