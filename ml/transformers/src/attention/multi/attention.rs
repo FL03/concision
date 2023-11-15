@@ -7,7 +7,7 @@ use crate::attention::Weight;
 use crate::neural::layers::linear::LinearLayer;
 use crate::neural::prelude::Mask;
 use crate::ops::Split;
-use ndarray::prelude::Array2;
+use ndarray::prelude::{Array2, NdFloat};
 use ndarray::{ScalarOperand, ShapeError};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -54,7 +54,7 @@ where
 
 impl<T> MultiHeadAttention<T>
 where
-    T: Float + ScalarOperand,
+    T: NdFloat + ScalarOperand,
 {
     pub fn attention(&self, data: &Array2<T>, mask: &Mask<T>) -> Result<Array2<T>, ShapeError> {
         let weighted = data * self.weights();

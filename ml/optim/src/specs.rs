@@ -16,6 +16,12 @@ pub trait Objective<T> {
     fn objective(&self, x: &Array2<T>, y: &Array1<T>) -> Array1<T>;
 }
 
+pub trait PartialDerivative<T> {
+    type Model;
+
+    fn partial_derivative(&self, x: &Array2<T>, y: &Array1<T>) -> Array2<T>;
+}
+
 pub trait Optimize {
     fn optimize(&self, params: &mut dyn Optimizable);
 }

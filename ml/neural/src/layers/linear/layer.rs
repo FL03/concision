@@ -7,8 +7,8 @@ use crate::layers::Features;
 use crate::prelude::{Bias, Forward};
 
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array1, Array2};
-use ndarray::{Dimension, ScalarOperand};
+use ndarray::prelude::{Array, Array1, Array2, NdFloat};
+use ndarray::Dimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -73,10 +73,6 @@ where
         self.features = params;
         self
     }
-
-    pub fn update_bias_at(&mut self, index: usize, value: T) {
-        self.bias_mut();
-    }
 }
 
 impl<T> LinearLayer<T>
@@ -112,7 +108,7 @@ where
 
 impl<T> LinearLayer<T>
 where
-    T: Float + ScalarOperand,
+    T: NdFloat,
 {
     pub fn fit(&mut self, data: &Array2<T>) -> Array2<T>
     where
@@ -128,17 +124,14 @@ where
         data.dot(&self.weights.t()) + &self.bias
     }
 
-    pub fn update_params_gradient(&mut self, bias: &Array1<T>, weights: &Array2<T>, lr: T) {
-        // self.bias = self.bias() + bias * lr;
-        self.weights = self.weights() - weights * lr;
-    }
-
     pub fn update_with_gradient(&mut self, gradient: &Array2<T>, lr: T) {
         self.weights = &self.weights - gradient * lr;
     }
 
-    pub fn apply_gradient(&mut self, gradient: &Array1<T>, lr: T) {
-        self.weights = &self.weights - gradient * lr;
+    pub fn apply_gradient(&mut self, gradient: &Array1<T>, gamma: T) {
+        for (ws, g) in self.weights_mut().iter_mut().zip(gradient.iter()) {
+            *ws -= *g * gamma;
+        }
     }
 }
 
@@ -146,7 +139,7 @@ impl<S, T, D> Forward<Array<T, D>> for LinearLayer<T>
 where
     D: Dimension,
     S: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: Add<Bias<T>, Output = Array<T, S>> + Dot<Array2<T>, Output = Array<T, S>>,
     Array<T, S>: Add<Bias<T>, Output = Array<T, S>>,
 {
@@ -159,7 +152,7 @@ where
 
 impl<T> Forward<T> for LinearLayer<T>
 where
-    T: Float + ScalarOperand,
+    T: NdFloat,
 {
     type Output = Array2<T>;
 

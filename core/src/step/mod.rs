@@ -8,4 +8,6 @@ pub(crate) mod stepper;
 
 pub mod linspace;
 
+pub trait Step {}
+
 pub(crate) mod utils {}

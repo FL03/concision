@@ -9,6 +9,10 @@ pub type BiasGradient<T = f64> = Array1<T>;
 
 pub type WeightGradient<T = f64> = Array2<T>;
 
+pub struct Grad {
+    
+}
+
 pub struct Gradients {
     pub bias: BiasGradient,
     pub weights: WeightGradient,

@@ -38,12 +38,6 @@ pub trait L<T: Float> {
     fn weights(&self) -> &Array2<T>;
 }
 
-pub trait Linear<T: Float> {
-    fn linear(&self, data: &Array2<T>) -> Array2<T>
-    where
-        T: 'static;
-}
-
 pub(crate) mod utils {}
 
 #[cfg(test)]

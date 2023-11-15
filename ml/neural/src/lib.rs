@@ -28,6 +28,7 @@ pub(crate) use concision_core as core;
 
 pub mod prelude {
     pub use crate::arch::*;
+    pub use crate::layers::linear::*;
     pub use crate::layers::*;
     pub use crate::loss::*;
     pub use crate::masks::*;

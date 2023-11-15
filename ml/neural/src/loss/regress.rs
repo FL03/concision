@@ -4,7 +4,7 @@
 */
 use super::Loss;
 use ndarray::prelude::{Array, Array1};
-use ndarray::{Dimension, ScalarOperand};
+use ndarray::Dimension;
 use num::Float;
 use std::ops;
 
