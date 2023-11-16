@@ -8,9 +8,7 @@ use ndarray::{Dimension, IntoDimension};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Uniform};
 use ndarray_rand::RandomExt;
-use num::traits::NumOps;
-use num::{Float, Num, One, Zero};
-use std::ops;
+use num::{Float, One, Zero};
 
 pub trait Borrowed<T>: AsRef<T> + AsMut<T> {}
 
@@ -19,11 +17,6 @@ impl<S, T> Borrowed<T> for S where S: AsRef<T> + AsMut<T> {}
 pub trait BinaryNum: One + Zero {}
 
 impl<T> BinaryNum for T where T: One + Zero {}
-
-pub trait NumOpsAssign:
-    Num + NumOps + Sized + ops::AddAssign + ops::DivAssign + ops::MulAssign + ops::SubAssign
-{
-}
 
 pub trait Pair<A, B> {
     fn pair(&self) -> (A, B);

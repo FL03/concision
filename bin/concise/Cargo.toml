@@ -1,37 +1,27 @@
 [package]
 authors.workspace = true
 categories.workspace = true
+default-run = "concise"
 description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-data"
+name = "concise"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
-[features]
-default = []
-
-
-[lib]
-bench = true
-crate-type = ["cdylib", "rlib"]
-doctest = false
-test = true
+[[bin]]
+name = "concise"
+path = "src/main.rs"
 
 [build-dependencies]
 
 [dependencies]
 anyhow.workspace = true
-linfa = { features = [], version = "0.7" }
+concision = { features = ["full"], path = "../../concision", version = "0.1.12" }
 ndarray.workspace = true
-num.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-smart-default.workspace = true
-strum.workspace = true
 
 [dev-dependencies]
 

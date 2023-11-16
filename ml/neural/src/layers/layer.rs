@@ -2,9 +2,9 @@
     Appellation: layer <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Features, LayerType};
+use super::LayerType;
 use crate::params::Bias;
-use crate::prop::Forward;
+use crate::prelude::{Features, Forward};
 
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;

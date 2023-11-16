@@ -4,14 +4,22 @@
 */
 //! # norm
 //!
-pub use self::{kinds::*, utils::*};
+pub use self::{kinds::*, normalizer::*, utils::*};
 
 pub(crate) mod kinds;
+pub(crate) mod normalizer;
 
 use ndarray::prelude::{Array, NdFloat};
 use ndarray::Dimension;
+use ndarray_stats::QuantileExt;
 
 pub trait Normalize<T> {
+    type Output;
+
+    fn norm(&self, args: &T) -> Self::Output;
+}
+
+pub trait Norm<T> {
     fn l0(&self) -> T;
 
     fn l1(&self) -> T;
@@ -19,21 +27,21 @@ pub trait Normalize<T> {
     fn l2(&self) -> T;
 }
 
-impl<T, D> Normalize<T> for Array<T, D>
+impl<T, D> Norm<T> for Array<T, D>
 where
     D: Dimension,
     T: NdFloat,
 {
     fn l0(&self) -> T {
-        utils::l0_norm(self)
+        *self.max().expect("No max value")
     }
 
     fn l1(&self) -> T {
-        utils::l1_norm(self)
+        self.mapv(|xs| xs.abs()).sum()
     }
 
     fn l2(&self) -> T {
-        utils::l2_norm(self)
+        self.mapv(|xs| xs.powi(2)).sum().sqrt()
     }
 }
 
@@ -68,4 +76,13 @@ pub(crate) mod utils {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_l0_norm() {
+        let args = Array::linspace(1., 3., 3).into_shape(3).unwrap();
+
+        assert_eq!(l0_norm(&args), 3.);
+    }
+}

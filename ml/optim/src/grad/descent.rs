@@ -3,23 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::neural::layers::linear::Linear;
-use crate::neural::prelude::{mse, Forward};
-use crate::prelude::Normalize;
+use crate::neural::prelude::Forward;
+use crate::prelude::Norm;
 use ndarray::prelude::{Array1, Array2};
 use ndarray_stats::DeviationExt;
-
-pub fn cost(target: &Array1<f64>, prediction: &Array1<f64>) -> f64 {
-    (target - prediction)
-        .map(|x| x.powi(2))
-        .mean()
-        .unwrap_or_default()
-}
-
-pub fn grad(data: &Array2<f64>, target: &Array1<f64>, prediction: &Array1<f64>) -> Array1<f64> {
-    let error = prediction - target;
-    let scale = -2.0 / data.len() as f64;
-    scale * data.t().dot(&error)
-}
 
 pub fn gradient_descent(
     weights: &mut Array1<f64>,
@@ -34,8 +21,6 @@ pub fn gradient_descent(
     }
     losses
 }
-
-pub type BaseObjective<T = f64> = fn(&Array1<T>) -> Array1<T>;
 
 #[derive(Clone)]
 pub struct GradientDescent {
@@ -83,13 +68,13 @@ impl GradientDescent {
     }
 
     pub fn logit(&mut self, data: &Array2<f64>, targets: &Array1<f64>) -> anyhow::Result<f64> {
+        // let pred = self.model.forward(data);
         let gradient = |p: &Array1<f64>| {
-            let pred = data.dot(p);
-            let error = targets - &pred;
+            let error = targets - &data.dot(&(p / p.l2()));
             let scale = -1.0 / (2.0 * data.len() as f64);
             let grad = scale * error.dot(data);
 
-            &grad / grad.l2()
+            grad
         };
         self.model.apply_gradient(self.gamma, &gradient);
 
@@ -97,7 +82,7 @@ impl GradientDescent {
         Ok(loss)
     }
 
-    pub fn descent(&mut self, data: &Array2<f64>, targets: &Array1<f64>) -> anyhow::Result<f64> {
+    pub fn step(&mut self, data: &Array2<f64>, targets: &Array1<f64>) -> anyhow::Result<f64> {
         let gradient = |p: &Array1<f64>| {
             let pred = data.dot(p);
             let error = targets - pred;
@@ -111,29 +96,6 @@ impl GradientDescent {
         // let loss = targets.mean_sq_err(&self.model.forward(data))?;
         let loss = targets.mean_sq_err(&self.model.forward(data))?;
         Ok(loss)
-    }
-
-    pub fn gradient(&self, x: &Array2<f64>, y: &Array1<f64>) -> Array1<f64> {
-        let (samples, _inputs) = x.dim();
-
-        let pred = x.dot(&self.model.weights().t()) + *self.model.bias(); // fully connected
-        let errors = y - &pred;
-        let scale = -2.0 / samples as f64;
-        scale * x.t().dot(&errors)
-    }
-
-    pub fn step(&mut self, x: &Array2<f64>, y: &Array1<f64>) -> f64 {
-        let (samples, _inputs) = x.dim();
-
-        let predictions = x.dot(&self.model.weights().t()) + *self.model.bias(); // fully connected
-        let errors = y - &predictions;
-        let scale = -2.0 / samples as f64;
-        let _bias = scale * &errors;
-        let weights = scale * x.t().dot(&errors);
-        self.model
-            .update_with_gradient(self.gamma, &weights.t().to_owned());
-
-        mse(&self.model.forward(x), y).unwrap_or_default()
     }
 }
 
@@ -164,6 +126,6 @@ mod tests {
         let model = Linear::new(inputs).init_weight();
         let mut grad = GradientDescent::new(gamma, model);
 
-        let _s = grad.descent(&x, &y);
+        let _s = grad.step(&x, &y);
     }
 }

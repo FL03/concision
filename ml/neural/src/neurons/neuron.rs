@@ -2,92 +2,141 @@
     Appellation: neuron <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::activate::{Activate, ActivationFn, LinearActivation};
+use super::activate::{Activate, LinearActivation};
+use crate::core::GenerateRandom;
 use crate::prelude::Forward;
-use crate::{core::GenerateRandom, layers::L};
-use ndarray::prelude::{Array1, Array2};
+use ndarray::prelude::{Array1, Array2, NdFloat};
+use ndarray_rand::rand_distr::uniform::SampleUniform;
+use num::Float;
+use rand::Rng;
 
-pub trait ArtificialNeuron<T> {
-    type Rho: Activate<T>;
+pub trait ArtificialNeuron<T>
+where
+    T: NdFloat,
+{
+    type Rho: Activate<Array1<T>>;
+
+    fn bias(&self) -> T;
+
+    fn forward(&self, args: &Array2<T>) -> Array1<T> {
+        self.rho()
+            .activate(args.dot(&self.weights().t()) + self.bias())
+    }
+
+    fn rho(&self) -> &Self::Rho;
+
+    fn weights(&self) -> &Array1<T>;
 }
 
 /// Artificial Neuron
 #[derive(Clone, Debug, PartialEq)]
-pub struct Neuron<Rho = LinearActivation>
+pub struct Neuron<T = f64, A = LinearActivation>
 where
-    Rho: Activate<Array1<f64>>,
+    A: Activate<Array1<T>>,
 {
-    activation: Rho,
-    bias: f64,
+    activation: A,
+    bias: T,
     features: usize,
-    weights: Array1<f64>,
+    weights: Array1<T>,
 }
 
-impl<Rho> Neuron<Rho>
+impl<T, A> Neuron<T, A>
 where
-    Rho: Activate<Array1<f64>>,
+    A: Activate<Array1<T>>,
+    T: Float,
 {
-    pub fn with_rho(mut self, rho: Rho) -> Self {
+    pub fn bias(&self) -> &T {
+        &self.bias
+    }
+
+    pub fn rho(&self) -> &A {
+        &self.activation
+    }
+
+    pub fn weights(&self) -> &Array1<T> {
+        &self.weights
+    }
+
+    pub fn weights_mut(&mut self) -> &mut Array1<T> {
+        &mut self.weights
+    }
+
+    pub fn set_bias(&mut self, bias: T) {
+        self.bias = bias;
+    }
+
+    pub fn set_weights(&mut self, weights: Array1<T>) {
+        self.weights = weights;
+    }
+
+    pub fn with_bias(mut self, bias: T) -> Self {
+        self.bias = bias;
+        self
+    }
+
+    pub fn with_rho(mut self, rho: A) -> Self {
         self.activation = rho;
         self
     }
 
-    pub fn init_weights(mut self) -> Self {
-        self.weights = Array1::uniform(0, self.features);
-        self
-    }
-
-    pub fn bias(&self) -> f64 {
-        self.bias
-    }
-
-    pub fn process(&self, args: &Array2<f64>) -> Array1<f64> {
-        self.rho()
-            .activate(args.dot(&self.weights.t()) + self.bias())
-    }
-
-    pub fn rho(&self) -> &Rho {
-        &self.activation
-    }
-
-    pub fn weights(&self) -> &Array1<f64> {
-        &self.weights
-    }
-
-    pub fn set_bias(&mut self, bias: f64) {
-        self.bias = bias;
-    }
-
-    pub fn set_weights(&mut self, weights: Array1<f64>) {
-        self.weights = weights;
-    }
-
-    pub fn with_bias(mut self, bias: f64) -> Self {
-        self.bias = bias;
-        self
-    }
-
-    pub fn with_weights(mut self, weights: Array1<f64>) -> Self {
+    pub fn with_weights(mut self, weights: Array1<T>) -> Self {
         self.weights = weights;
         self
-    }
-
-    pub fn apply_weight_gradient(&mut self, gamma: f64, gradient: &Array1<f64>) {
-        self.weights = &self.weights - gamma * gradient;
     }
 }
 
-impl<Rho> Neuron<Rho>
+impl<T, A> Neuron<T, A>
 where
-    Rho: Activate<Array1<f64>> + Default,
+    T: NdFloat,
+    A: Activate<Array1<T>> + Default,
 {
     pub fn new(features: usize) -> Self {
         Self {
-            activation: Rho::default(),
-            bias: 0.0,
+            activation: A::default(),
+            bias: T::zero(),
             features,
             weights: Array1::zeros(features),
         }
+    }
+}
+
+impl<T, A> Neuron<T, A>
+where
+    T: NdFloat,
+    A: Activate<Array1<T>>,
+{
+    pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
+    where
+        G: Fn(&Array1<T>) -> Array1<T>,
+    {
+        let grad = gradient(&self.weights);
+        self.weights_mut().scaled_add(-gamma, &grad);
+    }
+}
+
+impl<T, A> Neuron<T, A>
+where
+    T: Float + SampleUniform,
+    A: Activate<Array1<T>> + Default,
+{
+    pub fn init(mut self, biased: bool) -> Self {
+        if biased {
+            self = self.init_bias();
+        }
+        self.init_weight()
+    }
+
+    pub fn init_bias(mut self) -> Self {
+        let dk = (T::one() / T::from(self.features).unwrap()).sqrt();
+        self.bias = rand::thread_rng().gen_range(-dk..dk);
+        self
+    }
+
+    pub fn init_weight(mut self) -> Self {
+        let features = self.features;
+        let dk = (T::one() / T::from(features).unwrap()).sqrt();
+        self.weights = Array1::uniform_between(dk, features);
+        self
     }
 }
 
@@ -100,11 +149,15 @@ where
 
 // }
 
-impl Forward<Array2<f64>> for Neuron {
-    type Output = Array1<f64>;
+impl<T, A> Forward<Array2<T>> for Neuron<T, A>
+where
+    T: NdFloat,
+    A: Activate<Array1<T>> + Default,
+{
+    type Output = Array1<T>;
 
-    fn forward(&self, args: &Array2<f64>) -> Self::Output {
-        let linstep = args.dot(&self.weights().t().to_owned()) + self.bias;
+    fn forward(&self, args: &Array2<T>) -> Self::Output {
+        let linstep = args.dot(&self.weights().t()) + self.bias;
         self.rho().activate(linstep)
     }
 }

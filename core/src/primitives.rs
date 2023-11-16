@@ -16,4 +16,7 @@ mod types {
     pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
     ///
     pub type BoxResult<T = ()> = std::result::Result<T, BoxError>;
+
+    ///
+    pub type ShapeResult<T = ()> = std::result::Result<T, ndarray::ShapeError>;
 }

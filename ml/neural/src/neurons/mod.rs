@@ -16,6 +16,7 @@ pub(crate) mod utils {}
 mod tests {
     use super::activate::{softmax, Activate, Softmax};
     use super::*;
+    use crate::prelude::Forward;
     // use lazy_static::lazy_static;
     use ndarray::{array, Array1};
 
@@ -42,7 +43,7 @@ mod tests {
 
         let exp = softmax(data.clone().dot(&weights) + bias);
 
-        assert_eq!(exp, neuron.process(&data));
+        assert_eq!(exp, neuron.forward(&data));
     }
 
     // #[test]

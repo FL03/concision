@@ -19,7 +19,7 @@ fn main() -> anyhow::Result<()> {
         .unwrap()
         + 1.0;
 
-    let model = LinearLayer::<f64>::new_biased(inputs, outputs);
+    let model = LinearLayer::<f64>::new(inputs, outputs);
 
     let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
     let losses = sgd.sgd(&x, &y);

@@ -3,23 +3,13 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::core::prelude::GenerateRandom;
+
 use crate::prelude::Forward;
 use ndarray::prelude::{Array1, Array2, Axis, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_stats::CorrelationExt;
 use num::{Float, FromPrimitive};
 use rand::Rng;
-
-pub enum Params {
-    Layer {
-        bias: Array1<f64>,    // (outputs,)
-        weights: Array2<f64>, // (outputs, inputs)
-    },
-    Node {
-        bias: f64,
-        weights: Array1<f64>, // (inputs,)
-    },
-}
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Linear<T = f64>
@@ -140,8 +130,10 @@ where
     where
         G: Fn(&Array1<T>) -> Array1<T>,
     {
-        let grad = gradient(self.weights());
+        let mut grad = gradient(self.weights());
+        grad /= grad.mapv(|ws| ws.powi(2)).sum().sqrt();
         self.weights_mut().scaled_add(-gamma, &grad);
+        self.weights /= self.weights().mapv(|ws| ws.powi(2)).sum().sqrt();
     }
 
     pub fn update_with_gradient(&mut self, gamma: T, gradient: &Array1<T>) {

@@ -12,6 +12,7 @@ pub(crate) mod utils {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::prelude::Forward;
     use computare::prelude::RoundTo;
     use ndarray::prelude::{array, Array, Ix2};
 

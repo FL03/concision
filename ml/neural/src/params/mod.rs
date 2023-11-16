@@ -31,6 +31,17 @@ where
 
 pub trait Parameter {}
 
+pub trait Params<T = f64, D = Ix2>
+where
+    D: Dimension,
+    T: Float,
+{
+    fn bias(&self) -> &Array<T, D::Smaller>;
+    fn bias_mut(&mut self) -> &mut Array<T, D::Smaller>;
+    fn weights(&self) -> &Array<T, D>;
+    fn weights_mut(&mut self) -> &mut Array<T, D>;
+}
+
 pub trait Biased<T = f64>
 where
     T: Float,

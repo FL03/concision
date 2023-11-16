@@ -5,7 +5,7 @@
 use super::{multihead, MultiHeadParams};
 use crate::attention::Weight;
 use crate::neural::layers::linear::LinearLayer;
-use crate::neural::prelude::Mask;
+use crate::neural::prelude::{Forward, Mask};
 use crate::ops::Split;
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray::{ScalarOperand, ShapeError};
@@ -45,7 +45,7 @@ where
         let params = MultiHeadParams::new(heads, model);
         let weights = Weight::uniform((model, model));
         Self {
-            linear: LinearLayer::new_biased(model, model),
+            linear: LinearLayer::new(model, model),
             params,
             weights,
         }
@@ -60,7 +60,7 @@ where
         let weighted = data * self.weights();
         let (q, k, v) = weighted.split(self.params().heads())?;
         let score = multihead(&q, &k, &v, mask)?;
-        let res = self.linear().linear(&score);
+        let res = self.linear().forward(&score);
         Ok(res)
     }
 }

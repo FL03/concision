@@ -2,10 +2,10 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Axis, NdFloat};
-use ndarray::{concatenate, Dimension, RemoveAxis};
-use num::FromPrimitive;
+
+use ndarray::prelude::{Array, Axis, Dimension};
+use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
+use num::Float;
 
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where
@@ -20,19 +20,14 @@ where
     out
 }
 
-pub fn covariance<T, D>(ddof: T, x: &Array<T, D>, y: &Array<T, D>) -> anyhow::Result<Array<T, D>>
+pub fn linarr<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
 where
     D: Dimension,
-    T: Default + FromPrimitive + NdFloat,
-    Array<T, D>: Dot<Array<T, D>, Output = Array<T, D>>,
+    T: Float,
 {
-    let x_mean = x.mean().unwrap_or_default();
-    let y_mean = y.mean().unwrap_or_default();
-    let xs = x - x_mean;
-    let ys = y - y_mean;
-    let cov = xs.dot(&ys.t().to_owned());
-    let scale = T::one() / (T::from(x.len()).unwrap() - ddof);
-    Ok(cov * scale)
+    let dim = dim.into_dimension();
+    let n = dim.as_array_view().product();
+    Array::linspace(T::one(), T::from(n).unwrap(), n).into_shape(dim)
 }
 
 pub fn now() -> u128 {

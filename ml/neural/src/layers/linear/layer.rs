@@ -3,8 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::core::prelude::GenerateRandom;
-use crate::layers::Features;
-use crate::prelude::{Bias, Forward};
+use crate::prelude::{Features, Forward};
 
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array1, Array2, NdFloat};
@@ -16,7 +15,7 @@ use std::ops::Add;
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct LinearLayer<T: Float = f64> {
-    bias: Bias<T>,
+    bias: Array1<T>,
     pub features: Features,
     weights: Array2<T>,
 }
@@ -25,19 +24,26 @@ impl<T> LinearLayer<T>
 where
     T: Float,
 {
-    pub fn new(features: Features) -> Self {
+    pub fn new(inputs: usize, outputs: usize) -> Self {
         Self {
-            bias: Array1::zeros(features.outputs()).into(),
+            bias: Array1::zeros(outputs),
+            features: Features::new(inputs, outputs),
+            weights: Array2::zeros((inputs, outputs)),
+        }
+    }
+    pub fn from_features(features: Features) -> Self {
+        Self {
+            bias: Array1::zeros(features.outputs()),
             features,
             weights: Array2::zeros(features.out_by_in()),
         }
     }
 
-    pub fn bias(&self) -> &Bias<T> {
+    pub fn bias(&self) -> &Array1<T> {
         &self.bias
     }
 
-    pub fn bias_mut(&mut self) -> &mut Bias<T> {
+    pub fn bias_mut(&mut self) -> &mut Array1<T> {
         &mut self.bias
     }
 
@@ -57,7 +63,7 @@ where
         &mut self.weights
     }
 
-    pub fn set_bias(&mut self, bias: Bias<T>) {
+    pub fn set_bias(&mut self, bias: Array1<T>) {
         self.bias = bias;
     }
 
@@ -80,29 +86,15 @@ where
     T: Float + SampleUniform,
 {
     pub fn init_bias(mut self) -> Self {
-        let (inputs, outputs) = self.features().in_by_out();
-        let dk = (T::one() / T::from(inputs).unwrap()).sqrt();
-        self.bias = ndarray::Array1::uniform_between(dk, outputs).into();
+        let dk = (T::one() / T::from(self.features().inputs()).unwrap()).sqrt();
+        self.bias = ndarray::Array1::uniform_between(dk, self.features().outputs());
         self
     }
 
     pub fn init_weight(mut self) -> Self {
-        let (inputs, outputs) = self.features().in_by_out();
-        let dk = (T::one() / T::from(inputs).unwrap()).sqrt();
-        self.bias = ndarray::Array1::uniform_between(dk, outputs).into();
-        self.weights = Array2::uniform_between(dk, (outputs, inputs));
+        let dk = (T::one() / T::from(self.features().inputs()).unwrap()).sqrt();
+        self.weights = Array2::uniform_between(dk, self.features().out_by_in());
         self
-    }
-
-    pub fn new_biased(inputs: usize, outputs: usize) -> Self {
-        let features = Features::new(inputs, outputs);
-        let weights = Array2::uniform(1, (outputs, inputs));
-        let bias = Bias::biased(outputs);
-        Self {
-            bias,
-            features,
-            weights,
-        }
     }
 }
 
@@ -114,14 +106,7 @@ where
     where
         T: 'static,
     {
-        self.linear(data)
-    }
-
-    pub fn linear(&self, data: &Array2<T>) -> Array2<T>
-    where
-        T: 'static,
-    {
-        data.dot(&self.weights.t()) + &self.bias
+        self.forward(data)
     }
 
     pub fn update_with_gradient(&mut self, gradient: &Array2<T>, lr: T) {
@@ -140,8 +125,8 @@ where
     D: Dimension,
     S: Dimension,
     T: NdFloat,
-    Array<T, D>: Add<Bias<T>, Output = Array<T, S>> + Dot<Array2<T>, Output = Array<T, S>>,
-    Array<T, S>: Add<Bias<T>, Output = Array<T, S>>,
+    Array<T, D>: Add<Array1<T>, Output = Array<T, S>> + Dot<Array2<T>, Output = Array<T, S>>,
+    Array<T, S>: Add<Array1<T>, Output = Array<T, S>>,
 {
     type Output = Array<T, S>;
 

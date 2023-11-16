@@ -7,6 +7,14 @@ use ndarray::{Dimension, ShapeError};
 use num::{Num, One};
 use std::ops;
 
+pub trait NumOpsAssign:
+    Sized + ops::AddAssign + ops::DivAssign + ops::MulAssign + ops::SubAssign
+{
+}
+
+impl<T> NumOpsAssign for T where T: ops::AddAssign + ops::DivAssign + ops::MulAssign + ops::SubAssign
+{}
+
 pub trait Product<T = f64>
 where
     T: Num,

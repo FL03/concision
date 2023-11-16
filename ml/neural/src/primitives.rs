@@ -16,5 +16,5 @@ pub(crate) mod types {
 
     pub type LayerBias<T = f64> = ndarray::Array1<T>;
 
-    pub type WeightTensor<T = f64> = ndarray::Array2<T>;
+    pub type LayerWeight<T = f64> = ndarray::Array2<T>;
 }

@@ -4,10 +4,9 @@
 */
 use super::Layer;
 use crate::ops::LayerNorm;
-use crate::prop::Forward;
+use crate::prelude::Forward;
 
-use ndarray::prelude::Array2;
-use ndarray::ScalarOperand;
+use ndarray::prelude::{Array2, NdFloat};
 use num::{Float, FromPrimitive};
 use serde::{Deserialize, Serialize};
 
@@ -17,15 +16,20 @@ pub struct Sublayer<T: Float = f64> {
     norm: LayerNorm<T>,
 }
 
-impl<T: Float> Sublayer<T> {
+impl<T> Sublayer<T>
+where
+    T: Float,
+{
     pub fn new(layer: Layer<T>, norm: LayerNorm<T>) -> Self {
         Self { layer, norm }
     }
+}
 
-    pub fn forward(&self, data: &Array2<T>) -> Array2<T>
-    where
-        T: FromPrimitive + ScalarOperand,
-    {
+impl<T> Sublayer<T>
+where
+    T: FromPrimitive + NdFloat,
+{
+    pub fn forward(&self, data: &Array2<T>) -> Array2<T> {
         let norm = self.norm.forward(data);
         let layer = data + self.layer.forward(&norm);
         layer

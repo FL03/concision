@@ -9,11 +9,13 @@ pub(crate) mod primitives;
 pub(crate) mod specs;
 pub(crate) mod utils;
 
+pub mod datasets;
 pub mod df;
 pub mod flows;
 pub mod tensors;
 
 pub mod prelude {
+    pub use crate::datasets::*;
     pub use crate::df::*;
     pub use crate::flows::*;
     pub use crate::tensors::*;

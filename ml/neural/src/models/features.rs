@@ -23,7 +23,7 @@ impl Features {
     }
 
     pub fn uniform_scale<T: num::Float>(&self) -> T {
-        (T::one() / T::from(self.inputs()).unwrap()).sqrt()
+        (T::one() / T::from(self.inputs).unwrap()).sqrt()
     }
 
     pub fn inputs(&self) -> usize {
@@ -32,6 +32,24 @@ impl Features {
 
     pub fn outputs(&self) -> usize {
         self.outputs
+    }
+
+    pub fn set_inputs(&mut self, inputs: usize) {
+        self.inputs = inputs;
+    }
+
+    pub fn set_outputs(&mut self, outputs: usize) {
+        self.outputs = outputs;
+    }
+
+    pub fn with_inputs(mut self, inputs: usize) -> Self {
+        self.inputs = inputs;
+        self
+    }
+
+    pub fn with_outputs(mut self, outputs: usize) -> Self {
+        self.outputs = outputs;
+        self
     }
 
     pub fn in_by_out(&self) -> (usize, usize) {
@@ -93,11 +111,5 @@ impl From<Features> for (usize, usize) {
 impl From<(usize, usize)> for Features {
     fn from((inputs, outputs): (usize, usize)) -> Self {
         Self { inputs, outputs }
-    }
-}
-
-impl From<usize> for Features {
-    fn from(inputs: usize) -> Self {
-        Self { inputs, outputs: 1 }
     }
 }

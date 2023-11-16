@@ -220,7 +220,7 @@ mod tests {
         let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
         let y = Array::linspace(1., 100., 5).into_shape(5).unwrap();
 
-        let model = LinearLayer::<f64>::new_biased(inputs, 5);
+        let model = LinearLayer::<f64>::new(inputs, 5);
 
         let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
         sgd.sgd(&x, &y);
@@ -236,7 +236,7 @@ mod tests {
         let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
         let y = Array1::<f64>::uniform(0, 100);
 
-        let mut model = LinearLayer::<f64>::new_biased(inputs, 5);
+        let mut model = LinearLayer::<f64>::new(inputs, 5);
 
         // let grad = sgd(&x, &y, &mut model, epochs, gamma, batch_size);
         // assert!(grad.is_ok());
