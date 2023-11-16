@@ -14,10 +14,14 @@ pub(crate) use concision_neural as neural;
 
 pub mod cost;
 pub mod grad;
-pub mod optimizer;
+pub mod norm;
+pub mod optimize;
 
 pub mod prelude {
+    pub use crate::cost::*;
     pub use crate::grad::*;
+    pub use crate::norm::*;
+    pub use crate::optimize::*;
 
     pub use crate::primitives::*;
     pub use crate::specs::*;

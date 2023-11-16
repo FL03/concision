@@ -13,6 +13,7 @@ pub(crate) mod nonlinear;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
 
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LinearActivation;
 
 impl LinearActivation {

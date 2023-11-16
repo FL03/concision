@@ -7,7 +7,6 @@ pub use self::{constants::*, statics::*, types::*};
 mod constants {
 
     pub const FTOL: f64 = 2.220446049250313e-09;
-    
 }
 
 mod statics {}

@@ -5,6 +5,7 @@
 use ndarray::prelude::{Array1, Array2};
 
 pub trait Gradient<T> {
+    type Params;
     type Model;
 
     fn gradient(&self, x: &Array2<T>, y: &Array1<T>) -> T;
@@ -22,8 +23,6 @@ pub trait PartialDerivative<T> {
     fn partial_derivative(&self, x: &Array2<T>, y: &Array1<T>) -> Array2<T>;
 }
 
-pub trait Optimize {
-    fn optimize(&self, params: &mut dyn Optimizable);
+pub trait Minimize<T> {
+    fn minimize(&self, scale: T) -> Self;
 }
-
-pub trait Optimizable {}

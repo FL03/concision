@@ -14,7 +14,7 @@ pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {
-    use super::activate::{softmax, Activate};
+    use super::activate::{softmax, Activate, Softmax};
     use super::*;
     // use lazy_static::lazy_static;
     use ndarray::{array, Array1};
@@ -37,7 +37,7 @@ mod tests {
         let data = array![[10.0, 10.0, 6.0, 1.0, 8.0]];
         let weights = array![2.0, 1.0, 10.0, 1.0, 7.0];
         let neuron = Neuron::new(5)
-            .with_rho(softmax)
+            .with_rho(Softmax::default())
             .with_weights(weights.clone());
 
         let exp = softmax(data.clone().dot(&weights) + bias);

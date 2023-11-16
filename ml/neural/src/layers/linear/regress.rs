@@ -136,11 +136,12 @@ where
         data.dot(&self.weights().t()) + *self.bias()
     }
 
-
-    pub fn apply_gradient(&mut self, gamma: T, gradient: impl Fn(&Array1<T>) -> (T, Array1<T>)) -> T {
-        let (cost, grad) = gradient(self.weights());
+    pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
+    where
+        G: Fn(&Array1<T>) -> Array1<T>,
+    {
+        let grad = gradient(self.weights());
         self.weights_mut().scaled_add(-gamma, &grad);
-        cost
     }
 
     pub fn update_with_gradient(&mut self, gamma: T, gradient: &Array1<T>) {
@@ -155,7 +156,18 @@ where
     type Output = Array1<T>;
 
     fn forward(&self, data: &Array2<T>) -> Self::Output {
-        data.dot(&self.weights().t().to_owned()) + self.bias().clone()
+        data.dot(&self.weights().t().to_owned()) + *self.bias()
+    }
+}
+
+impl<T> Forward<Array1<T>> for Linear<T>
+where
+    T: NdFloat,
+{
+    type Output = T;
+
+    fn forward(&self, data: &Array1<T>) -> Self::Output {
+        data.dot(&self.weights().t().to_owned()) + *self.bias()
     }
 }
 

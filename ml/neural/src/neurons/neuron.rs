@@ -2,31 +2,32 @@
     Appellation: neuron <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::activate::{Activate, ActivationFn};
-use crate::core::GenerateRandom;
+use super::activate::{Activate, ActivationFn, LinearActivation};
 use crate::prelude::Forward;
+use crate::{core::GenerateRandom, layers::L};
 use ndarray::prelude::{Array1, Array2};
+
+pub trait ArtificialNeuron<T> {
+    type Rho: Activate<T>;
+}
 
 /// Artificial Neuron
 #[derive(Clone, Debug, PartialEq)]
-pub struct Neuron {
-    activation: ActivationFn<Array1<f64>>,
+pub struct Neuron<Rho = LinearActivation>
+where
+    Rho: Activate<Array1<f64>>,
+{
+    activation: Rho,
     bias: f64,
     features: usize,
     weights: Array1<f64>,
 }
 
-impl Neuron {
-    pub fn new(features: usize) -> Self {
-        Self {
-            activation: |x| x,
-            bias: 0.0,
-            features,
-            weights: Array1::zeros(features),
-        }
-    }
-
-    pub fn with_rho(mut self, rho: ActivationFn<Array1<f64>>) -> Self {
+impl<Rho> Neuron<Rho>
+where
+    Rho: Activate<Array1<f64>>,
+{
+    pub fn with_rho(mut self, rho: Rho) -> Self {
         self.activation = rho;
         self
     }
@@ -41,11 +42,12 @@ impl Neuron {
     }
 
     pub fn process(&self, args: &Array2<f64>) -> Array1<f64> {
-        self.rho()(args.dot(&self.weights.t()) + self.bias())
+        self.rho()
+            .activate(args.dot(&self.weights.t()) + self.bias())
     }
 
-    pub fn rho(&self) -> ActivationFn<Array1<f64>> {
-        self.activation
+    pub fn rho(&self) -> &Rho {
+        &self.activation
     }
 
     pub fn weights(&self) -> &Array1<f64> {
@@ -72,6 +74,20 @@ impl Neuron {
 
     pub fn apply_weight_gradient(&mut self, gamma: f64, gradient: &Array1<f64>) {
         self.weights = &self.weights - gamma * gradient;
+    }
+}
+
+impl<Rho> Neuron<Rho>
+where
+    Rho: Activate<Array1<f64>> + Default,
+{
+    pub fn new(features: usize) -> Self {
+        Self {
+            activation: Rho::default(),
+            bias: 0.0,
+            features,
+            weights: Array1::zeros(features),
+        }
     }
 }
 

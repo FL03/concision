@@ -6,18 +6,27 @@
 //!
 //! ## Overview
 //!
-pub use self::{bias::*, utils::*, weight::*};
+pub use self::{bias::*, shapes::*, utils::*, weight::*};
 
 pub(crate) mod bias;
+pub(crate) mod shapes;
 pub(crate) mod weight;
 
+use crate::core::prelude::Borrowed;
+
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array2, Ix2};
+use ndarray::prelude::{Array, Array2, Ix2, NdFloat};
 use ndarray::Dimension;
 use num::Float;
 
-pub enum ParameterShapes {
-    Thick { features: usize, outputs: usize },
+pub trait WeightTensor<T = f64, D = Ix2>
+where
+    Array<T, D>: Dot<Array<T, D>, Output = Array<T, D>>,
+    D: Dimension,
+    T: NdFloat,
+{
+    fn weights(&self) -> &Array<T, D>;
+    fn weights_mut(&mut self) -> &mut Array<T, D>;
 }
 
 pub trait Parameter {}
@@ -30,14 +39,19 @@ where
     fn bias_mut(&mut self) -> &mut Bias<T>;
 }
 
-pub trait W<T = f64, D = Ix2>
+impl<T, D> WeightTensor<T, D> for Array<T, D>
 where
-    Self: Dot<Array<T, D>>,
+    Array<T, D>: Borrowed<Array<T, D>> + Dot<Array<T, D>, Output = Array<T, D>>,
     D: Dimension,
-    T: Float,
+    T: NdFloat,
 {
-    fn weights(&self) -> &Self;
-    fn weights_mut(&mut self) -> &Self;
+    fn weights(&self) -> &Array<T, D> {
+        self.as_ref()
+    }
+
+    fn weights_mut(&mut self) -> &mut Array<T, D> {
+        self.as_mut()
+    }
 }
 
 pub trait Weighted<T = f64>
