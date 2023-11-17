@@ -2,9 +2,8 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Features;
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::Params;
+use crate::prelude::{Features, Params};
 use ndarray::prelude::{Array1, Array2, Ix2};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -76,7 +75,6 @@ where
         self
     }
 }
-
 
 impl<T> Params<T, Ix2> for ModelParams<T>
 where

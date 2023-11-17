@@ -19,7 +19,10 @@ use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
 use num::{Float, FromPrimitive};
 use std::ops;
 
-pub trait Loss<T = f64> where T: Float {
+pub trait Loss<T = f64>
+where
+    T: Float,
+{
     fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T;
 }
 

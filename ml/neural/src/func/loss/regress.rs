@@ -75,8 +75,6 @@ where
 
 pub struct MeanSquaredError;
 
-
-
 impl<T> Loss<T> for MeanSquaredError
 where
     T: NdFloat,

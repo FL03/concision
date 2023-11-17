@@ -3,8 +3,8 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::FFNParams;
-use crate::neural::layers::linear::LinearLayer;
 use crate::neural::func::activate::{Activate, ReLU};
+use crate::neural::layers::linear::LinearLayer;
 use crate::neural::prelude::Forward;
 use ndarray::prelude::Array2;
 use serde::{Deserialize, Serialize};

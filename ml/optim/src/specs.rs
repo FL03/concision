@@ -5,10 +5,16 @@
 use ndarray::prelude::{Array, Array1, Array2, Dimension};
 use num::Float;
 
-pub trait Gradient<T = f64> where T: Float {
+pub trait Gradient<T = f64>
+where
+    T: Float,
+{
     fn partial(&self, x: T) -> T;
 
-    fn gradient<D>(&self, args: &Array<T, D>) -> Array<T, D> where D: Dimension {
+    fn gradient<D>(&self, args: &Array<T, D>) -> Array<T, D>
+    where
+        D: Dimension,
+    {
         args.mapv(|xs| self.partial(xs))
     }
 }
@@ -28,7 +34,6 @@ pub trait PartialDerivative<T> {
 pub trait Minimize<T> {
     fn minimize(&self, scale: T) -> Self;
 }
-
 
 pub trait LearningRate<T = f64>
 where

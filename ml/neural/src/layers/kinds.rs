@@ -33,7 +33,9 @@ pub enum LayerType {
     Output,
 }
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
+)]
 pub struct Position {
     pub idx: usize,
     pub kind: LayerType,

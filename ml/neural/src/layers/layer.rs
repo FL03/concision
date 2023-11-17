@@ -2,13 +2,12 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Features, LayerType, LayerParams, Position};
+use super::{Features, LayerParams, LayerType, Position};
 use crate::prelude::{Activate, Forward, LinearActivation, Parameterized, Params};
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
-
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Layer<T = f64, A = LinearActivation>

@@ -26,6 +26,7 @@ pub struct DescentParams {
 }
 
 pub(crate) mod utils {
+    // use crate::neural::prelude::{Activate, Layer,};
     use ndarray::prelude::{Array, Array1, Dimension, NdFloat};
     use num::FromPrimitive;
 
@@ -34,7 +35,11 @@ pub(crate) mod utils {
         epochs: usize,
         gamma: T,
         partial: impl Fn(&Array<T, D>) -> Array<T, D>,
-    ) -> Array1<T> where D: Dimension, T: FromPrimitive + NdFloat {
+    ) -> Array1<T>
+    where
+        D: Dimension,
+        T: FromPrimitive + NdFloat,
+    {
         let mut losses = Array1::zeros(epochs);
         for e in 0..epochs {
             let grad = partial(params);
@@ -44,15 +49,15 @@ pub(crate) mod utils {
         losses
     }
 
-    pub fn gradient_descent_step<T, D>(
-        params: &mut Array<T, D>,
-        gamma: T,
-        partial: impl Fn(&Array<T, D>) -> Array<T, D>,
-    ) -> T where D: Dimension, T: FromPrimitive + NdFloat {
-        let grad = partial(params);
-        params.scaled_add(-gamma, &grad);
-        params.mean().unwrap_or_else(T::zero)
-    }
+    // pub fn gradient_descent_step<T, A>(
+    //     args: &Array2<T>,
+    //     layer: &mut Layer<T, A>,
+    //     gamma: T,
+    //     partial: impl Fn(&Array2<T>) -> Array2<T>,
+    // ) -> T where A: Activate<Array2<T>>, T: FromPrimitive + NdFloat {
+    //     let grad = partial(args);
+    //     layer.weights_mut().scaled_add(-gamma, &grad);
+    // }
 }
 
 #[cfg(test)]
@@ -67,7 +72,7 @@ mod tests {
     }
 
     #[test]
-    fn descent()  {
+    fn descent() {
         let (_samples, inputs) = (20, 5);
         let outputs = 1;
 

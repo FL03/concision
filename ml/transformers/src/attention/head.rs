@@ -59,7 +59,10 @@ where
     }
 }
 
-impl<T> AttentionHead<T> where T: NdFloat {
+impl<T> AttentionHead<T>
+where
+    T: NdFloat,
+{
     pub fn attention(&mut self, data: &Array2<T>) -> Array2<T> {
         // multiply the data by the wieghted query, key, and value matrices, respectively
         let weighted = data * self.weights();

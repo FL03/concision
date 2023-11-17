@@ -35,7 +35,7 @@ pub(crate) mod utils {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::func::activate::{Activate, Softmax, softmax};
+    use crate::func::activate::{softmax, Activate, Softmax};
     use crate::prelude::Forward;
     // use lazy_static::lazy_static;
     use ndarray::{array, Array1};

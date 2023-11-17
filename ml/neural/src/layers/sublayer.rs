@@ -12,7 +12,11 @@ use num::{Float, FromPrimitive};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Sublayer<T = f64, A = LinearActivation> where A: Activate<Array2<T>>, T: Float {
+pub struct Sublayer<T = f64, A = LinearActivation>
+where
+    A: Activate<Array2<T>>,
+    T: Float,
+{
     layer: Layer<T, A>,
     norm: LayerNorm<T>,
 }
@@ -33,7 +37,7 @@ where
     T: FromPrimitive + NdFloat,
 {
     type Output = Array2<T>;
-    
+
     fn forward(&self, data: &Array2<T>) -> Self::Output {
         let norm = self.norm.forward(data);
         let layer = data + self.layer.forward(&norm);

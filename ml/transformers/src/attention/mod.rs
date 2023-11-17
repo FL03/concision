@@ -29,8 +29,7 @@ pub type InputArray<T> = Array<T, BaseDim>;
 pub type AttentionArray<T> = Array<T, Ix2>;
 
 pub trait Attention<T: NdFloat = f64> {
-    fn attention(&self, data: &Array2<T>) -> BoxResult<Array2<T>>
-    {
+    fn attention(&self, data: &Array2<T>) -> BoxResult<Array2<T>> {
         // let (seq, model) = data.dim();
 
         let q = self.query().dot(data);

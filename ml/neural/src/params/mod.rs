@@ -13,26 +13,22 @@ pub(crate) mod param;
 pub(crate) mod shapes;
 pub(crate) mod weight;
 
-use ndarray::IntoDimension;
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Dimension, Ix2,};
+use ndarray::prelude::{Array, Dimension, Ix2};
+use ndarray::IntoDimension;
 use num::Float;
-
-
 
 pub trait Biased<T = f64, D = Ix2>
 where
     D: Dimension,
     T: Float,
-    Self: Weighted<T, D>
+    Self: Weighted<T, D>,
 {
     /// Returns an owned reference to the bias of the layer.
     fn bias(&self) -> &Array<T, D::Smaller>;
     /// Returns a mutable reference to the bias of the layer.
     fn bias_mut(&mut self) -> &mut Array<T, D::Smaller>;
 }
-
-
 
 pub trait Weighted<T = f64, D = Ix2>
 where
@@ -51,7 +47,6 @@ where
     D: Dimension,
     T: Float,
 {
-
 }
 
 pub trait Params<T = f64, D = Ix2>
@@ -59,7 +54,6 @@ where
     D: Dimension,
     T: Float,
 {
-
     /// Returns an owned reference to the bias of the layer.
     fn bias(&self) -> &Array<T, D::Smaller>;
     /// Returns a mutable reference to the bias of the layer.
@@ -73,7 +67,6 @@ where
     /// Sets the weights of the layer.
     fn set_weights(&mut self, weights: Array<T, D>);
 }
-
 
 pub trait Parameterized<T = f64, D = Ix2>
 where
@@ -106,7 +99,7 @@ where
     P: Parameterized<T, D>,
     T: Float,
     <D as Dimension>::Smaller: Dimension,
-    <P as Parameterized<T, D>>::Params: 'static, 
+    <P as Parameterized<T, D>>::Params: 'static,
 {
     fn bias(&self) -> &Array<T, D::Smaller> {
         self.params().bias()

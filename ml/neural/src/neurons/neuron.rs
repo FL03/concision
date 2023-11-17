@@ -2,8 +2,8 @@
     Appellation: neuron <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::{Activate, LinearActivation};
 use crate::core::GenerateRandom;
+use crate::func::activate::{Activate, LinearActivation};
 use crate::prelude::Forward;
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;

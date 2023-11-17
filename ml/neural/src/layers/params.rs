@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Features;
-use crate::prelude::Params;
 use crate::core::prelude::GenerateRandom;
+use crate::prelude::Params;
 use ndarray::prelude::{Array1, Array2, Ix2};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;

@@ -17,7 +17,7 @@ pub use concision_optim as optim;
 pub use concision_transformers as transformers;
 
 pub mod prelude {
-    
+
     #[cfg(feature = "neural")]
     pub use concision_neural::prelude::*;
     #[cfg(feature = "nlp")]

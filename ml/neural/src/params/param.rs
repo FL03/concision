@@ -2,8 +2,8 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::layers::Features;
 use crate::core::prelude::GenerateRandom;
+use crate::layers::Features;
 use ndarray::prelude::{Array1, Array2};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -24,7 +24,10 @@ pub trait ParamFeatures {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct ParamGroup<T = f64> where T: Float {
+pub struct ParamGroup<T = f64>
+where
+    T: Float,
+{
     bias: Array1<T>,
     pub features: Features,
     weights: Array2<T>,

@@ -2,35 +2,20 @@
     Appellation: activator <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Activate, LinearActivation};
-use std::marker::PhantomData;
+use super::Activate;
 
-pub struct Activator<T = f64, A = LinearActivation>
-where
-    A: Activate<T>,
-{
-    method: A,
-    _args: PhantomData<T>,
+pub struct Activator<T = f64> {
+    method: Box<dyn Activate<T>>,
 }
 
-impl<T, A> Activator<T, A>
-where
-    A: Activate<T>,
-{
-    pub fn new(method: A) -> Self {
-        Activator {
-            method,
-            _args: PhantomData,
-        }
+impl<T> Activator<T> {
+    pub fn new(method: Box<dyn Activate<T>>) -> Self {
+        Self { method }
     }
 }
 
-impl<T, A> Activate<T> for Activator<T, A>
-where
-    A: Activate<T>,
-{
+impl<T> Activate<T> for Activator<T> {
     fn activate(&self, x: T) -> T {
         self.method.activate(x)
     }
 }
-

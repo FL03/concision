@@ -38,7 +38,10 @@ where
 pub struct ReLU;
 
 impl ReLU {
-    pub fn relu<T>(args: T) -> T where T: PartialOrd + Zero {
+    pub fn relu<T>(args: T) -> T
+    where
+        T: PartialOrd + Zero,
+    {
         if args > T::zero() {
             args
         } else {
@@ -63,15 +66,25 @@ where
 pub struct Sigmoid;
 
 impl Sigmoid {
-    pub fn sigmoid<T>(x: T) -> T where T: Float {
+    pub fn sigmoid<T>(x: T) -> T
+    where
+        T: Float,
+    {
         (T::one() + (-x).exp()).powi(-2)
     }
 
-    pub fn derivative<T>(x: T) -> T where T: Float {
-        - (T::one() + (-x).exp()).powi(-2) * (-x).exp()
+    pub fn derivative<T>(x: T) -> T
+    where
+        T: Float,
+    {
+        -(T::one() + (-x).exp()).powi(-2) * (-x).exp()
     }
 
-    pub fn gradient<T, D>(args: &Array<T, D>) -> Array<T, D> where D: Dimension, T: Float {
+    pub fn gradient<T, D>(args: &Array<T, D>) -> Array<T, D>
+    where
+        D: Dimension,
+        T: Float,
+    {
         args.mapv(|x| Self::derivative(x))
     }
 }
@@ -85,8 +98,6 @@ where
         x.mapv(|x| Self::sigmoid(x))
     }
 }
-
-
 
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
@@ -104,7 +115,6 @@ impl Softmax {
         self.axis
     }
 
-    
     pub fn softmax<T, D>(args: Array<T, D>) -> Array<T, D>
     where
         D: Dimension,
@@ -114,7 +124,7 @@ impl Softmax {
         args.mapv(|x| x.exp() / denom)
     }
 
-    pub fn softmax_axis<T, D>(&self, args: Array<T, D>,) -> Array<T, D>
+    pub fn softmax_axis<T, D>(&self, args: Array<T, D>) -> Array<T, D>
     where
         T: NdFloat,
         D: Dimension + RemoveAxis,

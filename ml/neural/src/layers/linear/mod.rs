@@ -8,7 +8,6 @@ pub use self::{layer::*, regress::*, utils::*};
 pub(crate) mod layer;
 pub(crate) mod regress;
 
-
 pub(crate) mod utils {
     use ndarray::prelude::{Array1, Array2, NdFloat};
 
@@ -16,15 +15,17 @@ pub(crate) mod utils {
         data: &Array2<T>,
         bias: &Array1<T>,
         weights: &Array2<T>,
-    ) -> Array2<T> where T: NdFloat {
+    ) -> Array2<T>
+    where
+        T: NdFloat,
+    {
         data.dot(&weights.t()) + bias
     }
 
-    pub fn linear_node<T>(
-        data: &Array2<T>,
-        bias: &T,
-        weights: &Array1<T>,
-    ) -> Array1<T> where T: NdFloat {
+    pub fn linear_node<T>(data: &Array2<T>, bias: &T, weights: &Array1<T>) -> Array1<T>
+    where
+        T: NdFloat,
+    {
         data.dot(&weights.t()) + bias.clone()
     }
 }

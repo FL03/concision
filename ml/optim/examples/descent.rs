@@ -11,11 +11,11 @@ fn main() -> anyhow::Result<()> {
 
     let _n = samples * inputs;
 
-    let (epochs, gamma) = (500, 0.001);
+    let (epochs, gamma) = (100, 0.05);
 
-    basic_descent(epochs, features, gamma)?;
+    // basic_descent(epochs, features, gamma)?;
 
-    // sample_descent(epochs, features, gamma)?;
+    sample_descent(epochs, features, gamma)?;
 
     Ok(())
 }
@@ -52,7 +52,7 @@ pub fn sample_descent(epochs: usize, features: Features, gamma: f64) -> anyhow::
     let mut grad = GradientDescent::new(gamma, model);
     let mut losses = Array1::zeros(epochs);
     for e in 0..epochs {
-        let cost = grad.step(&x, &y)?;
+        let cost = grad.gradient(&x, &y, Sigmoid::gradient)?;
         losses[e] = cost;
     }
     println!("Losses:\n\n{:?}\n", &losses);

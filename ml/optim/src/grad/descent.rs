@@ -3,9 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::neural::layers::linear::Linear;
-use crate::neural::prelude::Forward;
+use crate::neural::prelude::{Forward, Layer};
 use crate::prelude::Norm;
-use ndarray::prelude::{Array1, Array2,};
+use ndarray::prelude::{Array1, Array2};
 use ndarray_stats::DeviationExt;
 
 #[derive(Clone)]
@@ -53,18 +53,23 @@ impl GradientDescent {
         self
     }
 
-    pub fn gradient(&mut self, data: &Array2<f64>, targets: &Array1<f64>) -> anyhow::Result<f64> {
-        // let pred = self.model.forward(data);
-        let gradient = |p: &Array1<f64>| {
-            let error = targets - &data.dot(&(p / p.l2()));
-            let scale = -1.0 / (2.0 * data.len() as f64);
-            let grad = scale * error.dot(data);
+    pub fn gradient(
+        &mut self,
+        data: &Array2<f64>,
+        targets: &Array1<f64>,
+        grad: impl Fn(&Array1<f64>) -> Array1<f64>,
+    ) -> anyhow::Result<f64> {
+        let lr = self.gamma();
+        let (samples, _inputs) = data.dim();
+        let pred = self.model.forward(data);
 
-            &grad / grad.l2()
-        };
-        self.model.apply_gradient(self.gamma, &gradient);
+        let errors = targets - &pred;
+        let dz = errors * grad(&pred);
+        let dw = data.t().dot(&dz) / (2.0 * samples as f64);
 
-        let loss = targets.mean_sq_err(&self.model.forward(data))?;
+        self.model_mut().update_with_gradient(lr, &dw);
+
+        let loss = targets.mean_sq_err(&self.model().forward(data))?;
         Ok(loss)
     }
 

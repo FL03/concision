@@ -43,7 +43,6 @@ where
         self.features = features;
     }
 
-
     pub fn with_bias(mut self, bias: Array0<T>) -> Self {
         self.bias = bias.into();
         self
@@ -108,7 +107,6 @@ impl<T> Params<T, Ix1> for NeuronParams<T>
 where
     T: Float,
 {
-
     fn bias(&self) -> &Array0<T> {
         &self.bias
     }
@@ -131,7 +129,5 @@ where
 
     fn set_weights(&mut self, weights: Array1<T>) {
         self.weights = weights;
-        
     }
 }
-

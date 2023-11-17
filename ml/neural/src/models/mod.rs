@@ -4,9 +4,8 @@
 */
 //! # Model
 //!
-pub use self::{features::*, model::*, params::*, utils::*};
+pub use self::{model::*, params::*, utils::*};
 
-pub(crate) mod features;
 pub(crate) mod model;
 pub(crate) mod params;
 
