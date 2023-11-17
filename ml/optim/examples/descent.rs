@@ -11,7 +11,7 @@ fn main() -> anyhow::Result<()> {
 
     let _n = samples * inputs;
 
-    let (epochs, gamma) = (100, 0.05);
+    let (epochs, gamma) = (10000, 0.05);
 
     // basic_descent(epochs, features, gamma)?;
 
