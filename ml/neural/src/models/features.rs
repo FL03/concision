@@ -68,10 +68,10 @@ impl std::fmt::Display for Features {
 }
 
 impl IntoDimension for Features {
-    type Dim = ndarray::IxDyn;
+    type Dim = ndarray::Ix2;
 
     fn into_dimension(self) -> Self::Dim {
-        ndarray::IxDyn(&[self.inputs, self.outputs])
+        ndarray::Ix2(self.outputs, self.inputs)
     }
 }
 

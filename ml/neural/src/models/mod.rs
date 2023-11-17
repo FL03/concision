@@ -10,6 +10,8 @@ pub(crate) mod features;
 pub(crate) mod model;
 pub(crate) mod params;
 
+pub mod stack;
+
 pub trait Module<T = f64> {
     fn add_module(&mut self, module: impl Module<T>);
 

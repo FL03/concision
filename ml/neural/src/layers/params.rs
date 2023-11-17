@@ -1,23 +1,23 @@
 /*
-    Appellation: model <mod>
+    Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Features;
-use crate::core::prelude::GenerateRandom;
 use crate::prelude::Params;
+use crate::core::prelude::GenerateRandom;
 use ndarray::prelude::{Array1, Array2, Ix2};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct ModelParams<T = f64> {
+pub struct LayerParams<T = f64> {
     bias: Array1<T>,
     pub features: Features,
     weights: Array2<T>,
 }
 
-impl<T> ModelParams<T>
+impl<T> LayerParams<T>
 where
     T: Float,
 {
@@ -53,7 +53,7 @@ where
     }
 }
 
-impl<T> ModelParams<T>
+impl<T> LayerParams<T>
 where
     T: Float + SampleUniform,
 {
@@ -77,8 +77,7 @@ where
     }
 }
 
-
-impl<T> Params<T, Ix2> for ModelParams<T>
+impl<T> Params<T, Ix2> for LayerParams<T>
 where
     T: Float,
 {

@@ -3,14 +3,58 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::neural::models::ModelParams;
-use ndarray::prelude::{Array1, Array2};
+use ndarray::prelude::{Array1, Array2, NdFloat};
 use num::Float;
+
+pub struct Grad<T = f64>
+where
+    T: Float,
+{
+    gamma: T,
+    params: Vec<ModelParams<T>>,
+    objective: fn(&Array2<T>) -> Array2<T>,
+}
+
+impl<T> Grad<T> where T: Float {
+    pub fn gamma(&self) -> T {
+        self.gamma
+    }
+
+    pub fn gamma_mut(&mut self) -> &mut T {
+        &mut self.gamma
+    }
+
+    pub fn objective(&self) -> fn(&Array2<T>) -> Array2<T> {
+        self.objective
+    }
+
+    pub fn params(&self) -> &Vec<ModelParams<T>> {
+        &self.params
+    }
+
+    pub fn params_mut(&mut self) -> &mut Vec<ModelParams<T>> {
+        &mut self.params
+    }
+
+
+}
+
+impl<T> Grad<T> where T: NdFloat {
+
+    pub fn step(&mut self, x: &Array2<T>, y: &Array2<T>) -> anyhow::Result<T> {
+        let mut cost = T::zero();
+        Ok(cost)
+    }
+
+
+}
 
 pub struct GradStep<T = f64>
 where
     T: Float,
 {
     gamma: T,
+
     params: ModelParams<T>,
 }
 

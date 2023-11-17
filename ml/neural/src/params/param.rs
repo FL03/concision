@@ -2,22 +2,35 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Features;
+use crate::layers::Features;
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::Params;
-use ndarray::prelude::{Array1, Array2, Ix2};
+use ndarray::prelude::{Array1, Array2};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
+pub trait ParamFeatures {
+    fn inputs(&self) -> usize;
+
+    fn outputs(&self) -> usize;
+
+    fn in_by_out(&self) -> (usize, usize) {
+        (self.inputs(), self.outputs())
+    }
+
+    fn out_by_in(&self) -> (usize, usize) {
+        (self.outputs(), self.inputs())
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct ModelParams<T = f64> {
+pub struct ParamGroup<T = f64> where T: Float {
     bias: Array1<T>,
     pub features: Features,
     weights: Array2<T>,
 }
 
-impl<T> ModelParams<T>
+impl<T> ParamGroup<T>
 where
     T: Float,
 {
@@ -34,12 +47,36 @@ where
         self.weights = Array2::zeros(self.features.out_by_in());
     }
 
+    pub fn bias(&self) -> &Array1<T> {
+        &self.bias
+    }
+
+    pub fn bias_mut(&mut self) -> &mut Array1<T> {
+        &mut self.bias
+    }
+
     pub fn features(&self) -> &Features {
         &self.features
     }
 
     pub fn features_mut(&mut self) -> &mut Features {
         &mut self.features
+    }
+
+    pub fn weights(&self) -> &Array2<T> {
+        &self.weights
+    }
+
+    pub fn weights_mut(&mut self) -> &mut Array2<T> {
+        &mut self.weights
+    }
+
+    pub fn set_bias(&mut self, bias: Array1<T>) {
+        self.bias = bias;
+    }
+
+    pub fn set_weights(&mut self, weights: Array2<T>) {
+        self.weights = weights;
     }
 
     pub fn with_bias(mut self, bias: Array1<T>) -> Self {
@@ -53,7 +90,7 @@ where
     }
 }
 
-impl<T> ModelParams<T>
+impl<T> ParamGroup<T>
 where
     T: Float + SampleUniform,
 {
@@ -74,35 +111,5 @@ where
         let dk = (T::one() / T::from(self.features().inputs()).unwrap()).sqrt();
         self.weights = Array2::uniform_between(dk, self.features().out_by_in());
         self
-    }
-}
-
-
-impl<T> Params<T, Ix2> for ModelParams<T>
-where
-    T: Float,
-{
-    fn bias(&self) -> &Array1<T> {
-        &self.bias
-    }
-
-    fn bias_mut(&mut self) -> &mut Array1<T> {
-        &mut self.bias
-    }
-
-    fn weights(&self) -> &Array2<T> {
-        &self.weights
-    }
-
-    fn weights_mut(&mut self) -> &mut Array2<T> {
-        &mut self.weights
-    }
-
-    fn set_bias(&mut self, bias: Array1<T>) {
-        self.bias = bias;
-    }
-
-    fn set_weights(&mut self, weights: Array2<T>) {
-        self.weights = weights;
     }
 }

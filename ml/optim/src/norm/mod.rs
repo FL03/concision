@@ -9,9 +9,10 @@ pub use self::{kinds::*, normalizer::*, utils::*};
 pub(crate) mod kinds;
 pub(crate) mod normalizer;
 
-use ndarray::prelude::{Array, NdFloat};
+use ndarray::prelude::Array;
 use ndarray::Dimension;
 use ndarray_stats::QuantileExt;
+use num::Float;
 
 pub trait Normalize<T> {
     type Output;
@@ -30,7 +31,7 @@ pub trait Norm<T> {
 impl<T, D> Norm<T> for Array<T, D>
 where
     D: Dimension,
-    T: NdFloat,
+    T: Float,
 {
     fn l0(&self) -> T {
         *self.max().expect("No max value")
@@ -41,19 +42,20 @@ where
     }
 
     fn l2(&self) -> T {
-        self.mapv(|xs| xs.powi(2)).sum().sqrt()
+        self.fold(T::zero(), |b, a| b + a.powi(2)).sqrt()
     }
 }
 
 pub(crate) mod utils {
-    use ndarray::prelude::{Array, NdFloat};
+    use ndarray::prelude::Array;
     use ndarray::Dimension;
     use ndarray_stats::QuantileExt;
+    use num::Float;
 
     pub fn l0_norm<T, D>(args: &Array<T, D>) -> T
     where
         D: Dimension,
-        T: NdFloat,
+        T: Float,
     {
         *args.max().expect("No max value")
     }
@@ -61,7 +63,7 @@ pub(crate) mod utils {
     pub fn l1_norm<T, D>(args: &Array<T, D>) -> T
     where
         D: Dimension,
-        T: NdFloat,
+        T: Float,
     {
         args.mapv(|xs| xs.abs()).sum()
     }
@@ -69,7 +71,7 @@ pub(crate) mod utils {
     pub fn l2_norm<T, D>(args: &Array<T, D>) -> T
     where
         D: Dimension,
-        T: NdFloat,
+        T: Float,
     {
         args.mapv(|xs| xs.powi(2)).sum().sqrt()
     }

@@ -15,12 +15,11 @@ pub(crate) mod kinds;
 pub mod regress;
 
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array1};
-use ndarray::{Dimension, ScalarOperand};
+use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
 use num::{Float, FromPrimitive};
 use std::ops;
 
-pub trait Loss<T: Float = f64> {
+pub trait Loss<T = f64> where T: Float {
     fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T;
 }
 
@@ -29,7 +28,21 @@ pub trait Loss<T: Float = f64> {
 pub struct MSE;
 
 impl MSE {
-    pub fn partial_slope<T, D>(
+    pub fn partial_slope<T>(
+        data: &Array2<T>,
+        target: &Array1<T>,
+        bias: &Array1<T>,
+        weights: &Array2<T>,
+    ) -> T
+    where
+        T: FromPrimitive + NdFloat,
+    {
+        let pred = data.dot(&weights.t().to_owned()) + bias.clone();
+        let error = target - &pred;
+        let w = data.t().dot(&error) * (-T::from(2).unwrap());
+        w.mean().unwrap()
+    }
+    pub fn partial<T, D>(
         data: &Array<T, D>,
         bias: &Array1<T>,
         slope: &Array<T, D>,
@@ -37,7 +50,7 @@ impl MSE {
     ) -> (T, T)
     where
         D: Dimension,
-        T: Float + FromPrimitive + ScalarOperand,
+        T: FromPrimitive + NdFloat,
         Array<T, D>: Dot<Array<T, D>>,
         <Array<T, D> as Dot<Array<T, D>>>::Output: ops::Add<Array1<T>, Output = Array<T, D>>
             + ops::Sub<Array1<T>, Output = Array<T, D>>

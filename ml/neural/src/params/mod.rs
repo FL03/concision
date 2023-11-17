@@ -6,85 +6,129 @@
 //!
 //! ## Overview
 //!
-pub use self::{bias::*, shapes::*, utils::*, weight::*};
+pub use self::{bias::*, param::*, shapes::*, utils::*, weight::*};
 
 pub(crate) mod bias;
+pub(crate) mod param;
 pub(crate) mod shapes;
 pub(crate) mod weight;
 
-use crate::core::prelude::Borrowed;
-
+use ndarray::IntoDimension;
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array2, Ix2, NdFloat};
-use ndarray::Dimension;
+use ndarray::prelude::{Array, Dimension, Ix2,};
 use num::Float;
 
-pub trait WeightTensor<T = f64, D = Ix2>
+
+
+pub trait Biased<T = f64, D = Ix2>
 where
-    Array<T, D>: Dot<Array<T, D>, Output = Array<T, D>>,
     D: Dimension,
-    T: NdFloat,
+    T: Float,
+    Self: Weighted<T, D>
 {
+    /// Returns an owned reference to the bias of the layer.
+    fn bias(&self) -> &Array<T, D::Smaller>;
+    /// Returns a mutable reference to the bias of the layer.
+    fn bias_mut(&mut self) -> &mut Array<T, D::Smaller>;
+}
+
+
+
+pub trait Weighted<T = f64, D = Ix2>
+where
+    D: Dimension,
+    T: Float,
+{
+    /// Returns an owned reference to the weights of the layer.
     fn weights(&self) -> &Array<T, D>;
+    /// Returns a mutable reference to the weights of the layer.
     fn weights_mut(&mut self) -> &mut Array<T, D>;
 }
 
-pub trait Parameter {}
+pub trait WeightedExt<T = f64, D = Ix2>: Weighted<T, D>
+where
+    Array<T, D>: Dot<Array<T, D>, Output = Array<T, D>>,
+    D: Dimension,
+    T: Float,
+{
+
+}
 
 pub trait Params<T = f64, D = Ix2>
 where
     D: Dimension,
     T: Float,
 {
+
+    /// Returns an owned reference to the bias of the layer.
     fn bias(&self) -> &Array<T, D::Smaller>;
+    /// Returns a mutable reference to the bias of the layer.
     fn bias_mut(&mut self) -> &mut Array<T, D::Smaller>;
+    /// Returns an owned reference to the weights of the layer.
     fn weights(&self) -> &Array<T, D>;
+    /// Returns a mutable reference to the weights of the layer.
     fn weights_mut(&mut self) -> &mut Array<T, D>;
+    /// Sets the bias of the layer.
+    fn set_bias(&mut self, bias: Array<T, D::Smaller>);
+    /// Sets the weights of the layer.
+    fn set_weights(&mut self, weights: Array<T, D>);
 }
 
-pub trait Biased<T = f64>
+
+pub trait Parameterized<T = f64, D = Ix2>
 where
+    D: Dimension,
     T: Float,
 {
-    fn bias(&self) -> &Bias<T>;
-    fn bias_mut(&mut self) -> &mut Bias<T>;
+    type Features: IntoDimension<Dim = D>;
+    type Params: Params<T, D>;
+
+    fn features(&self) -> &Self::Features;
+
+    fn features_mut(&mut self) -> &mut Self::Features;
+
+    fn params(&self) -> &Self::Params;
+
+    fn params_mut(&mut self) -> &mut Self::Params;
+
+    fn set_bias(&mut self, bias: Array<T, D::Smaller>) {
+        self.params_mut().set_bias(bias);
+    }
+
+    fn set_weights(&mut self, weights: Array<T, D>) {
+        self.params_mut().set_weights(weights);
+    }
 }
 
-impl<T, D> WeightTensor<T, D> for Array<T, D>
+impl<T, D, P> Biased<T, D> for P
 where
-    Array<T, D>: Borrowed<Array<T, D>> + Dot<Array<T, D>, Output = Array<T, D>>,
     D: Dimension,
-    T: NdFloat,
+    P: Parameterized<T, D>,
+    T: Float,
+    <D as Dimension>::Smaller: Dimension,
+    <P as Parameterized<T, D>>::Params: 'static, 
+{
+    fn bias(&self) -> &Array<T, D::Smaller> {
+        self.params().bias()
+    }
+
+    fn bias_mut(&mut self) -> &mut Array<T, D::Smaller> {
+        self.params_mut().bias_mut()
+    }
+}
+
+impl<T, D, P> Weighted<T, D> for P
+where
+    P: Parameterized<T, D>,
+    D: Dimension,
+    T: Float,
 {
     fn weights(&self) -> &Array<T, D> {
-        self.as_ref()
+        self.params().weights()
     }
 
     fn weights_mut(&mut self) -> &mut Array<T, D> {
-        self.as_mut()
-    }
-}
-
-pub trait Weighted<T = f64>
-where
-    T: Float,
-{
-    fn weights(&self) -> &Array2<T>;
-
-    fn weights_mut(&mut self) -> &mut Array2<T>;
-}
-
-impl<S, T> Weighted<T> for S
-where
-    S: AsMut<Array2<T>> + AsRef<Array2<T>>,
-    T: Float,
-{
-    fn weights(&self) -> &Array2<T> {
-        self.as_ref()
-    }
-
-    fn weights_mut(&mut self) -> &mut Array2<T> {
-        self.as_mut()
+        self.params_mut().weights_mut()
     }
 }
 

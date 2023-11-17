@@ -45,4 +45,18 @@ where
     }
 }
 
-pub(crate) mod utils {}
+pub(crate) mod utils {
+    use num::{One, Zero};
+    
+    pub fn linear_activation<T>(x: &T) -> T where T: Clone {
+        x.clone()
+    }
+
+    pub fn heavyside<T>(x: &T) -> T where T: Clone + One + PartialOrd + Zero {
+        if x.clone() > T::zero() {
+            T::one()
+        } else {
+            T::zero()
+        }
+    }
+}

@@ -2,15 +2,18 @@
     Appellation: binary <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neurons::activate::Activate;
-use ndarray::prelude::Array;
-use ndarray::Dimension;
+use super::Activate;
+use ndarray::prelude::{Array, Dimension};
 use num::{One, Zero};
+use serde::{Deserialize, Serialize};
 
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
+)]
 pub struct Heavyside;
 
 impl Heavyside {
-    pub fn heavyside<T: PartialOrd + One + Zero>(x: T) -> T
+    pub fn heavyside<T>(x: T) -> T
     where
         T: One + PartialOrd + Zero,
     {

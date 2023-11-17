@@ -1,4 +1,4 @@
-use concision_neural::prelude::{Features, Linear};
+use concision_neural::prelude::{Features, Linear, Sigmoid};
 use concision_neural::prop::Forward;
 use concision_optim::prelude::{gradient_descent, GradientDescent};
 use ndarray::prelude::{Array, Array1};
@@ -13,9 +13,9 @@ fn main() -> anyhow::Result<()> {
 
     let (epochs, gamma) = (500, 0.001);
 
-    // basic_descent(epochs, features, gamma)?;
+    basic_descent(epochs, features, gamma)?;
 
-    sample_descent(epochs, features, gamma)?;
+    // sample_descent(epochs, features, gamma)?;
 
     Ok(())
 }
@@ -25,7 +25,7 @@ pub fn basic_descent(epochs: usize, features: Features, gamma: f64) -> anyhow::R
 
     println!(
         "{:?}",
-        gradient_descent(model.weights_mut(), epochs, gamma, |a| a.clone())
+        gradient_descent(model.weights_mut(), epochs, gamma, Sigmoid::gradient)
     );
     Ok(())
 }
@@ -52,7 +52,7 @@ pub fn sample_descent(epochs: usize, features: Features, gamma: f64) -> anyhow::
     let mut grad = GradientDescent::new(gamma, model);
     let mut losses = Array1::zeros(epochs);
     for e in 0..epochs {
-        let cost = grad.logit(&x, &y)?;
+        let cost = grad.step(&x, &y)?;
         losses[e] = cost;
     }
     println!("Losses:\n\n{:?}\n", &losses);

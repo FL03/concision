@@ -50,48 +50,48 @@ impl std::fmt::Display for Features {
 }
 
 impl IntoDimension for Features {
-    type Dim = ndarray::IxDyn;
+    type Dim = ndarray::Ix2;
 
     fn into_dimension(self) -> Self::Dim {
-        ndarray::IxDyn(&[self.inputs, self.outputs])
+        ndarray::Ix2(self.outputs, self.inputs)
     }
 }
 
 impl From<Features> for ndarray::Ix2 {
     fn from(features: Features) -> Self {
-        ndarray::Ix2(features.inputs, features.outputs)
+        ndarray::Ix2(features.outputs, features.inputs)
     }
 }
 
 impl From<Features> for ndarray::IxDyn {
     fn from(features: Features) -> Self {
-        ndarray::IxDyn(&[features.inputs, features.outputs])
+        ndarray::IxDyn(&[features.outputs, features.inputs])
     }
 }
 
 impl From<Features> for [usize; 2] {
     fn from(features: Features) -> Self {
-        [features.inputs, features.outputs]
+        [features.outputs, features.inputs]
     }
 }
 
 impl From<[usize; 2]> for Features {
     fn from(features: [usize; 2]) -> Self {
         Self {
-            inputs: features[0],
-            outputs: features[1],
+            inputs: features[1],
+            outputs: features[0],
         }
     }
 }
 
 impl From<Features> for (usize, usize) {
     fn from(features: Features) -> Self {
-        (features.inputs, features.outputs)
+        (features.outputs, features.inputs)
     }
 }
 
 impl From<(usize, usize)> for Features {
-    fn from((inputs, outputs): (usize, usize)) -> Self {
+    fn from((outputs, inputs): (usize, usize)) -> Self {
         Self { inputs, outputs }
     }
 }

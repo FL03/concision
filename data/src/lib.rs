@@ -15,6 +15,8 @@ pub mod flows;
 pub mod tensors;
 
 pub mod prelude {
+    pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
+
     pub use crate::datasets::*;
     pub use crate::df::*;
     pub use crate::flows::*;

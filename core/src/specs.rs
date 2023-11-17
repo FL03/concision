@@ -2,13 +2,23 @@
     Appellation: specs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::Array;
-use ndarray::{Dimension, IntoDimension};
+use ndarray::prelude::{Array, Axis, Dimension};
+use ndarray::IntoDimension;
 // use ndarray::linalg::Dot;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Uniform};
 use ndarray_rand::RandomExt;
 use num::{Float, One, Zero};
+
+pub trait IntoAxis {
+    fn into_axis(self) -> Axis;
+}
+
+impl IntoAxis for usize {
+    fn into_axis(self) -> Axis {
+        Axis(self)
+    }
+}
 
 pub trait Borrowed<T>: AsRef<T> + AsMut<T> {}
 

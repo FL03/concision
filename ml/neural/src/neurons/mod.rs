@@ -3,19 +3,39 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # neurons
-pub use self::{neuron::*, node::*, utils::*};
+pub use self::{neuron::*, node::*, params::*, utils::*};
 
 pub(crate) mod neuron;
 pub(crate) mod node;
+pub(crate) mod params;
 
-pub mod activate;
+use crate::func::activate::Activate;
+use ndarray::prelude::{Array1, Array2, NdFloat};
+
+pub trait ArtificialNeuron<T>
+where
+    T: NdFloat,
+{
+    type Rho: Activate<Array1<T>>;
+
+    fn bias(&self) -> T;
+
+    fn forward(&self, args: &Array2<T>) -> Array1<T> {
+        self.rho()
+            .activate(args.dot(&self.weights().t()) + self.bias())
+    }
+
+    fn rho(&self) -> &Self::Rho;
+
+    fn weights(&self) -> &Array1<T>;
+}
 
 pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {
-    use super::activate::{softmax, Activate, Softmax};
     use super::*;
+    use crate::func::activate::{Activate, Softmax, softmax};
     use crate::prelude::Forward;
     // use lazy_static::lazy_static;
     use ndarray::{array, Array1};

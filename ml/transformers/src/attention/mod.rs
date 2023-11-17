@@ -19,8 +19,7 @@ pub mod params;
 use crate::core::prelude::BoxResult;
 use crate::prelude::BaseDim;
 
-use ndarray::prelude::{Array, Array2, Ix2};
-use ndarray::{Dimension, ScalarOperand};
+use ndarray::prelude::{Array, Array2, Dimension, Ix2, NdFloat};
 use num::Float;
 use std::ops::Mul;
 
@@ -29,10 +28,8 @@ pub type InputArray<T> = Array<T, BaseDim>;
 
 pub type AttentionArray<T> = Array<T, Ix2>;
 
-pub trait Attention<T: Float> {
+pub trait Attention<T: NdFloat = f64> {
     fn attention(&self, data: &Array2<T>) -> BoxResult<Array2<T>>
-    where
-        T: ScalarOperand,
     {
         // let (seq, model) = data.dim();
 
@@ -85,11 +82,9 @@ pub trait Weights<T: Float>: Mul<Array2<T>, Output = Self> {
 
 pub(crate) mod utils {
     use crate::neural::prelude::{Activate, Softmax};
-    use ndarray::prelude::Array2;
-    use ndarray::ScalarOperand;
-    use num::Float;
+    use ndarray::prelude::{Array2, NdFloat};
 
-    pub fn attention<T: Float + ScalarOperand>(
+    pub fn attention<T: NdFloat>(
         query: &Array2<T>,
         key: &Array2<T>,
         value: &Array2<T>,

@@ -4,9 +4,8 @@
 */
 use super::params::{HeadShape, QKV};
 use super::{Head, Weight};
-use crate::neural::neurons::activate::{Activate, Softmax};
-use ndarray::prelude::Array2;
-use ndarray::ScalarOperand;
+use crate::neural::func::activate::{Activate, Softmax};
+use ndarray::prelude::{Array2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -60,7 +59,7 @@ where
     }
 }
 
-impl<T: Float + ScalarOperand> AttentionHead<T> {
+impl<T> AttentionHead<T> where T: NdFloat {
     pub fn attention(&mut self, data: &Array2<T>) -> Array2<T> {
         // multiply the data by the wieghted query, key, and value matrices, respectively
         let weighted = data * self.weights();
@@ -68,7 +67,7 @@ impl<T: Float + ScalarOperand> AttentionHead<T> {
 
         // compute the attention score
         let inner = (q.dot(&k.t()) + self.mask.clone()) * self.scale();
-        Activate::activate(&Softmax::default(), inner).dot(&v)
+        Softmax::default().activate(inner).dot(&v)
     }
 }
 

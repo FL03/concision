@@ -2,22 +2,10 @@
     Appellation: activator <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Activate, ActivationFn, ActivationMethod};
+use super::{Activate, LinearActivation};
 use std::marker::PhantomData;
 
-pub trait ActivationParams {}
-
-pub trait LinearActivation<T>: ActivationMethod {
-    fn rho() -> ActivationFn<T> {
-        |x| x
-    }
-
-    fn linear(&self, x: T) -> T {
-        x
-    }
-}
-
-pub struct Activator<T, A>
+pub struct Activator<T = f64, A = LinearActivation>
 where
     A: Activate<T>,
 {
@@ -45,3 +33,4 @@ where
         self.method.activate(x)
     }
 }
+

@@ -8,24 +8,24 @@ pub use self::{layer::*, regress::*, utils::*};
 pub(crate) mod layer;
 pub(crate) mod regress;
 
-use ndarray::prelude::Array2;
-use num::Float;
-
-// pub trait Lin<T = f64> where T: Float {
-
-//     fn forward(&self, data: &Array2<T>) -> Array2<T>;
-// }
 
 pub(crate) mod utils {
-    use ndarray::prelude::{Array1, Array2};
-    use num::Float;
+    use ndarray::prelude::{Array1, Array2, NdFloat};
 
-    pub fn linear_transformation<T: Float + 'static>(
+    pub fn linear_transformation<T>(
         data: &Array2<T>,
         bias: &Array1<T>,
         weights: &Array2<T>,
-    ) -> Array2<T> {
+    ) -> Array2<T> where T: NdFloat {
         data.dot(&weights.t()) + bias
+    }
+
+    pub fn linear_node<T>(
+        data: &Array2<T>,
+        bias: &T,
+        weights: &Array1<T>,
+    ) -> Array1<T> where T: NdFloat {
+        data.dot(&weights.t()) + bias.clone()
     }
 }
 

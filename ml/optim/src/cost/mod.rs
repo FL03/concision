@@ -16,7 +16,7 @@ pub trait Cost<T = f64>
 where
     T: Float,
 {
-    fn cost(&self, pred: &T, target: &T) -> T;
+    fn cost(&self, other: &Self) -> T;
 }
 
 pub trait CostArr<T = f64>
@@ -32,14 +32,17 @@ pub(crate) mod utils {
 
     use ndarray::prelude::Array;
     use ndarray::Dimension;
-    use num::Float;
+    use num::{Float, FromPrimitive};
 
-    pub fn mse<'a, T, D>(pred: &Array<T, D>, target: &Array<T, D>) -> Array<T, D>
+    pub fn mse<'a, T, D>(pred: &Array<T, D>, target: &Array<T, D>) -> T
     where
-        T: Float,
+        T: Float + FromPrimitive,
         D: Dimension,
     {
-        (pred - target).mapv(|x| x.powi(2))
+        (pred - target)
+            .mapv(|x| x.powi(2))
+            .mean()
+            .unwrap_or_else(T::zero)
     }
 
     pub fn mae<'a, T, D>(pred: &Array<T, D>, target: &Array<T, D>) -> Array<T, D>

@@ -2,31 +2,13 @@
     Appellation: neuron <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::activate::{Activate, LinearActivation};
+use crate::func::activate::{Activate, LinearActivation};
 use crate::core::GenerateRandom;
 use crate::prelude::Forward;
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use rand::Rng;
-
-pub trait ArtificialNeuron<T>
-where
-    T: NdFloat,
-{
-    type Rho: Activate<Array1<T>>;
-
-    fn bias(&self) -> T;
-
-    fn forward(&self, args: &Array2<T>) -> Array1<T> {
-        self.rho()
-            .activate(args.dot(&self.weights().t()) + self.bias())
-    }
-
-    fn rho(&self) -> &Self::Rho;
-
-    fn weights(&self) -> &Array1<T>;
-}
 
 /// Artificial Neuron
 #[derive(Clone, Debug, PartialEq)]
@@ -117,7 +99,7 @@ where
 impl<T, A> Neuron<T, A>
 where
     T: Float + SampleUniform,
-    A: Activate<Array1<T>> + Default,
+    A: Activate<Array1<T>>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         if biased {
@@ -152,7 +134,7 @@ where
 impl<T, A> Forward<Array2<T>> for Neuron<T, A>
 where
     T: NdFloat,
-    A: Activate<Array1<T>> + Default,
+    A: Activate<Array1<T>>,
 {
     type Output = Array1<T>;
 

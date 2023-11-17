@@ -3,9 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Neural Network
-pub use self::{network::*, utils::*};
+pub use self::{deep::*, utils::*};
 
-pub(crate) mod network;
+pub(crate) mod deep;
 
 use crate::layers::Layer;
 use crate::Trainable;
@@ -17,6 +17,10 @@ pub trait NeuralNet<T: Float = f64>: Trainable<T> {
     }
 
     fn layers(&self) -> &[Layer<T>];
+
+    fn input_layer(&self) -> &Layer<T> {
+        &self.layers()[0]
+    }
 }
 
 pub(crate) mod utils {}

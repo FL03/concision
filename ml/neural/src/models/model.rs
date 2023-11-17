@@ -2,14 +2,16 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Features, ModelParams, Parameterized};
+use super::{Features, ModelParams,};
+use crate::prelude::{Biased, Parameterized, Weighted};
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 
 pub struct Model<T = f64> {
     pub features: Features,
-    params: ModelParams<T>,
+    children: Vec<Model<T>>,
+    params: ModelParams<T>
 }
 
 impl<T> Model<T>
@@ -19,6 +21,7 @@ where
     pub fn new(features: Features) -> Self {
         Self {
             features,
+            children: Vec::new(),
             params: ModelParams::new(features),
         }
     }
@@ -37,7 +40,7 @@ where
     T: NdFloat,
 {
     pub fn linear(&self, args: &Array2<T>) -> Array2<T> {
-        args.dot(&self.params().weights().t()) + self.params().bias()
+        args.dot(&self.weights().t()) + self.bias()
     }
 }
 
@@ -55,6 +58,17 @@ impl<T> Parameterized<T> for Model<T>
 where
     T: Float,
 {
+    type Features = Features;
+    type Params = ModelParams<T>;
+
+    fn features(&self) -> &Features {
+        &self.features
+    }
+
+    fn features_mut(&mut self) -> &mut Features {
+        &mut self.features
+    }
+    
     fn params(&self) -> &ModelParams<T> {
         &self.params
     }

@@ -5,22 +5,8 @@
 use crate::neural::layers::linear::Linear;
 use crate::neural::prelude::Forward;
 use crate::prelude::Norm;
-use ndarray::prelude::{Array1, Array2};
+use ndarray::prelude::{Array1, Array2,};
 use ndarray_stats::DeviationExt;
-
-pub fn gradient_descent(
-    weights: &mut Array1<f64>,
-    epochs: usize,
-    gamma: f64,
-    partial: impl Fn(&Array1<f64>) -> Array1<f64>,
-) -> Array1<f64> {
-    let mut losses = Array1::zeros(epochs);
-    for e in 0..epochs {
-        *weights = weights.clone() - gamma * partial(&weights.clone());
-        losses[e] = weights.mean().unwrap_or_default();
-    }
-    losses
-}
 
 #[derive(Clone)]
 pub struct GradientDescent {
@@ -67,14 +53,14 @@ impl GradientDescent {
         self
     }
 
-    pub fn logit(&mut self, data: &Array2<f64>, targets: &Array1<f64>) -> anyhow::Result<f64> {
+    pub fn gradient(&mut self, data: &Array2<f64>, targets: &Array1<f64>) -> anyhow::Result<f64> {
         // let pred = self.model.forward(data);
         let gradient = |p: &Array1<f64>| {
             let error = targets - &data.dot(&(p / p.l2()));
             let scale = -1.0 / (2.0 * data.len() as f64);
             let grad = scale * error.dot(data);
 
-            grad
+            &grad / grad.l2()
         };
         self.model.apply_gradient(self.gamma, &gradient);
 
@@ -83,17 +69,16 @@ impl GradientDescent {
     }
 
     pub fn step(&mut self, data: &Array2<f64>, targets: &Array1<f64>) -> anyhow::Result<f64> {
+        // let pred = self.model.forward(data);
         let gradient = |p: &Array1<f64>| {
-            let pred = data.dot(p);
-            let error = targets - pred;
-            let scale = -2.0 / data.len() as f64;
-            let grad = scale * data.t().dot(&error);
+            let error = targets - &data.dot(&(p / p.l2()));
+            let scale = -1.0 / (2.0 * data.len() as f64);
+            let grad = scale * error.dot(data);
 
             &grad / grad.l2()
         };
         self.model.apply_gradient(self.gamma, &gradient);
 
-        // let loss = targets.mean_sq_err(&self.model.forward(data))?;
         let loss = targets.mean_sq_err(&self.model.forward(data))?;
         Ok(loss)
     }

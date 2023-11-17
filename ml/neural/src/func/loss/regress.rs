@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Loss;
-use ndarray::prelude::{Array, Array1};
+use ndarray::prelude::{Array, Array1, NdFloat};
 use ndarray::Dimension;
 use num::Float;
 use std::ops;
@@ -75,9 +75,11 @@ where
 
 pub struct MeanSquaredError;
 
+
+
 impl<T> Loss<T> for MeanSquaredError
 where
-    T: Float + ops::AddAssign + ops::DivAssign,
+    T: NdFloat,
 {
     fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
         let mut res = T::zero();

@@ -11,13 +11,11 @@ use crate::attention::Weight;
 use crate::core::prelude::BoxResult;
 use crate::neural::prelude::Mask;
 use crate::ops::Split;
-use ndarray::prelude::Array2;
-use ndarray::ScalarOperand;
-use num::Float;
+use ndarray::prelude::{Array2, NdFloat};
 
 pub trait MultiHead<T>
 where
-    T: Float + ScalarOperand,
+    T: NdFloat,
 {
     fn attention(&mut self, data: &Array2<T>, mask: &Mask<T>) -> BoxResult<Array2<T>> {
         let weighted = data * self.weights();
@@ -35,9 +33,8 @@ pub(crate) mod utils {
     use crate::attention::attention;
     use crate::neural::prelude::Mask;
     use crate::ops::Merge;
-    use ndarray::prelude::{s, Array2, Array3, Array4};
-    use ndarray::{ScalarOperand, ShapeError};
-    use num::Float;
+    use ndarray::prelude::{s, Array2, Array3, Array4, NdFloat};
+    use ndarray::ShapeError;
 
     pub fn batched_multihead(
         query: &Array4<f64>,
@@ -67,7 +64,7 @@ pub(crate) mod utils {
         mask: &Mask<T>,
     ) -> Result<Array2<T>, ShapeError>
     where
-        T: Float + ScalarOperand,
+        T: NdFloat,
     {
         let (heads, _, _) = query.dim();
         let mut score = Array3::<T>::zeros(query.dim());
