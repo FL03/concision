@@ -26,9 +26,44 @@ pub struct DescentParams {
 }
 
 pub(crate) mod utils {
-    // use crate::neural::prelude::{Activate, Layer,};
-    use ndarray::prelude::{Array, Array1, Dimension, NdFloat};
-    use num::FromPrimitive;
+    use crate::neural::prelude::{Activate, Biased, Forward, Layer, Parameterized, Weighted};
+    use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, Ix2, NdFloat};
+    use ndarray_stats::DeviationExt;
+    use num::{FromPrimitive, Signed};
+
+    pub fn gradient<T, A>(
+        gamma: T,
+        model: &mut Layer<T, A>,
+        data: &Array2<T>,
+        targets: &Array2<T>,
+        grad: impl Fn(&Array2<T>) -> Array2<T>,
+    ) -> f64
+    where
+        A: Activate<T, Ix2>,
+        T: FromPrimitive + NdFloat + Signed,
+    {
+        let (samples, _inputs) = data.dim();
+        let pred = model.forward(data);
+
+        let ns = T::from(samples).unwrap();
+
+        let errors = &pred - targets;
+        // compute the gradient of the objective function w.r.t. the model's weights
+        let dz = errors * grad(&pred);
+        // compute the gradient of the objective function w.r.t. the model's weights
+        let dw = data.t().dot(&dz) / ns;
+        // compute the gradient of the objective function w.r.t. the model's bias
+        // let db = dz.sum_axis(Axis(0)) / ns;
+        // // Apply the gradients to the model's learnable parameters
+        // model.params_mut().bias_mut().scaled_add(-gamma, &db.t());
+
+        model.params_mut().weights_mut().scaled_add(-gamma, &dw.t());
+
+        let loss = targets
+            .mean_sq_err(&model.forward(data))
+            .expect("Error when calculating the MSE of the model");
+        loss
+    }
 
     pub fn gradient_descent<T, D>(
         params: &mut Array<T, D>,
@@ -64,8 +99,10 @@ pub(crate) mod utils {
 mod tests {
 
     use super::*;
-    use crate::neural::prelude::{Features, Layer, LinearActivation, Weighted};
-    use ndarray::prelude::Array2;
+    use crate::core::prelude::linarr;
+    use crate::neural::func::activate::{LinearActivation, Sigmoid};
+    use crate::neural::prelude::{Features, Layer, Parameterized, Weighted};
+    use ndarray::prelude::{Array1, Array2};
 
     fn test_grad(args: &Array2<f64>) -> Array2<f64> {
         args.clone()
@@ -82,7 +119,36 @@ mod tests {
 
         let mut model = Layer::<f64, LinearActivation>::from(features).init(true);
 
-        let losses = gradient_descent(&mut model.weights_mut(), epochs, gamma, test_grad);
+        let losses = gradient_descent(
+            &mut model.params_mut().weights_mut(),
+            epochs,
+            gamma,
+            test_grad,
+        );
         assert_eq!(losses.len(), epochs);
+    }
+
+    #[test]
+    fn test_gradient() {
+        let (samples, inputs) = (20, 5);
+        let outputs = 1;
+
+        let (epochs, gamma) = (10, 0.001);
+
+        let features = Features::new(inputs, outputs);
+
+        // Generate some example data
+        let x = linarr((samples, features.inputs())).unwrap();
+        let y = linarr((samples, features.outputs())).unwrap();
+
+        let mut model = Layer::<f64, LinearActivation>::input(features).init(true);
+
+        let mut losses = Array1::zeros(epochs);
+        for e in 0..epochs {
+            let cost = gradient(gamma, &mut model, &x, &y, Sigmoid::gradient);
+            losses[e] = cost;
+        }
+        assert_eq!(losses.len(), epochs);
+        assert!(losses.first() > losses.last());
     }
 }

@@ -21,7 +21,7 @@ impl FFN {
         let features = Features::new(model, params.network_size());
 
         Self {
-            input: Layer::new_input(features),
+            input: Layer::input(features),
             output: Layer::output(features, 1),
             params,
         }
@@ -33,6 +33,6 @@ impl Forward<Array2<f64>> for FFN {
 
     fn forward(&self, data: &Array2<f64>) -> Self::Output {
         self.output
-            .forward(&Activate::activate(&ReLU, self.input.forward(data)))
+            .forward(&ReLU::default().activate(&self.input.forward(data)))
     }
 }

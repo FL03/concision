@@ -2,51 +2,10 @@
     Appellation: grad <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::layers::linear::Linear;
-use crate::neural::prelude::{Activate, Biased, Forward, Layer, Weighted};
+use crate::neural::prelude::{Forward, Linear};
 use crate::prelude::Norm;
-use ndarray::prelude::{Array1, Array2, Axis, NdFloat};
+use ndarray::prelude::{Array1, Array2};
 use ndarray_stats::DeviationExt;
-use num::{FromPrimitive, Signed};
-
-pub fn gradient<T, A>(
-    gamma: T,
-    model: &mut Layer<T, A>,
-    data: &Array2<T>,
-    targets: &Array2<T>,
-    grad: impl Fn(&Array2<T>) -> Array2<T>,
-) -> f64
-where
-    A: Activate<Array2<T>>,
-    T: FromPrimitive + NdFloat + Signed,
-{
-    let (samples, _inputs) = data.dim();
-    let pred = model.forward(data);
-
-    let ns = T::from(samples).unwrap();
-
-    let errors = &pred - targets;
-    // compute the gradient of the objective function w.r.t. the model's weights
-    let dz = errors * grad(&pred);
-    // compute the gradient of the objective function w.r.t. the model's weights
-    let dw = data.t().dot(&dz) / ns;
-    // compute the gradient of the objective function w.r.t. the model's bias
-    // let db = dz.sum_axis(Axis(0)) / ns;
-    // // Apply the gradients to the model's learnable parameters
-    // model.bias_mut().scaled_add(-gamma, &db);
-
-    model.weights_mut().scaled_add(-gamma, &dw.t());
-
-    let loss = targets
-        .mean_sq_err(&model.forward(data))
-        .expect("Error when calculating the MSE of the model");
-    loss
-}
-
-pub struct GradLayer {
-    gamma: f64,
-    layer: Layer,
-}
 
 #[derive(Clone)]
 pub struct GradientDescent {

@@ -5,29 +5,29 @@
 use crate::core::GenerateRandom;
 use crate::func::activate::{Activate, LinearActivation};
 use crate::prelude::Forward;
-use ndarray::prelude::{Array1, Array2, NdFloat};
+use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
-use rand::Rng;
 
 /// Artificial Neuron
 #[derive(Clone, Debug, PartialEq)]
 pub struct Neuron<T = f64, A = LinearActivation>
 where
-    A: Activate<Array1<T>>,
+    A: Activate<T, Ix1>,
+    T: Float,
 {
     activation: A,
-    bias: T,
+    bias: Array0<T>,
     features: usize,
     weights: Array1<T>,
 }
 
 impl<T, A> Neuron<T, A>
 where
-    A: Activate<Array1<T>>,
+    A: Activate<T, Ix1>,
     T: Float,
 {
-    pub fn bias(&self) -> &T {
+    pub fn bias(&self) -> &Array0<T> {
         &self.bias
     }
 
@@ -43,7 +43,7 @@ where
         &mut self.weights
     }
 
-    pub fn set_bias(&mut self, bias: T) {
+    pub fn set_bias(&mut self, bias: Array0<T>) {
         self.bias = bias;
     }
 
@@ -51,7 +51,7 @@ where
         self.weights = weights;
     }
 
-    pub fn with_bias(mut self, bias: T) -> Self {
+    pub fn with_bias(mut self, bias: Array0<T>) -> Self {
         self.bias = bias;
         self
     }
@@ -70,12 +70,12 @@ where
 impl<T, A> Neuron<T, A>
 where
     T: NdFloat,
-    A: Activate<Array1<T>> + Default,
+    A: Activate<T, Ix1> + Default,
 {
     pub fn new(features: usize) -> Self {
         Self {
             activation: A::default(),
-            bias: T::zero(),
+            bias: Array0::zeros(()),
             features,
             weights: Array1::zeros(features),
         }
@@ -85,7 +85,7 @@ where
 impl<T, A> Neuron<T, A>
 where
     T: NdFloat,
-    A: Activate<Array1<T>>,
+    A: Activate<T, Ix1>,
 {
     pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
     where
@@ -99,7 +99,7 @@ where
 impl<T, A> Neuron<T, A>
 where
     T: Float + SampleUniform,
-    A: Activate<Array1<T>>,
+    A: Activate<T, Ix1>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         if biased {
@@ -110,7 +110,7 @@ where
 
     pub fn init_bias(mut self) -> Self {
         let dk = (T::one() / T::from(self.features).unwrap()).sqrt();
-        self.bias = rand::thread_rng().gen_range(-dk..dk);
+        self.bias = Array0::uniform_between(dk, ());
         self
     }
 
@@ -134,12 +134,12 @@ where
 impl<T, A> Forward<Array2<T>> for Neuron<T, A>
 where
     T: NdFloat,
-    A: Activate<Array1<T>>,
+    A: Activate<T, Ix1>,
 {
     type Output = Array1<T>;
 
     fn forward(&self, args: &Array2<T>) -> Self::Output {
-        let linstep = args.dot(&self.weights().t()) + self.bias;
-        self.rho().activate(linstep)
+        let linstep = args.dot(&self.weights().t()) + self.bias();
+        self.rho().activate(&linstep)
     }
 }

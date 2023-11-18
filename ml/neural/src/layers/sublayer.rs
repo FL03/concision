@@ -7,14 +7,14 @@ use crate::func::activate::{Activate, LinearActivation};
 use crate::ops::LayerNorm;
 use crate::prelude::Forward;
 
-use ndarray::prelude::{Array2, NdFloat};
+use ndarray::prelude::{Array2, Ix2, NdFloat};
 use num::{Float, FromPrimitive};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Sublayer<T = f64, A = LinearActivation>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     layer: Layer<T, A>,
@@ -23,7 +23,7 @@ where
 
 impl<T, A> Sublayer<T, A>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     pub fn new(layer: Layer<T, A>, norm: LayerNorm<T>) -> Self {
@@ -33,7 +33,7 @@ where
 
 impl<T, A> Forward<Array2<T>> for Sublayer<T, A>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: FromPrimitive + NdFloat,
 {
     type Output = Array2<T>;

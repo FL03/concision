@@ -44,7 +44,7 @@ where
         let params = MultiHeadParams::new(heads, model);
         let weights = Weight::uniform((model, model));
         Self {
-            linear: Layer::new_input((model, model).into()),
+            linear: Layer::input((model, model).into()),
             params,
             weights,
         }

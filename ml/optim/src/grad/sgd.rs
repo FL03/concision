@@ -5,22 +5,23 @@
 //! # Stochastic Gradient Descent (SGD)
 //!
 //!
-use crate::neural::prelude::{mse, Activate, Forward, Layer, Parameterized, Params, Weighted};
+use crate::neural::prelude::{Activate, Forward, Layer, Parameterized, Weighted};
 // use crate::prelude::ObjectiveFn;
-use ndarray::prelude::{s, Array1, Array2, Axis, NdFloat};
-use num::{Float, FromPrimitive};
+use ndarray::prelude::{s, Array1, Array2, Axis, Ix2, NdFloat};
+use ndarray_stats::DeviationExt;
+use num::{Float, FromPrimitive, Signed};
 use rand::seq::SliceRandom;
 
 pub fn sgd<A>(
     x: &Array2<f64>,
-    y: &Array1<f64>,
+    y: &Array2<f64>,
     model: &mut Layer<f64, A>,
     epochs: usize,
     learning_rate: f64,
     batch_size: usize,
 ) -> anyhow::Result<Array1<f64>>
 where
-    A: Activate<Array2<f64>> + Clone,
+    A: Clone + Activate<f64, Ix2>,
 {
     let layer = model.clone();
     let features = layer.features();
@@ -52,21 +53,24 @@ where
                     .to_owned(); // (1, inputs)
                 let prediction = model.forward(&input); // (1, outputs)
 
-                let inner = y[idx] - &prediction;
+                let inner = y - &prediction;
                 let partial_w = (-2.0 / batch_size as f64) * input.dot(&inner);
                 let partial_b = (-2.0 / batch_size as f64) * inner;
                 gradient -= partial_w.sum();
                 // let mut weights = model.weights_mut().slice_mut(s![])
                 // model.set_weights(weights)
 
-                let cost = mse(&prediction, y).unwrap();
+                let cost = y.mean_sq_err(&prediction)?;
                 losses[epoch] += cost;
                 // let error = &prediction - y[idx];
                 println!("Cost:\t{:?}", &cost);
                 // gradient += &(input * cost);
             }
             gradient /= batch_size as f64;
-            model.weights_mut().scaled_add(-learning_rate, &gradient);
+            model
+                .params_mut()
+                .weights_mut()
+                .scaled_add(-learning_rate, &gradient.t());
 
             println!("Gradient:\n{:?}", &gradient);
         }
@@ -84,7 +88,7 @@ pub fn sgd_step<A>(
     batch_size: usize,
 ) -> anyhow::Result<f64>
 where
-    A: Activate<Array2<f64>> + Clone,
+    A: Clone + Activate<f64, Ix2>,
 {
     let layer = model.clone();
     let features = layer.features();
@@ -167,9 +171,9 @@ where
 
 impl<T> StochasticGradientDescent<T>
 where
-    T: Default + FromPrimitive + NdFloat,
+    T: Default + FromPrimitive + NdFloat + Signed,
 {
-    pub fn sgd(&mut self, x: &Array2<T>, y: &Array1<T>) -> Array1<T> {
+    pub fn sgd(&mut self, x: &Array2<T>, y: &Array2<T>) -> Array1<T> {
         let (samples, inputs) = x.dim();
         let mut indices: Vec<usize> = (0..samples).collect();
         let mut losses = Array1::<T>::zeros(self.epochs);
@@ -197,7 +201,7 @@ where
                 self.model.update_with_gradient(self.gamma, &gradient);
 
                 println!("Gradient:\n{:?}", &gradient);
-                let loss = mse(&self.model.forward(x), y).unwrap();
+                let loss = y.mean_sq_err(&self.model.forward(x)).unwrap();
                 println!("Epoch: {:?}\nLoss:\n{:?}", &epoch, &loss);
                 losses[epoch] += gradient.mean().unwrap_or_default();
             }
@@ -224,12 +228,14 @@ mod tests {
         let (batch_size, epochs, gamma) = (10, 1, 0.01);
         // Generate some example data
         let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
-        let y = Array::linspace(1., 100., 5).into_shape(5).unwrap();
+        let y = Array::linspace(1., 100., samples)
+            .into_shape(samples)
+            .unwrap();
 
         let mut model = Layer::<f64, Sigmoid>::hidden(features, 5).init(true);
 
         // let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
         // sgd.sgd(&x, &y);
-        let sgd = sgd(&x, &y, &mut model, epochs, gamma, batch_size).unwrap();
+        // let sgd = sgd(&x, &y, &mut model, epochs, gamma, batch_size).unwrap();
     }
 }

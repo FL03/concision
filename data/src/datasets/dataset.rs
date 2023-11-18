@@ -25,6 +25,14 @@ where
     pub fn new(data: Array2<T>, targets: Array<T, D>) -> Self {
         Self { data, targets }
     }
+
+    pub fn data(&self) -> &Array2<T> {
+        &self.data
+    }
+
+    pub fn targets(&self) -> &Array<T, D> {
+        &self.targets
+    }
 }
 
 impl<T, D> std::fmt::Display for DataSet<T, D>

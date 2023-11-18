@@ -29,29 +29,6 @@ where
 }
 
 pub(crate) mod utils {
-
-    use ndarray::prelude::Array;
-    use ndarray::Dimension;
-    use num::{Float, FromPrimitive};
-
-    pub fn mse<'a, T, D>(pred: &Array<T, D>, target: &Array<T, D>) -> T
-    where
-        T: Float + FromPrimitive,
-        D: Dimension,
-    {
-        (pred - target)
-            .mapv(|x| x.powi(2))
-            .mean()
-            .unwrap_or_else(T::zero)
-    }
-
-    pub fn mae<'a, T, D>(pred: &Array<T, D>, target: &Array<T, D>) -> Array<T, D>
-    where
-        T: Float,
-        D: Dimension,
-    {
-        (pred - target).mapv(|x| x.abs())
-    }
 }
 
 #[cfg(test)]

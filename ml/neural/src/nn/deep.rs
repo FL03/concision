@@ -2,18 +2,18 @@
     Appellation: network <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::{Activate, LinearActivation};
+use crate::func::activate::{Activate, ActivateMethod, LinearActivation};
 use crate::prelude::{Forward, Layer, Parameterized};
 
-use ndarray::prelude::{Array2, NdFloat};
+use ndarray::prelude::{Array2, Ix2, NdFloat};
 use num::Float;
 
 pub struct DeepNetwork<T = f64, I = LinearActivation, H = LinearActivation, O = LinearActivation>
 where
     T: Float,
-    I: Activate<Array2<T>>,
-    H: Activate<Array2<T>>,
-    O: Activate<Array2<T>>,
+    I: Activate<T, Ix2>,
+    H: Activate<T, Ix2>,
+    O: Activate<T, Ix2>,
 {
     pub input: Layer<T, I>,
     pub hidden: Vec<Layer<T, H>>,
@@ -23,9 +23,9 @@ where
 impl<T, I, H, O> DeepNetwork<T, I, H, O>
 where
     T: Float,
-    I: Activate<Array2<T>>,
-    H: Activate<Array2<T>>,
-    O: Activate<Array2<T>>,
+    I: Activate<T, Ix2>,
+    H: Activate<T, Ix2>,
+    O: Activate<T, Ix2>,
 {
     pub fn new(input: Layer<T, I>, hidden: Vec<Layer<T, H>>, output: Layer<T, O>) -> Self {
         Self {
@@ -53,9 +53,9 @@ where
 impl<T, I, H, O> Forward<Array2<T>> for DeepNetwork<T, I, H, O>
 where
     T: NdFloat,
-    I: Activate<Array2<T>>,
-    H: Activate<Array2<T>>,
-    O: Activate<Array2<T>>,
+    I: Activate<T, Ix2>,
+    H: Activate<T, Ix2>,
+    O: Activate<T, Ix2>,
 {
     type Output = Array2<T>;
 

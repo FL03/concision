@@ -10,19 +10,22 @@ pub(crate) mod node;
 pub(crate) mod params;
 
 use crate::func::activate::Activate;
-use ndarray::prelude::{Array1, Array2, NdFloat};
+use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 
 pub trait ArtificialNeuron<T>
 where
     T: NdFloat,
 {
-    type Rho: Activate<Array1<T>>;
+    type Rho: Activate<T, Ix1>;
 
-    fn bias(&self) -> T;
+    fn bias(&self) -> Array0<T>;
+
+    fn linear(&self, args: &Array2<T>) -> Array1<T> {
+        args.dot(self.weights()) + self.bias()
+    }
 
     fn forward(&self, args: &Array2<T>) -> Array1<T> {
-        self.rho()
-            .activate(args.dot(&self.weights().t()) + self.bias())
+        self.rho().activate(&self.linear(args))
     }
 
     fn rho(&self) -> &Self::Rho;
@@ -35,7 +38,7 @@ pub(crate) mod utils {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::func::activate::{softmax, Activate, Softmax};
+    use crate::func::activate::{softmax, ActivateMethod, Softmax};
     use crate::prelude::Forward;
     // use lazy_static::lazy_static;
     use ndarray::{array, Array1};
@@ -43,12 +46,10 @@ mod tests {
     fn _artificial(
         args: &Array1<f64>,
         bias: Option<Array1<f64>>,
-        rho: impl Activate<Array1<f64>>,
+        rho: impl ActivateMethod<Array1<f64>>,
         weights: &Array1<f64>,
     ) -> Array1<f64> {
-        rho.activate(
-            args.dot(weights) + bias.unwrap_or_else(|| Array1::<f64>::zeros(args.shape()[0])),
-        )
+        rho.rho(args.dot(weights) + bias.unwrap_or_else(|| Array1::<f64>::zeros(args.shape()[0])))
     }
 
     #[test]

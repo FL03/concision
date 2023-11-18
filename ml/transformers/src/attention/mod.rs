@@ -92,10 +92,9 @@ pub(crate) mod utils {
         let (seq, dk) = query.dim();
         let mask = mask.unwrap_or_else(|| Array2::<T>::zeros((seq, seq)));
         let scale = T::one() / (T::from(dk).unwrap()).sqrt();
-        let softmax = Softmax::new(Some(1));
-        softmax
-            .activate((query.dot(&key.t()) + mask) * scale)
-            .dot(value)
+        let score = (query.dot(&key.t()) + mask) * scale;
+        let pred = Softmax::new(Some(1)).activate(&score);
+        pred.dot(value)
     }
 }
 

@@ -9,6 +9,7 @@ pub use self::{optimizer::*, utils::*};
 pub(crate) mod optimizer;
 
 pub trait Optimize {
+    // fn params(&self) -> &Params;
     fn optimize(&self) -> Self;
 }
 

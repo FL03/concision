@@ -4,7 +4,7 @@
 */
 use super::Features;
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::Params;
+use crate::prelude::{Biased, Params, Weighted};
 use ndarray::prelude::{Array1, Array2, Ix2};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -77,7 +77,36 @@ where
     }
 }
 
-impl<T> Params<T, Ix2> for LayerParams<T>
+// impl<T> Params<T, Ix2> for LayerParams<T>
+// where
+//     T: Float,
+// {
+//     fn bias(&self) -> &Array1<T> {
+//         &self.bias
+//     }
+
+//     fn bias_mut(&mut self) -> &mut Array1<T> {
+//         &mut self.bias
+//     }
+
+//     fn weights(&self) -> &Array2<T> {
+//         &self.weights
+//     }
+
+//     fn weights_mut(&mut self) -> &mut Array2<T> {
+//         &mut self.weights
+//     }
+
+//     fn set_bias(&mut self, bias: Array1<T>) {
+//         self.bias = bias;
+//     }
+
+//     fn set_weights(&mut self, weights: Array2<T>) {
+//         self.weights = weights;
+//     }
+// }
+
+impl<T> Biased<T, Ix2> for LayerParams<T>
 where
     T: Float,
 {
@@ -89,19 +118,24 @@ where
         &mut self.bias
     }
 
+    fn set_bias(&mut self, bias: Array1<T>) {
+        self.bias = bias;
+    }
+}
+
+impl<T> Weighted<T, Ix2> for LayerParams<T>
+where
+    T: Float,
+{
+    fn set_weights(&mut self, weights: Array2<T>) {
+        self.weights = weights;
+    }
+
     fn weights(&self) -> &Array2<T> {
         &self.weights
     }
 
     fn weights_mut(&mut self) -> &mut Array2<T> {
         &mut self.weights
-    }
-
-    fn set_bias(&mut self, bias: Array1<T>) {
-        self.bias = bias;
-    }
-
-    fn set_weights(&mut self, weights: Array2<T>) {
-        self.weights = weights;
     }
 }

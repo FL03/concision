@@ -4,14 +4,14 @@
 */
 use crate::layers::Layer;
 use crate::prelude::{Activate, LinearActivation};
-use ndarray::prelude::Array2;
+use ndarray::prelude::Ix2;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Stack<T = f64, A = LinearActivation>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     layers: Vec<Layer<T, A>>,
@@ -19,7 +19,7 @@ where
 
 impl<T, A> Stack<T, A>
 where
-    A: Activate<Array2<T>> + Default,
+    A: Activate<T, Ix2> + Default,
     T: Float,
 {
     pub fn new() -> Self {

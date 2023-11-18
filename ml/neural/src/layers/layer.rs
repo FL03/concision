@@ -4,7 +4,7 @@
 */
 use super::{Features, LayerParams, LayerType, Position};
 use crate::prelude::{Activate, Forward, LinearActivation, Parameterized, Params};
-use ndarray::prelude::{Array2, NdFloat};
+use ndarray::prelude::{Array2, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Layer<T = f64, A = LinearActivation>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     activator: A,
@@ -23,7 +23,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<Array2<T>> + Default,
+    A: Default + Activate<T, Ix2>,
     T: Float,
 {
     pub fn new(features: Features, position: Position) -> Self {
@@ -35,7 +35,7 @@ where
         }
     }
 
-    pub fn new_input(features: Features) -> Self {
+    pub fn input(features: Features) -> Self {
         Self::new(features, Position::input())
     }
 
@@ -50,7 +50,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     pub fn activator(&self) -> &A {
@@ -72,7 +72,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: Float + 'static,
 {
     pub fn update_with_gradient(&mut self, gamma: T, grad: &Array2<T>) {
@@ -82,7 +82,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: NdFloat,
 {
     pub fn linear(&self, args: &Array2<T>) -> Array2<T> {
@@ -92,7 +92,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: Float + SampleUniform,
 {
     pub fn init(mut self, biased: bool) -> Self {
@@ -103,19 +103,19 @@ where
 
 impl<T, A> Forward<Array2<T>> for Layer<T, A>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: NdFloat,
 {
     type Output = Array2<T>;
 
     fn forward(&self, args: &Array2<T>) -> Self::Output {
-        self.activator.activate(self.linear(args))
+        self.activator.activate(&self.linear(args))
     }
 }
 
 impl<T, A> Parameterized<T> for Layer<T, A>
 where
-    A: Activate<Array2<T>>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     type Features = Features;
@@ -140,7 +140,7 @@ where
 
 impl<T, A> PartialOrd for Layer<T, A>
 where
-    A: Activate<Array2<T>> + PartialEq,
+    A: Activate<T, Ix2> + PartialEq,
     T: Float,
 {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
@@ -150,7 +150,7 @@ where
 
 impl<T, A> From<Features> for Layer<T, A>
 where
-    A: Activate<Array2<T>> + Default,
+    A: Activate<T, Ix2> + Default,
     T: Float,
 {
     fn from(features: Features) -> Self {

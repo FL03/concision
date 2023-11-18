@@ -1,6 +1,7 @@
+use concision_core::prelude::linarr;
 use concision_neural::prelude::{Features, Layer, Sigmoid};
 use concision_optim::grad::sgd::sgd;
-use ndarray::prelude::Array;
+use ndarray::prelude::Array2;
 
 fn main() -> anyhow::Result<()> {
     let (samples, inputs) = (20, 10);
@@ -8,22 +9,23 @@ fn main() -> anyhow::Result<()> {
 
     let features = Features::new(inputs, outputs);
 
-    let n = samples * inputs;
-
     let (batch_size, epochs, gamma) = (20, 4, 0.01);
     // Generate some example data
-    let base = Array::linspace(1., n as f64, n);
-    let x = Array::linspace(1., n as f64, n)
-        .into_shape((samples, inputs))
-        .unwrap();
-    let y = Array::linspace(1., n as f64, outputs)
-        .into_shape(outputs)
-        .unwrap()
-        + 1.0;
+    let (x, y) = sample_data::<f64>(inputs, outputs, samples)?;
 
-    let mut model = Layer::<f64, Sigmoid>::new_input(features);
+    let mut model = Layer::<f64, Sigmoid>::input(features);
 
     let cost = sgd(&x, &y, &mut model, epochs, gamma, batch_size).unwrap();
     println!("Losses {:?}", cost);
     Ok(())
+}
+
+fn sample_data<T: num::Float>(
+    inputs: usize,
+    outputs: usize,
+    samples: usize,
+) -> anyhow::Result<(Array2<T>, Array2<T>)> {
+    let x = linarr((samples, inputs)).unwrap(); // (samples, inputs)
+    let y = linarr((samples, outputs)).unwrap(); // (samples, outputs)
+    Ok((x, y))
 }

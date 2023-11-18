@@ -2,7 +2,8 @@
     Appellation: linear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Activate, ActivationFn};
+use super::{Activate, ActivateMethod, ActivationFn};
+use ndarray::prelude::{Array, Dimension};
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -20,8 +21,18 @@ impl LinearActivation {
     }
 }
 
-impl<T> Activate<T> for LinearActivation {
-    fn activate(&self, x: T) -> T {
+impl<T> ActivateMethod<T> for LinearActivation {
+    fn rho(&self, x: T) -> T {
         Self::method()(x)
+    }
+}
+
+impl<T, D> Activate<T, D> for LinearActivation
+where
+    D: Dimension,
+    T: num::Float,
+{
+    fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
+        args.mapv(|x| self.rho(x))
     }
 }

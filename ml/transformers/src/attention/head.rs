@@ -70,7 +70,7 @@ where
 
         // compute the attention score
         let inner = (q.dot(&k.t()) + self.mask.clone()) * self.scale();
-        Softmax::default().activate(inner).dot(&v)
+        Softmax::default().activate(&inner).dot(&v)
     }
 }
 

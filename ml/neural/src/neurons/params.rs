@@ -4,7 +4,7 @@
 */
 use crate::core::prelude::GenerateRandom;
 
-use crate::prelude::Params;
+use crate::prelude::{Biased, Weighted};
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::{Float, FromPrimitive};
@@ -103,7 +103,36 @@ where
     }
 }
 
-impl<T> Params<T, Ix1> for NeuronParams<T>
+// impl<T> Params<T, Ix1> for NeuronParams<T>
+// where
+//     T: Float,
+// {
+//     fn bias(&self) -> &Array0<T> {
+//         &self.bias
+//     }
+
+//     fn bias_mut(&mut self) -> &mut Array0<T> {
+//         &mut self.bias
+//     }
+
+//     fn weights(&self) -> &Array1<T> {
+//         &self.weights
+//     }
+
+//     fn weights_mut(&mut self) -> &mut Array1<T> {
+//         &mut self.weights
+//     }
+
+//     fn set_bias(&mut self, bias: Array0<T>) {
+//         self.bias = bias;
+//     }
+
+//     fn set_weights(&mut self, weights: Array1<T>) {
+//         self.weights = weights;
+//     }
+// }
+
+impl<T> Biased<T, Ix1> for NeuronParams<T>
 where
     T: Float,
 {
@@ -115,19 +144,24 @@ where
         &mut self.bias
     }
 
+    fn set_bias(&mut self, bias: Array0<T>) {
+        self.bias = bias;
+    }
+}
+
+impl<T> Weighted<T, Ix1> for NeuronParams<T>
+where
+    T: Float,
+{
+    fn set_weights(&mut self, weights: Array1<T>) {
+        self.weights = weights;
+    }
+
     fn weights(&self) -> &Array1<T> {
         &self.weights
     }
 
     fn weights_mut(&mut self) -> &mut Array1<T> {
         &mut self.weights
-    }
-
-    fn set_bias(&mut self, bias: Array0<T>) {
-        self.bias = bias;
-    }
-
-    fn set_weights(&mut self, weights: Array1<T>) {
-        self.weights = weights;
     }
 }
