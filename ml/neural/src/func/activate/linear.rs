@@ -4,6 +4,7 @@
 */
 use super::{Activate, ActivateMethod, ActivationFn};
 use ndarray::prelude::{Array, Dimension};
+use num::One;
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -12,6 +13,25 @@ use serde::{Deserialize, Serialize};
 pub struct LinearActivation;
 
 impl LinearActivation {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn derivative<T>(_x: T) -> T
+    where
+        T: One,
+    {
+        T::one()
+    }
+
+    pub fn gradient<T, D>(args: &Array<T, D>) -> Array<T, D>
+    where
+        D: Dimension,
+        T: Clone + One,
+    {
+        args.mapv(|x| Self::derivative(x))
+    }
+
     pub fn method<T>() -> ActivationFn<T> {
         |x| x
     }
