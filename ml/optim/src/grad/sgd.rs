@@ -5,22 +5,23 @@
 //! # Stochastic Gradient Descent (SGD)
 //!
 //!
-use crate::neural::layers::linear::LinearLayer;
-use crate::neural::prelude::{mse, Forward};
+use crate::neural::prelude::{mse, Activate, Forward, Layer, Parameterized, Params, Weighted};
 // use crate::prelude::ObjectiveFn;
-use ndarray::prelude::{s, Array1, Array2, Axis};
-use ndarray::NdFloat;
+use ndarray::prelude::{s, Array1, Array2, Axis, NdFloat};
 use num::{Float, FromPrimitive};
 use rand::seq::SliceRandom;
 
-pub fn sgd(
+pub fn sgd<A>(
     x: &Array2<f64>,
     y: &Array1<f64>,
-    model: &mut LinearLayer,
+    model: &mut Layer<f64, A>,
     epochs: usize,
     learning_rate: f64,
     batch_size: usize,
-) -> anyhow::Result<Array1<f64>> {
+) -> anyhow::Result<Array1<f64>>
+where
+    A: Activate<Array2<f64>> + Clone,
+{
     let layer = model.clone();
     let features = layer.features();
     let (samples, _inputs) = x.dim();
@@ -65,7 +66,7 @@ pub fn sgd(
                 // gradient += &(input * cost);
             }
             gradient /= batch_size as f64;
-            model.update_with_gradient(&gradient, learning_rate);
+            model.weights_mut().scaled_add(-learning_rate, &gradient);
 
             println!("Gradient:\n{:?}", &gradient);
         }
@@ -75,13 +76,16 @@ pub fn sgd(
     Ok(losses)
 }
 
-pub fn sgd_step(
+pub fn sgd_step<A>(
     x: &Array2<f64>,
     y: &Array1<f64>,
-    model: &mut LinearLayer,
+    model: &mut Layer<f64, A>,
     learning_rate: f64,
     batch_size: usize,
-) -> anyhow::Result<f64> {
+) -> anyhow::Result<f64>
+where
+    A: Activate<Array2<f64>> + Clone,
+{
     let layer = model.clone();
     let features = layer.features();
     let (samples, _inputs) = x.dim();
@@ -102,7 +106,7 @@ pub fn sgd_step(
 pub struct Sgd {
     batch_size: usize,
     gamma: f64, // learning rate
-    model: LinearLayer,
+    model: Layer,
 }
 
 impl Sgd {
@@ -128,14 +132,14 @@ where
     batch_size: usize,
     epochs: usize,
     gamma: T, // learning rate
-    model: LinearLayer<T>,
+    model: Layer<T>,
 }
 
 impl<T> StochasticGradientDescent<T>
 where
     T: Float,
 {
-    pub fn new(batch_size: usize, epochs: usize, gamma: T, model: LinearLayer<T>) -> Self {
+    pub fn new(batch_size: usize, epochs: usize, gamma: T, model: Layer<T>) -> Self {
         Self {
             batch_size,
             epochs,
@@ -156,7 +160,7 @@ where
         self.gamma
     }
 
-    pub fn model(&self) -> &LinearLayer<T> {
+    pub fn model(&self) -> &Layer<T> {
         &self.model
     }
 }
@@ -190,8 +194,7 @@ where
                 }
 
                 gradient /= T::from(self.batch_size).unwrap();
-                self.model
-                    .update_with_gradient(&gradient.t().to_owned(), self.gamma);
+                self.model.update_with_gradient(self.gamma, &gradient);
 
                 println!("Gradient:\n{:?}", &gradient);
                 let loss = mse(&self.model.forward(x), y).unwrap();
@@ -208,37 +211,25 @@ where
 mod tests {
     use super::*;
     use crate::core::prelude::GenerateRandom;
+    use crate::neural::prelude::{Features, Sigmoid};
     use ndarray::prelude::{Array, Array1};
 
     #[test]
     fn test_sgd() {
-        let (samples, inputs) = (20, 5);
+        let (samples, inputs, outputs) = (20, 5, 4);
         let shape = (samples, inputs);
+
+        let features = Features::new(inputs, outputs);
 
         let (batch_size, epochs, gamma) = (10, 1, 0.01);
         // Generate some example data
         let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
         let y = Array::linspace(1., 100., 5).into_shape(5).unwrap();
 
-        let model = LinearLayer::<f64>::new(inputs, 5);
+        let mut model = Layer::<f64, Sigmoid>::hidden(features, 5).init(true);
 
-        let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
-        sgd.sgd(&x, &y);
-    }
-
-    #[test]
-    fn test_stochastic() {
-        let (samples, inputs) = (20, 5);
-        let shape = (samples, inputs);
-
-        let (batch_size, epochs, gamma) = (10, 1, 0.01);
-        // Generate some example data
-        let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
-        let y = Array1::<f64>::uniform(0, 100);
-
-        let mut model = LinearLayer::<f64>::new(inputs, 5);
-
-        // let grad = sgd(&x, &y, &mut model, epochs, gamma, batch_size);
-        // assert!(grad.is_ok());
+        // let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
+        // sgd.sgd(&x, &y);
+        let sgd = sgd(&x, &y, &mut model, epochs, gamma, batch_size).unwrap();
     }
 }

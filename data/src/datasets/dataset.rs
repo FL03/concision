@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
-pub struct Dataset<T = f64, D = Ix2>
+pub struct DataSet<T = f64, D = Ix2>
 where
     D: Dimension,
 {
@@ -17,7 +17,7 @@ where
     targets: Array<T, D>,
 }
 
-impl<T, D> Dataset<T, D>
+impl<T, D> DataSet<T, D>
 where
     D: Dimension,
     T: Float,
@@ -27,7 +27,7 @@ where
     }
 }
 
-impl<T, D> std::fmt::Display for Dataset<T, D>
+impl<T, D> std::fmt::Display for DataSet<T, D>
 where
     D: Dimension + Serialize,
     T: Serialize,

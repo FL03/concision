@@ -1,10 +1,12 @@
-use concision_neural::layers::linear::LinearLayer;
-use concision_optim::grad::sgd::StochasticGradientDescent;
+use concision_neural::prelude::{Features, Layer, Sigmoid};
+use concision_optim::grad::sgd::sgd;
 use ndarray::prelude::Array;
 
 fn main() -> anyhow::Result<()> {
     let (samples, inputs) = (20, 10);
     let outputs = 5;
+
+    let features = Features::new(inputs, outputs);
 
     let n = samples * inputs;
 
@@ -19,10 +21,9 @@ fn main() -> anyhow::Result<()> {
         .unwrap()
         + 1.0;
 
-    let model = LinearLayer::<f64>::new(inputs, outputs);
+    let mut model = Layer::<f64, Sigmoid>::new_input(features);
 
-    let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
-    let losses = sgd.sgd(&x, &y);
-    println!("Losses {:?}", losses);
+    let cost = sgd(&x, &y, &mut model, epochs, gamma, batch_size).unwrap();
+    println!("Losses {:?}", cost);
     Ok(())
 }

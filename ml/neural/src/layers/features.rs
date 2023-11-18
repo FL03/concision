@@ -5,6 +5,14 @@
 use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
 
+pub trait FromFeatures {
+    fn from_features(features: Features) -> Self;
+}
+
+pub trait IntoFeatures {
+    fn into_features(self) -> Features;
+}
+
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]

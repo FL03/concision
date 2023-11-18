@@ -22,7 +22,7 @@ where
 pub trait Objective<T> {
     type Model;
 
-    fn objective(&self, x: &Array2<T>, y: &Array1<T>) -> Array1<T>;
+    fn objective(&self, args: &Array2<T>) -> Array1<T>;
 }
 
 pub trait PartialDerivative<T> {

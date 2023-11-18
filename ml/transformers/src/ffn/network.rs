@@ -4,25 +4,25 @@
 */
 use super::FFNParams;
 use crate::neural::func::activate::{Activate, ReLU};
-use crate::neural::layers::linear::LinearLayer;
-use crate::neural::prelude::Forward;
+use crate::neural::prelude::{Features, Forward, Layer};
 use ndarray::prelude::Array2;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct FFN {
-    input: LinearLayer,
-    output: LinearLayer,
+    input: Layer,
+    output: Layer,
     pub params: FFNParams,
 }
 
 impl FFN {
     pub fn new(model: usize, network: Option<usize>) -> Self {
         let params = FFNParams::new(model, network.unwrap_or(crate::NETWORK_SIZE));
-        let layer = LinearLayer::new(params.model, params.network);
+        let features = Features::new(model, params.network_size());
+
         Self {
-            input: layer.clone(),
-            output: layer,
+            input: Layer::new_input(features),
+            output: Layer::output(features, 1),
             params,
         }
     }

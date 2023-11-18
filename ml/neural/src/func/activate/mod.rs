@@ -5,10 +5,11 @@
 //! # activate
 //!
 //! This module contains the activation functions for the neurons.
-pub use self::{activator::*, binary::*, nonlinear::*, utils::*};
+pub use self::{activator::*, binary::*, linear::*, nonlinear::*, utils::*};
 
 pub(crate) mod activator;
 pub(crate) mod binary;
+pub(crate) mod linear;
 pub(crate) mod nonlinear;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
@@ -32,21 +33,6 @@ where
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct LinearActivation;
-
-impl LinearActivation {
-    pub fn method<T>() -> ActivationFn<T> {
-        |x| x
-    }
-}
-
-impl<T> Activate<T> for LinearActivation {
-    fn activate(&self, x: T) -> T {
-        Self::method()(x)
-    }
-}
-
 pub(crate) mod utils {
     use num::{One, Zero};
 
@@ -67,4 +53,9 @@ pub(crate) mod utils {
             T::zero()
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    // use super::*;
 }

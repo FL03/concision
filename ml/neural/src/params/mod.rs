@@ -18,6 +18,8 @@ use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
 use num::Float;
 
+pub type BoxedParams<T = f64, D = Ix2> = Box<dyn Params<T, D>>;
+
 pub trait Biased<T = f64, D = Ix2>
 where
     D: Dimension,

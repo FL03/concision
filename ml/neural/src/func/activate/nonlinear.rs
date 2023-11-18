@@ -70,14 +70,14 @@ impl Sigmoid {
     where
         T: Float,
     {
-        (T::one() + (-x).exp()).powi(-2)
+        T::one() / (T::one() + (-x).exp())
     }
 
     pub fn derivative<T>(x: T) -> T
     where
         T: Float,
     {
-        -(T::one() + (-x).exp()).powi(-2) * (-x).exp()
+        (-x).exp() / (T::one() + (-x).exp()).powi(2)
     }
 
     pub fn gradient<T, D>(args: &Array<T, D>) -> Array<T, D>

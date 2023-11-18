@@ -4,8 +4,7 @@
 */
 use super::{multihead, MultiHeadParams};
 use crate::attention::Weight;
-use crate::neural::layers::linear::LinearLayer;
-use crate::neural::prelude::{Forward, Mask};
+use crate::neural::prelude::{Forward, Layer, Mask};
 use crate::ops::Split;
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray::{ScalarOperand, ShapeError};
@@ -15,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct MultiHeadAttention<T: Float = f64> {
-    linear: LinearLayer<T>,
+    linear: Layer<T>,
     params: MultiHeadParams,
     weights: Weight<T>,
 }
@@ -24,7 +23,7 @@ impl<T> MultiHeadAttention<T>
 where
     T: Float,
 {
-    pub fn linear(&self) -> &LinearLayer<T> {
+    pub fn linear(&self) -> &Layer<T> {
         &self.linear
     }
 
@@ -45,7 +44,7 @@ where
         let params = MultiHeadParams::new(heads, model);
         let weights = Weight::uniform((model, model));
         Self {
-            linear: LinearLayer::new(model, model),
+            linear: Layer::new_input((model, model).into()),
             params,
             weights,
         }

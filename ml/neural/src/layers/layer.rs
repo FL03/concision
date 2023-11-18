@@ -34,6 +34,18 @@ where
             position,
         }
     }
+
+    pub fn new_input(features: Features) -> Self {
+        Self::new(features, Position::input())
+    }
+
+    pub fn hidden(features: Features, index: usize) -> Self {
+        Self::new(features, Position::hidden(index))
+    }
+
+    pub fn output(features: Features, index: usize) -> Self {
+        Self::new(features, Position::output(index))
+    }
 }
 
 impl<T, A> Layer<T, A>
@@ -51,6 +63,20 @@ where
 
     pub fn position(&self) -> &Position {
         &self.position
+    }
+
+    pub fn set_position(&mut self, position: Position) {
+        self.position = position;
+    }
+}
+
+impl<T, A> Layer<T, A>
+where
+    A: Activate<Array2<T>>,
+    T: Float + 'static,
+{
+    pub fn update_with_gradient(&mut self, gamma: T, grad: &Array2<T>) {
+        self.params.weights_mut().scaled_add(-gamma, grad);
     }
 }
 
