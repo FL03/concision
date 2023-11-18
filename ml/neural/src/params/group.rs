@@ -2,13 +2,8 @@
     Appellation: group <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::prelude::GenerateRandom;
-use crate::layers::Features;
-use ndarray::prelude::{Array, Array1, Array2, Dimension, Ix2};
-use ndarray::{IntoDimension, RemoveAxis};
-use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParamGroup<T = f64, D = Ix2>

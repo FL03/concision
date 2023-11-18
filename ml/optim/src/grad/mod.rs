@@ -26,8 +26,8 @@ pub struct DescentParams {
 }
 
 pub(crate) mod utils {
-    use crate::neural::prelude::{Activate, Biased, Forward, Layer, Parameterized, Weighted};
-    use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, Ix2, NdFloat};
+    use crate::neural::prelude::{Activate, Forward, Layer, Parameterized, Weighted};
+    use ndarray::prelude::{Array, Array1, Array2, Dimension, Ix2, NdFloat};
     use ndarray_stats::DeviationExt;
     use num::{FromPrimitive, Signed};
 
@@ -42,14 +42,14 @@ pub(crate) mod utils {
         A: Activate<T, Ix2>,
         T: FromPrimitive + NdFloat + Signed,
     {
-        let (samples, _inputs) = data.dim();
+        let (_samples, _inputs) = data.dim();
         let pred = model.forward(data);
 
-        let ns = T::from(samples).unwrap();
+        let ns = T::from(data.len()).unwrap();
 
         let errors = &pred - targets;
         // compute the gradient of the objective function w.r.t. the model's weights
-        let dz = errors * grad(&pred);
+        let dz = &errors * grad(&pred);
         // compute the gradient of the objective function w.r.t. the model's weights
         let dw = data.t().dot(&dz) / ns;
         // compute the gradient of the objective function w.r.t. the model's bias

@@ -3,9 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Neural Network
-pub use self::{deep::*, utils::*};
+pub use self::{deep::*, shallow::*, utils::*};
 
 pub(crate) mod deep;
+pub(crate) mod shallow;
 
 use crate::layers::Layer;
 use crate::Trainable;

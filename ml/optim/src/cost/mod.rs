@@ -28,8 +28,7 @@ where
     fn cost(&self, pred: &Array<T, Self::Dim>, target: &Array1<T>) -> Array<T, Self::Dim>;
 }
 
-pub(crate) mod utils {
-}
+pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {}

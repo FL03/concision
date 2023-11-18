@@ -10,7 +10,7 @@ fn main() -> anyhow::Result<()> {
 
     let features = Features::new(inputs, outputs);
 
-    let (epochs, gamma) = (100000, 0.005);
+    let (epochs, gamma) = (1000000, 0.05);
 
     // basic_descent(epochs, features, gamma)?;
 
