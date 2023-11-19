@@ -4,12 +4,11 @@
 */
 //! # Model
 //!
-pub use self::{config::*, model::*, utils::*};
+pub use self::{config::*, model::*, stack::*, utils::*};
 
 pub(crate) mod config;
 pub(crate) mod model;
-
-pub mod stack;
+pub(crate) mod stack;
 
 use ndarray::prelude::Array2;
 

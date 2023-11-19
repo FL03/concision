@@ -11,7 +11,7 @@
 //! - `heads`: The number of attention heads
 //! - `model`: The dimension of the model (embedding size)
 use crate::{HEADS, MODEL_SIZE, QUERY_SIZE};
-use ndarray::prelude::{Dimension, Ix2, Ix3, Ix4};
+use ndarray::prelude::{Ix2, Ix3, Ix4};
 use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
 

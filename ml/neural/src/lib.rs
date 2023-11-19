@@ -16,7 +16,6 @@ pub(crate) mod utils;
 pub mod arch;
 pub mod func;
 pub mod layers;
-pub mod masks;
 pub mod models;
 pub mod neurons;
 pub mod nn;
@@ -30,7 +29,6 @@ pub mod prelude {
     pub use crate::arch::*;
     pub use crate::func::{activate::*, loss::*};
     pub use crate::layers::*;
-    pub use crate::masks::*;
     pub use crate::neurons::*;
     pub use crate::nn::*;
     pub use crate::ops::*;

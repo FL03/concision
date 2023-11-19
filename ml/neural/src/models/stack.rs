@@ -7,10 +7,13 @@ use crate::prelude::{Activate, LayerShape, LinearActivation, Parameterized};
 use ndarray::prelude::Ix2;
 use num::Float;
 use serde::{Deserialize, Serialize};
+use std::ops;
+
+pub trait HiddenLayers {}
 
 /// A [Stack] is a collection of [Layer]s, typically used to construct the hidden
 /// layers of a deep neural network.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Stack<T = f64, A = LinearActivation>
 where
     A: Activate<T, Ix2>,
@@ -62,6 +65,22 @@ where
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.children.is_empty()
+    }
+
+    pub fn first(&self) -> Option<&Layer<T, A>> {
+        self.children.first()
+    }
+
+    pub fn first_mut(&mut self) -> Option<&mut Layer<T, A>> {
+        self.children.first_mut()
+    }
+
+    pub fn last(&self) -> Option<&Layer<T, A>> {
+        self.children.last()
+    }
+
     pub fn layers(&self) -> &[Layer<T, A>] {
         &self.children
     }
@@ -70,13 +89,13 @@ where
         &mut self.children
     }
 
-    pub fn depth(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.children.len()
     }
 
     pub fn validate_shapes(&self) -> bool {
         let mut dim = true;
-        for (i, layer) in self.children[..(self.depth() - 1)].iter().enumerate() {
+        for (i, layer) in self.children[..(self.len() - 1)].iter().enumerate() {
             dim = dim && layer.features().outputs() == self.children[i + 1].features().inputs();
         }
         dim
@@ -108,16 +127,6 @@ where
 {
     fn as_mut(&mut self) -> &mut [Layer<T, A>] {
         &mut self.children
-    }
-}
-
-impl<T, A> Default for Stack<T, A>
-where
-    A: Activate<T, Ix2>,
-    T: Float,
-{
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -168,6 +177,28 @@ where
     }
 }
 
+impl<T, A> ops::Index<usize> for Stack<T, A>
+where
+    A: Activate<T, Ix2>,
+    T: Float,
+{
+    type Output = Layer<T, A>;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.children[index]
+    }
+}
+
+impl<T, A> ops::IndexMut<usize> for Stack<T, A>
+where
+    A: Activate<T, Ix2>,
+    T: Float,
+{
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.children[index]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -175,8 +206,7 @@ mod tests {
 
     #[test]
     fn test_stack() {
-        let (samples, inputs, outputs) = (20, 5, 3);
-        let features = LayerShape::new(inputs, outputs);
+        let (inputs, outputs) = (5, 3);
 
         let shapes = [(inputs, outputs), (outputs, outputs), (outputs, 1)];
 

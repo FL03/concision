@@ -4,8 +4,9 @@
 */
 use super::EncoderParams;
 use crate::attention::multi::MultiHeadAttention;
+use crate::core::prelude::Mask;
 use crate::ffn::FFN;
-use crate::neural::prelude::{Forward, LayerNorm, Mask};
+use crate::neural::prelude::{Forward, LayerNorm};
 use ndarray::prelude::Array2;
 
 pub struct Encoder {

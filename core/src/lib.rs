@@ -11,6 +11,7 @@ pub(crate) mod utils;
 
 pub mod epochs;
 pub mod errors;
+pub mod masks;
 pub mod states;
 pub mod step;
 
@@ -18,6 +19,7 @@ pub mod prelude {
 
     pub use crate::epochs::*;
     pub use crate::errors::*;
+    pub use crate::masks::*;
     pub use crate::states::*;
     pub use crate::step::*;
 

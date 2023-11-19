@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::params::{HeadShape, QKV};
-use super::{Head, Weight};
+use super::Weight;
 use crate::neural::func::activate::{Activate, Softmax};
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;

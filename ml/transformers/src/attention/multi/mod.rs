@@ -8,8 +8,7 @@ pub(crate) mod attention;
 pub(crate) mod params;
 
 use crate::attention::Weight;
-use crate::core::prelude::BoxResult;
-use crate::neural::prelude::Mask;
+use crate::core::prelude::{BoxResult, Mask};
 use crate::ops::Split;
 use ndarray::prelude::{Array2, NdFloat};
 
@@ -31,7 +30,7 @@ where
 
 pub(crate) mod utils {
     use crate::attention::scaled_dot_product_attention;
-    use crate::neural::prelude::Mask;
+    use crate::core::prelude::Mask;
     use crate::ops::Merge;
     use ndarray::prelude::{s, Array2, Array3, Array4, NdFloat};
     use ndarray::ShapeError;
@@ -83,7 +82,7 @@ pub(crate) mod utils {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::neural::prelude::Mask;
+    use crate::core::prelude::Mask;
 
     #[test]
     fn test_multihead_shape() {
