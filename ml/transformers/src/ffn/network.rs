@@ -17,11 +17,12 @@ pub struct FFN {
 
 impl FFN {
     pub fn new(model: usize, network: Option<usize>) -> Self {
+        
         let network = network.unwrap_or(crate::NETWORK_SIZE);
-
+        let features = network / model;
         Self {
-            input: Layer::input((model, network).into()),
-            output: Layer::output((network, model).into(), 1),
+            input: Layer::input((model, features).into()),
+            output: Layer::output((features, model).into(), 1),
             params: FFNParams::new(model, network),
         }
     }

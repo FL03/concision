@@ -59,6 +59,10 @@ where
         &self.activator
     }
 
+    pub fn index(&self) -> usize {
+        self.position().index()
+    }
+
     pub fn kind(&self) -> &LayerKind {
         self.position().kind()
     }
@@ -86,12 +90,9 @@ where
     }
 
     pub fn validate_layer(&self, other: &Self) -> bool {
-        let pos = self
-            .position()
-            .position()
-            .abs_diff(other.position().position());
+        let pos = self.position().index().abs_diff(other.position().index());
         if pos == 1 {
-            if self.position().position() > other.position().position() {
+            if self.position().index() > other.position().index() {
                 return self.features().inputs() == other.features().outputs();
             } else {
                 return self.features().outputs() == other.features().inputs();

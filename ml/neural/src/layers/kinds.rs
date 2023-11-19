@@ -70,13 +70,15 @@ impl LayerPosition {
         self.kind().is_output()
     }
 
+    pub fn index(&self) -> usize {
+        self.idx
+    }
+
     pub fn kind(&self) -> &LayerKind {
         &self.kind
     }
 
-    pub fn position(&self) -> usize {
-        self.idx
-    }
+    
 }
 
 impl AsRef<usize> for LayerPosition {

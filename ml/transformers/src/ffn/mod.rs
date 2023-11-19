@@ -20,7 +20,7 @@ mod tests {
     #[test]
     fn test_ffn() {
         let samples = 20;
-        let (model, network) = (5, 3);
+        let (model, network) = (5, 15);
 
         // sample data
         let x = linarr::<f64, Ix2>((samples, model)).unwrap();
