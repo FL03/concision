@@ -101,7 +101,7 @@ mod tests {
     use super::*;
     use crate::core::prelude::linarr;
     use crate::neural::func::activate::{LinearActivation, Sigmoid};
-    use crate::neural::prelude::{Features, Layer, Parameterized, Weighted};
+    use crate::neural::prelude::{Layer, LayerShape, Parameterized, Weighted};
     use ndarray::prelude::{Array1, Array2};
 
     fn test_grad(args: &Array2<f64>) -> Array2<f64> {
@@ -115,7 +115,7 @@ mod tests {
 
         let (epochs, gamma) = (10, 0.001);
 
-        let features = Features::new(inputs, outputs);
+        let features = LayerShape::new(inputs, outputs);
 
         let mut model = Layer::<f64, LinearActivation>::from(features).init(true);
 
@@ -135,7 +135,7 @@ mod tests {
 
         let (epochs, gamma) = (10, 0.001);
 
-        let features = Features::new(inputs, outputs);
+        let features = LayerShape::new(inputs, outputs);
 
         // Generate some example data
         let x = linarr((samples, features.inputs())).unwrap();

@@ -19,7 +19,10 @@ pub struct AttentionHead<T: Float> {
     weights: Weight<T>,
 }
 
-impl<T: Float> AttentionHead<T> {
+impl<T> AttentionHead<T>
+where
+    T: Float,
+{
     pub fn dim(&self) -> HeadShape {
         self.dim
     }
@@ -74,31 +77,19 @@ where
     }
 }
 
-impl<T: Float> Head<T> for AttentionHead<T> {
-    fn key(&self) -> &Array2<T> {
-        &self.weights.key
-    }
-
-    fn mask(&self) -> &Array2<T> {
-        &self.mask
-    }
-
-    fn query(&self) -> &Array2<T> {
-        &self.weights.query
-    }
-
-    fn value(&self) -> &Array2<T> {
-        &self.weights.value
-    }
-}
-
-impl<T: Float + Serialize> std::fmt::Display for AttentionHead<T> {
+impl<T> std::fmt::Display for AttentionHead<T>
+where
+    T: Float + Serialize,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{}", serde_json::to_string(self).unwrap())
     }
 }
 
-impl<T: Float> ops::Index<QKV> for AttentionHead<T> {
+impl<T> ops::Index<QKV> for AttentionHead<T>
+where
+    T: Float,
+{
     type Output = Array2<T>;
 
     fn index(&self, index: QKV) -> &Self::Output {
@@ -106,13 +97,19 @@ impl<T: Float> ops::Index<QKV> for AttentionHead<T> {
     }
 }
 
-impl<T: Float> ops::IndexMut<QKV> for AttentionHead<T> {
+impl<T> ops::IndexMut<QKV> for AttentionHead<T>
+where
+    T: Float,
+{
     fn index_mut(&mut self, index: QKV) -> &mut Self::Output {
         &mut self.weights[index]
     }
 }
 
-impl<T: Float + 'static> ops::Mul<Array2<T>> for AttentionHead<T> {
+impl<T> ops::Mul<Array2<T>> for AttentionHead<T>
+where
+    T: NdFloat,
+{
     type Output = AttentionHead<T>;
 
     fn mul(self, rhs: Array2<T>) -> Self::Output {
@@ -122,7 +119,10 @@ impl<T: Float + 'static> ops::Mul<Array2<T>> for AttentionHead<T> {
     }
 }
 
-impl<T: Float + 'static> ops::Mul<&Array2<T>> for AttentionHead<T> {
+impl<T> ops::Mul<&Array2<T>> for AttentionHead<T>
+where
+    T: NdFloat,
+{
     type Output = AttentionHead<T>;
 
     fn mul(self, rhs: &Array2<T>) -> Self::Output {
@@ -132,19 +132,28 @@ impl<T: Float + 'static> ops::Mul<&Array2<T>> for AttentionHead<T> {
     }
 }
 
-impl<T: Float + 'static> ops::MulAssign<Array2<T>> for AttentionHead<T> {
+impl<T> ops::MulAssign<Array2<T>> for AttentionHead<T>
+where
+    T: NdFloat,
+{
     fn mul_assign(&mut self, rhs: Array2<T>) {
         self.weights *= rhs;
     }
 }
 
-impl<T: Float + 'static> ops::MulAssign<&Array2<T>> for AttentionHead<T> {
+impl<T> ops::MulAssign<&Array2<T>> for AttentionHead<T>
+where
+    T: NdFloat,
+{
     fn mul_assign(&mut self, rhs: &Array2<T>) {
         self.weights *= rhs;
     }
 }
 
-impl<T: Float + 'static> ops::MulAssign<&Array2<T>> for &mut AttentionHead<T> {
+impl<T> ops::MulAssign<&Array2<T>> for &mut AttentionHead<T>
+where
+    T: NdFloat,
+{
     fn mul_assign(&mut self, rhs: &Array2<T>) {
         self.weights *= rhs;
     }

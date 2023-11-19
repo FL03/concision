@@ -215,7 +215,7 @@ where
 mod tests {
     use super::*;
     use crate::core::prelude::GenerateRandom;
-    use crate::neural::prelude::{Features, Sigmoid};
+    use crate::neural::prelude::{LayerShape, Sigmoid};
     use ndarray::prelude::{Array, Array1};
 
     #[test]
@@ -223,7 +223,7 @@ mod tests {
         let (samples, inputs, outputs) = (20, 5, 4);
         let shape = (samples, inputs);
 
-        let features = Features::new(inputs, outputs);
+        let features = LayerShape::new(inputs, outputs);
 
         let (batch_size, epochs, gamma) = (10, 1, 0.01);
         // Generate some example data

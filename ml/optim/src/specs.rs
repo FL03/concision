@@ -25,14 +25,22 @@ pub trait Objective<T> {
     fn objective(&self, args: &Array2<T>) -> Array1<T>;
 }
 
-pub trait PartialDerivative<T> {
-    type Args;
-
-    fn partial_derivative(&self, args: Self::Args) -> T;
-}
-
 pub trait Minimize<T> {
     fn minimize(&self, scale: T) -> Self;
+}
+
+pub trait Dampener<T = f64>
+where
+    T: Float,
+{
+    fn tau(&self) -> T; // Momentum Damper
+}
+
+pub trait Decay<T = f64>
+where
+    T: Float,
+{
+    fn lambda(&self) -> T; // Decay Rate
 }
 
 pub trait LearningRate<T = f64>
@@ -49,18 +57,4 @@ where
     fn mu(&self) -> T; // Momentum Rate
 
     fn nestrov(&self) -> bool;
-}
-
-pub trait Decay<T = f64>
-where
-    T: Float,
-{
-    fn lambda(&self) -> T; // Decay Rate
-}
-
-pub trait Dampener<T = f64>
-where
-    T: Float,
-{
-    fn tau(&self) -> T; // Momentum Damper
 }

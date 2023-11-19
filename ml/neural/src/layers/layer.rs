@@ -2,7 +2,7 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Features, LayerParams, LayerType, Position};
+use super::{LayerKind, LayerParams, LayerPosition, LayerShape};
 use crate::prelude::{Activate, Forward, LinearActivation, Parameterized, Params};
 use ndarray::prelude::{Array2, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -16,9 +16,10 @@ where
     T: Float,
 {
     activator: A,
-    pub features: Features,
+    pub features: LayerShape,
+    name: String,
     params: LayerParams<T>,
-    position: Position,
+    position: LayerPosition,
 }
 
 impl<T, A> Layer<T, A>
@@ -26,25 +27,26 @@ where
     A: Default + Activate<T, Ix2>,
     T: Float,
 {
-    pub fn new(features: Features, position: Position) -> Self {
+    pub fn new(features: LayerShape, position: LayerPosition) -> Self {
         Self {
             activator: A::default(),
             features,
+            name: String::new(),
             params: LayerParams::new(features),
             position,
         }
     }
 
-    pub fn input(features: Features) -> Self {
-        Self::new(features, Position::input())
+    pub fn input(features: LayerShape) -> Self {
+        Self::new(features, LayerPosition::input())
     }
 
-    pub fn hidden(features: Features, index: usize) -> Self {
-        Self::new(features, Position::hidden(index))
+    pub fn hidden(features: LayerShape, index: usize) -> Self {
+        Self::new(features, LayerPosition::hidden(index))
     }
 
-    pub fn output(features: Features, index: usize) -> Self {
-        Self::new(features, Position::output(index))
+    pub fn output(features: LayerShape, index: usize) -> Self {
+        Self::new(features, LayerPosition::output(index))
     }
 }
 
@@ -57,16 +59,50 @@ where
         &self.activator
     }
 
-    pub fn kind(&self) -> &LayerType {
+    pub fn kind(&self) -> &LayerKind {
         self.position().kind()
     }
 
-    pub fn position(&self) -> &Position {
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn position(&self) -> &LayerPosition {
         &self.position
     }
 
-    pub fn set_position(&mut self, position: Position) {
-        self.position = position;
+    pub fn set_name(&mut self, name: impl ToString) {
+        self.name = name.to_string();
+    }
+
+    pub fn update_position(&mut self, idx: usize, output: bool) {
+        self.position = if idx == 0 {
+            LayerPosition::input()
+        } else if output {
+            LayerPosition::output(idx)
+        } else {
+            LayerPosition::hidden(idx)
+        };
+    }
+
+    pub fn validate_layer(&self, other: &Self) -> bool {
+        let pos = self
+            .position()
+            .position()
+            .abs_diff(other.position().position());
+        if pos == 1 {
+            if self.position().position() > other.position().position() {
+                return self.features().inputs() == other.features().outputs();
+            } else {
+                return self.features().outputs() == other.features().inputs();
+            }
+        }
+        false
+    }
+
+    pub fn with_name(mut self, name: impl ToString) -> Self {
+        self.name = name.to_string();
+        self
     }
 }
 
@@ -118,14 +154,14 @@ where
     A: Activate<T, Ix2>,
     T: Float,
 {
-    type Features = Features;
+    type Features = LayerShape;
     type Params = LayerParams<T>;
 
-    fn features(&self) -> &Features {
+    fn features(&self) -> &LayerShape {
         &self.features
     }
 
-    fn features_mut(&mut self) -> &mut Features {
+    fn features_mut(&mut self) -> &mut LayerShape {
         &mut self.features
     }
 
@@ -148,12 +184,12 @@ where
     }
 }
 
-impl<T, A> From<Features> for Layer<T, A>
+impl<T, A> From<LayerShape> for Layer<T, A>
 where
     A: Activate<T, Ix2> + Default,
     T: Float,
 {
-    fn from(features: Features) -> Self {
-        Self::new(features, Position::input())
+    fn from(features: LayerShape) -> Self {
+        Self::new(features, LayerPosition::input())
     }
 }

@@ -4,7 +4,7 @@
 */
 use super::FFNParams;
 use crate::neural::func::activate::{Activate, ReLU};
-use crate::neural::prelude::{Features, Forward, Layer};
+use crate::neural::prelude::{Forward, Layer, LayerShape};
 use ndarray::prelude::Array2;
 use serde::{Deserialize, Serialize};
 
@@ -18,7 +18,7 @@ pub struct FFN {
 impl FFN {
     pub fn new(model: usize, network: Option<usize>) -> Self {
         let params = FFNParams::new(model, network.unwrap_or(crate::NETWORK_SIZE));
-        let features = Features::new(model, params.network_size());
+        let features = LayerShape::new(model, params.network_size());
 
         Self {
             input: Layer::input(features),

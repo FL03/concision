@@ -1,4 +1,4 @@
-use concision_neural::prelude::Features;
+use concision_neural::prelude::LayerShape;
 use concision_optim::prelude::Norm;
 use ndarray::prelude::Array;
 
@@ -6,7 +6,7 @@ fn main() -> anyhow::Result<()> {
     let (samples, inputs) = (20, 3);
     let outputs = 8;
 
-    let features = Features::new(inputs, outputs);
+    let features = LayerShape::new(inputs, outputs);
 
     // basic_descent(epochs, features, gamma)?;
 
@@ -15,7 +15,7 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn sample_norm(features: Features, samples: usize) -> anyhow::Result<()> {
+pub fn sample_norm(features: LayerShape, samples: usize) -> anyhow::Result<()> {
     let n = samples * features.inputs();
     let args = Array::linspace(1., n as f64, n)
         .into_shape((samples, features.inputs()))

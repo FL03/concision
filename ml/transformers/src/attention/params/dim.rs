@@ -11,7 +11,7 @@
 //! - `heads`: The number of attention heads
 //! - `model`: The dimension of the model (embedding size)
 use crate::{HEADS, MODEL_SIZE, QUERY_SIZE};
-use ndarray::prelude::{Ix3, Ix4};
+use ndarray::prelude::{Dimension, Ix2, Ix3, Ix4};
 use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
 
@@ -31,31 +31,18 @@ impl Batched for Ix4 {
     }
 }
 
-pub enum AttentionDims {
-    Base(BaseShape),       // a 3d matrix (batch, seq, model)
-    Head(HeadShape),       // a 2d matrix (seq, query)
-    MultiHead(MultiShape), // a 4d matrix (batch, heads, seq, query)
+pub enum Shapes {
+    Batched((usize, Box<Shapes>)),
+    Data(BaseShape),
+    Head(HeadShape),
+    Mask { seq: usize },
+    MultiHead(MultiShape),
 }
 
-pub enum Shapes {
-    Data {
-        batch: usize,
-        seq: usize,
-        model: usize,
-    },
-    Head {
-        seq: usize,
-        query: usize,
-    },
-    Mask {
-        seq: usize,
-    },
-    MultiHead {
-        batch: usize,
-        heads: usize,
-        model: usize,
-        seq: usize,
-    },
+impl Shapes {
+    pub fn batched(batch_size: usize, shape: impl Into<Shapes>) -> Self {
+        Shapes::Batched((batch_size, Box::new(shape.into())))
+    }
 }
 
 #[derive(
@@ -134,12 +121,7 @@ impl MultiShape {
 
 impl From<MultiShape> for Shapes {
     fn from(shape: MultiShape) -> Self {
-        Self::MultiHead {
-            batch: 1,
-            heads: shape.heads(),
-            model: shape.model_size(),
-            seq: shape.seq_len(),
-        }
+        Shapes::MultiHead(shape)
     }
 }
 
@@ -166,11 +148,26 @@ impl IntoDimension for MultiShape {
 pub trait HeadDimension {
     fn query_size(&self) -> usize;
     fn sequence(&self) -> usize;
+
+    fn as_shape(&self) -> HeadShape {
+        HeadShape::new(self.query_size(), self.sequence())
+    }
+}
+
+pub trait AsShape<Sh> {
+    fn as_shape(&self) -> Sh;
+}
+
+pub trait ShapeExt<D>
+where
+    D: ndarray::Dimension,
+{
+    fn dim(&self) -> D;
 }
 
 impl<T> HeadDimension for T
 where
-    T: Clone + IntoDimension<Dim = [usize; 2]>,
+    T: Clone + IntoDimension<Dim = Ix2>,
 {
     fn query_size(&self) -> usize {
         self.clone().into_dimension()[1]

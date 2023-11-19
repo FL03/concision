@@ -2,7 +2,7 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Features;
+use super::LayerShape;
 use crate::core::prelude::GenerateRandom;
 use crate::prelude::{Biased, Weighted};
 use ndarray::prelude::{Array1, Array2, Ix2};
@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LayerParams<T = f64> {
     bias: Array1<T>,
-    pub features: Features,
+    pub features: LayerShape,
     weights: Array2<T>,
 }
 
@@ -21,7 +21,7 @@ impl<T> LayerParams<T>
 where
     T: Float,
 {
-    pub fn new(features: Features) -> Self {
+    pub fn new(features: LayerShape) -> Self {
         Self {
             bias: Array1::zeros(features.outputs()),
             features,
@@ -34,11 +34,11 @@ where
         self.weights = Array2::zeros(self.features.out_by_in());
     }
 
-    pub fn features(&self) -> &Features {
+    pub fn features(&self) -> &LayerShape {
         &self.features
     }
 
-    pub fn features_mut(&mut self) -> &mut Features {
+    pub fn features_mut(&mut self) -> &mut LayerShape {
         &mut self.features
     }
 

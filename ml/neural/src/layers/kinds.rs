@@ -26,7 +26,7 @@ use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum LayerType {
+pub enum LayerKind {
     #[default]
     Input = 0,
     Hidden(usize),
@@ -36,26 +36,26 @@ pub enum LayerType {
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
-pub struct Position {
+pub struct LayerPosition {
     pub idx: usize,
-    pub kind: LayerType,
+    pub kind: LayerKind,
 }
 
-impl Position {
-    pub fn new(idx: usize, kind: LayerType) -> Self {
+impl LayerPosition {
+    pub fn new(idx: usize, kind: LayerKind) -> Self {
         Self { idx, kind }
     }
 
     pub fn input() -> Self {
-        Self::new(0, LayerType::Input)
+        Self::new(0, LayerKind::Input)
     }
 
     pub fn hidden(idx: usize) -> Self {
-        Self::new(idx, LayerType::Hidden(idx))
+        Self::new(idx, LayerKind::Hidden(idx))
     }
 
     pub fn output(idx: usize) -> Self {
-        Self::new(idx, LayerType::Output)
+        Self::new(idx, LayerKind::Output)
     }
 
     pub fn is_input(&self) -> bool {
@@ -70,7 +70,7 @@ impl Position {
         self.kind().is_output()
     }
 
-    pub fn kind(&self) -> &LayerType {
+    pub fn kind(&self) -> &LayerKind {
         &self.kind
     }
 
@@ -79,38 +79,38 @@ impl Position {
     }
 }
 
-impl AsRef<usize> for Position {
+impl AsRef<usize> for LayerPosition {
     fn as_ref(&self) -> &usize {
         &self.idx
     }
 }
 
-impl AsRef<LayerType> for Position {
-    fn as_ref(&self) -> &LayerType {
+impl AsRef<LayerKind> for LayerPosition {
+    fn as_ref(&self) -> &LayerKind {
         &self.kind
     }
 }
 
-impl AsMut<usize> for Position {
+impl AsMut<usize> for LayerPosition {
     fn as_mut(&mut self) -> &mut usize {
         &mut self.idx
     }
 }
 
-impl AsMut<LayerType> for Position {
-    fn as_mut(&mut self) -> &mut LayerType {
+impl AsMut<LayerKind> for LayerPosition {
+    fn as_mut(&mut self) -> &mut LayerKind {
         &mut self.kind
     }
 }
 
-impl From<Position> for usize {
-    fn from(pos: Position) -> Self {
+impl From<LayerPosition> for usize {
+    fn from(pos: LayerPosition) -> Self {
         pos.idx
     }
 }
 
-impl From<Position> for LayerType {
-    fn from(pos: Position) -> Self {
+impl From<LayerPosition> for LayerKind {
+    fn from(pos: LayerPosition) -> Self {
         pos.kind
     }
 }

@@ -1,5 +1,5 @@
 /*
-    Appellation: network <mod>
+    Appellation: shallow <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::func::activate::{Activate, LinearActivation};
@@ -26,6 +26,14 @@ where
 {
     pub fn new(input: Layer<T, I>, output: Layer<T, O>) -> Self {
         Self { input, output }
+    }
+
+    pub fn input(&self) -> &Layer<T, I> {
+        &self.input
+    }
+
+    pub fn output(&self) -> &Layer<T, O> {
+        &self.output
     }
 
     pub fn validate_dims(&self) -> bool {

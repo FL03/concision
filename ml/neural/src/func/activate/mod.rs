@@ -14,20 +14,23 @@ pub(crate) mod nonlinear;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
 
-pub type BoxedActivation<T = f64> = Box<dyn ActivateMethod<T>>;
+pub type BoxedActivation = Box<dyn Activation>;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
 
+pub trait Activation {
+    fn activate<T, D: Dimension>(&self, args: &Array<T, D>) -> Array<T, D>;
+}
+
 pub trait Activate<T = f64, D = Ix2>
 where
     D: Dimension,
-    T: Float,
 {
     fn activate(&self, args: &Array<T, D>) -> Array<T, D>;
 }
 
-pub trait RhoGradient<T = f64, D = Ix2>: Activate<T, D>
+pub trait ActivateExt<T = f64, D = Ix2>: Activate<T, D>
 where
     D: Dimension,
     T: Float,
@@ -57,19 +60,15 @@ where
 //     }
 // }
 
-pub trait ActivationMethod {
-    fn method_name(&self) -> &str;
-}
-
 pub trait ActivateMethod<T> {
-    fn rho(&self, x: T) -> T;
+    fn rho(&self, x: &T) -> T;
 }
 
 impl<F, T> ActivateMethod<T> for F
 where
-    F: Fn(T) -> T,
+    F: Fn(&T) -> T,
 {
-    fn rho(&self, x: T) -> T {
+    fn rho(&self, x: &T) -> T {
         self.call((x,))
     }
 }

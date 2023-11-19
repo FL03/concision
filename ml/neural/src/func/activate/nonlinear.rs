@@ -61,12 +61,12 @@ impl ReLU {
         args.mapv(|x| Self::derivative(x))
     }
 
-    pub fn relu<T>(args: T) -> T
+    pub fn relu<T>(args: &T) -> T
     where
-        T: PartialOrd + Zero,
+        T: Clone + PartialOrd + Zero,
     {
-        if args > T::zero() {
-            args
+        if args > &T::zero() {
+            args.clone()
         } else {
             T::zero()
         }
@@ -75,9 +75,9 @@ impl ReLU {
 
 impl<T> ActivateMethod<T> for ReLU
 where
-    T: PartialOrd + Zero,
+    T: Clone + PartialOrd + Zero,
 {
-    fn rho(&self, x: T) -> T {
+    fn rho(&self, x: &T) -> T {
         Self::relu(x)
     }
 }
@@ -85,10 +85,10 @@ where
 impl<T, D> Activate<T, D> for ReLU
 where
     D: Dimension,
-    T: Float,
+    T: Clone + PartialOrd + Zero,
 {
     fn activate(&self, x: &Array<T, D>) -> Array<T, D> {
-        x.mapv(|x| Self::relu(x))
+        x.mapv(|x| Self::relu(&x))
     }
 }
 #[derive(
@@ -121,15 +121,6 @@ impl Sigmoid {
         T: Float,
     {
         T::one() / (T::one() + (-x).exp())
-    }
-}
-
-impl<T> ActivateMethod<T> for Sigmoid
-where
-    T: Float,
-{
-    fn rho(&self, x: T) -> T {
-        Self::sigmoid(x)
     }
 }
 
@@ -238,7 +229,7 @@ impl<T> ActivateMethod<T> for Tanh
 where
     T: Float,
 {
-    fn rho(&self, x: T) -> T {
+    fn rho(&self, x: &T) -> T {
         x.tanh()
     }
 }

@@ -11,8 +11,6 @@ pub(crate) mod layer;
 pub(crate) mod params;
 pub(crate) mod sublayer;
 
-pub mod linear;
-
 use crate::func::activate::Activate;
 use ndarray::prelude::Ix2;
 use num::Float;
@@ -34,7 +32,7 @@ mod tests {
     #[test]
     fn test_layer() {
         let (samples, inputs, outputs) = (20, 5, 3);
-        let features = Features::new(inputs, outputs);
+        let features = LayerShape::new(inputs, outputs);
 
         let args = linarr::<f64, Ix2>((samples, inputs)).unwrap();
 

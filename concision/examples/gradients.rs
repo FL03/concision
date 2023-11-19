@@ -1,14 +1,15 @@
-use concision_core::prelude::linarr;
-use concision_neural::prelude::{Features, Layer, Linear, LinearActivation, Sigmoid};
-use concision_neural::prop::Forward;
-use concision_optim::prelude::{gradient, gradient_descent, GradientDescent};
+use concision::prelude::{linarr, Forward, LayerShape, Weighted};
+
+use concision::neural::prelude::{Layer, Neuron, Sigmoid};
+use concision::optim::grad::*;
+
 use ndarray::prelude::Array1;
 
 fn main() -> anyhow::Result<()> {
     let (samples, inputs) = (20, 8);
     let outputs = 4;
 
-    let features = Features::new(inputs, outputs);
+    let features = LayerShape::new(inputs, outputs);
 
     let (epochs, gamma) = (1000000, 0.05);
 
@@ -21,8 +22,8 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn basic_descent(epochs: usize, features: Features, gamma: f64) -> anyhow::Result<()> {
-    let mut model = Linear::new(features.inputs()).init_weight();
+pub fn basic_descent(epochs: usize, features: LayerShape, gamma: f64) -> anyhow::Result<()> {
+    let mut model = Neuron::<f64, Sigmoid>::new(features.inputs()).init_weight();
 
     println!(
         "{:?}",
@@ -33,7 +34,7 @@ pub fn basic_descent(epochs: usize, features: Features, gamma: f64) -> anyhow::R
 
 pub fn sample_descent(
     epochs: usize,
-    features: Features,
+    features: LayerShape,
     gamma: f64,
     samples: usize,
 ) -> anyhow::Result<()> {
@@ -41,7 +42,7 @@ pub fn sample_descent(
     let x = linarr((samples, features.inputs()))?;
     let y = linarr(samples)?;
 
-    let model = Linear::new(features.inputs()).init_weight();
+    let model = Neuron::new(features.inputs()).init_weight();
     println!(
         "Targets:\n\n{:?}\nPredictions:\n\n{:?}\n",
         &y,
@@ -55,14 +56,13 @@ pub fn sample_descent(
         losses[e] = cost;
     }
     println!("Losses:\n\n{:?}\n", &losses);
-
     println!("Trained:\n\n{:?}", grad.model().forward(&x));
     Ok(())
 }
 
 pub fn sample_gradient(
     epochs: usize,
-    features: Features,
+    features: LayerShape,
     gamma: f64,
     samples: usize,
 ) -> anyhow::Result<()> {
@@ -70,10 +70,10 @@ pub fn sample_gradient(
     let x = linarr((samples, features.inputs()))?;
     let y = linarr((samples, features.outputs()))?;
 
-    let mut model = Layer::<f64, LinearActivation>::input(features).init(false);
+    let mut model = Layer::<f64>::input(features).init(false);
     println!(
-        "Targets:\n\n{:?}\nPredictions:\n\n{:?}\n",
-        &y,
+        "Targets (dim):\t{:?}\nPredictions:\n\n{:?}\n",
+        &y.shape(),
         model.forward(&x)
     );
 

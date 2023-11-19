@@ -2,7 +2,7 @@
     Appellation: grad <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::prelude::{Forward, Linear};
+use crate::neural::prelude::{Forward, Neuron};
 use crate::prelude::Norm;
 use ndarray::prelude::{Array1, Array2};
 use ndarray_stats::DeviationExt;
@@ -10,11 +10,11 @@ use ndarray_stats::DeviationExt;
 #[derive(Clone)]
 pub struct GradientDescent {
     pub gamma: f64,
-    model: Linear,
+    model: Neuron<f64>,
 }
 
 impl GradientDescent {
-    pub fn new(gamma: f64, model: Linear) -> Self {
+    pub fn new(gamma: f64, model: Neuron<f64>) -> Self {
         Self { gamma, model }
     }
 
@@ -26,11 +26,11 @@ impl GradientDescent {
         &mut self.gamma
     }
 
-    pub fn model(&self) -> &Linear {
+    pub fn model(&self) -> &Neuron<f64> {
         &self.model
     }
 
-    pub fn model_mut(&mut self) -> &mut Linear {
+    pub fn model_mut(&mut self) -> &mut Neuron<f64> {
         &mut self.model
     }
 
@@ -38,7 +38,7 @@ impl GradientDescent {
         self.gamma = gamma;
     }
 
-    pub fn set_model(&mut self, model: Linear) {
+    pub fn set_model(&mut self, model: Neuron<f64>) {
         self.model = model;
     }
 
@@ -47,7 +47,7 @@ impl GradientDescent {
         self
     }
 
-    pub fn with_model(mut self, model: Linear) -> Self {
+    pub fn with_model(mut self, model: Neuron<f64>) -> Self {
         self.model = model;
         self
     }
@@ -112,7 +112,7 @@ mod tests {
         // Generate some example data
         let (x, y) = sample_data(samples, inputs);
 
-        let model = Linear::new(inputs).init_weight();
+        let model = Neuron::new(inputs).init_weight();
         let mut grad = GradientDescent::new(gamma, model);
 
         let _s = grad.step(&x, &y);

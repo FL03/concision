@@ -4,7 +4,7 @@
 */
 use crate::core::GenerateRandom;
 use crate::func::activate::{Activate, LinearActivation};
-use crate::prelude::Forward;
+use crate::prelude::{Biased, Forward, Weighted};
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -27,28 +27,8 @@ where
     A: Activate<T, Ix1>,
     T: Float,
 {
-    pub fn bias(&self) -> &Array0<T> {
-        &self.bias
-    }
-
     pub fn rho(&self) -> &A {
         &self.activation
-    }
-
-    pub fn weights(&self) -> &Array1<T> {
-        &self.weights
-    }
-
-    pub fn weights_mut(&mut self) -> &mut Array1<T> {
-        &mut self.weights
-    }
-
-    pub fn set_bias(&mut self, bias: Array0<T>) {
-        self.bias = bias;
-    }
-
-    pub fn set_weights(&mut self, weights: Array1<T>) {
-        self.weights = weights;
     }
 
     pub fn with_bias(mut self, bias: Array0<T>) -> Self {
@@ -92,7 +72,11 @@ where
         G: Fn(&Array1<T>) -> Array1<T>,
     {
         let grad = gradient(&self.weights);
-        self.weights_mut().scaled_add(-gamma, &grad);
+        self.update_with_gradient(gamma, &grad);
+    }
+
+    pub fn update_with_gradient(&mut self, gamma: T, grad: &Array1<T>) {
+        self.weights_mut().scaled_add(-gamma, grad);
     }
 }
 
@@ -119,6 +103,42 @@ where
         let dk = (T::one() / T::from(features).unwrap()).sqrt();
         self.weights = Array1::uniform_between(dk, features);
         self
+    }
+}
+
+impl<T, A> Biased<T, Ix1> for Neuron<T, A>
+where
+    T: NdFloat,
+    A: Activate<T, Ix1>,
+{
+    fn bias(&self) -> &Array0<T> {
+        &self.bias
+    }
+
+    fn bias_mut(&mut self) -> &mut Array0<T> {
+        &mut self.bias
+    }
+
+    fn set_bias(&mut self, bias: Array0<T>) {
+        self.bias = bias;
+    }
+}
+
+impl<T, A> Weighted<T, Ix1> for Neuron<T, A>
+where
+    T: NdFloat,
+    A: Activate<T, Ix1>,
+{
+    fn weights(&self) -> &Array1<T> {
+        &self.weights
+    }
+
+    fn weights_mut(&mut self) -> &mut Array1<T> {
+        &mut self.weights
+    }
+
+    fn set_weights(&mut self, weights: Array1<T>) {
+        self.weights = weights;
     }
 }
 

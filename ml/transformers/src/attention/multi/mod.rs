@@ -30,7 +30,7 @@ where
 }
 
 pub(crate) mod utils {
-    use crate::attention::attention;
+    use crate::attention::scaled_dot_product_attention;
     use crate::neural::prelude::Mask;
     use crate::ops::Merge;
     use ndarray::prelude::{s, Array2, Array3, Array4, NdFloat};
@@ -50,7 +50,7 @@ pub(crate) mod utils {
                 let q = query.slice(s![i, h, .., ..]).to_owned();
                 let k = key.slice(s![i, h, .., ..]).to_owned();
                 let v = value.slice(s![i, h, .., ..]).to_owned();
-                let head = attention(&q, &k, &v, Some(mask.clone()));
+                let head = scaled_dot_product_attention(&q, &k, &v, Some(mask.clone()));
                 score.slice_mut(s![i, h, .., ..]).assign(&head);
             }
         }
@@ -73,7 +73,7 @@ pub(crate) mod utils {
             let q = query.slice(pos).to_owned();
             let k = key.slice(pos).to_owned();
             let v = value.slice(pos).to_owned();
-            let head = attention(&q, &k, &v, mask.clone().into());
+            let head = scaled_dot_product_attention(&q, &k, &v, mask.clone().into());
             score.slice_mut(s![h, .., ..]).assign(&head);
         }
         score.merge()

@@ -93,6 +93,8 @@ concision-optim = { features = [], optional = true, path = "../ml/optim", versio
 concision-transformers = { features = [], optional = true, path = "../ml/transformers", version = "0.1.12" }
 
 [dev-dependencies]
+anyhow.workspace = true
+ndarray.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

@@ -32,6 +32,10 @@ impl LinearActivation {
         args.mapv(|x| Self::derivative(x))
     }
 
+    pub fn linear<T: Clone>(args: &T) -> T {
+        args.clone()
+    }
+
     pub fn method<T>() -> ActivationFn<T> {
         |x| x
     }
@@ -41,18 +45,21 @@ impl LinearActivation {
     }
 }
 
-impl<T> ActivateMethod<T> for LinearActivation {
-    fn rho(&self, x: T) -> T {
-        Self::method()(x)
+impl<T> ActivateMethod<T> for LinearActivation
+where
+    T: Clone,
+{
+    fn rho(&self, x: &T) -> T {
+        Self::linear(x)
     }
 }
 
 impl<T, D> Activate<T, D> for LinearActivation
 where
     D: Dimension,
-    T: num::Float,
+    T: Clone,
 {
     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-        args.mapv(|x| self.rho(x))
+        args.mapv(|x| Self::linear(&x))
     }
 }

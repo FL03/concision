@@ -3,11 +3,12 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # neurons
-pub use self::{neuron::*, node::*, params::*, utils::*};
+pub use self::{neuron::*, node::*, params::*, synapse::*, utils::*};
 
 pub(crate) mod neuron;
 pub(crate) mod node;
 pub(crate) mod params;
+pub(crate) mod synapse;
 
 use crate::func::activate::Activate;
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
@@ -38,18 +39,20 @@ pub(crate) mod utils {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::func::activate::{softmax, ActivateMethod, Softmax};
+    use crate::func::activate::{softmax, Activate, Softmax};
     use crate::prelude::Forward;
     // use lazy_static::lazy_static;
-    use ndarray::{array, Array1};
+    use ndarray::prelude::{array, Array1, Ix1};
 
     fn _artificial(
         args: &Array1<f64>,
         bias: Option<Array1<f64>>,
-        rho: impl ActivateMethod<Array1<f64>>,
+        rho: impl Activate<f64, Ix1>,
         weights: &Array1<f64>,
     ) -> Array1<f64> {
-        rho.rho(args.dot(weights) + bias.unwrap_or_else(|| Array1::<f64>::zeros(args.shape()[0])))
+        let bias = bias.unwrap_or_else(|| Array1::zeros(args.len()));
+        let linear = args.dot(weights) + bias;
+        rho.activate(&linear)
     }
 
     #[test]
