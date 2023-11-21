@@ -2,35 +2,12 @@
     Appellation: nonlinear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Activate, ActivateMethod};
+use super::{Activate, Activation};
 use ndarray::prelude::{Array, Axis, Dimension, NdFloat};
 use ndarray::RemoveAxis;
 use num::{Float, One, Zero};
 use serde::{Deserialize, Serialize};
 
-pub fn softmax<T, D>(args: Array<T, D>) -> Array<T, D>
-where
-    D: Dimension,
-    T: Float,
-{
-    let denom = args.mapv(|x| x.exp()).sum();
-    args.mapv(|x| x.exp() / denom)
-}
-
-pub fn softmax_axis<T, D>(args: Array<T, D>, axis: Option<usize>) -> Array<T, D>
-where
-    D: Dimension + RemoveAxis,
-    T: NdFloat,
-{
-    let exp = args.mapv(|x| x.exp());
-    if let Some(axis) = axis {
-        let denom = exp.sum_axis(Axis(axis));
-        exp / denom
-    } else {
-        let denom = exp.sum();
-        exp / denom
-    }
-}
 
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
@@ -73,15 +50,6 @@ impl ReLU {
     }
 }
 
-impl<T> ActivateMethod<T> for ReLU
-where
-    T: Clone + PartialOrd + Zero,
-{
-    fn rho(&self, x: &T) -> T {
-        Self::relu(x)
-    }
-}
-
 impl<T, D> Activate<T, D> for ReLU
 where
     D: Dimension,
@@ -91,6 +59,7 @@ where
         x.mapv(|x| Self::relu(&x))
     }
 }
+
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
@@ -225,24 +194,24 @@ impl Tanh {
     }
 }
 
-impl<T> ActivateMethod<T> for Tanh
-where
-    T: Float,
-{
-    fn rho(&self, x: &T) -> T {
-        x.tanh()
-    }
-}
-
 impl<T, D> Activate<T, D> for Tanh
 where
     D: Dimension,
     T: Float,
 {
     fn activate(&self, x: &Array<T, D>) -> Array<T, D> {
-        x.mapv(|x| Self::tanh(x))
+        x.mapv(Float::tanh)
     }
 }
+
+impl<T> Activation<T> for Tanh where T: Float
+{
+    fn activate<D: Dimension>(&self, x: &Array<T, D>) -> Array<T, D> {
+        x.mapv(Float::tanh)
+    }
+}
+
+
 
 #[cfg(test)]
 mod tests {
@@ -282,7 +251,7 @@ mod tests {
         let exp = array![0.76159416, 0.96402758, 0.99505475];
         let args = array![1.0, 2.0, 3.0];
 
-        let res = Tanh::new().activate(&args).mapv(|i| i.round_to(8));
+        let res = Activation::activate(&Tanh::new(), &args).mapv(|i| i.round_to(8));
         assert_eq!(res, exp);
     }
 }

@@ -65,7 +65,8 @@ mod tests {
             .with_rho(Softmax::default())
             .with_weights(weights.clone());
 
-        let exp = softmax(data.clone().dot(&weights) + bias);
+        let linear = data.dot(&weights) + bias;
+        let exp = softmax(&linear);
 
         assert_eq!(exp, neuron.forward(&data));
     }

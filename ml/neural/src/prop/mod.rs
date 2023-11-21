@@ -13,6 +13,8 @@ pub(crate) mod propagation;
 // pub mod forward;
 use ndarray::prelude::{Array, Array2, Dimension};
 
+pub type ForwardDyn<T> = Box<dyn Forward<Array2<T>, Output = Array2<T>>>;
+
 pub trait Backward<T> {
     type Params;
     type Output;

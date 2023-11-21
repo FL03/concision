@@ -16,18 +16,37 @@ pub type ActivationFn<T = f64> = fn(T) -> T;
 
 pub type BoxedActivation = Box<dyn Activation>;
 
+pub type ActivateDyn<T = f64, D = Ix2> = Box<dyn Activate<T, D>>;
+
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
 
-pub trait Activation {
-    fn activate<T, D: Dimension>(&self, args: &Array<T, D>) -> Array<T, D>;
+pub trait Activation<T = f64> {
+    fn activate<D: Dimension>(&self, args: &Array<T, D>) -> Array<T, D>;
 }
+
+
 
 pub trait Activate<T = f64, D = Ix2>
 where
     D: Dimension,
 {
     fn activate(&self, args: &Array<T, D>) -> Array<T, D>;
+}
+
+// impl<T, D, S> Activate<T, D> for S where D: Dimension, S: Activation<T>, {
+//     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
+//         Activation::activate::<D>(self, args)
+//     }
+// }
+
+impl<T, D> Activate<T, D> for Box<dyn Activate<T, D>>
+where
+    D: Dimension,
+{
+    fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
+        self.as_ref().activate(args)
+    }
 }
 
 pub trait ActivateExt<T = f64, D = Ix2>: Activate<T, D>
@@ -38,43 +57,23 @@ where
     fn gradient(&self, args: &Array<T, D>) -> Array<T, D>;
 }
 
-// impl<T, D, F> Rho<T, D> for F
-// where
-//     D: Dimension,
-//     F: Fn(&Array<T, D>) -> Array<T, D>,
-//     T: Float
-// {
-//     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-//         self.call((args,))
-//     }
+// pub trait ActivateMethod<T> {
+//     fn rho(&self, x: &T) -> T;
 // }
 
-// impl<T, D, A> Rho<T, D> for A
+// impl<F, T> ActivateMethod<T> for F
 // where
-//     A: Activate<T>,
-//     D: Dimension,
-//     T: Float
+//     F: Fn(&T) -> T,
 // {
-//     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-//         args.mapv(|x| self.rho(x))
+//     fn rho(&self, x: &T) -> T {
+//         self.call((x,))
 //     }
 // }
-
-pub trait ActivateMethod<T> {
-    fn rho(&self, x: &T) -> T;
-}
-
-impl<F, T> ActivateMethod<T> for F
-where
-    F: Fn(&T) -> T,
-{
-    fn rho(&self, x: &T) -> T {
-        self.call((x,))
-    }
-}
 
 pub(crate) mod utils {
-    use num::{One, Zero};
+    use ndarray::RemoveAxis;
+    use ndarray::prelude::{Array, Axis, Dimension, NdFloat};
+    use num::{Float, One, Zero};
 
     pub fn linear_activation<T>(x: &T) -> T
     where
@@ -92,6 +91,56 @@ pub(crate) mod utils {
         } else {
             T::zero()
         }
+    }
+
+    
+    pub fn relu<T>(args: &T) -> T
+    where
+        T: Clone + PartialOrd + Zero,
+    {
+        if args > &T::zero() {
+            args.clone()
+        } else {
+            T::zero()
+        }
+    }
+
+    pub fn sigmoid<T>(x: &T) -> T
+    where
+        T: Float,
+    {
+        T::one() / (T::one() + (-x.clone()).exp())
+    }
+
+    pub fn softmax<T, D>(args: &Array<T, D>) -> Array<T, D>
+    where
+        D: Dimension,
+        T: Float,
+    {
+        let denom = args.mapv(|x| x.exp()).sum();
+        args.mapv(|x| x.exp() / denom)
+    }
+
+    pub fn softmax_axis<T, D>(args: &Array<T, D>, axis: Option<usize>) -> Array<T, D>
+    where
+        D: Dimension + RemoveAxis,
+        T: NdFloat,
+    {
+        let exp = args.mapv(|x| x.exp());
+        if let Some(axis) = axis {
+            let denom = exp.sum_axis(Axis(axis));
+            exp / denom
+        } else {
+            let denom = exp.sum();
+            exp / denom
+        }
+    }
+
+    pub fn tanh<T>(x: &T) -> T
+    where
+        T: Float,
+    {
+        x.tanh()
     }
 }
 
