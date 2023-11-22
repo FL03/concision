@@ -8,7 +8,7 @@ use crate::core::prelude::Mask;
 use crate::neural::prelude::{Forward, Layer};
 use crate::ops::Split;
 use ndarray::prelude::{Array2, NdFloat};
-use ndarray::{ScalarOperand, ShapeError};
+use ndarray::ShapeError;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -54,7 +54,7 @@ where
 
 impl<T> MultiHeadAttention<T>
 where
-    T: NdFloat + ScalarOperand,
+    T: NdFloat,
 {
     pub fn attention(&self, data: &Array2<T>, mask: &Mask<T>) -> Result<Array2<T>, ShapeError> {
         let weighted = data * self.weights();

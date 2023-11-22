@@ -17,7 +17,6 @@ pub struct FFN {
 
 impl FFN {
     pub fn new(model: usize, network: Option<usize>) -> Self {
-        
         let network = network.unwrap_or(crate::NETWORK_SIZE);
         let features = network / model;
         Self {

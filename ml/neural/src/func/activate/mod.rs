@@ -14,18 +14,10 @@ pub(crate) mod nonlinear;
 
 pub type ActivationFn<T = f64> = fn(T) -> T;
 
-pub type BoxedActivation = Box<dyn Activation>;
-
 pub type ActivateDyn<T = f64, D = Ix2> = Box<dyn Activate<T, D>>;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
-
-pub trait Activation<T = f64> {
-    fn activate<D: Dimension>(&self, args: &Array<T, D>) -> Array<T, D>;
-}
-
-
 
 pub trait Activate<T = f64, D = Ix2>
 where
@@ -57,43 +49,29 @@ where
     fn gradient(&self, args: &Array<T, D>) -> Array<T, D>;
 }
 
-// pub trait ActivateMethod<T> {
-//     fn rho(&self, x: &T) -> T;
-// }
-
-// impl<F, T> ActivateMethod<T> for F
-// where
-//     F: Fn(&T) -> T,
-// {
-//     fn rho(&self, x: &T) -> T {
-//         self.call((x,))
-//     }
-// }
-
 pub(crate) mod utils {
-    use ndarray::RemoveAxis;
     use ndarray::prelude::{Array, Axis, Dimension, NdFloat};
+    use ndarray::RemoveAxis;
     use num::{Float, One, Zero};
 
-    pub fn linear_activation<T>(x: &T) -> T
+    pub fn linear_activation<T>(args: &T) -> T
     where
         T: Clone,
     {
-        x.clone()
+        args.clone()
     }
 
-    pub fn heavyside<T>(x: &T) -> T
+    pub fn heavyside<T>(args: &T) -> T
     where
-        T: Clone + One + PartialOrd + Zero,
+        T: One + PartialOrd + Zero,
     {
-        if x.clone() > T::zero() {
+        if args > &T::zero() {
             T::one()
         } else {
             T::zero()
         }
     }
 
-    
     pub fn relu<T>(args: &T) -> T
     where
         T: Clone + PartialOrd + Zero,
@@ -105,11 +83,11 @@ pub(crate) mod utils {
         }
     }
 
-    pub fn sigmoid<T>(x: &T) -> T
+    pub fn sigmoid<T>(args: &T) -> T
     where
         T: Float,
     {
-        T::one() / (T::one() + (-x.clone()).exp())
+        T::one() / (T::one() + (-args.clone()).exp())
     }
 
     pub fn softmax<T, D>(args: &Array<T, D>) -> Array<T, D>
@@ -136,11 +114,11 @@ pub(crate) mod utils {
         }
     }
 
-    pub fn tanh<T>(x: &T) -> T
+    pub fn tanh<T>(args: &T) -> T
     where
         T: Float,
     {
-        x.tanh()
+        args.tanh()
     }
 }
 

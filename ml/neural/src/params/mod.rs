@@ -48,17 +48,6 @@ where
     fn set_weights(&mut self, weights: Array<T, D>);
 }
 
-pub trait ParamsExt<T = f64, D = Ix2>: Biased<T, D>
-where
-    Array<T, D>: Dot<Array<T, D>, Output = Array<T, D>>,
-    D: Dimension,
-    T: Float,
-{
-    fn linear(&self, args: &Array<T, D>) -> Array<T, D> {
-        args.dot(self.weights()) + self.bias()
-    }
-}
-
 pub trait Params<T = f64, D = Ix2>
 where
     D: Dimension,
@@ -76,6 +65,17 @@ where
     fn set_bias(&mut self, bias: Array<T, D::Smaller>);
     /// Sets the weights of the layer.
     fn set_weights(&mut self, weights: Array<T, D>);
+}
+
+pub trait ParamsExt<T = f64, D = Ix2>: Biased<T, D>
+where
+    Array<T, D>: Dot<Array<T, D>, Output = Array<T, D>>,
+    D: Dimension,
+    T: Float,
+{
+    fn linear(&self, args: &Array<T, D>) -> Array<T, D> {
+        args.dot(self.weights()) + self.bias()
+    }
 }
 
 pub trait Parameterized<T = f64, D = Ix2>

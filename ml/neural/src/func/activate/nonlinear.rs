@@ -2,12 +2,11 @@
     Appellation: nonlinear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Activate, Activation};
+use super::Activate;
 use ndarray::prelude::{Array, Axis, Dimension, NdFloat};
 use ndarray::RemoveAxis;
 use num::{Float, One, Zero};
 use serde::{Deserialize, Serialize};
-
 
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
@@ -204,15 +203,6 @@ where
     }
 }
 
-impl<T> Activation<T> for Tanh where T: Float
-{
-    fn activate<D: Dimension>(&self, x: &Array<T, D>) -> Array<T, D> {
-        x.mapv(Float::tanh)
-    }
-}
-
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -251,7 +241,7 @@ mod tests {
         let exp = array![0.76159416, 0.96402758, 0.99505475];
         let args = array![1.0, 2.0, 3.0];
 
-        let res = Activation::activate(&Tanh::new(), &args).mapv(|i| i.round_to(8));
+        let res = Tanh::new().activate(&args).mapv(|i| i.round_to(8));
         assert_eq!(res, exp);
     }
 }

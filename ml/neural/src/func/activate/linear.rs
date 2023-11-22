@@ -2,7 +2,7 @@
     Appellation: linear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Activate, Activation, ActivationFn};
+use super::{Activate, ActivationFn};
 use ndarray::prelude::{Array, Dimension};
 use num::One;
 use serde::{Deserialize, Serialize};
@@ -51,13 +51,6 @@ where
     T: Clone,
 {
     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-        args.clone()
-    }
-}
-
-
-impl<T> Activation<T> for LinearActivation where T: Clone {
-    fn activate<D: Dimension>(&self, args: &Array<T, D>) -> Array<T, D> {
         args.clone()
     }
 }

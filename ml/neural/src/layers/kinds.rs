@@ -77,8 +77,6 @@ impl LayerPosition {
     pub fn kind(&self) -> &LayerKind {
         &self.kind
     }
-
-    
 }
 
 impl AsRef<usize> for LayerPosition {

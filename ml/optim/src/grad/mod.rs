@@ -33,13 +33,13 @@ pub(crate) mod utils {
 
     pub fn gradient<T, A>(
         gamma: T,
-        model: &mut Layer<T, A>,
+        model: &mut A,
         data: &Array2<T>,
         targets: &Array2<T>,
         grad: impl Fn(&Array2<T>) -> Array2<T>,
     ) -> f64
     where
-        A: Activate<T, Ix2>,
+        A: Forward<Array2<T>, Output = Array2<T>> + Parameterized<T, Ix2>,
         T: FromPrimitive + NdFloat + Signed,
     {
         let (_samples, _inputs) = data.dim();

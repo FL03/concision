@@ -45,7 +45,7 @@ where
     T: NdFloat,
 {
     pub fn step(&mut self, x: &Array2<T>, y: &Array1<T>) -> anyhow::Result<T> {
-        let mut cost = T::zero();
+        let cost = T::zero();
         Ok(cost)
     }
 }

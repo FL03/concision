@@ -6,12 +6,18 @@ use super::ModelConfig;
 use crate::layers::LayerDyn;
 use num::Float;
 
-pub struct Model<T = f64> where T: Float {
+pub struct Model<T = f64>
+where
+    T: Float,
+{
     config: ModelConfig,
     layers: Vec<LayerDyn<T>>,
 }
 
-impl<T> Model<T> where T: Float {
+impl<T> Model<T>
+where
+    T: Float,
+{
     pub fn new(config: ModelConfig) -> Self {
         Self {
             config,
@@ -36,7 +42,10 @@ impl<T> Model<T> where T: Float {
     }
 }
 
-impl<T> IntoIterator for Model<T> where T: Float {
+impl<T> IntoIterator for Model<T>
+where
+    T: Float,
+{
     type Item = LayerDyn<T>;
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
@@ -44,5 +53,3 @@ impl<T> IntoIterator for Model<T> where T: Float {
         self.layers.into_iter()
     }
 }
-
-
