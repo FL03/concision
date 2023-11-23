@@ -2,8 +2,30 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::{concatenate, Array, Axis, RemoveAxis};
-// use num::Float;
+
+use ndarray::prelude::{Array, Axis, Dimension};
+use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
+use num::Float;
+
+#[macro_export]
+macro_rules! linspace {
+    ( $x:expr ) => {
+        {
+            let dim = $x.into_dimension();
+            let n = $dim.as_array_view().product();
+            ndarray::Array::linspace(T::one(), T::from(n).unwrap(), n).into_shape(dim).unwrap()
+        }
+    };
+    ( $( $x:expr ),* ) => {
+        {
+            let mut res = Vec::new();
+            $(
+                res.push(linarr!($x));
+            )*
+            res
+        }
+    };
+}
 
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where
@@ -17,6 +39,17 @@ where
     }
     out
 }
+
+pub fn linarr<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
+where
+    D: Dimension,
+    T: Float,
+{
+    let dim = dim.into_dimension();
+    let n = dim.as_array_view().product();
+    Array::linspace(T::one(), T::from(n).unwrap(), n).into_shape(dim)
+}
+
 pub fn now() -> u128 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)

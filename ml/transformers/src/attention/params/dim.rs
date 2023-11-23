@@ -10,67 +10,39 @@
 //! - `batch`: The batch size
 //! - `heads`: The number of attention heads
 //! - `model`: The dimension of the model (embedding size)
-use crate::{HEADS, MODEL_SIZE};
+use crate::{HEADS, MODEL_SIZE, QUERY_SIZE};
+use ndarray::prelude::{Ix2, Ix3, Ix4};
 use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
 
-pub trait StructuredDim: IntoDimension {}
-
-pub trait BaseDimension: IntoDimension {
-    fn model_size(&self) -> usize;
-    fn seq_len(&self) -> usize;
-}
-
 pub trait Batched {
-    fn batch_size(&self) -> usize;
+    fn batch(&self) -> usize;
 }
 
-pub trait ModelSize {
-    fn model_size(&self) -> usize;
-}
-
-pub trait MultiHeadDimension: BaseDimension {
-    fn heads(&self) -> usize;
-}
-
-impl<D> BaseDimension for D
-where
-    D: Clone + IntoDimension<Dim = [usize; 2]>,
-{
-    fn model_size(&self) -> usize {
-        self.clone().into_dimension()[1]
-    }
-
-    fn seq_len(&self) -> usize {
-        self.clone().into_dimension()[0]
+impl Batched for Ix3 {
+    fn batch(&self) -> usize {
+        self[0]
     }
 }
 
-pub enum AttentionDims {
-    Base(BaseShape),       // a 3d matrix (batch, seq, model)
-    Head(HeadShape),       // a 2d matrix (seq, query)
-    MultiHead(MultiShape), // a 4d matrix (batch, heads, seq, query)
+impl Batched for Ix4 {
+    fn batch(&self) -> usize {
+        self[0]
+    }
 }
 
-pub enum AttentionShape {
-    IO {
-        batch: usize,
-        seq: usize,
-        model: usize,
-    },
-    Head {
-        seq: usize,
-        query: usize,
-    },
-    Mask {
-        seq: usize,
-    },
-    MultiHead {
-        batch: usize,
-        heads: usize,
-        seq: usize,
-        query: usize,
-    },
+pub enum Shapes {
+    Batched((usize, Box<Shapes>)),
+    Data(BaseShape),
+    Head(HeadShape),
+    Mask { seq: usize },
+    MultiHead(MultiShape),
+}
+
+impl Shapes {
+    pub fn batched(batch_size: usize, shape: impl Into<Shapes>) -> Self {
+        Shapes::Batched((batch_size, Box::new(shape.into())))
+    }
 }
 
 #[derive(
@@ -91,18 +63,16 @@ impl BaseShape {
         Self::new(batch, seq, MODEL_SIZE)
     }
 
+    pub fn batch(&self) -> usize {
+        self.batch
+    }
+
     pub fn model_size(&self) -> usize {
         self.model
     }
 
     pub fn seq_len(&self) -> usize {
         self.seq
-    }
-}
-
-impl Batched for BaseShape {
-    fn batch_size(&self) -> usize {
-        self.batch
     }
 }
 
@@ -129,7 +99,7 @@ impl MultiShape {
     }
 
     pub fn std(seq: usize) -> Self {
-        Self::new(HEADS, seq, MODEL_SIZE)
+        Self::new(HEADS, seq, *QUERY_SIZE)
     }
 
     pub fn heads(&self) -> usize {
@@ -137,6 +107,10 @@ impl MultiShape {
     }
 
     pub fn model_size(&self) -> usize {
+        self.heads() * self.query_size()
+    }
+
+    pub fn query_size(&self) -> usize {
         self.query
     }
 
@@ -145,14 +119,9 @@ impl MultiShape {
     }
 }
 
-impl From<MultiShape> for AttentionShape {
+impl From<MultiShape> for Shapes {
     fn from(shape: MultiShape) -> Self {
-        Self::MultiHead {
-            batch: 1,
-            heads: shape.heads,
-            seq: shape.seq,
-            query: shape.query,
-        }
+        Shapes::MultiHead(shape)
     }
 }
 
@@ -179,11 +148,26 @@ impl IntoDimension for MultiShape {
 pub trait HeadDimension {
     fn query_size(&self) -> usize;
     fn sequence(&self) -> usize;
+
+    fn as_shape(&self) -> HeadShape {
+        HeadShape::new(self.query_size(), self.sequence())
+    }
+}
+
+pub trait AsShape<Sh> {
+    fn as_shape(&self) -> Sh;
+}
+
+pub trait ShapeExt<D>
+where
+    D: ndarray::Dimension,
+{
+    fn dim(&self) -> D;
 }
 
 impl<T> HeadDimension for T
 where
-    T: Clone + IntoDimension<Dim = [usize; 2]>,
+    T: Clone + IntoDimension<Dim = Ix2>,
 {
     fn query_size(&self) -> usize {
         self.clone().into_dimension()[1]

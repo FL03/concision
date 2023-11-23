@@ -15,6 +15,7 @@ version.workspace = true
 default = [
     "core",
     "data",
+    "math",
     "ml",
 ]
 
@@ -22,6 +23,7 @@ full = [
     "core", 
     "data",
     "derive",
+    "math",
     "ml",
 ]
 
@@ -42,9 +44,14 @@ macros = [
     "concision-macros"
 ]
 
+math = [
+    "concision-math"
+]
+
 ml = [
     "neural",
     "nlp",
+    "optim",
     "transformers",
 ]
 
@@ -54,6 +61,10 @@ neural = [
 
 nlp = [
     "concision-nlp"
+]
+
+optim = [
+    "concision-optim",
 ]
 
 transformers = [
@@ -73,12 +84,17 @@ concision-core = { features = [], optional = true, path = "../core", version = "
 concision-data = { features = [], optional = true, path = "../data", version = "0.1.12" }
 concision-derive = { features = [], optional = true, path = "../derive", version = "0.1.12" }
 concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.12" }
+concision-math = { features = [], optional = true, path = "../math", version = "0.1.12" }
 
+# concision-ml = { features = [], optional = true, path = "../ml/ml", version = "0.1.12" }
 concision-neural = { features = [], optional = true, path = "../ml/neural", version = "0.1.12" }
 concision-nlp = { features = [], optional = true, path = "../ml/nlp", version = "0.1.12" }
+concision-optim = { features = [], optional = true, path = "../ml/optim", version = "0.1.12" }
 concision-transformers = { features = [], optional = true, path = "../ml/transformers", version = "0.1.12" }
 
 [dev-dependencies]
+anyhow.workspace = true
+ndarray.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

@@ -25,6 +25,7 @@ test = true
 
 [dependencies]
 anyhow.workspace = true
+linfa = { features = [], version = "0.7" }
 ndarray.workspace = true
 num.workspace = true
 serde.workspace = true

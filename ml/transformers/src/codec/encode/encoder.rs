@@ -4,14 +4,10 @@
 */
 use super::EncoderParams;
 use crate::attention::multi::MultiHeadAttention;
+use crate::core::prelude::Mask;
 use crate::ffn::FFN;
 use crate::neural::prelude::{Forward, LayerNorm};
 use ndarray::prelude::Array2;
-
-pub struct Sublayer<T> {
-    layer: T,
-    norm: LayerNorm,
-}
 
 pub struct Encoder {
     attention: MultiHeadAttention,
@@ -25,30 +21,29 @@ impl Encoder {
     pub fn new(params: EncoderParams) -> Self {
         let attention = MultiHeadAttention::new(params.heads, params.model);
         let network = FFN::new(params.model, None);
-        let norm = LayerNorm::new(params.model);
         Self {
             attention,
             network,
-            norm_attention: norm.clone(),
-            norm_network: norm,
+            norm_attention: LayerNorm::new(params.model),
+            norm_network: LayerNorm::new(params.model),
             params,
         }
     }
 
-    pub fn forward(&mut self, data: &Array2<f64>) -> Array2<f64> {
-        let attention = data + self.attention.attention(data);
+    fn _forward(&self, data: &Array2<f64>, mask: &Mask<f64>) -> anyhow::Result<Array2<f64>> {
+        let attention = data + self.attention.attention(data, mask)?;
         let norm = self.norm_attention.forward(&attention);
         let network = data + self.network.forward(&norm);
         let norm = self.norm_network.forward(&network);
-        norm
+        Ok(norm)
     }
 
-    pub fn _forward(&mut self, data: &Array2<f64>) -> Array2<f64> {
+    pub fn forward(&mut self, data: &Array2<f64>, mask: &Mask<f64>) -> anyhow::Result<Array2<f64>> {
         let norm = self.norm_attention.forward(data);
-        let attention = data + self.attention.attention(&norm);
+        let attention = data + self.attention.attention(&norm, mask)?;
         let norm = self.norm_network.forward(&attention);
         let network = data + self.network.forward(&norm);
-        network
+        Ok(network)
     }
 
     pub fn params(&self) -> EncoderParams {

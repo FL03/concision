@@ -26,6 +26,7 @@ test = true
 anyhow.workspace = true
 chrono = "0.4"
 ndarray.workspace = true
+ndarray-rand.workspace = true
 num.workspace = true
 serde.workspace = true
 serde_json.workspace = true
