@@ -35,15 +35,6 @@ where
     type Rho: Activate<T, Ix2>;
 }
 
-pub trait LayerWrapper<T: Float>: Forward<Array2<T>> {
-    type Layer: Forward<Array2<T>>;
-
-    fn layer(&self) -> &Self::Layer;
-
-    fn layer_mut(&mut self) -> &mut Self::Layer;
-
-    fn wrapper(&self) -> &Self;
-}
 
 pub(crate) mod utils {}
 

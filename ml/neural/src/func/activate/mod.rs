@@ -26,11 +26,11 @@ where
     fn activate(&self, args: &Array<T, D>) -> Array<T, D>;
 }
 
-// impl<T, D, S> Activate<T, D> for S where D: Dimension, S: Activation<T>, {
-//     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-//         Activation::activate::<D>(self, args)
-//     }
-// }
+impl<T, D> Activate<T, D> for fn(&Array<T, D>) -> Array<T, D> where D: Dimension, {
+    fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
+        self.call((args,))
+    }
+}
 
 impl<T, D> Activate<T, D> for Box<dyn Activate<T, D>>
 where
