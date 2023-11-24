@@ -11,34 +11,20 @@ pub(crate) mod modes;
 pub(crate) mod propagation;
 
 // pub mod forward;
-use ndarray::prelude::{Array, Array2, Dimension};
+use ndarray::prelude::{Array, Ix2};
 
-pub type ForwardDyn<T> = Box<dyn Forward<Array2<T>, Output = Array2<T>>>;
+pub type ForwardDyn<T = f64, D = Ix2> = Box<dyn Forward<Array<T, D>, Output = Array<T, D>>>;
 
-pub trait Backward<T> {
-    type Params;
-    type Output;
+pub trait Backward<T>: Forward<T> {
+    type Optim;
 
-    fn backward(&mut self, args: &T, params: &Self::Params) -> Self::Output;
+    fn backward(&mut self, data: &T, opt: Self::Optim);
 }
 
 pub trait Forward<T> {
     type Output;
 
     fn forward(&self, args: &T) -> Self::Output;
-}
-
-pub trait Propagate<T> {
-    type Optimizer;
-
-    fn backward<D: Dimension>(
-        &mut self,
-        args: &Array2<T>,
-        targets: &Array<T, D>,
-        opt: Self::Optimizer,
-    ) -> Array<T, D>;
-
-    fn forward(&self, args: &Array2<T>) -> Array2<T>;
 }
 
 pub(crate) mod utils {}

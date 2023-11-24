@@ -10,9 +10,9 @@ use serde::{Deserialize, Serialize};
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
-pub struct LinearActivation;
+pub struct Linear;
 
-impl LinearActivation {
+impl Linear {
     pub fn new() -> Self {
         Self::default()
     }
@@ -45,7 +45,7 @@ impl LinearActivation {
     }
 }
 
-impl<T, D> Activate<T, D> for LinearActivation
+impl<T, D> Activate<T, D> for Linear
 where
     D: Dimension,
     T: Clone,

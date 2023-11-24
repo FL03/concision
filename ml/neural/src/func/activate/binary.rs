@@ -13,11 +13,15 @@ use serde::{Deserialize, Serialize};
 pub struct Heavyside;
 
 impl Heavyside {
-    pub fn heavyside<T>(x: T) -> T
+    pub fn new() -> Self {
+        Self
+    }
+
+    pub fn heavyside<T>(args: &T) -> T
     where
         T: One + PartialOrd + Zero,
     {
-        if x > T::zero() {
+        if args > &T::zero() {
             T::one()
         } else {
             T::zero()
@@ -31,6 +35,6 @@ where
     T: Clone + One + PartialOrd + Zero,
 {
     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-        args.mapv(|x| Self::heavyside(x))
+        args.mapv(|x| Self::heavyside(&x))
     }
 }

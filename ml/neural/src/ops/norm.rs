@@ -74,12 +74,12 @@ where
 {
     type Output = Array<T, D>;
 
-    fn forward(&self, x: &Array<T, D>) -> Self::Output {
+    fn forward(&self, data: &Array<T, D>) -> Self::Output {
         let epsilon = T::from(1e-6).unwrap();
         // Calculate the mean and standard deviation of the activations along the feature axis.
-        let mean = x.mean().unwrap_or_else(T::zero);
+        let mean = data.mean().unwrap_or_else(T::zero);
         // Normalize the activations.
-        let norm = (x - mean) / (x.std(T::one()) + epsilon);
+        let norm = (data - mean) / (data.std(T::one()) + epsilon);
 
         // Scale and shift the normalized activations with learnable parameters alpha and beta.
         norm * self.alpha().clone() + self.beta().clone()

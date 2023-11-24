@@ -3,8 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::generate_uniform_arr;
-use ndarray::prelude::{Array, Array1};
-use ndarray::{Dimension, ScalarOperand};
+use ndarray::prelude::{Array, Array1, Dimension, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -15,6 +14,15 @@ use strum::EnumIs;
 pub struct Belief<T: Float = f64> {
     pub bias: Bias<T>,
     pub features: usize,
+}
+
+pub enum Biases<T = f64, D = Ix2>
+where
+    D: Dimension,
+    T: Float,
+{
+    Biased(Array<T, D::Smaller>),
+    Unbiased,
 }
 
 #[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]
@@ -40,7 +48,7 @@ where
 
 impl<T> Bias<T>
 where
-    T: Float + ScalarOperand,
+    T: NdFloat,
 {
     pub fn forward(&self, data: &Array1<T>) -> Array1<T> {
         match self {
@@ -107,7 +115,7 @@ where
 impl<T, D> ops::Add<Array<T, D>> for Bias<T>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -124,7 +132,7 @@ where
 impl<T, D> ops::Add<Array<T, D>> for &Bias<T>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -141,7 +149,7 @@ where
 impl<T, D> ops::Add<&Array<T, D>> for Bias<T>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -158,7 +166,7 @@ where
 impl<T, D> ops::Add<Bias<T>> for Array<T, D>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -175,7 +183,7 @@ where
 impl<T, D> ops::Add<&Bias<T>> for Array<T, D>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Add<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -192,7 +200,7 @@ where
 impl<T, D> ops::Sub<Array<T, D>> for Bias<T>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Sub<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -209,7 +217,7 @@ where
 impl<T, D> ops::Sub<&Array<T, D>> for Bias<T>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Sub<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -226,7 +234,7 @@ where
 impl<T, D> ops::Sub<Bias<T>> for Array<T, D>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Sub<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -243,7 +251,7 @@ where
 impl<T, D> ops::Sub<&Bias<T>> for Array<T, D>
 where
     D: Dimension,
-    T: Float + ScalarOperand,
+    T: NdFloat,
     Array<T, D>: ops::Sub<Array1<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;

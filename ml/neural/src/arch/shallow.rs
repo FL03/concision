@@ -2,13 +2,13 @@
     Appellation: shallow <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::{Activate, LinearActivation};
+use crate::func::activate::{Activate, Linear};
 use crate::prelude::{Forward, Layer, Parameterized};
 
 use ndarray::prelude::{Array2, Ix2, NdFloat};
 use num::Float;
 
-pub struct ShallowNetwork<T = f64, I = LinearActivation, O = LinearActivation>
+pub struct ShallowNetwork<T = f64, I = Linear, O = Linear>
 where
     T: Float,
     I: Activate<T, Ix2>,

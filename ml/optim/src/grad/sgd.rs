@@ -38,8 +38,6 @@ where
 
         let pred = model.forward(&xs);
         let error = &pred - &ys;
-        let grad_w = xs.dot(&error.t()).sum() * (-2.0 / batch_size as f64);
-        let grad_b = error.sum() * (-2.0 / batch_size as f64);
 
         for batch in (0..samples).step_by(batch_size) {
             let mut gradient = Array2::zeros((features.outputs(), features.inputs()));

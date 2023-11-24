@@ -25,7 +25,6 @@
 //!
 //!
 use super::params::QKV;
-use super::Weights;
 use crate::core::GenerateRandom;
 use crate::ops::Split;
 use ndarray::linalg::Dot;
@@ -55,9 +54,24 @@ where
     pub value: Array2<T>,
 }
 
-impl<T: Float> Weight<T> {
+impl<T> Weight<T>
+where
+    T: Float,
+{
     pub fn dim(&self) -> Ix2 {
         self.dim
+    }
+
+    pub fn key(&self) -> &Array2<T> {
+        &self.key
+    }
+
+    pub fn query(&self) -> &Array2<T> {
+        &self.query
+    }
+
+    pub fn value(&self) -> &Array2<T> {
+        &self.value
     }
 
     pub fn qkv(&self) -> (Array2<T>, Array2<T>, Array2<T>) {
@@ -116,21 +130,6 @@ impl<T: Float> Split<(Array3<T>, Array3<T>, Array3<T>)> for Weight<T> {
         Ok((key.split(heads)?, query.split(heads)?, value.split(heads)?))
     }
 }
-
-impl<T: Float + 'static> Weights<T> for Weight<T> {
-    fn key(&self) -> &Array2<T> {
-        &self.key
-    }
-
-    fn query(&self) -> &Array2<T> {
-        &self.query
-    }
-
-    fn value(&self) -> &Array2<T> {
-        &self.value
-    }
-}
-
 impl<D, T> From<D> for Weight<T>
 where
     D: IntoDimension<Dim = Ix2>,

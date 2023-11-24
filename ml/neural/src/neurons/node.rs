@@ -92,10 +92,8 @@ where
     where
         G: Fn(&Array1<T>) -> Array1<T>,
     {
-        let mut grad = gradient(self.weights());
-        grad /= grad.mapv(|ws| ws.powi(2)).sum().sqrt();
+        let grad = gradient(self.weights());
         self.weights_mut().scaled_add(-gamma, &grad);
-        self.weights /= self.weights().mapv(|ws| ws.powi(2)).sum().sqrt();
     }
 
     pub fn activate<A>(&self, data: &Array2<T>, activator: A) -> Array1<T>

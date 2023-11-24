@@ -6,7 +6,7 @@
 //!
 //! This library implements the neural network primitives and specifications.
 //!
-#![feature(fn_traits)]
+#![feature(fn_traits, unboxed_closures)]
 pub use self::{primitives::*, specs::*, utils::*};
 
 pub(crate) mod primitives;

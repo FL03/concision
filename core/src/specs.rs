@@ -20,9 +20,19 @@ impl IntoAxis for usize {
     }
 }
 
-pub trait Borrowed<T>: AsRef<T> + AsMut<T> {}
+pub trait Apply<T> {
+    fn apply<F>(&self, f: F) -> T
+    where
+        F: FnOnce(&Self) -> T;
+}
 
-impl<S, T> Borrowed<T> for S where S: AsRef<T> + AsMut<T> {}
+pub trait ApplyTo<T> {
+    fn apply_to(&self, args: &mut T) -> &mut T;
+}
+
+pub trait As<T>: AsRef<T> + AsMut<T> {}
+
+impl<S, T> As<T> for S where S: AsRef<T> + AsMut<T> {}
 
 pub trait BinaryNum: One + Zero {}
 

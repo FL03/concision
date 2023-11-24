@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::core::GenerateRandom;
-use crate::func::activate::{Activate, LinearActivation};
+use crate::func::activate::{Activate, Linear};
 use crate::prelude::{Biased, Forward, Weighted};
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -11,7 +11,7 @@ use num::Float;
 
 /// Artificial Neuron
 #[derive(Clone, Debug, PartialEq)]
-pub struct Neuron<T = f64, A = LinearActivation>
+pub struct Neuron<T = f64, A = Linear>
 where
     A: Activate<T, Ix1>,
     T: Float,

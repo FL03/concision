@@ -26,7 +26,7 @@ pub struct DescentParams {
 }
 
 pub(crate) mod utils {
-    use crate::neural::prelude::{Activate, Forward, Layer, Parameterized, Weighted};
+    use crate::neural::prelude::{Forward, Parameterized, Weighted};
     use ndarray::prelude::{Array, Array1, Array2, Dimension, Ix2, NdFloat};
     use ndarray_stats::DeviationExt;
     use num::{FromPrimitive, Signed};
@@ -100,7 +100,7 @@ mod tests {
 
     use super::*;
     use crate::core::prelude::linarr;
-    use crate::neural::func::activate::{LinearActivation, Sigmoid};
+    use crate::neural::func::activate::{Linear, Objective, Sigmoid};
     use crate::neural::prelude::{Layer, LayerShape, Parameterized, Weighted};
     use ndarray::prelude::{Array1, Array2};
 
@@ -117,7 +117,7 @@ mod tests {
 
         let features = LayerShape::new(inputs, outputs);
 
-        let mut model = Layer::<f64, LinearActivation>::from(features).init(true);
+        let mut model = Layer::<f64, Linear>::from(features).init(true);
 
         let losses = gradient_descent(
             &mut model.params_mut().weights_mut(),
@@ -141,11 +141,11 @@ mod tests {
         let x = linarr((samples, features.inputs())).unwrap();
         let y = linarr((samples, features.outputs())).unwrap();
 
-        let mut model = Layer::<f64, LinearActivation>::input(features).init(true);
+        let mut model = Layer::<f64, Linear>::input(features).init(true);
 
         let mut losses = Array1::zeros(epochs);
         for e in 0..epochs {
-            let cost = gradient(gamma, &mut model, &x, &y, Sigmoid::gradient);
+            let cost = gradient(gamma, &mut model, &x, &y, |w| Sigmoid::new().gradient(w));
             losses[e] = cost;
         }
         assert_eq!(losses.len(), epochs);

@@ -5,13 +5,25 @@
 //! # Architecture
 //!
 //! This module describes the architecture of various components of the neural network.
+//!
+//! ## Contents
+//!
+//! ## Verification
+//!
+//! - Each layer must have the same number of inputs as the previous layer has outputs.
+//! - Input Layers should be unbiased
 pub use self::{architecture::*, deep::*, shallow::*, utils::*};
 
 pub(crate) mod architecture;
 pub(crate) mod deep;
 pub(crate) mod shallow;
 
-pub trait Arch {}
+pub trait NetworkOps {}
+
+pub trait Arch {
+    /// Validates the dimensions of the network. Each
+    fn validate_layers(&self) -> bool;
+}
 
 pub(crate) mod utils {}
 

@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Layer;
-use crate::func::activate::{Activate, LinearActivation};
+use crate::func::activate::{Activate, Linear};
 use crate::ops::LayerNorm;
 use crate::prelude::Forward;
 
@@ -12,7 +12,7 @@ use num::{Float, FromPrimitive};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Sublayer<T = f64, A = LinearActivation>
+pub struct Sublayer<T = f64, A = Linear>
 where
     A: Activate<T, Ix2>,
     T: Float,

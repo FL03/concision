@@ -1,6 +1,6 @@
 use concision::prelude::{linarr, Forward, LayerShape, Weighted};
 
-use concision::neural::prelude::{Layer, Neuron, Sigmoid};
+use concision::neural::prelude::{Layer, Neuron, Objective, Sigmoid};
 use concision::optim::grad::*;
 
 use ndarray::prelude::Array1;
@@ -27,7 +27,8 @@ pub fn basic_descent(epochs: usize, features: LayerShape, gamma: f64) -> anyhow:
 
     println!(
         "{:?}",
-        gradient_descent(model.weights_mut(), epochs, gamma, Sigmoid::gradient)
+        gradient_descent(model.weights_mut(), epochs, gamma, |w| Sigmoid::new()
+            .gradient(w))
     );
     Ok(())
 }
@@ -52,7 +53,7 @@ pub fn sample_descent(
     let mut grad = GradientDescent::new(gamma, model);
     let mut losses = Array1::zeros(epochs);
     for e in 0..epochs {
-        let cost = grad.gradient(&x, &y, Sigmoid::gradient)?;
+        let cost = grad.gradient(&x, &y, |w| Sigmoid::new().gradient(w))?;
         losses[e] = cost;
     }
     println!("Losses:\n\n{:?}\n", &losses);
@@ -79,7 +80,7 @@ pub fn sample_gradient(
 
     let mut losses = Array1::zeros(epochs);
     for e in 0..epochs {
-        let cost = gradient(gamma, &mut model, &x, &y, Sigmoid::gradient);
+        let cost = gradient(gamma, &mut model, &x, &y, |w| Sigmoid::new().gradient(w));
         losses[e] = cost;
     }
     println!("Losses:\n\n{:?}\n", &losses);

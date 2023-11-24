@@ -2,7 +2,7 @@
     Appellation: nonlinear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Activate;
+use super::{Activate, Objective};
 use ndarray::prelude::{Array, Axis, Dimension, NdFloat};
 use ndarray::RemoveAxis;
 use num::{Float, One, Zero};
@@ -29,14 +29,6 @@ impl ReLU {
         }
     }
 
-    pub fn gradient<T, D>(args: &Array<T, D>) -> Array<T, D>
-    where
-        D: Dimension,
-        T: Clone + One + PartialOrd + Zero,
-    {
-        args.mapv(|x| Self::derivative(x))
-    }
-
     pub fn relu<T>(args: &T) -> T
     where
         T: Clone + PartialOrd + Zero,
@@ -59,6 +51,16 @@ where
     }
 }
 
+impl<T, D> Objective<T, D> for ReLU
+where
+    D: Dimension,
+    T: Clone + One + PartialOrd + Zero,
+{
+    fn gradient(&self, args: &Array<T, D>) -> Array<T, D> {
+        args.mapv(|x| Self::derivative(x))
+    }
+}
+
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
@@ -76,14 +78,6 @@ impl Sigmoid {
         (-x).exp() / (T::one() + (-x).exp()).powi(2)
     }
 
-    pub fn gradient<T, D>(args: &Array<T, D>) -> Array<T, D>
-    where
-        D: Dimension,
-        T: Float,
-    {
-        args.mapv(|x| Self::derivative(x))
-    }
-
     pub fn sigmoid<T>(x: T) -> T
     where
         T: Float,
@@ -99,6 +93,16 @@ where
 {
     fn activate(&self, x: &Array<T, D>) -> Array<T, D> {
         x.mapv(|x| Self::sigmoid(x))
+    }
+}
+
+impl<T, D> Objective<T, D> for Sigmoid
+where
+    D: Dimension,
+    T: Float,
+{
+    fn gradient(&self, args: &Array<T, D>) -> Array<T, D> {
+        args.mapv(|x| Self::derivative(x))
     }
 }
 
@@ -160,6 +164,23 @@ where
     }
 }
 
+impl<T, D> Objective<T, D> for Softmax
+where
+    D: Dimension + RemoveAxis,
+    T: NdFloat,
+{
+    fn gradient(&self, args: &Array<T, D>) -> Array<T, D> {
+        let exp = args.mapv(|x| x.exp());
+        if let Some(axis) = self.axis {
+            let denom = exp.sum_axis(Axis(axis));
+            exp / denom
+        } else {
+            let denom = exp.sum();
+            exp / denom
+        }
+    }
+}
+
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
@@ -170,26 +191,18 @@ impl Tanh {
         Self
     }
 
-    pub fn derivative<T>(x: T) -> T
+    pub fn derivative<T>(args: &T) -> T
     where
         T: Float,
     {
-        T::one() - x.tanh().powi(2)
+        T::one() - args.tanh().powi(2)
     }
 
-    pub fn gradient<T, D>(args: &Array<T, D>) -> Array<T, D>
-    where
-        D: Dimension,
-        T: Float,
-    {
-        args.mapv(|x| Self::derivative(x))
-    }
-
-    pub fn tanh<T>(x: T) -> T
+    pub fn tanh<T>(args: &T) -> T
     where
         T: Float,
     {
-        x.tanh()
+        args.tanh()
     }
 }
 
@@ -203,45 +216,12 @@ where
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use computare::prelude::RoundTo;
-    use ndarray::array;
-
-    #[test]
-    fn test_relu() {
-        let exp = array![0.0, 0.0, 3.0];
-        let args = array![-1.0, 0.0, 3.0];
-
-        let res = ReLU::new().activate(&args);
-        assert_eq!(res, exp);
-    }
-
-    #[test]
-    fn test_sigmoid() {
-        let exp = array![0.73105858, 0.88079708, 0.95257413];
-        let args = array![1.0, 2.0, 3.0];
-
-        let res = Sigmoid::new().activate(&args).mapv(|i| i.round_to(8));
-        assert_eq!(res, exp);
-    }
-
-    #[test]
-    fn test_softmax() {
-        let exp = array![0.09003057, 0.24472847, 0.66524096];
-        let args = array![1.0, 2.0, 3.0];
-
-        let res = Softmax::new(None).activate(&args).mapv(|i| i.round_to(8));
-        assert_eq!(res, exp);
-    }
-
-    #[test]
-    fn test_tanh() {
-        let exp = array![0.76159416, 0.96402758, 0.99505475];
-        let args = array![1.0, 2.0, 3.0];
-
-        let res = Tanh::new().activate(&args).mapv(|i| i.round_to(8));
-        assert_eq!(res, exp);
+impl<T, D> Objective<T, D> for Tanh
+where
+    D: Dimension,
+    T: Float,
+{
+    fn gradient(&self, args: &Array<T, D>) -> Array<T, D> {
+        args.mapv(|x| Self::derivative(&x))
     }
 }

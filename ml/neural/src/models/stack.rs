@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::layers::Layer;
-use crate::prelude::{Activate, LayerShape, LinearActivation, Parameterized};
+use crate::prelude::{Activate, LayerShape, Linear, Parameterized};
 use ndarray::prelude::Ix2;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -14,7 +14,7 @@ pub trait HiddenLayers {}
 /// A [Stack] is a collection of [Layer]s, typically used to construct the hidden
 /// layers of a deep neural network.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
-pub struct Stack<T = f64, A = LinearActivation>
+pub struct Stack<T = f64, A = Linear>
 where
     A: Activate<T, Ix2>,
     T: Float,

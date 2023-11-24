@@ -2,14 +2,14 @@
     Appellation: network <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::{Activate, LinearActivation};
+use crate::func::activate::{Activate, Linear};
 use crate::models::Stack;
 use crate::prelude::{Forward, Layer, Parameterized};
 
 use ndarray::prelude::{Array2, Ix2, NdFloat};
 use num::Float;
 
-pub struct DeepNetwork<T = f64, I = LinearActivation, H = LinearActivation, O = LinearActivation>
+pub struct DeepNetwork<T = f64, I = Linear, H = Linear, O = Linear>
 where
     T: Float,
     I: Activate<T, Ix2>,

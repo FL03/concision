@@ -2,7 +2,7 @@
     Appellation: specs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Array1, Array2, Dimension};
+use ndarray::prelude::{Array, Dimension};
 use num::Float;
 
 pub trait Gradient<T = f64>
@@ -17,12 +17,6 @@ where
     {
         args.mapv(|xs| self.partial(xs))
     }
-}
-
-pub trait Objective<T> {
-    type Model;
-
-    fn objective(&self, args: &Array2<T>) -> Array1<T>;
 }
 
 pub trait Minimize<T> {

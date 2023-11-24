@@ -3,14 +3,14 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{LayerKind, LayerParams, LayerPosition, LayerShape};
-use crate::prelude::{Activate, Forward, LinearActivation, Parameterized, Params};
+use crate::prelude::{Activate, Forward, Linear, Parameterized, Params};
 use ndarray::prelude::{Array2, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Layer<T = f64, A = LinearActivation>
+pub struct Layer<T = f64, A = Linear>
 where
     A: Activate<T, Ix2>,
     T: Float,
@@ -104,6 +104,22 @@ where
     pub fn with_name(mut self, name: impl ToString) -> Self {
         self.name = name.to_string();
         self
+    }
+}
+
+impl<T, A> Layer<T, A>
+where
+    A: Activate<T, Ix2> + Clone + 'static,
+    T: Float,
+{
+    pub fn as_dyn(&self) -> Layer<T, Box<dyn Activate<T, Ix2>>> {
+        Layer {
+            activator: Box::new(self.activator.clone()),
+            features: self.features.clone(),
+            name: self.name.clone(),
+            params: self.params.clone(),
+            position: self.position.clone(),
+        }
     }
 }
 

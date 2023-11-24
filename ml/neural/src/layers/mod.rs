@@ -35,7 +35,6 @@ where
     type Rho: Activate<T, Ix2>;
 }
 
-
 pub(crate) mod utils {}
 
 #[cfg(test)]
