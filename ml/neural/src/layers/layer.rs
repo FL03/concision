@@ -211,19 +211,6 @@ where
     }
 }
 
-// impl<T, A> IntoIterator for Layer<T, A>
-// where
-//     A: Activate<T, Ix2>,
-//     T: Float,
-// {
-//     type Item = (Array1<T>, Array0<T>);
-//     type IntoIter = std::vec::IntoIter<Self::Item>;
-
-//     fn into_iter(self) -> Self::IntoIter {
-//         self.params().weights().axis_iter(Axis(0)).zip(self.params().bias().axis_iter(Axis(0))).map(|(w, b)| (w.to_owned(), b.to_owned())).collect::<Vec<_>>().into_iter()
-//     }
-// }
-
 impl<T, A> IntoIterator for Layer<T, A>
 where
     A: Activate<T, Ix2> + Activate<T, Ix1> + Default,

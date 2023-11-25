@@ -24,8 +24,8 @@ impl Encoder {
         Self {
             attention,
             network,
-            norm_attention: LayerNorm::new(params.model),
-            norm_network: LayerNorm::new(params.model),
+            norm_attention: LayerNorm::new((params.model, params.model)),
+            norm_network: LayerNorm::new((params.model, params.model)),
             params,
         }
     }

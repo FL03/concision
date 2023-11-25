@@ -14,14 +14,15 @@ pub mod errors;
 pub mod masks;
 pub mod states;
 pub mod step;
+pub mod vars;
 
 pub mod prelude {
-
     pub use crate::epochs::*;
     pub use crate::errors::*;
     pub use crate::masks::*;
     pub use crate::states::*;
     pub use crate::step::*;
+    // pub use crate::vars::*;
 
     pub use crate::primitives::*;
     pub use crate::specs::*;

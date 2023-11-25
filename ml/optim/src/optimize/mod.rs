@@ -12,6 +12,10 @@ pub trait Optimize {
     type Model;
 
     fn apply(&self, model: &mut Self::Model) -> &mut Self::Model;
+
+    fn model(&self) -> &Self::Model;
+
+    fn model_mut(&mut self) -> &mut Self::Model;
 }
 
 pub(crate) mod utils {}

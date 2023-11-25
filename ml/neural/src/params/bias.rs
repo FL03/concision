@@ -2,8 +2,10 @@
     Appellation: bias <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::core::prelude::GenerateRandom;
 use crate::generate_uniform_arr;
-use ndarray::prelude::{Array, Array1, Dimension, Ix2, NdFloat};
+use ndarray::prelude::{Array, Array1, Dimension, Ix1, NdFloat};
+use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -16,14 +18,101 @@ pub struct Belief<T: Float = f64> {
     pub features: usize,
 }
 
-pub enum Biases<T = f64, D = Ix2>
+#[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]
+pub enum Biases<T = f64, D = Ix1>
 where
     D: Dimension,
     T: Float,
 {
-    Biased(Array<T, D::Smaller>),
+    Biased(Array<T, D>),
+    #[default]
     Unbiased,
 }
+
+impl<T, D> Biases<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    pub fn biased(bias: Array<T, D>) -> Self {
+        Self::Biased(bias)
+    }
+}
+
+impl<T, D> Biases<T, D>
+where
+    D: Dimension,
+    T: Float + SampleUniform,
+{
+    pub fn init(self, dk: T, features: impl IntoDimension<Dim = D>) -> Self {
+        Self::Biased(Array::uniform_between(dk, features))
+    }
+    pub fn uniform(dk: T, features: impl IntoDimension<Dim = D>) -> Self {
+        Self::Biased(Array::uniform_between(dk, features))
+    }
+}
+
+impl<T, D> From<Array<T, D>> for Biases<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    fn from(bias: Array<T, D>) -> Self {
+        Self::Biased(bias)
+    }
+}
+
+impl<T, D> From<Option<Array<T, D>>> for Biases<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    fn from(bias: Option<Array<T, D>>) -> Self {
+        match bias {
+            Some(bias) => Self::Biased(bias),
+            None => Self::Unbiased,
+        }
+    }
+}
+
+impl<T, D> From<Biases<T, D>> for Option<Array<T, D>>
+where
+    D: Dimension,
+    T: Float,
+{
+    fn from(bias: Biases<T, D>) -> Self {
+        match bias {
+            Biases::Biased(bias) => Some(bias),
+            Biases::Unbiased => None,
+        }
+    }
+}
+
+impl<T, D> From<Biases<T, D>> for Array<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    fn from(bias: Biases<T, D>) -> Self {
+        match bias {
+            Biases::Biased(bias) => bias,
+            Biases::Unbiased => Array::zeros(D::zeros(D::NDIM.unwrap_or_default())),
+        }
+    }
+}
+
+// impl<'a, T, D> From<&'a Biases<T, D>> for ArrayView<'a, T, D>
+// where
+//     D: Dimension + 'a,
+//     T: Float,
+// {
+//     fn from(bias: &'a Biases<T, D>) -> Self {
+//         match bias {
+//             Biases::Biased(bias) => bias.view(),
+//             Biases::Unbiased => ArrayView::empty(D::zeros(D::NDIM.unwrap_or_default())),
+//         }
+//     }
+// }
 
 #[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]
 pub enum Bias<T: Float = f64> {

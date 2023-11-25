@@ -105,6 +105,12 @@ impl std::fmt::Display for LayerShape {
     }
 }
 
+// impl From<LayerShape> for (usize,) {
+//     fn from(features: LayerShape) -> Self {
+//         (features.inputs,)
+//     }
+// }
+
 impl Features for LayerShape {
     fn inputs(&self) -> usize {
         self.inputs

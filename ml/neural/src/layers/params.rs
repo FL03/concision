@@ -4,8 +4,8 @@
 */
 use super::LayerShape;
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::{Biased, Weighted};
-use ndarray::prelude::{Array1, Array2, Ix2};
+use crate::prelude::{Biased, Node, Weighted};
+use ndarray::prelude::{Array1, Array2, Axis, Ix2};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -77,35 +77,6 @@ where
     }
 }
 
-// impl<T> Params<T, Ix2> for LayerParams<T>
-// where
-//     T: Float,
-// {
-//     fn bias(&self) -> &Array1<T> {
-//         &self.bias
-//     }
-
-//     fn bias_mut(&mut self) -> &mut Array1<T> {
-//         &mut self.bias
-//     }
-
-//     fn weights(&self) -> &Array2<T> {
-//         &self.weights
-//     }
-
-//     fn weights_mut(&mut self) -> &mut Array2<T> {
-//         &mut self.weights
-//     }
-
-//     fn set_bias(&mut self, bias: Array1<T>) {
-//         self.bias = bias;
-//     }
-
-//     fn set_weights(&mut self, weights: Array2<T>) {
-//         self.weights = weights;
-//     }
-// }
-
 impl<T> Biased<T, Ix2> for LayerParams<T>
 where
     T: Float,
@@ -137,5 +108,22 @@ where
 
     fn weights_mut(&mut self) -> &mut Array2<T> {
         &mut self.weights
+    }
+}
+
+impl<T> IntoIterator for LayerParams<T>
+where
+    T: Float,
+{
+    type Item = Node<T>;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.weights()
+            .axis_iter(Axis(0))
+            .zip(self.bias().axis_iter(Axis(0)))
+            .map(|(w, b)| (w.to_owned(), b.to_owned()).into())
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }
