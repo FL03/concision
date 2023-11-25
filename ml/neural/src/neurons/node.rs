@@ -152,3 +152,38 @@ where
         &mut self.weights
     }
 }
+
+impl<T> From<(Array1<T>, Array0<T>)> for Node<T>
+where
+    T: Float,
+{
+    fn from((weights, bias): (Array1<T>, Array0<T>)) -> Self {
+        Self {
+            bias,
+            features: weights.len(),
+            weights,
+        }
+    }
+}
+
+impl<T> From<(Array1<T>, T)> for Node<T>
+where
+    T: NdFloat,
+{
+    fn from((weights, bias): (Array1<T>, T)) -> Self {
+        Self {
+            bias: Array0::ones(()) * bias,
+            features: weights.len(),
+            weights,
+        }
+    }
+}
+
+impl<T> From<Node<T>> for (Array1<T>, Array0<T>)
+where
+    T: Float,
+{
+    fn from(node: Node<T>) -> Self {
+        (node.weights, node.bias)
+    }
+}

@@ -4,6 +4,14 @@
 */
 use super::Activate;
 
+pub trait Activations<T = f64> {
+    fn linear() -> Activator<T>
+    where
+        Self: Sized;
+}
+
+pub struct A<T = f64>(Box<dyn Activations<T>>);
+
 pub struct Activator<T = f64> {
     method: Box<dyn Activate<T>>,
 }

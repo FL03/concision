@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{LayerKind, LayerParams, LayerPosition, LayerShape};
-use crate::prelude::{Activate, Forward, Linear, Parameterized, Params};
-use ndarray::prelude::{Array2, Ix2, NdFloat};
+use crate::prelude::{Activate, Forward, Linear, Neuron, Parameterized, Params};
+use ndarray::prelude::{Array2, Axis, Ix1, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -208,5 +208,37 @@ where
 {
     fn from(features: LayerShape) -> Self {
         Self::new(features, LayerPosition::input())
+    }
+}
+
+// impl<T, A> IntoIterator for Layer<T, A>
+// where
+//     A: Activate<T, Ix2>,
+//     T: Float,
+// {
+//     type Item = (Array1<T>, Array0<T>);
+//     type IntoIter = std::vec::IntoIter<Self::Item>;
+
+//     fn into_iter(self) -> Self::IntoIter {
+//         self.params().weights().axis_iter(Axis(0)).zip(self.params().bias().axis_iter(Axis(0))).map(|(w, b)| (w.to_owned(), b.to_owned())).collect::<Vec<_>>().into_iter()
+//     }
+// }
+
+impl<T, A> IntoIterator for Layer<T, A>
+where
+    A: Activate<T, Ix2> + Activate<T, Ix1> + Default,
+    T: Float,
+{
+    type Item = Neuron<T, A>;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.params()
+            .weights()
+            .axis_iter(Axis(0))
+            .zip(self.params().bias().axis_iter(Axis(0)))
+            .map(|(w, b)| (w.to_owned(), b.to_owned()).into())
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }

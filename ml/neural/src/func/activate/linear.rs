@@ -2,7 +2,6 @@
     Appellation: linear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Activate, ActivationFn};
 use ndarray::prelude::{Array, Dimension};
 use num::One;
 use serde::{Deserialize, Serialize};
@@ -33,11 +32,11 @@ impl Linear {
     }
 
     pub fn linear<T: Clone>(args: &T) -> T {
-        args.clone()
+        Linear::method()(args)
     }
 
-    pub fn method<T>() -> ActivationFn<T> {
-        |x| x
+    pub fn method<T: Clone>() -> fn(&T) -> T {
+        |x| x.clone()
     }
 
     pub fn rho<T>(args: T) -> T {
@@ -45,12 +44,41 @@ impl Linear {
     }
 }
 
-impl<T, D> Activate<T, D> for Linear
+// impl<T, D> Activate<T, D> for Linear
+// where
+//     D: Dimension,
+//     T: Clone,
+// {
+//     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
+//         args.clone()
+//     }
+// }
+
+impl<T> Fn<(&T,)> for Linear
 where
-    D: Dimension,
     T: Clone,
 {
-    fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-        args.clone()
+    extern "rust-call" fn call(&self, args: (&T,)) -> T {
+        args.0.clone()
+    }
+}
+
+impl<T> FnMut<(&T,)> for Linear
+where
+    T: Clone,
+{
+    extern "rust-call" fn call_mut(&mut self, args: (&T,)) -> T {
+        args.0.clone()
+    }
+}
+
+impl<T> FnOnce<(&T,)> for Linear
+where
+    T: Clone,
+{
+    type Output = T;
+
+    extern "rust-call" fn call_once(self, args: (&T,)) -> Self::Output {
+        args.0.clone()
     }
 }

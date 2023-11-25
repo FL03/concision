@@ -95,6 +95,46 @@ where
     fn params_mut(&mut self) -> &mut Self::Params;
 }
 
+pub trait ParameterizedExt<T = f64, D = Ix2>: Parameterized<T, D>
+where
+    D: Dimension,
+    T: Float,
+    <Self as Parameterized<T, D>>::Params: Params<T, D> + 'static,
+{
+    fn bias(&self) -> &Array<T, D::Smaller> {
+        Biased::bias(self.params())
+    }
+
+    fn bias_mut(&mut self) -> &mut Array<T, D::Smaller> {
+        Biased::bias_mut(self.params_mut())
+    }
+
+    fn weights(&self) -> &Array<T, D> {
+        Weighted::weights(self.params())
+    }
+
+    fn weights_mut(&mut self) -> &mut Array<T, D> {
+        Weighted::weights_mut(self.params_mut())
+    }
+
+    fn set_bias(&mut self, bias: Array<T, D::Smaller>) {
+        Biased::set_bias(self.params_mut(), bias)
+    }
+
+    fn set_weights(&mut self, weights: Array<T, D>) {
+        Weighted::set_weights(self.params_mut(), weights)
+    }
+}
+
+impl<T, D, P> ParameterizedExt<T, D> for P
+where
+    D: Dimension,
+    P: Parameterized<T, D>,
+    T: Float,
+    <P as Parameterized<T, D>>::Params: Params<T, D> + 'static,
+{
+}
+
 // impl<S, T, D, P> Params<T, D> for S
 // where
 //     S: Parameterized<T, D, Params = P>,
@@ -174,21 +214,6 @@ where
 
 //     fn bias_mut(&mut self) -> &mut Array<T, D::Smaller> {
 //         self.params_mut().bias_mut()
-//     }
-// }
-
-// impl<T, D, P> Weighted<T, D> for P
-// where
-//     P: Parameterized<T, D>,
-//     D: Dimension,
-//     T: Float,
-// {
-//     fn weights(&self) -> &Array<T, D> {
-//         self.params().weights()
-//     }
-
-//     fn weights_mut(&mut self) -> &mut Array<T, D> {
-//         self.params_mut().weights_mut()
 //     }
 // }
 

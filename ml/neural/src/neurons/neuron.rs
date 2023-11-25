@@ -2,9 +2,9 @@
     Appellation: neuron <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::GenerateRandom;
+use super::Node;
 use crate::func::activate::{Activate, Linear};
-use crate::prelude::{Biased, Forward, Weighted};
+use crate::prelude::{Forward, Parameterized, ParameterizedExt, Weighted};
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -17,9 +17,8 @@ where
     T: Float,
 {
     activation: A,
-    bias: Array0<T>,
     features: usize,
-    weights: Array1<T>,
+    node: Node<T>,
 }
 
 impl<T, A> Neuron<T, A>
@@ -27,22 +26,46 @@ where
     A: Activate<T, Ix1>,
     T: Float,
 {
+    pub fn activation(&self) -> &A {
+        &self.activation
+    }
+
+    pub fn features(&self) -> usize {
+        self.features
+    }
+
+    pub fn node(&self) -> &Node<T> {
+        &self.node
+    }
+
+    pub fn node_mut(&mut self) -> &mut Node<T> {
+        &mut self.node
+    }
+
     pub fn rho(&self) -> &A {
         &self.activation
     }
 
     pub fn with_bias(mut self, bias: Array0<T>) -> Self {
-        self.bias = bias;
+        self.node = self.node.with_bias(bias);
         self
     }
 
-    pub fn with_rho(mut self, rho: A) -> Self {
-        self.activation = rho;
+    pub fn with_rho<B: Activate<T, Ix1>>(self, rho: B) -> Neuron<T, B> {
+        Neuron {
+            activation: rho,
+            features: self.features,
+            node: self.node,
+        }
+    }
+
+    pub fn with_node(mut self, node: Node<T>) -> Self {
+        self.node = node;
         self
     }
 
     pub fn with_weights(mut self, weights: Array1<T>) -> Self {
-        self.weights = weights;
+        self.node = self.node.with_weights(weights);
         self
     }
 }
@@ -55,9 +78,8 @@ where
     pub fn new(features: usize) -> Self {
         Self {
             activation: A::default(),
-            bias: Array0::zeros(()),
             features,
-            weights: Array1::zeros(features),
+            node: Node::new(features),
         }
     }
 }
@@ -71,7 +93,7 @@ where
     where
         G: Fn(&Array1<T>) -> Array1<T>,
     {
-        let grad = gradient(&self.weights);
+        let grad = gradient(self.node().weights());
         self.update_with_gradient(gamma, &grad);
     }
 
@@ -93,52 +115,75 @@ where
     }
 
     pub fn init_bias(mut self) -> Self {
-        let dk = (T::one() / T::from(self.features).unwrap()).sqrt();
-        self.bias = Array0::uniform_between(dk, ());
+        self.node = self.node.init_bias();
         self
     }
 
     pub fn init_weight(mut self) -> Self {
-        let features = self.features;
-        let dk = (T::one() / T::from(features).unwrap()).sqrt();
-        self.weights = Array1::uniform_between(dk, features);
+        self.node = self.node.init_weight();
         self
     }
 }
 
-impl<T, A> Biased<T, Ix1> for Neuron<T, A>
+// impl<T, A> Biased<T, Ix1> for Neuron<T, A>
+// where
+//     T: Float,
+//     A: Activate<T, Ix1>,
+// {
+//     fn bias(&self) -> &Array0<T> {
+//         self.node.bias()
+//     }
+
+//     fn bias_mut(&mut self) -> &mut Array0<T> {
+//         self.node.bias_mut()
+//     }
+
+//     fn set_bias(&mut self, bias: Array0<T>) {
+//         self.node.set_bias(bias);
+//     }
+// }
+
+// impl<T, A> Weighted<T, Ix1> for Neuron<T, A>
+// where
+//     T: Float,
+//     A: Activate<T, Ix1>,
+// {
+//     fn weights(&self) -> &Array1<T> {
+//         self.node.weights()
+//     }
+
+//     fn weights_mut(&mut self) -> &mut Array1<T> {
+//         self.node.weights_mut()
+//     }
+
+//     fn set_weights(&mut self, weights: Array1<T>) {
+//         self.node.set_weights(weights);
+//     }
+// }
+
+impl<T, A> Parameterized<T, Ix1> for Neuron<T, A>
 where
-    T: NdFloat,
     A: Activate<T, Ix1>,
+    T: Float,
 {
-    fn bias(&self) -> &Array0<T> {
-        &self.bias
+    type Features = usize;
+
+    type Params = Node<T>;
+
+    fn features(&self) -> &Self::Features {
+        &self.features
     }
 
-    fn bias_mut(&mut self) -> &mut Array0<T> {
-        &mut self.bias
+    fn features_mut(&mut self) -> &mut Self::Features {
+        &mut self.features
     }
 
-    fn set_bias(&mut self, bias: Array0<T>) {
-        self.bias = bias;
-    }
-}
-
-impl<T, A> Weighted<T, Ix1> for Neuron<T, A>
-where
-    T: NdFloat,
-    A: Activate<T, Ix1>,
-{
-    fn weights(&self) -> &Array1<T> {
-        &self.weights
+    fn params(&self) -> &Self::Params {
+        &self.node
     }
 
-    fn weights_mut(&mut self) -> &mut Array1<T> {
-        &mut self.weights
-    }
-
-    fn set_weights(&mut self, weights: Array1<T>) {
-        self.weights = weights;
+    fn params_mut(&mut self) -> &mut Self::Params {
+        &mut self.node
     }
 }
 
@@ -161,5 +206,71 @@ where
     fn forward(&self, args: &Array2<T>) -> Self::Output {
         let linstep = args.dot(&self.weights().t()) + self.bias();
         self.rho().activate(&linstep)
+    }
+}
+
+impl<T, A> From<(Array1<T>, Array0<T>)> for Neuron<T, A>
+where
+    T: Float,
+    A: Activate<T, Ix1> + Default,
+{
+    fn from((weights, bias): (Array1<T>, Array0<T>)) -> Self {
+        Self {
+            activation: A::default(),
+            features: weights.len(),
+            node: Node::from((weights, bias)),
+        }
+    }
+}
+
+impl<T, A> From<(Array1<T>, T)> for Neuron<T, A>
+where
+    T: NdFloat,
+    A: Activate<T, Ix1> + Default,
+{
+    fn from((weights, bias): (Array1<T>, T)) -> Self {
+        Self {
+            activation: A::default(),
+            features: weights.len(),
+            node: Node::from((weights, bias)),
+        }
+    }
+}
+
+impl<T, A> From<(Array1<T>, Array0<T>, A)> for Neuron<T, A>
+where
+    T: Float,
+    A: Activate<T, Ix1>,
+{
+    fn from((weights, bias, activation): (Array1<T>, Array0<T>, A)) -> Self {
+        Self {
+            activation,
+            features: weights.len(),
+            node: Node::from((weights, bias)),
+        }
+    }
+}
+
+impl<T, A> From<(Array1<T>, T, A)> for Neuron<T, A>
+where
+    T: NdFloat,
+    A: Activate<T, Ix1>,
+{
+    fn from((weights, bias, activation): (Array1<T>, T, A)) -> Self {
+        Self {
+            activation,
+            features: weights.len(),
+            node: Node::from((weights, bias)),
+        }
+    }
+}
+
+impl<T, A> From<Neuron<T, A>> for (Array1<T>, Array0<T>)
+where
+    T: Float,
+    A: Activate<T, Ix1>,
+{
+    fn from(neuron: Neuron<T, A>) -> Self {
+        neuron.node().clone().into()
     }
 }

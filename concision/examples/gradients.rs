@@ -1,4 +1,4 @@
-use concision::prelude::{linarr, Forward, LayerShape, Weighted};
+use concision::prelude::{linarr, Forward, LayerShape, ParameterizedExt};
 
 use concision::neural::prelude::{Layer, Neuron, Objective, Sigmoid};
 use concision::optim::grad::*;
