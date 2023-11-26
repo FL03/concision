@@ -2,7 +2,7 @@
    Appellation: params <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{HEADS, MODEL_SIZE};
+use crate::{HEADS, MODEL};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -31,6 +31,6 @@ impl EncoderParams {
 
 impl Default for EncoderParams {
     fn default() -> Self {
-        Self::new(HEADS, MODEL_SIZE)
+        Self::new(HEADS, MODEL)
     }
 }

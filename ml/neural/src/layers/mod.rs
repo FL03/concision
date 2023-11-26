@@ -3,23 +3,28 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Layers
-pub use self::{features::*, kinds::*, layer::*, params::*, sublayer::*, utils::*};
+pub use self::{cmp::*, layer::*, params::*, stack::*, utils::*};
 
-pub(crate) mod features;
-pub(crate) mod kinds;
+pub(crate) mod cmp;
 pub(crate) mod layer;
 pub(crate) mod params;
-pub(crate) mod sublayer;
+pub(crate) mod stack;
+
+pub mod exp;
 
 use crate::func::activate::{Activate, ActivateDyn};
-use crate::prelude::Forward;
-use ndarray::prelude::{Array2, Ix2};
+use crate::prelude::Node;
+use ndarray::prelude::Ix2;
 // use ndarray::IntoDimension;
 use num::Float;
 
-pub type LayerDyn<T = f64> = Layer<T, ActivateDyn<T, Ix2>>;
+pub type LayerDyn<T = f64, D = Ix2> = Layer<T, ActivateDyn<T, D>>;
 
-pub trait L<T: Float>: Forward<Array2<T>> {
+pub trait L<T, A>: IntoIterator<Item = Node<T>>
+where
+    A: Activate<T>,
+    T: Float,
+{
     fn features(&self) -> LayerShape;
     fn name(&self) -> &str;
     fn params(&self) -> &LayerParams<T>;
@@ -28,12 +33,12 @@ pub trait L<T: Float>: Forward<Array2<T>> {
     fn is_biased(&self) -> bool;
 }
 
-pub trait LayerExt<T = f64>: L<T>
-where
-    T: Float,
-{
-    type Rho: Activate<T, Ix2>;
-}
+// pub trait LayerExt<T = f64>: L<T>
+// where
+//     T: Float,
+// {
+//     type Rho: Activate<T, Ix2>;
+// }
 
 pub(crate) mod utils {}
 
@@ -42,7 +47,7 @@ mod tests {
     use super::*;
     use crate::core::prelude::linarr;
     use crate::func::activate::Softmax;
-    use crate::prelude::{Forward, ParameterizedExt};
+    use crate::prelude::{Biased, Forward, Node, Parameterized};
     use ndarray::prelude::Ix2;
 
     #[test]
@@ -57,6 +62,12 @@ mod tests {
         let pred = layer.forward(&args);
 
         assert_eq!(pred.dim(), (samples, outputs));
+
+        let nodes = (0..outputs)
+            .map(|_| Node::<f64>::new(inputs).init(true))
+            .collect::<Vec<_>>();
+        let layer = Layer::<f64, Softmax>::from_iter(nodes);
+        assert_eq!(layer.features(), &features);
     }
 
     #[test]
@@ -66,9 +77,9 @@ mod tests {
 
         let layer = Layer::<f64, Softmax>::from(features).init(true);
 
-        for neuron in layer.into_iter() {
-            assert_eq!(neuron.features(), inputs);
-            assert_eq!(neuron.bias().dim(), ());
+        for node in layer.into_iter() {
+            assert_eq!(node.features(), inputs);
+            assert_eq!(node.bias().dim(), ());
         }
     }
 }

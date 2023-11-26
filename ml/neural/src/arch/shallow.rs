@@ -3,16 +3,16 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::func::activate::{Activate, Linear};
-use crate::prelude::{Forward, Layer, Parameterized};
+use crate::prelude::{Features, Forward, Layer, Parameterized};
 
-use ndarray::prelude::{Array2, Ix2, NdFloat};
+use ndarray::prelude::{Array2, NdFloat};
 use num::Float;
 
 pub struct ShallowNetwork<T = f64, I = Linear, O = Linear>
 where
     T: Float,
-    I: Activate<T, Ix2>,
-    O: Activate<T, Ix2>,
+    I: Activate<T>,
+    O: Activate<T>,
 {
     pub input: Layer<T, I>,
     pub output: Layer<T, O>,
@@ -21,8 +21,8 @@ where
 impl<T, I, O> ShallowNetwork<T, I, O>
 where
     T: Float,
-    I: Activate<T, Ix2>,
-    O: Activate<T, Ix2>,
+    I: Activate<T>,
+    O: Activate<T>,
 {
     pub fn new(input: Layer<T, I>, output: Layer<T, O>) -> Self {
         Self { input, output }
@@ -44,8 +44,8 @@ where
 impl<T, I, O> Forward<Array2<T>> for ShallowNetwork<T, I, O>
 where
     T: NdFloat,
-    I: Activate<T, Ix2>,
-    O: Activate<T, Ix2>,
+    I: Activate<T>,
+    O: Activate<T>,
 {
     type Output = Array2<T>;
 

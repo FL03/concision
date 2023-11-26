@@ -22,16 +22,18 @@ use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
     Serialize,
     SmartDefault,
 )]
+#[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum Errors {
     Async,
     Codec,
     Connection,
+    Custom(String),
     Data,
     Dimension,
     #[default]
-    Error(String),
+    Error,
     Execution,
     IO,
     Null,
@@ -100,6 +102,12 @@ impl std::fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
+
+impl From<Box<dyn std::error::Error>> for Error {
+    fn from(err: Box<dyn std::error::Error>) -> Self {
+        Self::new(Errors::Unknown, err.to_string())
+    }
+}
 
 impl From<Errors> for Error {
     fn from(err: Errors) -> Self {

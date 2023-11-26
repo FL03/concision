@@ -25,7 +25,6 @@ pub trait Biased<T = f64, D = Ix2>
 where
     D: Dimension,
     T: Float,
-    Self: Weighted<T, D>,
 {
     /// Returns an owned reference to the bias of the layer.
     fn bias(&self) -> &Array<T, D::Smaller>;
@@ -67,7 +66,7 @@ where
     fn set_weights(&mut self, weights: Array<T, D>);
 }
 
-pub trait ParamsExt<T = f64, D = Ix2>: Biased<T, D>
+pub trait ParamsExt<T = f64, D = Ix2>: Biased<T, D> + Weighted<T, D>
 where
     Array<T, D>: Dot<Array<T, D>, Output = Array<T, D>>,
     D: Dimension,
@@ -84,7 +83,7 @@ where
     T: Float,
 {
     type Features: IntoDimension<Dim = D>;
-    type Params: Biased<T, D>;
+    type Params: Biased<T, D> + Weighted<T, D>;
 
     fn features(&self) -> &Self::Features;
 
@@ -171,32 +170,31 @@ where
 impl<T, D, P> Params<T, D> for P
 where
     D: Dimension,
-    P: Biased<T, D>,
     T: Float,
-    <D as Dimension>::Smaller: Dimension,
+    Self: Biased<T, D> + Weighted<T, D> + Sized,
 {
     fn bias(&self) -> &Array<T, D::Smaller> {
-        self.bias()
+        Biased::bias(self)
     }
 
     fn bias_mut(&mut self) -> &mut Array<T, D::Smaller> {
-        self.bias_mut()
+        Biased::bias_mut(self)
     }
 
     fn weights(&self) -> &Array<T, D> {
-        self.weights()
+        Weighted::weights(self)
     }
 
     fn weights_mut(&mut self) -> &mut Array<T, D> {
-        self.weights_mut()
+        Weighted::weights_mut(self)
     }
 
     fn set_bias(&mut self, bias: Array<T, D::Smaller>) {
-        self.set_bias(bias)
+        Biased::set_bias(self, bias)
     }
 
     fn set_weights(&mut self, weights: Array<T, D>) {
-        self.set_weights(weights)
+        Weighted::set_weights(self, weights)
     }
 }
 

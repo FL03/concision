@@ -5,7 +5,8 @@
 //! # Stochastic Gradient Descent (SGD)
 //!
 //!
-use crate::neural::prelude::{Activate, Forward, Layer, Parameterized, Weighted};
+
+use crate::neural::prelude::{Activate, Features, Forward, Layer, Parameterized, Weighted};
 // use crate::prelude::ObjectiveFn;
 use ndarray::prelude::{s, Array1, Array2, Axis, Ix2, NdFloat};
 use ndarray_stats::DeviationExt;

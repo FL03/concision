@@ -12,11 +12,39 @@ pub(crate) mod binary;
 pub(crate) mod linear;
 pub(crate) mod nl;
 
-pub type ActivationFn<T = f64> = fn(T) -> T;
+// use crate::core::prelude::ShapeResult;
+use ndarray::prelude::{Array, ArrayD, Dimension, Ix2, IxDyn};
 
-pub type ActivateDyn<T = f64, D = Ix2> = Box<dyn Activate<T, D>>;
+pub type ActivationFn<T = f64, D = Ix2> = Box<dyn Fn(&Array<T, D>) -> Array<T, D>>;
 
-use ndarray::prelude::{Array, Dimension, Ix2};
+pub type ActivateDyn<T = f64, D = IxDyn> = Box<dyn Activate<T, D>>;
+
+pub trait Rho<T = f64> {
+    fn rho(&self, args: &T) -> T;
+}
+
+impl<T, F> Rho<T> for F
+where
+    F: Fn(&T) -> T,
+{
+    fn rho(&self, args: &T) -> T {
+        self.call((args,))
+    }
+}
+
+pub trait A<T = f64>
+where
+    T: Clone,
+{
+    // fn activate<D: Dimension>(&self, args: &Array<T, D>) -> ShapeResult<Array<T, D>> {
+    //     let shape = args.shape();
+    //     let res = self.activate_dyn(&args.into_dyn());
+    //     let res: Array<T, D> = res.to_shape(shape)?.to_owned();
+    //     Ok(res)
+    // }
+
+    fn activate_dyn(&self, args: &ArrayD<T>) -> ArrayD<T>;
+}
 
 pub trait Activate<T = f64, D = Ix2>
 where

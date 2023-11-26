@@ -4,8 +4,8 @@
 */
 use super::LayerShape;
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::{Biased, Node, Weighted};
-use ndarray::prelude::{Array1, Array2, Axis, Ix2};
+use crate::prelude::{Biased, Features, Forward, Node, Weighted};
+use ndarray::prelude::{Array1, Array2, Axis, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -29,17 +29,22 @@ where
         }
     }
 
-    pub fn reset(&mut self) {
-        self.bias = Array1::zeros(self.features.outputs());
-        self.weights = Array2::zeros(self.features.out_by_in());
-    }
-
     pub fn features(&self) -> &LayerShape {
         &self.features
     }
 
     pub fn features_mut(&mut self) -> &mut LayerShape {
         &mut self.features
+    }
+
+    pub fn set_node(&mut self, idx: usize, node: Node<T>) {
+        self.bias_mut()
+            .index_axis_mut(Axis(0), idx)
+            .assign(&node.bias());
+
+        self.weights_mut()
+            .index_axis_mut(Axis(0), idx)
+            .assign(&node.weights());
     }
 
     pub fn with_bias(mut self, bias: Array1<T>) -> Self {
@@ -50,6 +55,16 @@ where
     pub fn with_weights(mut self, weights: Array2<T>) -> Self {
         self.weights = weights;
         self
+    }
+}
+
+impl<T> LayerParams<T>
+where
+    T: NdFloat,
+{
+    pub fn reset(&mut self) {
+        self.bias *= T::zero();
+        self.weights *= T::zero();
     }
 }
 
@@ -111,6 +126,30 @@ where
     }
 }
 
+impl<T> Features for LayerParams<T>
+where
+    T: Float,
+{
+    fn inputs(&self) -> usize {
+        self.features.inputs()
+    }
+
+    fn outputs(&self) -> usize {
+        self.features.outputs()
+    }
+}
+
+impl<T> Forward<Array2<T>> for LayerParams<T>
+where
+    T: NdFloat,
+{
+    type Output = Array2<T>;
+
+    fn forward(&self, input: &Array2<T>) -> Array2<T> {
+        input.dot(&self.weights) + &self.bias
+    }
+}
+
 impl<T> IntoIterator for LayerParams<T>
 where
     T: Float,
@@ -125,5 +164,23 @@ where
             .map(|(w, b)| (w.to_owned(), b.to_owned()).into())
             .collect::<Vec<_>>()
             .into_iter()
+    }
+}
+
+impl<T> FromIterator<Node<T>> for LayerParams<T>
+where
+    T: Float,
+{
+    fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
+        let nodes = nodes.into_iter().collect::<Vec<_>>();
+        let mut iter = nodes.iter();
+        let node = iter.next().unwrap();
+        let shape = LayerShape::new(node.features(), nodes.len());
+        let mut params = LayerParams::new(shape);
+        params.set_node(0, node.clone());
+        for (i, node) in iter.into_iter().enumerate() {
+            params.set_node(i + 1, node.clone());
+        }
+        params
     }
 }

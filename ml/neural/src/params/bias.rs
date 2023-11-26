@@ -13,9 +13,13 @@ use smart_default::SmartDefault;
 use std::ops;
 use strum::EnumIs;
 
-pub struct Belief<T: Float = f64> {
-    pub bias: Bias<T>,
-    pub features: usize,
+pub struct Belief<T = f64, D = Ix1>
+where
+    D: Dimension,
+    T: Float,
+{
+    pub bias: Array<T, D>,
+    pub features: D,
 }
 
 #[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]

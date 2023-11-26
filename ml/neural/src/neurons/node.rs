@@ -110,6 +110,7 @@ where
 
 impl<T> Forward<Array2<T>> for Node<T>
 where
+    Self: Biased<T, Ix1>,
     T: FromPrimitive + NdFloat,
 {
     type Output = Array1<T>;
@@ -150,6 +151,23 @@ where
 
     fn weights_mut(&mut self) -> &mut Array1<T> {
         &mut self.weights
+    }
+}
+
+impl<T> FromIterator<T> for Node<T>
+where
+    T: Float,
+{
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = T>,
+    {
+        let weights = Array1::<T>::from_iter(iter);
+        Self {
+            bias: Array0::zeros(()),
+            features: weights.len(),
+            weights,
+        }
     }
 }
 

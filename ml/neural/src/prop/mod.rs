@@ -18,7 +18,7 @@ pub type ForwardDyn<T = f64, D = Ix2> = Box<dyn Forward<Array<T, D>, Output = Ar
 pub trait Backward<T>: Forward<T> {
     type Optim;
 
-    fn backward(&mut self, data: &T, opt: Self::Optim);
+    fn backward(&mut self, data: &T, opt: &Self::Optim);
 }
 
 pub trait Forward<T> {

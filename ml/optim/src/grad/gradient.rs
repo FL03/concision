@@ -44,7 +44,7 @@ impl<T> Grad<T>
 where
     T: NdFloat,
 {
-    pub fn step(&mut self, x: &Array2<T>, y: &Array1<T>) -> anyhow::Result<T> {
+    pub fn step(&mut self, data: &Array2<T>, targets: &Array1<T>) -> anyhow::Result<T> {
         let cost = T::zero();
         Ok(cost)
     }

@@ -29,7 +29,7 @@ use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
 pub enum LayerKind {
     #[default]
     Input = 0,
-    Hidden(usize),
+    Hidden,
     Output,
 }
 
@@ -51,7 +51,7 @@ impl LayerPosition {
     }
 
     pub fn hidden(idx: usize) -> Self {
-        Self::new(idx, LayerKind::Hidden(idx))
+        Self::new(idx, LayerKind::Hidden)
     }
 
     pub fn output(idx: usize) -> Self {

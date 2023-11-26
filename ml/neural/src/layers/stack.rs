@@ -2,21 +2,25 @@
     Appellation: stack <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::layers::Layer;
-use crate::prelude::{Activate, LayerShape, Linear, Parameterized};
-use ndarray::prelude::Ix2;
+use crate::layers::{Layer, LayerShape};
+use crate::prelude::{Activate, Features, Linear, Parameterized};
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
 
-pub trait HiddenLayers {}
+pub trait Layers<T, A>: IntoIterator<Item = Layer<T, A>>
+where
+    A: Activate<T>,
+    T: Float,
+{
+}
 
 /// A [Stack] is a collection of [Layer]s, typically used to construct the hidden
 /// layers of a deep neural network.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Stack<T = f64, A = Linear>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     children: Vec<Layer<T, A>>,
@@ -24,7 +28,7 @@ where
 
 impl<T, A> Stack<T, A>
 where
-    A: Activate<T, Ix2> + Default,
+    A: Activate<T> + Default,
     T: Float,
 {
     pub fn build_layers(mut self, shapes: impl IntoIterator<Item = (usize, usize)>) -> Self {
@@ -38,7 +42,7 @@ where
 
 impl<T, A> Stack<T, A>
 where
-    A: Activate<T, Ix2> + Clone + Default,
+    A: Activate<T> + Clone + Default,
     T: Float + crate::core::prelude::SampleUniform,
 {
     pub fn init_layers(mut self, biased: bool) -> Self {
@@ -51,7 +55,7 @@ where
 
 impl<T, A> Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     pub fn new() -> Self {
@@ -112,7 +116,7 @@ where
 
 impl<T, A> AsRef<[Layer<T, A>]> for Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     fn as_ref(&self) -> &[Layer<T, A>] {
@@ -122,7 +126,7 @@ where
 
 impl<T, A> AsMut<[Layer<T, A>]> for Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     fn as_mut(&mut self) -> &mut [Layer<T, A>] {
@@ -132,7 +136,7 @@ where
 
 impl<T, A> IntoIterator for Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     type Item = Layer<T, A>;
@@ -145,7 +149,7 @@ where
 
 impl<T, A> FromIterator<Layer<T, A>> for Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     fn from_iter<I: IntoIterator<Item = Layer<T, A>>>(iter: I) -> Self {
@@ -157,17 +161,17 @@ where
 
 impl<T, A> From<Vec<Layer<T, A>>> for Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
-    fn from(layers: Vec<Layer<T, A>>) -> Self {
-        Self { children: layers }
+    fn from(children: Vec<Layer<T, A>>) -> Self {
+        Self { children }
     }
 }
 
 impl<T, A> From<Layer<T, A>> for Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     fn from(layer: Layer<T, A>) -> Self {
@@ -179,7 +183,7 @@ where
 
 impl<T, A> ops::Index<usize> for Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     type Output = Layer<T, A>;
@@ -191,10 +195,32 @@ where
 
 impl<T, A> ops::IndexMut<usize> for Stack<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.children[index]
+    }
+}
+
+impl<T, A> ops::Index<ops::Range<usize>> for Stack<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+{
+    type Output = [Layer<T, A>];
+
+    fn index(&self, index: ops::Range<usize>) -> &Self::Output {
+        &self.children[index]
+    }
+}
+
+impl<T, A> ops::IndexMut<ops::Range<usize>> for Stack<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+{
+    fn index_mut(&mut self, index: ops::Range<usize>) -> &mut Self::Output {
         &mut self.children[index]
     }
 }

@@ -1,11 +1,10 @@
 /*
-    Appellation: model <mod>
+    Appellation: layer <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{LayerKind, LayerParams, LayerPosition, LayerShape};
-use crate::func::activate::{Activate, Linear};
-use crate::prelude::{Features, Forward, Neuron, Node, Parameterized, Params};
-use ndarray::prelude::{Array2, Ix1, NdFloat};
+use crate::layers::{LayerKind, LayerParams, LayerPosition, LayerShape};
+use crate::prelude::{Activate, Features, Forward, Linear, Neuron, Parameterized, Params};
+use ndarray::prelude::{Array2, Axis, Ix1, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -13,7 +12,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Layer<T = f64, A = Linear>
 where
-    A: Activate<T>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     activator: A,
@@ -25,7 +24,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Default + Activate<T>,
+    A: Default + Activate<T, Ix2>,
     T: Float,
 {
     pub fn new(features: LayerShape, position: LayerPosition) -> Self {
@@ -53,7 +52,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     pub fn activator(&self) -> &A {
@@ -80,13 +79,6 @@ where
         self.name = name.to_string();
     }
 
-    pub fn set_node(&mut self, idx: usize, neuron: &Neuron<T, A>)
-    where
-        A: Activate<T, Ix1>,
-    {
-        self.params.set_node(idx, neuron.node().clone());
-    }
-
     pub fn update_position(&mut self, idx: usize, output: bool) {
         self.position = if idx == 0 {
             LayerPosition::input()
@@ -97,11 +89,16 @@ where
         };
     }
 
-    pub fn validate_layer(&self, other: &Self, next: bool) -> bool {
-        if next {
-            return self.features().inputs() == other.features().outputs();
+    pub fn validate_layer(&self, other: &Self) -> bool {
+        let pos = self.position().index().abs_diff(other.position().index());
+        if pos == 1 {
+            if self.position().index() > other.position().index() {
+                return self.features().inputs() == other.features().outputs();
+            } else {
+                return self.features().outputs() == other.features().inputs();
+            }
         }
-        self.features().outputs() == other.features().inputs()
+        false
     }
 
     pub fn with_name(mut self, name: impl ToString) -> Self {
@@ -112,10 +109,10 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T> + Clone + 'static,
+    A: Activate<T, Ix2> + Clone + 'static,
     T: Float,
 {
-    pub fn as_dyn(&self) -> Layer<T, Box<dyn Activate<T>>> {
+    pub fn as_dyn(&self) -> Layer<T, Box<dyn Activate<T, Ix2>>> {
         Layer {
             activator: Box::new(self.activator.clone()),
             features: self.features.clone(),
@@ -128,7 +125,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T>,
+    A: Activate<T, Ix2>,
     T: Float + 'static,
 {
     pub fn update_with_gradient(&mut self, gamma: T, grad: &Array2<T>) {
@@ -138,7 +135,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T>,
+    A: Activate<T, Ix2>,
     T: NdFloat,
 {
     pub fn linear(&self, args: &Array2<T>) -> Array2<T> {
@@ -148,7 +145,7 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T>,
+    A: Activate<T, Ix2>,
     T: Float + SampleUniform,
 {
     pub fn init(mut self, biased: bool) -> Self {
@@ -159,7 +156,7 @@ where
 
 impl<T, A> Forward<Array2<T>> for Layer<T, A>
 where
-    A: Activate<T>,
+    A: Activate<T, Ix2>,
     T: NdFloat,
 {
     type Output = Array2<T>;
@@ -171,7 +168,7 @@ where
 
 impl<T, A> Parameterized<T> for Layer<T, A>
 where
-    A: Activate<T>,
+    A: Activate<T, Ix2>,
     T: Float,
 {
     type Features = LayerShape;
@@ -196,7 +193,7 @@ where
 
 impl<T, A> PartialOrd for Layer<T, A>
 where
-    A: Activate<T> + PartialEq,
+    A: Activate<T, Ix2> + PartialEq,
     T: Float,
 {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
@@ -206,7 +203,7 @@ where
 
 impl<T, A> From<LayerShape> for Layer<T, A>
 where
-    A: Activate<T> + Default,
+    A: Activate<T, Ix2> + Default,
     T: Float,
 {
     fn from(features: LayerShape) -> Self {
@@ -216,30 +213,19 @@ where
 
 impl<T, A> IntoIterator for Layer<T, A>
 where
-    A: Activate<T> + Default,
+    A: Activate<T, Ix2> + Activate<T, Ix1> + Default,
     T: Float,
 {
-    type Item = Node<T>;
+    type Item = Neuron<T, A>;
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.params.into_iter()
-    }
-}
-
-impl<T, A> FromIterator<Node<T>> for Layer<T, A>
-where
-    A: Activate<T> + Default,
-    T: Float,
-{
-    fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
-        let params = LayerParams::from_iter(nodes);
-        Self {
-            activator: A::default(),
-            features: *params.features(),
-            name: String::new(),
-            params,
-            position: LayerPosition::input(),
-        }
+        self.params()
+            .weights()
+            .axis_iter(Axis(0))
+            .zip(self.params().bias().axis_iter(Axis(0)))
+            .map(|(w, b)| (w.to_owned(), b.to_owned()).into())
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }

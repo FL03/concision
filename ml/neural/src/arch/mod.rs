@@ -31,8 +31,7 @@ pub(crate) mod utils {}
 mod tests {
     use super::*;
     use crate::core::prelude::linarr;
-    use crate::models::stack::Stack;
-    use crate::prelude::{Forward, Layer, LayerShape, Sigmoid};
+    use crate::prelude::{Forward, Layer, LayerShape, Sigmoid, Stack};
     use ndarray::prelude::Ix2;
 
     #[test]

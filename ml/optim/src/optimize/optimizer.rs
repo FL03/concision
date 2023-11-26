@@ -3,15 +3,40 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::neural::prelude::Params;
-use ndarray::prelude::Dimension;
+use ndarray::prelude::Array2;
+use num::Float;
 
-pub struct Optimizer {
-    params: Vec<Box<dyn Params>>,
+pub trait Optimizer<T = f64> {
+    fn name(&self) -> &str;
 }
 
-impl Optimizer {
-    pub fn new() -> Self {
-        Self { params: Vec::new() }
+pub struct OptimizerStep<T = f64>
+where
+    T: Float,
+{
+    data: Array2<T>,
+    params: Vec<Box<dyn Params>>,
+    targets: Array2<T>,
+}
+
+impl<T> OptimizerStep<T>
+where
+    T: Float,
+{
+    pub fn new(data: Array2<T>, targets: Array2<T>) -> Self {
+        Self {
+            data,
+            params: Vec::new(),
+            targets,
+        }
+    }
+
+    pub fn zeros(inputs: usize, outputs: usize, samples: usize) -> Self {
+        Self {
+            data: Array2::zeros((samples, inputs)),
+            params: Vec::new(),
+            targets: Array2::zeros((samples, outputs)),
+        }
     }
 
     pub fn params(&self) -> &[Box<dyn Params>] {

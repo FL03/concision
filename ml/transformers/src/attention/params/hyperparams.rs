@@ -15,7 +15,7 @@
 //!
 
 use super::dim::{BaseShape, HeadShape, MultiShape};
-use crate::{HEADS, MODEL_SIZE, SAMPLES};
+use crate::{HEADS, MODEL, SAMPLES};
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -42,7 +42,7 @@ impl AttentionParameters {
     }
 
     pub fn std(batch: usize, seq: usize) -> Self {
-        Self::new(batch, HEADS, MODEL_SIZE, SAMPLES, seq)
+        Self::new(batch, HEADS, MODEL, SAMPLES, seq)
     }
 
     pub fn batch_size(&self) -> usize {

@@ -8,6 +8,9 @@ pub use self::{position::*, sequential::*, utils::*};
 pub(crate) mod position;
 pub(crate) mod sequential;
 
+pub mod ffn;
+pub mod graph;
+
 use crate::layers::Layer;
 use crate::Trainable;
 use num::Float;

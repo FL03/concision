@@ -101,7 +101,7 @@ mod tests {
     use super::*;
     use crate::core::prelude::linarr;
     use crate::neural::func::activate::{Linear, Objective, Sigmoid};
-    use crate::neural::prelude::{Layer, LayerShape, Parameterized, Weighted};
+    use crate::neural::prelude::{Features, Layer, LayerShape, Parameterized, Weighted};
     use ndarray::prelude::{Array1, Array2};
 
     fn test_grad(args: &Array2<f64>) -> Array2<f64> {
@@ -110,8 +110,7 @@ mod tests {
 
     #[test]
     fn descent() {
-        let (_samples, inputs) = (20, 5);
-        let outputs = 1;
+        let (_samples, inputs, outputs) = (20, 5, 1);
 
         let (epochs, gamma) = (10, 0.001);
 
@@ -130,8 +129,7 @@ mod tests {
 
     #[test]
     fn test_gradient() {
-        let (samples, inputs) = (20, 5);
-        let outputs = 1;
+        let (samples, inputs, outputs) = (20, 5, 1);
 
         let (epochs, gamma) = (10, 0.001);
 
