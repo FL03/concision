@@ -17,7 +17,12 @@ pub trait Optimize<T = f64> {
 
     fn name(&self) -> &str;
 
-    fn optimize(&mut self, model: &mut Self::Model, args: &Array2<T>, targets: &Array2<T>);
+    // fn optimize(&mut self, model: &mut Self::Model, args: &Array2<T>, targets: &Array2<T>) -> T {
+    //     let gradients = model.backward(args, targets);
+    //     let loss = model.loss(args, targets);
+    //     self.update(model, &gradients);
+    //     loss
+    // }
 }
 
 pub trait Gradient<T = f64, D = Ix2>

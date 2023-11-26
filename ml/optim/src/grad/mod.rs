@@ -26,7 +26,7 @@ pub struct DescentParams {
 }
 
 pub(crate) mod utils {
-    use crate::neural::prelude::{Forward, Parameterized, Weighted};
+    use crate::neural::prelude::{Forward, Parameterized, Params};
     use ndarray::prelude::{Array, Array1, Array2, Dimension, Ix2, NdFloat};
     use ndarray_stats::DeviationExt;
     use num::{FromPrimitive, Signed};
@@ -41,6 +41,7 @@ pub(crate) mod utils {
     where
         A: Forward<Array2<T>, Output = Array2<T>> + Parameterized<T, Ix2>,
         T: FromPrimitive + NdFloat + Signed,
+        <A as Parameterized<T, Ix2>>::Params: Params<T, Ix2> + 'static,
     {
         let (_samples, _inputs) = data.dim();
         let pred = model.forward(data);

@@ -6,8 +6,17 @@ use crate::neural::prelude::Params;
 use ndarray::prelude::Array2;
 use num::Float;
 
-pub trait Optimizer<T = f64> {
+pub trait Optimizer<T = f64>
+where
+    T: Float,
+{
     fn name(&self) -> &str;
+
+    fn step(
+        &mut self,
+        data: &Array2<T>,
+        targets: &Array2<T>,
+    ) -> impl Fn(&mut Box<dyn Params<T>>) -> T;
 }
 
 pub struct OptimizerStep<T = f64>

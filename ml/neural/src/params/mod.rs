@@ -83,7 +83,7 @@ where
     T: Float,
 {
     type Features: IntoDimension<Dim = D>;
-    type Params: Biased<T, D> + Weighted<T, D>;
+    type Params;
 
     fn features(&self) -> &Self::Features;
 
@@ -101,27 +101,27 @@ where
     <Self as Parameterized<T, D>>::Params: Params<T, D> + 'static,
 {
     fn bias(&self) -> &Array<T, D::Smaller> {
-        Biased::bias(self.params())
+        Params::bias(self.params())
     }
 
     fn bias_mut(&mut self) -> &mut Array<T, D::Smaller> {
-        Biased::bias_mut(self.params_mut())
+        Params::bias_mut(self.params_mut())
     }
 
     fn weights(&self) -> &Array<T, D> {
-        Weighted::weights(self.params())
+        Params::weights(self.params())
     }
 
     fn weights_mut(&mut self) -> &mut Array<T, D> {
-        Weighted::weights_mut(self.params_mut())
+        Params::weights_mut(self.params_mut())
     }
 
     fn set_bias(&mut self, bias: Array<T, D::Smaller>) {
-        Biased::set_bias(self.params_mut(), bias)
+        Params::set_bias(self.params_mut(), bias)
     }
 
     fn set_weights(&mut self, weights: Array<T, D>) {
-        Weighted::set_weights(self.params_mut(), weights)
+        Params::set_weights(self.params_mut(), weights)
     }
 }
 

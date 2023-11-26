@@ -11,6 +11,8 @@ pub(crate) mod model;
 use ndarray::prelude::{Array, Array2, Dimension, Ix2};
 use num::Float;
 
+
+
 pub trait FeedForward<T = f64, D = Ix2>
 where
     D: Dimension,
@@ -21,6 +23,8 @@ where
     fn backward(&mut self, args: &Array2<T>, targets: &Array2<T>, opt: &Self::Opt) -> Array2<T>;
 
     fn forward(&self, args: &Array2<T>) -> Array<T, D>;
+
+    
 }
 
 pub(crate) mod utils {}

@@ -2,7 +2,7 @@
     Appellation: specs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Ix2, Dimension};
+use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
 
 pub trait ApplyGradient<T = f64, D = Ix2>
