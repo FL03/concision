@@ -131,6 +131,14 @@ where
     A: Activate<T>,
     T: Float + 'static,
 {
+    pub fn apply_gradient<F>(&mut self, gamma: T, gradient: F)
+    where
+        F: Fn(&Array2<T>) -> Array2<T>,
+    {
+        let grad = gradient(&self.params.weights());
+        self.params.weights_mut().scaled_add(-gamma, &grad);
+    }
+
     pub fn update_with_gradient(&mut self, gamma: T, grad: &Array2<T>) {
         self.params.weights_mut().scaled_add(-gamma, grad);
     }

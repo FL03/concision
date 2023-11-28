@@ -41,9 +41,9 @@ pub fn sample_descent(
 ) -> anyhow::Result<()> {
     // Generate some example data
     let x = linarr((samples, features.inputs()))?;
-    let y = linarr(samples)?;
+    let y = linarr((samples, features.outputs()))?;
 
-    let model = Neuron::new(features.inputs()).init_weight();
+    let model = Layer::from(features).init(false);
     println!(
         "Targets:\n\n{:?}\nPredictions:\n\n{:?}\n",
         &y,

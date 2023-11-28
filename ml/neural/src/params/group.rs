@@ -4,7 +4,7 @@
 */
 use super::{Biased, Weighted};
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::Forward;
+use crate::prelude::{Forward, Node};
 use ndarray::prelude::{Array, Axis, Dimension, Ix1, Ix2};
 use ndarray::{IntoDimension, RemoveAxis};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -177,5 +177,22 @@ where
         Ser: serde::Serializer,
     {
         (self.bias(), self.features(), self.weights()).serialize(serializer)
+    }
+}
+
+impl<T> IntoIterator for ParamGroup<T, Ix2>
+where
+    T: Float,
+{
+    type Item = Node<T>;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.weights()
+            .axis_iter(Axis(0))
+            .zip(self.bias().axis_iter(Axis(0)))
+            .map(|(w, b)| (w.to_owned(), b.to_owned()).into())
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }
