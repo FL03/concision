@@ -165,6 +165,20 @@ where
     }
 }
 
+impl<T, A> Features for Layer<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+{
+    fn inputs(&self) -> usize {
+        self.features.inputs()
+    }
+
+    fn outputs(&self) -> usize {
+        self.features.outputs()
+    }
+}
+
 impl<T, A> Forward<Array2<T>> for Layer<T, A>
 where
     A: Activate<T>,
@@ -211,6 +225,17 @@ where
         self.position.partial_cmp(&other.position)
     }
 }
+
+// impl<T, A> From<S> for Layer<T, A>
+// where
+//     A: Activate<T> + Default,
+//     S: IntoDimension<Ix2>
+//     T: Float,
+// {
+//     fn from(features: LayerShape) -> Self {
+//         Self::new(features, LayerPosition::input())
+//     }
+// }
 
 impl<T, A> From<LayerShape> for Layer<T, A>
 where

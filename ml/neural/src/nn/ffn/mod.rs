@@ -4,8 +4,9 @@
 */
 //! # Feed Forward Neural Network
 //!
-pub use self::{model::*, utils::*};
+pub use self::{mlp::*, model::*, utils::*};
 
+pub(crate) mod mlp;
 pub(crate) mod model;
 
 use ndarray::prelude::{Array, Array2, Dimension, Ix2};
@@ -25,9 +26,7 @@ where
 {
     type Opt;
 
-    fn apply_gradients(&mut self, gamma: &T, grad: &Array<T, D>);
-
-    fn backward(&mut self, args: &Array2<T>, targets: &Array2<T>, opt: &Self::Opt) -> Array2<T>;
+    fn backward(&mut self, args: &Array2<T>, targets: &Array<T, D>, opt: &Self::Opt) -> Array2<T>;
 
     fn forward(&self, args: &Array2<T>) -> Array<T, D>;
 }

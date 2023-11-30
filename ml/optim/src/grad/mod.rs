@@ -27,21 +27,24 @@ pub struct DescentParams {
 
 pub(crate) mod utils {
     use crate::neural::prelude::{Forward, Parameterized, Params};
-    use ndarray::prelude::{Array, Array1, Array2, Dimension, Ix2, NdFloat};
+    use ndarray::linalg::Dot;
+    use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
     use ndarray_stats::DeviationExt;
     use num::{FromPrimitive, Signed};
 
-    pub fn gradient<T, A>(
+    pub fn gradient<T, D, A>(
         gamma: T,
         model: &mut A,
         data: &Array2<T>,
-        targets: &Array2<T>,
-        grad: impl Fn(&Array2<T>) -> Array2<T>,
+        targets: &Array<T, D>,
+        grad: impl Fn(&Array<T, D>) -> Array<T, D>,
     ) -> f64
     where
-        A: Forward<Array2<T>, Output = Array2<T>> + Parameterized<T, Ix2>,
+        A: Forward<Array2<T>, Output = Array<T, D>> + Parameterized<T, D>,
+        D: Dimension,
         T: FromPrimitive + NdFloat + Signed,
-        <A as Parameterized<T, Ix2>>::Params: Params<T, Ix2> + 'static,
+        <A as Parameterized<T, D>>::Params: Params<T, D> + 'static,
+        Array2<T>: Dot<Array<T, D>, Output = Array<T, D>>,
     {
         let (_samples, _inputs) = data.dim();
         let pred = model.forward(data);
@@ -52,7 +55,7 @@ pub(crate) mod utils {
         // compute the gradient of the objective function w.r.t. the model's weights
         let dz = &errors * grad(&pred);
         // compute the gradient of the objective function w.r.t. the model's weights
-        let dw = data.t().dot(&dz) / ns;
+        let dw = data.t().to_owned().dot(&dz) / ns;
         // compute the gradient of the objective function w.r.t. the model's bias
         // let db = dz.sum_axis(Axis(0)) / ns;
         // // Apply the gradients to the model's learnable parameters

@@ -111,6 +111,12 @@ impl LayerShape {
         Self { inputs, outputs }
     }
 
+    pub fn from_dimension(shape: impl IntoDimension<Dim = Ix2>) -> Self {
+        let dim = shape.into_dimension();
+        let (outputs, inputs) = dim.into_pattern();
+        Self::new(inputs, outputs)
+    }
+
     pub fn neuron(inputs: usize) -> Self {
         Self::new(inputs, 1)
     }

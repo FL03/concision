@@ -10,8 +10,6 @@ pub(crate) mod model;
 
 use num::Float;
 
-
-
 pub trait GNN<T = f64>
 where
     T: Float,

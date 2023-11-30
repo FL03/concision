@@ -4,6 +4,7 @@
 */
 use crate::layers::{Layer, LayerShape};
 use crate::prelude::{Activate, Features, Linear, Parameterized};
+// use ndarray::{IntoDimension, Ix2};
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
@@ -13,6 +14,23 @@ where
     A: Activate<T>,
     T: Float,
 {
+}
+
+pub trait StackExt<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+    Self: Clone + Layers<T, A> + IntoIterator<Item = Layer<T, A>>,
+{
+    fn validate_params(&self) -> bool {
+        let layers = self.clone().into_iter().collect::<Vec<_>>();
+        let depth = layers.len();
+        let mut dim = true;
+        for (i, layer) in layers[..(depth - 1)].into_iter().enumerate() {
+            dim = dim && layer.features().inputs() == layers[i + 1].features().outputs();
+        }
+        dim
+    }
 }
 
 /// A [Stack] is a collection of [Layer]s, typically used to construct the hidden
@@ -31,7 +49,24 @@ where
     A: Activate<T> + Default,
     T: Float,
 {
+    // pub fn create<Sh: IntoDimension<Dim = Ix2>>(shapes: impl IntoIterator<Item = Sh>) -> Self {
+    //     let shapes = shapes.into_iter().map(|s| s.into_dimension());
+    //     let mut children = Vec::new();
+    //     for (inputs, outputs) in shapes {
+    //         children.push(Layer::<T, A>::from(LayerShape::new(inputs, outputs)));
+    //     }
+
+    // }
+    // pub fn build_layers<Sh: Features>(mut self, shapes: impl IntoIterator<Item = Sh>) -> Self {
+    //     // let shapes = shapes.into_iter().map(|s| (s.inputs(), s.outputs()));
+    //     for (inputs, outputs) in shapes.into_iter().map(|s| (s.inputs(), s.outputs())) {
+    //         self.children
+    //             .push(Layer::<T, A>::from(LayerShape::new(inputs, outputs)));
+    //     }
+    //     self
+    // }
     pub fn build_layers(mut self, shapes: impl IntoIterator<Item = (usize, usize)>) -> Self {
+        // let shapes = shapes.into_iter().map(|s| (s.inputs(), s.outputs()));
         for (inputs, outputs) in shapes.into_iter() {
             self.children
                 .push(Layer::<T, A>::from(LayerShape::new(inputs, outputs)));
@@ -95,6 +130,14 @@ where
 
     pub fn len(&self) -> usize {
         self.children.len()
+    }
+
+    pub fn validate_params(&self) -> bool {
+        let mut dim = true;
+        for (i, layer) in self[..(self.len() - 1)].iter().enumerate() {
+            dim = dim && layer.features().outputs() == self[i + 1].features().inputs();
+        }
+        dim
     }
 
     pub fn validate_shapes(&self) -> bool {
@@ -225,6 +268,40 @@ where
     }
 }
 
+impl<T, A> ops::Index<ops::RangeFrom<usize>> for Stack<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+{
+    type Output = [Layer<T, A>];
+
+    fn index(&self, index: ops::RangeFrom<usize>) -> &Self::Output {
+        &self.children[index]
+    }
+}
+
+impl<T, A> ops::IndexMut<ops::RangeFrom<usize>> for Stack<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+{
+    fn index_mut(&mut self, index: ops::RangeFrom<usize>) -> &mut Self::Output {
+        &mut self.children[index]
+    }
+}
+
+impl<T, A> ops::Index<ops::RangeTo<usize>> for Stack<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+{
+    type Output = [Layer<T, A>];
+
+    fn index(&self, index: ops::RangeTo<usize>) -> &Self::Output {
+        &self.children[index]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -239,6 +316,7 @@ mod tests {
         let stack = Stack::<f64, Softmax>::new()
             .build_layers(shapes)
             .init_layers(true);
+        // assert!(stack.validate_params());
 
         assert!(stack.validate_shapes());
         for (layer, shape) in stack.layers().iter().zip(&shapes) {

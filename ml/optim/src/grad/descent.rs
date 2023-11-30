@@ -2,18 +2,24 @@
     Appellation: grad <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::prelude::{Forward, Layer,};
+use crate::neural::prelude::{Forward, Layer};
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
 
 #[derive(Clone)]
-pub struct GradientDescent<T = f64> where T: Float {
+pub struct GradientDescent<T = f64>
+where
+    T: Float,
+{
     pub gamma: T,
     model: Layer<T>,
 }
 
-impl<T> GradientDescent<T> where T: Float {
+impl<T> GradientDescent<T>
+where
+    T: Float,
+{
     pub fn new(gamma: T, model: Layer<T>) -> Self {
         Self { gamma, model }
     }
@@ -51,19 +57,18 @@ impl<T> GradientDescent<T> where T: Float {
         self.model = model;
         self
     }
-
 }
 
-impl<T> GradientDescent<T> where T: NdFloat + Signed {
-
-
+impl<T> GradientDescent<T>
+where
+    T: NdFloat + Signed,
+{
     pub fn gradient(
         &mut self,
         data: &Array2<T>,
         targets: &Array2<T>,
         grad: impl Fn(&Array2<T>) -> Array2<T>,
     ) -> anyhow::Result<T> {
-        
         let lr = self.gamma();
         let ns = T::from(data.shape()[0]).unwrap();
         let pred = self.model.forward(data);
@@ -74,7 +79,8 @@ impl<T> GradientDescent<T> where T: NdFloat + Signed {
         let dz = errors * grad(&pred);
         let dw = data.t().dot(&dz) / scale;
 
-        self.model_mut().update_with_gradient(lr, &dw.t().to_owned());
+        self.model_mut()
+            .update_with_gradient(lr, &dw.t().to_owned());
 
         let loss = targets.mean_sq_err(&self.model().forward(data))?;
         Ok(T::from(loss).unwrap())
@@ -124,6 +130,5 @@ mod tests {
         };
 
         assert!(l1 > l2);
-
     }
 }

@@ -12,9 +12,8 @@ pub(crate) mod stack;
 
 pub mod exp;
 
-use crate::func::activate::{Activate, ActivateDyn};
-use crate::prelude::Node;
-use ndarray::prelude::Ix2;
+use crate::prelude::{Activate, ActivateDyn, Forward, Node};
+use ndarray::prelude::{Array2, Ix2};
 // use ndarray::IntoDimension;
 use num::Float;
 
@@ -33,6 +32,14 @@ where
     fn is_biased(&self) -> bool;
 }
 
+pub trait FFNLayer<T, A>: Forward<Array2<T>> + L<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+{
+    fn forward(&self, args: &Node<T>) -> Node<T>;
+}
+
 // pub trait LayerExt<T = f64>: L<T>
 // where
 //     T: Float,
@@ -40,7 +47,25 @@ where
 //     type Rho: Activate<T, Ix2>;
 // }
 
-pub(crate) mod utils {}
+pub(crate) mod utils {
+    use crate::prelude::{Activate, Features, Layer};
+    use num::Float;
+
+    pub fn validate_layers<I, T, A>(layers: I) -> bool
+    where
+        A: Activate<T>,
+        T: Float,
+        I: IntoIterator<Item = Layer<T, A>>,
+    {
+        let layers = layers.into_iter().collect::<Vec<_>>();
+        let depth = layers.len();
+        let mut dim = true;
+        for (i, layer) in layers[..(depth - 1)].into_iter().enumerate() {
+            dim = dim && layer.inputs() == layers[i + 1].outputs();
+        }
+        dim
+    }
+}
 
 #[cfg(test)]
 mod tests {

@@ -47,7 +47,11 @@ pub trait Compile<T = f64> {}
 
 pub trait Train<T = f64> {}
 
-pub trait Predict<T = f64, D = Ix2> where D: Dimension, T: Float, {
+pub trait Predict<T = f64, D = Ix2>
+where
+    D: Dimension,
+    T: Float,
+{
     type Output;
 
     fn predict(&self, input: &Array<T, D>) -> BoxResult<Self::Output>;
