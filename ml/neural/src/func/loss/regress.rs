@@ -3,8 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Loss;
-use ndarray::prelude::{Array, Array1, NdFloat};
-use ndarray::Dimension;
+use ndarray::prelude::{Array, Dimension, NdFloat};
 use num::Float;
 use std::ops;
 
@@ -36,11 +35,14 @@ where
     }
 }
 
-impl<T> Loss<T> for HuberLoss<T>
+impl<T, D> Loss<Array<T, D>> for HuberLoss<T>
 where
-    T: Float + ops::AddAssign,
+    D: Dimension,
+    T: NdFloat,
 {
-    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
+    type Output = T;
+
+    fn loss(&self, pred: &Array<T, D>, target: &Array<T, D>) -> Self::Output {
         let half = T::from(0.5).unwrap();
         let mut loss = T::zero();
         for (x, y) in pred.iter().cloned().zip(target.iter().cloned()) {
@@ -59,11 +61,14 @@ where
 
 pub struct MeanAbsoluteError;
 
-impl<T> Loss<T> for MeanAbsoluteError
+impl<T, D> Loss<Array<T, D>> for MeanAbsoluteError
 where
+    D: Dimension,
     T: Float + ops::AddAssign + ops::DivAssign,
 {
-    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
+    type Output = T;
+
+    fn loss(&self, pred: &Array<T, D>, target: &Array<T, D>) -> Self::Output {
         let mut res = T::zero();
         for (p, t) in pred.iter().cloned().zip(target.iter().cloned()) {
             res += (p - t).abs();
@@ -75,16 +80,19 @@ where
 
 pub struct MeanSquaredError;
 
-impl<T> Loss<T> for MeanSquaredError
+impl<T, D> Loss<Array<T, D>> for MeanSquaredError
 where
+    D: Dimension,
     T: NdFloat,
 {
-    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T {
-        let mut res = T::zero();
-        for (p, t) in pred.iter().cloned().zip(target.iter().cloned()) {
-            res += (p - t).powi(2);
-        }
-        res /= T::from(pred.len()).unwrap();
-        res
+    type Output = T;
+
+    fn loss(&self, pred: &Array<T, D>, target: &Array<T, D>) -> Self::Output {
+        let res = pred
+            .iter()
+            .cloned()
+            .zip(target.iter().cloned())
+            .fold(T::zero(), |i, (p, t)| i + (p - t).powi(2));
+        res / T::from(pred.len()).unwrap()
     }
 }

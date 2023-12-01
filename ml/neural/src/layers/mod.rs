@@ -27,7 +27,6 @@ where
     fn features(&self) -> LayerShape;
     fn name(&self) -> &str;
     fn params(&self) -> &LayerParams<T>;
-    fn position(&self) -> LayerPosition;
 
     fn is_biased(&self) -> bool;
 }

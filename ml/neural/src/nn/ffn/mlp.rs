@@ -5,7 +5,7 @@
 //! # Multi-Layer Perceptron
 //!
 
-use crate::func::activate::{Activate, Linear};
+use crate::func::activate::{Activate, Linear, ReLU, Softmax};
 use crate::layers::{Layer, LayerShape, Stack};
 use crate::prelude::{Features, Forward, Parameterized};
 
@@ -13,7 +13,7 @@ use ndarray::prelude::{Array2, Ix2, NdFloat};
 use ndarray::IntoDimension;
 use num::Float;
 
-pub struct MLP<T = f64, I = Linear, H = Linear, O = Linear>
+pub struct MLP<T = f64, I = Linear, H = ReLU, O = Softmax>
 where
     T: Float,
     I: Activate<T>,
@@ -59,7 +59,31 @@ where
     H: Activate<T> + Default,
     O: Activate<T> + Default,
 {
-    // pub fn create<Sh: IntoDimension<Dim = Ix2>>(inputs: Sh, hidden: impl IntoIterator<Item = Sh>, outputs: Sh) -> Self {
+    pub fn create<Sh>(hidden: usize, inputs: usize, outputs: usize) -> Self
+    where
+        Sh: IntoDimension<Dim = Ix2>,
+    {
+        let input_shape = LayerShape::new(inputs, outputs);
+        let shape = LayerShape::new(outputs, outputs);
+
+        let input = Layer::input(input_shape);
+        let stack = Stack::square(hidden, outputs, outputs);
+        let output = Layer::output(shape, hidden + 1);
+        Self::new(input, stack, output)
+    }
+
+    pub fn from_features(
+        inputs: (usize, usize),
+        hidden: impl IntoIterator<Item = (usize, usize)>,
+        outputs: (usize, usize),
+    ) -> Self {
+        let input = Layer::input(LayerShape::from(inputs));
+        let stack = Stack::new().build_layers(hidden);
+        let output = Layer::output(outputs.into(), stack.len() + 1);
+        Self::new(input, stack, output)
+    }
+
+    // pub fn from_shapes<Sh>(inputs: Sh, hidden: impl IntoIterator<Item = Sh>, outputs: Sh) -> Self where Sh: IntoDimension<Dim = Ix2> {
     //     let input = LayerShape::from_dimension(inputs);
     //     let hidden = Stack::new().build_layers(hidden);
     //     let output = LayerShape::from_dimension(outputs);

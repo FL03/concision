@@ -3,10 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # neurons
-pub use self::{neuron::*, node::*, synapse::*, utils::*};
+pub use self::{neuron::*, node::*, perceptron::*, synapse::*, utils::*};
 
 pub(crate) mod neuron;
 pub(crate) mod node;
+pub(crate) mod perceptron;
 pub(crate) mod synapse;
 
 use crate::func::activate::Activate;

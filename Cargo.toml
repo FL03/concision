@@ -16,6 +16,7 @@ concision-core = { path = "core", version = "0.1.12" }
 computare = { features = ["full"], branch = "v0.1.0", git = "https://github.com/FL03/computare", version = "0.1.0" }
 
 anyhow = "1"
+itertools = { features = [], version = "0.12" }
 lazy_static = "1"
 linfa = { features = [], version = "0.7" }
 ndarray = { features = ["serde-1"], version = "0.15" }

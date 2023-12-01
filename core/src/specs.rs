@@ -41,9 +41,21 @@ where
 }
 
 pub trait Apply<T> {
-    fn apply<F>(&self, f: F) -> T
+    fn apply<F>(&self, f: F) -> Self
     where
-        F: Fn(&Self) -> T;
+        F: Fn(&T) -> T;
+}
+
+impl<T, D> Apply<T> for Array<T, D>
+where
+    D: Dimension,
+{
+    fn apply<F>(&self, f: F) -> Self
+    where
+        F: Fn(&T) -> T,
+    {
+        self.map(f)
+    }
 }
 
 pub trait ApplyTo<T> {

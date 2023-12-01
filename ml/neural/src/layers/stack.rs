@@ -4,23 +4,15 @@
 */
 use crate::layers::{Layer, LayerShape};
 use crate::prelude::{Activate, Features, Linear, Parameterized};
-// use ndarray::{IntoDimension, Ix2};
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
-
-pub trait Layers<T, A>: IntoIterator<Item = Layer<T, A>>
-where
-    A: Activate<T>,
-    T: Float,
-{
-}
 
 pub trait StackExt<T, A>
 where
     A: Activate<T>,
     T: Float,
-    Self: Clone + Layers<T, A> + IntoIterator<Item = Layer<T, A>>,
+    Self: Clone + IntoIterator<Item = Layer<T, A>>,
 {
     fn validate_params(&self) -> bool {
         let layers = self.clone().into_iter().collect::<Vec<_>>();
@@ -65,6 +57,16 @@ where
     //     }
     //     self
     // }
+    pub fn square(layers: usize, inputs: usize, outputs: usize) -> Self {
+        let mut children = Vec::with_capacity(layers);
+        children.push(Layer::<T, A>::from(LayerShape::new(inputs, outputs)));
+
+        for _ in 1..layers {
+            children.push(Layer::<T, A>::from(LayerShape::new(outputs, outputs)));
+        }
+        Self::from_iter(children)
+    }
+
     pub fn build_layers(mut self, shapes: impl IntoIterator<Item = (usize, usize)>) -> Self {
         // let shapes = shapes.into_iter().map(|s| (s.inputs(), s.outputs()));
         for (inputs, outputs) in shapes.into_iter() {

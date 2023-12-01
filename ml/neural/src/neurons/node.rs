@@ -108,6 +108,18 @@ where
     }
 }
 
+impl<T> Forward<Array1<T>> for Node<T>
+where
+    Self: Biased<T, Ix1>,
+    T: FromPrimitive + NdFloat,
+{
+    type Output = T;
+
+    fn forward(&self, data: &Array1<T>) -> Self::Output {
+        data.dot(&self.weights().t()) + self.bias().first().unwrap().clone()
+    }
+}
+
 impl<T> Forward<Array2<T>> for Node<T>
 where
     Self: Biased<T, Ix1>,

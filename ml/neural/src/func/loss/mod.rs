@@ -19,11 +19,17 @@ use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
 use num::{Float, FromPrimitive};
 use std::ops;
 
-pub trait Loss<T = f64>
+pub trait Loss<T = f64> {
+    type Output;
+
+    fn loss(&self, pred: &T, target: &T) -> Self::Output;
+}
+
+pub trait Losses<T = f64>
 where
     T: Float,
 {
-    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array1<T>) -> T;
+    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array<T, D>) -> Array<T, D>;
 }
 
 // pub type LinearWeightGradient<T = f64> = fn()

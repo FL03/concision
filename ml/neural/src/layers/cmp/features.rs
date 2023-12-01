@@ -82,7 +82,7 @@ where
 // }
 
 pub trait FromFeatures<Sh: Features> {
-    fn from_features(features: LayerShape) -> Self;
+    fn from_features(features: Sh) -> Self;
 }
 
 pub trait IntoFeatures {

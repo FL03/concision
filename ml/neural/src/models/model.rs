@@ -2,17 +2,18 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::ModelConfig;
-use crate::prelude::{Forward, ForwardDyn};
-use ndarray::prelude::Array2;
+use super::{ModelConfig, ModelParams};
+use crate::prelude::{Forward, LayerParams};
+use ndarray::prelude::{Array2, NdFloat};
 use num::Float;
 
+#[derive(Clone, Debug)]
 pub struct Model<T = f64>
 where
     T: Float,
 {
     config: ModelConfig,
-    layers: Vec<ForwardDyn<T>>,
+    params: ModelParams<T>,
 }
 
 impl<T> Model<T>
@@ -22,7 +23,7 @@ where
     pub fn new(config: ModelConfig) -> Self {
         Self {
             config,
-            layers: Vec::new(),
+            params: ModelParams::new(),
         }
     }
 
@@ -34,16 +35,12 @@ where
         &mut self.config
     }
 
-    pub fn layers(&self) -> &[ForwardDyn<T>] {
-        &self.layers
+    pub fn params(&self) -> &ModelParams<T> {
+        &self.params
     }
 
-    pub fn layers_mut(&mut self) -> &mut [ForwardDyn<T>] {
-        &mut self.layers
-    }
-
-    pub fn add_layer(&mut self, layer: ForwardDyn<T>) {
-        self.layers.push(layer);
+    pub fn params_mut(&mut self) -> &mut ModelParams<T> {
+        &mut self.params
     }
 }
 
@@ -51,22 +48,22 @@ impl<T> IntoIterator for Model<T>
 where
     T: Float,
 {
-    type Item = ForwardDyn<T>;
+    type Item = LayerParams<T>;
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.layers.into_iter()
+        self.params.into_iter()
     }
 }
 
 impl<T> Forward<Array2<T>> for Model<T>
 where
-    T: Float,
+    T: NdFloat,
 {
     type Output = Array2<T>;
 
     fn forward(&self, input: &Array2<T>) -> Array2<T> {
-        let mut iter = self.layers().into_iter();
+        let mut iter = self.clone().into_iter();
 
         let mut output = iter.next().unwrap().forward(input);
         for layer in iter {

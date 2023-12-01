@@ -60,6 +60,15 @@ where
 
 impl<T> LayerParams<T>
 where
+    T: Float + 'static,
+{
+    pub fn update_with_gradient(&mut self, gamma: T, gradient: &Array2<T>) {
+        self.weights_mut().scaled_add(-gamma, gradient);
+    }
+}
+
+impl<T> LayerParams<T>
+where
     T: NdFloat,
 {
     pub fn reset(&mut self) {
@@ -139,14 +148,25 @@ where
     }
 }
 
+impl<T> Forward<Array1<T>> for LayerParams<T>
+where
+    T: NdFloat,
+{
+    type Output = Array1<T>;
+
+    fn forward(&self, input: &Array1<T>) -> Self::Output {
+        input.dot(self.weights()) + self.bias()
+    }
+}
+
 impl<T> Forward<Array2<T>> for LayerParams<T>
 where
     T: NdFloat,
 {
     type Output = Array2<T>;
 
-    fn forward(&self, input: &Array2<T>) -> Array2<T> {
-        input.dot(&self.weights) + &self.bias
+    fn forward(&self, input: &Array2<T>) -> Self::Output {
+        input.dot(self.weights()) + self.bias()
     }
 }
 
