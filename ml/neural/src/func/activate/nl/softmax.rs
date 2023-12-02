@@ -2,7 +2,7 @@
     Appellation: softmax <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::Objective;
+use crate::func::activate::Gradient;
 use ndarray::prelude::{Array, Axis, Dimension, NdFloat};
 use ndarray::RemoveAxis;
 use num::Float;
@@ -66,7 +66,7 @@ impl Softmax {
 //     }
 // }
 
-impl<T, D> Objective<T, D> for Softmax
+impl<T, D> Gradient<T, D> for Softmax
 where
     D: Dimension + RemoveAxis,
     T: NdFloat,

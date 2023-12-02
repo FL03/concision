@@ -2,7 +2,7 @@
     Appellation: relu <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::Objective;
+use crate::func::activate::Gradient;
 use ndarray::prelude::{Array, Dimension};
 use num::{One, Zero};
 use serde::{Deserialize, Serialize};
@@ -50,7 +50,7 @@ impl ReLU {
 //     }
 // }
 
-impl<T, D> Objective<T, D> for ReLU
+impl<T, D> Gradient<T, D> for ReLU
 where
     D: Dimension,
     T: Clone + One + PartialOrd + Zero,

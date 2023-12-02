@@ -2,23 +2,26 @@
     Appellation: grad <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::neural::func::activate::Sigmoid;
 use crate::neural::models::ModelParams;
-use crate::neural::prelude::{Forward, LayerParams};
+use crate::neural::prelude::{Forward, Gradient, LayerParams};
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
 
-pub struct Grad<T = f64>
+pub struct Grad<T = f64, O = Sigmoid>
 where
+    O: Gradient<T>,
     T: Float,
 {
     gamma: T,
     params: Vec<LayerParams<T>>,
-    objective: fn(&Array2<T>) -> Array2<T>,
+    objective: O,
 }
 
-impl<T> Grad<T>
+impl<T, O> Grad<T, O>
 where
+    O: Gradient<T>,
     T: Float,
 {
     pub fn gamma(&self) -> T {
@@ -29,8 +32,8 @@ where
         &mut self.gamma
     }
 
-    pub fn objective(&self) -> fn(&Array2<T>) -> Array2<T> {
-        self.objective
+    pub fn objective(&self) -> &O {
+        &self.objective
     }
 
     pub fn model(&self) -> &[LayerParams<T>] {
@@ -42,25 +45,27 @@ where
     }
 }
 
-impl<T> Grad<T>
+impl<T, O> Grad<T, O>
 where
+    O: Gradient<T>,
     T: NdFloat + Signed,
 {
     pub fn step(&mut self, data: &Array2<T>, targets: &Array2<T>) -> anyhow::Result<T> {
-        let grad = self.objective();
-        let layers = self.model().len();
-        let lr = self.gamma();
         let ns = T::from(data.shape()[0]).unwrap();
 
         let mut cost = T::zero();
         let params = self.params.clone();
 
         for (i, layer) in self.params[1..].iter_mut().enumerate() {
+            // compute the prediction of the model
             let pred = params[i - 1].forward(data);
+            // compute the error of the prediction
             let errors = &pred - targets;
-            let dz = errors * grad(&pred);
+            // compute the gradient of the objective function w.r.t. the error's
+            let dz = errors * self.objective.gradient(&pred);
+            // compute the gradient of the objective function w.r.t. the model's weights
             let dw = data.t().dot(&dz) / ns;
-            layer.update_with_gradient(lr, &dw.t().to_owned());
+            layer.update_with_gradient(self.gamma, &dw.t().to_owned());
             let loss = targets.mean_sq_err(&pred)?;
             cost += T::from(loss).unwrap();
         }

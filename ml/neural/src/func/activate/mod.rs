@@ -13,7 +13,7 @@ pub(crate) mod linear;
 pub(crate) mod nl;
 
 // use crate::core::prelude::ShapeResult;
-use ndarray::prelude::{Array, ArrayD, Dimension, Ix2, IxDyn};
+use ndarray::prelude::{Array, Dimension, Ix2, IxDyn};
 
 pub type ActivationFn<T = f64, D = Ix2> = Box<dyn Fn(&Array<T, D>) -> Array<T, D>>;
 
@@ -32,25 +32,27 @@ where
     }
 }
 
-pub trait A<T = f64>
-where
-    T: Clone,
-{
-    // fn activate<D: Dimension>(&self, args: &Array<T, D>) -> ShapeResult<Array<T, D>> {
-    //     let shape = args.shape();
-    //     let res = self.activate_dyn(&args.into_dyn());
-    //     let res: Array<T, D> = res.to_shape(shape)?.to_owned();
-    //     Ok(res)
-    // }
-
-    fn activate_dyn(&self, args: &ArrayD<T>) -> ArrayD<T>;
-}
-
 pub trait Activate<T = f64, D = Ix2>
 where
     D: Dimension,
 {
     fn activate(&self, args: &Array<T, D>) -> Array<T, D>;
+}
+
+pub trait ActivateExt<T = f64, D = Ix2>: Activate<T, D> + Clone + 'static
+where
+    D: Dimension,
+{
+    fn boxed(&self) -> ActivateDyn<T, D> {
+        Box::new(self.clone())
+    }
+}
+
+impl<T, D, F> ActivateExt<T, D> for F
+where
+    D: Dimension,
+    F: Activate<T, D> + Clone + 'static,
+{
 }
 
 impl<T, D, F> Activate<T, D> for F
@@ -72,7 +74,7 @@ where
     }
 }
 
-pub trait Objective<T = f64, D = Ix2>: Activate<T, D>
+pub trait Gradient<T = f64, D = Ix2>
 where
     D: Dimension,
 {
@@ -88,16 +90,7 @@ where
 //     }
 // }
 
-impl<T, D> Activate<T, D> for Box<dyn Objective<T, D>>
-where
-    D: Dimension,
-{
-    fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-        self.as_ref().activate(args)
-    }
-}
-
-impl<T, D> Objective<T, D> for Box<dyn Objective<T, D>>
+impl<T, D> Gradient<T, D> for Box<dyn Gradient<T, D>>
 where
     D: Dimension,
 {

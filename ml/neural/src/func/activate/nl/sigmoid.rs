@@ -2,7 +2,7 @@
     Appellation: sigmoid <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::Objective;
+use crate::func::activate::Gradient;
 use ndarray::prelude::{Array, Dimension};
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -42,7 +42,7 @@ impl Sigmoid {
 //     }
 // }
 
-impl<T, D> Objective<T, D> for Sigmoid
+impl<T, D> Gradient<T, D> for Sigmoid
 where
     D: Dimension,
     T: Float,

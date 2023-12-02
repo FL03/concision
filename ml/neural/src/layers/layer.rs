@@ -2,12 +2,13 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{LayerKind, LayerParams, LayerPosition, LayerShape};
-use crate::func::activate::{Activate, Linear};
+use super::{LayerParams, LayerShape};
+use crate::func::activate::{Activate, Gradient, Linear};
 use crate::prelude::{Features, Forward, Neuron, Node, Parameterized, Params};
 use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
-use num::Float;
+use ndarray_stats::DeviationExt;
+use num::{Float, Signed};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -20,7 +21,6 @@ where
     pub features: LayerShape,
     name: String,
     params: LayerParams<T>,
-    position: LayerPosition,
 }
 
 impl<T, A> Layer<T, A>
@@ -28,26 +28,13 @@ where
     A: Default + Activate<T>,
     T: Float,
 {
-    pub fn new(features: LayerShape, position: LayerPosition) -> Self {
+    pub fn new(features: LayerShape) -> Self {
         Self {
             activator: A::default(),
             features,
             name: String::new(),
             params: LayerParams::new(features),
-            position,
         }
-    }
-
-    pub fn input(features: LayerShape) -> Self {
-        Self::new(features, LayerPosition::input())
-    }
-
-    pub fn hidden(features: LayerShape, index: usize) -> Self {
-        Self::new(features, LayerPosition::hidden(index))
-    }
-
-    pub fn output(features: LayerShape, index: usize) -> Self {
-        Self::new(features, LayerPosition::output(index))
     }
 }
 
@@ -60,20 +47,8 @@ where
         &self.activator
     }
 
-    pub fn index(&self) -> usize {
-        self.position().index()
-    }
-
-    pub fn kind(&self) -> &LayerKind {
-        self.position().kind()
-    }
-
     pub fn name(&self) -> &str {
         &self.name
-    }
-
-    pub fn position(&self) -> &LayerPosition {
-        &self.position
     }
 
     pub fn set_name(&mut self, name: impl ToString) {
@@ -85,16 +60,6 @@ where
         A: Activate<T, Ix1>,
     {
         self.params.set_node(idx, neuron.node().clone());
-    }
-
-    pub fn update_position(&mut self, idx: usize, output: bool) {
-        self.position = if idx == 0 {
-            LayerPosition::input()
-        } else if output {
-            LayerPosition::output(idx)
-        } else {
-            LayerPosition::hidden(idx)
-        };
     }
 
     pub fn validate_layer(&self, other: &Self, next: bool) -> bool {
@@ -121,7 +86,6 @@ where
             features: self.features.clone(),
             name: self.name.clone(),
             params: self.params.clone(),
-            position: self.position.clone(),
         }
     }
 }
@@ -151,6 +115,30 @@ where
 {
     pub fn linear(&self, args: &Array2<T>) -> Array2<T> {
         args.dot(&self.params.weights().t()) + self.params.bias()
+    }
+}
+
+impl<T, A> Layer<T, A>
+where
+    A: Activate<T> + Gradient<T>,
+    T: NdFloat + Signed,
+{
+    pub fn grad(&mut self, gamma: T, args: &Array2<T>, targets: &Array2<T>) -> T {
+        let ns = T::from(args.shape()[0]).unwrap();
+        let pred = self.forward(args);
+
+        let scale = T::from(2).unwrap() * ns;
+
+        let errors = &pred - targets;
+        let dz = errors * self.activator.gradient(&pred);
+        let dw = args.t().dot(&dz) / scale;
+
+        self.params_mut().weights_mut().scaled_add(-gamma, &dw.t());
+
+        let loss = targets
+            .mean_sq_err(&pred)
+            .expect("Failed to calculate loss");
+        T::from(loss).unwrap()
     }
 }
 
@@ -216,15 +204,15 @@ where
     }
 }
 
-impl<T, A> PartialOrd for Layer<T, A>
-where
-    A: Activate<T> + PartialEq,
-    T: Float,
-{
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.position.partial_cmp(&other.position)
-    }
-}
+// impl<T, A> PartialOrd for Layer<T, A>
+// where
+//     A: Activate<T> + PartialEq,
+//     T: Float,
+// {
+//     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+//         self.position.partial_cmp(&other.position)
+//     }
+// }
 
 // impl<T, A> From<S> for Layer<T, A>
 // where
@@ -243,7 +231,7 @@ where
     T: Float,
 {
     fn from(features: LayerShape) -> Self {
-        Self::new(features, LayerPosition::input())
+        Self::new(features)
     }
 }
 
@@ -272,7 +260,6 @@ where
             features: *params.features(),
             name: String::new(),
             params,
-            position: LayerPosition::input(),
         }
     }
 }

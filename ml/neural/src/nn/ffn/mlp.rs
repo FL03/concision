@@ -66,9 +66,9 @@ where
         let input_shape = LayerShape::new(inputs, outputs);
         let shape = LayerShape::new(outputs, outputs);
 
-        let input = Layer::input(input_shape);
+        let input = Layer::from(input_shape);
         let stack = Stack::square(hidden, outputs, outputs);
-        let output = Layer::output(shape, hidden + 1);
+        let output = Layer::from(shape);
         Self::new(input, stack, output)
     }
 
@@ -77,9 +77,9 @@ where
         hidden: impl IntoIterator<Item = (usize, usize)>,
         outputs: (usize, usize),
     ) -> Self {
-        let input = Layer::input(LayerShape::from(inputs));
+        let input = Layer::from(LayerShape::from(inputs));
         let stack = Stack::new().build_layers(hidden);
-        let output = Layer::output(outputs.into(), stack.len() + 1);
+        let output = Layer::from(LayerShape::from(outputs));
         Self::new(input, stack, output)
     }
 

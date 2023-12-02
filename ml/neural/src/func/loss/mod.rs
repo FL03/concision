@@ -25,14 +25,11 @@ pub trait Loss<T = f64> {
     fn loss(&self, pred: &T, target: &T) -> Self::Output;
 }
 
-pub trait Losses<T = f64>
-where
-    T: Float,
-{
-    fn loss<D: Dimension>(&self, pred: &Array<T, D>, target: &Array<T, D>) -> Array<T, D>;
-}
+pub trait LossPartial<T = f64> {
+    type Output;
 
-// pub type LinearWeightGradient<T = f64> = fn()
+    fn partial(&self, pred: &T, target: &T) -> Self::Output;
+}
 
 pub struct MSE;
 
@@ -95,5 +92,34 @@ pub(crate) mod utils {
         Array1<T>: ops::Sub<Array<T, D>, Output = Array<T, D>>,
     {
         (target.clone() - pred.clone()).mapv(|x| x.powi(2)).mean()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::regress::*;
+    use super::*;
+    use crate::core::GenerateRandom;
+    use computare::prelude::RoundTo;
+    use ndarray::prelude::{Array, Ix2};
+    use ndarray_stats::DeviationExt;
+
+    #[test]
+    fn test_mse() {
+        let (m, n) = (3, 3);
+        let shape = (m, n);
+
+        let ns = m * n;
+
+        let targets: Array<f64, Ix2> = Array::linspace(0.0, ns as f64, ns)
+            .into_shape(shape)
+            .unwrap();
+        let pred = Array::<f64, Ix2>::uniform_between(3.0, shape);
+
+        let loss = MeanSquaredError::new().loss(&pred, &targets).round_to(4);
+
+        let exp = targets.mean_sq_err(&pred).unwrap().round_to(4);
+
+        assert_eq!(&loss, &exp);
     }
 }

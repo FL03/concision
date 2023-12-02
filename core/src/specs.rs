@@ -2,13 +2,13 @@
     Appellation: specs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Axis, Dimension, Ix2};
+use ndarray::prelude::{Array, Axis, Dimension, Ix2, NdFloat};
 use ndarray::IntoDimension;
 // use ndarray::linalg::Dot;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Uniform};
 use ndarray_rand::RandomExt;
-use num::{Float, One, Zero};
+use num::{Float, FromPrimitive, One, Signed, Zero};
 use std::ops;
 
 pub trait Arithmetic<S, T>:
@@ -69,6 +69,10 @@ impl<S, T> As<T> for S where S: AsRef<T> + AsMut<T> {}
 pub trait BinaryNum: One + Zero {}
 
 impl<T> BinaryNum for T where T: One + Zero {}
+
+pub trait FloatExt: FromPrimitive + NdFloat + Signed + SampleUniform {}
+
+impl<T> FloatExt for T where T: FromPrimitive + NdFloat + Signed + SampleUniform {}
 
 pub trait Pair<A, B> {
     fn pair(&self) -> (A, B);

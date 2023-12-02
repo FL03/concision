@@ -231,7 +231,7 @@ mod tests {
             .into_shape(samples)
             .unwrap();
 
-        let mut model = Layer::<f64, Sigmoid>::hidden(features, 5).init(true);
+        let mut model = Layer::<f64, Sigmoid>::new(features).init(true);
 
         // let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
         // sgd.sgd(&x, &y);

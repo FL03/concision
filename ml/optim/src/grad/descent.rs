@@ -2,8 +2,8 @@
     Appellation: grad <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::prelude::{Forward, Layer};
-use ndarray::prelude::{Array1, Array2, NdFloat};
+use crate::neural::prelude::{Forward, Gradient, Layer};
+use ndarray::prelude::{Array2, Ix2, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
 
@@ -67,7 +67,7 @@ where
         &mut self,
         data: &Array2<T>,
         targets: &Array2<T>,
-        grad: impl Fn(&Array2<T>) -> Array2<T>,
+        grad: impl Gradient<T, Ix2>,
     ) -> anyhow::Result<T> {
         let lr = self.gamma();
         let ns = T::from(data.shape()[0]).unwrap();
@@ -76,7 +76,7 @@ where
         let scale = T::from(2).unwrap() * ns;
 
         let errors = &pred - targets;
-        let dz = errors * grad(&pred);
+        let dz = errors * grad.gradient(&pred);
         let dw = data.t().dot(&dz) / scale;
 
         self.model_mut()
@@ -90,7 +90,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::neural::prelude::{LayerShape, Objective, Sigmoid};
+    use crate::neural::prelude::{LayerShape, Sigmoid};
     use ndarray::prelude::{Array, Array2};
 
     fn sample_data(inputs: usize, outputs: usize, samples: usize) -> (Array2<f64>, Array2<f64>) {
@@ -118,13 +118,13 @@ mod tests {
         let mut grad = GradientDescent::new(gamma, model);
 
         let l1 = {
-            let tmp = grad.gradient(&x, &y, |xs| Sigmoid::default().gradient(xs));
+            let tmp = grad.gradient(&x, &y, Sigmoid);
             assert!(tmp.is_ok());
             tmp.unwrap()
         };
 
         let l2 = {
-            let tmp = grad.gradient(&x, &y, |xs| Sigmoid::default().gradient(xs));
+            let tmp = grad.gradient(&x, &y, Sigmoid);
             assert!(tmp.is_ok());
             tmp.unwrap()
         };

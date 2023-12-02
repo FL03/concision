@@ -46,7 +46,7 @@ where
         let weights = Weight::uniform((model, model));
         Self {
             features,
-            linear: Layer::input((model, model).into()),
+            linear: Layer::new((model, model).into()),
             weights,
         }
     }

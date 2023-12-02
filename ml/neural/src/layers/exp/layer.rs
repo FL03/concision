@@ -2,7 +2,7 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::{Activate, Linear};
+use crate::func::activate::{Activate, Activator, Linear};
 use crate::layers::{LayerParams, LayerShape};
 use crate::prelude::{Features, Forward, Neuron, Node, Parameterized, Params};
 use ndarray::prelude::{Array2, Ix1, NdFloat};
@@ -10,39 +10,31 @@ use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Layer<T = f64, A = Linear>
+pub struct Layer<T = f64>
 where
-    A: Activate<T>,
     T: Float,
 {
-    activator: A,
+    activator: Activator<T>,
     pub features: LayerShape,
     name: String,
     params: LayerParams<T>,
 }
 
-impl<T, A> Layer<T, A>
+impl<T> Layer<T>
 where
-    A: Default + Activate<T>,
     T: Float,
 {
-    pub fn new(features: LayerShape) -> Self {
+    pub fn new(activator: impl Activate<T> + 'static, features: impl Into<LayerShape>) -> Self {
+        let features = features.into();
         Self {
-            activator: A::default(),
+            activator: Activator::new(Box::new(activator)),
             features,
             name: String::new(),
             params: LayerParams::new(features),
         }
     }
-}
 
-impl<T, A> Layer<T, A>
-where
-    A: Activate<T>,
-    T: Float,
-{
-    pub fn activator(&self) -> &A {
+    pub fn activator(&self) -> &Activator<T> {
         &self.activator
     }
 
@@ -54,11 +46,8 @@ where
         self.name = name.to_string();
     }
 
-    pub fn set_node(&mut self, idx: usize, neuron: &Neuron<T, A>)
-    where
-        A: Activate<T, Ix1>,
-    {
-        self.params.set_node(idx, neuron.node().clone());
+    pub fn set_node(&mut self, idx: usize, node: &Node<T>) {
+        self.params.set_node(idx, node.clone());
     }
 
     pub fn validate_layer(&self, other: &Self, next: bool) -> bool {
@@ -74,24 +63,8 @@ where
     }
 }
 
-impl<T, A> Layer<T, A>
+impl<T> Layer<T>
 where
-    A: Activate<T> + Clone + 'static,
-    T: Float,
-{
-    pub fn as_dyn(&self) -> Layer<T, Box<dyn Activate<T>>> {
-        Layer {
-            activator: Box::new(self.activator.clone()),
-            features: self.features.clone(),
-            name: self.name.clone(),
-            params: self.params.clone(),
-        }
-    }
-}
-
-impl<T, A> Layer<T, A>
-where
-    A: Activate<T>,
     T: Float + 'static,
 {
     pub fn apply_gradient<F>(&mut self, gamma: T, gradient: F)
@@ -107,9 +80,8 @@ where
     }
 }
 
-impl<T, A> Layer<T, A>
+impl<T> Layer<T>
 where
-    A: Activate<T>,
     T: NdFloat,
 {
     pub fn linear(&self, args: &Array2<T>) -> Array2<T> {
@@ -117,9 +89,8 @@ where
     }
 }
 
-impl<T, A> Layer<T, A>
+impl<T> Layer<T>
 where
-    A: Activate<T>,
     T: Float + SampleUniform,
 {
     pub fn init(mut self, biased: bool) -> Self {
@@ -128,9 +99,8 @@ where
     }
 }
 
-impl<T, A> Forward<Array2<T>> for Layer<T, A>
+impl<T> Forward<Array2<T>> for Layer<T>
 where
-    A: Activate<T>,
     T: NdFloat,
 {
     type Output = Array2<T>;
@@ -140,9 +110,8 @@ where
     }
 }
 
-impl<T, A> Parameterized<T> for Layer<T, A>
+impl<T> Parameterized<T> for Layer<T>
 where
-    A: Activate<T>,
     T: Float,
 {
     type Features = LayerShape;
@@ -175,19 +144,17 @@ where
 //     }
 // }
 
-impl<T, A> From<LayerShape> for Layer<T, A>
+impl<T> From<LayerShape> for Layer<T>
 where
-    A: Activate<T> + Default,
-    T: Float,
+    T: Float + 'static,
 {
     fn from(features: LayerShape) -> Self {
-        Self::new(features)
+        Self::new(Activator::linear(), features)
     }
 }
 
-impl<T, A> IntoIterator for Layer<T, A>
+impl<T> IntoIterator for Layer<T>
 where
-    A: Activate<T> + Default,
     T: Float,
 {
     type Item = Node<T>;
@@ -198,15 +165,14 @@ where
     }
 }
 
-impl<T, A> FromIterator<Node<T>> for Layer<T, A>
+impl<T> FromIterator<Node<T>> for Layer<T>
 where
-    A: Activate<T> + Default,
     T: Float,
 {
     fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
         let params = LayerParams::from_iter(nodes);
         Self {
-            activator: A::default(),
+            activator: Activator::linear(),
             features: *params.features(),
             name: String::new(),
             params,

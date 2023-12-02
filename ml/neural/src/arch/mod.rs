@@ -31,7 +31,8 @@ pub(crate) mod utils {}
 mod tests {
     use super::*;
     use crate::core::prelude::linarr;
-    use crate::prelude::{Forward, Layer, LayerShape, Sigmoid, Stack};
+    use crate::func::activate::{ReLU, Sigmoid, Softmax};
+    use crate::prelude::{Forward, Layer, LayerShape, Stack};
     use ndarray::prelude::Ix2;
 
     #[test]
@@ -73,10 +74,13 @@ mod tests {
         let _y = linarr::<f64, Ix2>((samples, outputs)).unwrap();
 
         // layers
-        let input = Layer::<f64>::from(LayerShape::new(inputs, outputs)).init(false);
-        let output = Layer::<f64>::from(LayerShape::new(outputs, outputs)).init(false);
+        let in_features = LayerShape::new(inputs, outputs);
+        let out_features = LayerShape::new(outputs, outputs);
+        let input = Layer::<f64>::from(in_features).init(false);
+        let hidden = Layer::<f64, ReLU>::from(out_features).init(false);
+        let output = Layer::<f64, Softmax>::from(out_features).init(false);
 
-        let network = ShallowNetwork::new(input, output);
+        let network = ShallowNetwork::new(input, hidden, output);
         assert!(network.validate_dims());
 
         let pred = network.forward(&x);

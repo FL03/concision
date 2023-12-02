@@ -2,7 +2,7 @@
     Appellation: tanh <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::Objective;
+use crate::func::activate::Gradient;
 use ndarray::prelude::{Array, Dimension};
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -42,7 +42,7 @@ impl Tanh {
 //     }
 // }
 
-impl<T, D> Objective<T, D> for Tanh
+impl<T, D> Gradient<T, D> for Tanh
 where
     D: Dimension,
     T: Float,

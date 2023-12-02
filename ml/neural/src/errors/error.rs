@@ -25,26 +25,89 @@ use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum Errors {
-    Async,
-    Codec,
-    Connection,
-    Custom(String),
+pub enum MlError {
     Data,
     Dimension,
     #[default]
-    Error,
-    Execution,
-    IO,
-    Null,
-    Parse,
-    Process,
-    Runtime,
-    Syntax,
-    Unknown,
+    Error(String),
+    Network(NetworkError),
 }
 
-pub enum NetworkError {}
+impl std::error::Error for MlError {}
+
+impl From<Box<dyn std::error::Error>> for MlError {
+    fn from(err: Box<dyn std::error::Error>) -> Self {
+        Self::Error(err.to_string())
+    }
+}
+
+impl From<String> for MlError {
+    fn from(err: String) -> Self {
+        Self::Error(err)
+    }
+}
+
+impl From<&str> for MlError {
+    fn from(err: &str) -> Self {
+        Self::Error(err.to_string())
+    }
+}
+
+impl From<NetworkError> for MlError {
+    fn from(err: NetworkError) -> Self {
+        Self::Network(err)
+    }
+}
+
+#[derive(
+    Clone,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIs,
+    EnumIter,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+    SmartDefault,
+)]
+#[non_exhaustive]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
+pub enum ComputeError {
+    #[default]
+    Compute(String),
+    ShapeError(String),
+}
+
+#[derive(
+    Clone,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIs,
+    EnumIter,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+    SmartDefault,
+)]
+#[non_exhaustive]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
+pub enum NetworkError {
+    Layer,
+    #[default]
+    Network(String),
+}
 
 pub enum ActivationError {}
 

@@ -26,6 +26,7 @@ pub struct DescentParams {
 }
 
 pub(crate) mod utils {
+    use crate::neural::func::activate::Gradient;
     use crate::neural::prelude::{Forward, Parameterized, Params};
     use ndarray::linalg::Dot;
     use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
@@ -37,7 +38,7 @@ pub(crate) mod utils {
         model: &mut A,
         data: &Array2<T>,
         targets: &Array<T, D>,
-        grad: impl Fn(&Array<T, D>) -> Array<T, D>,
+        grad: impl Gradient<T, D>,
     ) -> f64
     where
         A: Forward<Array2<T>, Output = Array<T, D>> + Parameterized<T, D>,
@@ -53,9 +54,10 @@ pub(crate) mod utils {
 
         let errors = &pred - targets;
         // compute the gradient of the objective function w.r.t. the model's weights
-        let dz = &errors * grad(&pred);
+        let dz = &errors * grad.gradient(&pred);
         // compute the gradient of the objective function w.r.t. the model's weights
         let dw = data.t().to_owned().dot(&dz) / ns;
+        // let dw = - model.params().bias() * dz + data.t().to_owned().dot(&dz)  / ns;
         // compute the gradient of the objective function w.r.t. the model's bias
         // let db = dz.sum_axis(Axis(0)) / ns;
         // // Apply the gradients to the model's learnable parameters
@@ -104,11 +106,16 @@ mod tests {
 
     use super::*;
     use crate::core::prelude::linarr;
-    use crate::neural::func::activate::{Linear, Objective, Sigmoid};
+    use crate::neural::func::activate::{Linear, Sigmoid};
     use crate::neural::prelude::{Features, Layer, LayerShape, Parameterized, Weighted};
-    use ndarray::prelude::{Array1, Array2};
+    use ndarray::prelude::{Array, Array1, Dimension};
+    use num::Float;
 
-    fn test_grad(args: &Array2<f64>) -> Array2<f64> {
+    fn test_grad<T, D>(args: &Array<T, D>) -> Array<T, D>
+    where
+        D: Dimension,
+        T: Float,
+    {
         args.clone()
     }
 
@@ -143,11 +150,11 @@ mod tests {
         let x = linarr((samples, features.inputs())).unwrap();
         let y = linarr((samples, features.outputs())).unwrap();
 
-        let mut model = Layer::<f64, Linear>::input(features).init(true);
+        let mut model = Layer::<f64, Linear>::from(features).init(true);
 
         let mut losses = Array1::zeros(epochs);
         for e in 0..epochs {
-            let cost = gradient(gamma, &mut model, &x, &y, |w| Sigmoid::new().gradient(w));
+            let cost = gradient(gamma, &mut model, &x, &y, Sigmoid);
             losses[e] = cost;
         }
         assert_eq!(losses.len(), epochs);
