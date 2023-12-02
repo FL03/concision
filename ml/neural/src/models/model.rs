@@ -44,6 +44,34 @@ where
     }
 }
 
+// impl<T> FromIterator<LayerShape> for Model<T>
+// where
+//     T: Float,
+// {
+//     fn from_iter<I>(iter: I) -> Self
+//     where
+//         I: IntoIterator<Item = LayerShape>,
+//     {
+//         let params = ModelParam::from_iter(iter);
+//         Self {
+
+//         }
+//     }
+// }
+
+// impl<T> FromIterator<LayerParams<T>> for Model<T>
+// where
+//     T: Float,
+// {
+//     fn from_iter<I>(iter: I) -> Self
+//     where
+//         I: IntoIterator<Item = LayerParams<T>>,
+//     {
+//         Self {
+//             children: iter.into_iter().collect(),
+//         }
+//     }
+// }
 impl<T> IntoIterator for Model<T>
 where
     T: Float,

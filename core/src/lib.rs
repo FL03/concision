@@ -17,7 +17,15 @@ pub mod states;
 pub mod step;
 pub mod vars;
 
+pub trait Transform<T> {
+    type Output;
+
+    fn transform(&self, args: &T) -> Self::Output;
+}
+
 pub mod prelude {
+    pub use super::Transform;
+
     pub use crate::epochs::*;
     pub use crate::errors::*;
     pub use crate::masks::*;

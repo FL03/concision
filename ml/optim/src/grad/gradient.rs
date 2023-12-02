@@ -4,7 +4,7 @@
 */
 use crate::neural::func::activate::Sigmoid;
 use crate::neural::models::ModelParams;
-use crate::neural::prelude::{Forward, Gradient, LayerParams};
+use crate::neural::prelude::{Forward, Gradient, LayerParams,};
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
@@ -15,7 +15,7 @@ where
     T: Float,
 {
     gamma: T,
-    params: Vec<LayerParams<T>>,
+    params: ModelParams<T>,
     objective: O,
 }
 
@@ -24,6 +24,14 @@ where
     O: Gradient<T>,
     T: Float,
 {
+    pub fn new(gamma: T, params: ModelParams<T>, objective: O) -> Self {
+        Self {
+            gamma,
+            params,
+            objective,
+        }
+    }
+    
     pub fn gamma(&self) -> T {
         self.gamma
     }
@@ -36,11 +44,11 @@ where
         &self.objective
     }
 
-    pub fn model(&self) -> &[LayerParams<T>] {
+    pub fn model(&self) -> &ModelParams<T> {
         &self.params
     }
 
-    pub fn model_mut(&mut self) -> &mut [LayerParams<T>] {
+    pub fn model_mut(&mut self) -> &mut ModelParams<T> {
         &mut self.params
     }
 }
@@ -76,10 +84,18 @@ where
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::neural::models::ModelParams;
 
     #[test]
     fn test_gradient() {
         let (samples, inputs) = (20, 5);
+        let outputs = 4;
+
         let _shape = (samples, inputs);
+
+        let mut model = ModelParams::<f64>::new().build_layers([(inputs, outputs,), (outputs, outputs), (outputs, outputs)]).init_layers(false);
+
+
     }
 }

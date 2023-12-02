@@ -121,6 +121,20 @@ where
     }
 }
 
+impl<T> FromIterator<LayerShape> for ModelParams<T>
+where
+    T: Float,
+{
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = LayerShape>,
+    {
+        Self {
+            children: iter.into_iter().map(LayerParams::new).collect(),
+        }
+    }
+}
+
 impl<T> FromIterator<LayerParams<T>> for ModelParams<T>
 where
     T: Float,
