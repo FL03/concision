@@ -31,7 +31,7 @@ where
             objective,
         }
     }
-    
+
     pub fn gamma(&self) -> T {
         self.gamma
     }
@@ -60,13 +60,16 @@ where
 {
     pub fn step(&mut self, data: &Array2<T>, targets: &Array2<T>) -> anyhow::Result<T> {
         let ns = T::from(data.shape()[0]).unwrap();
+        let depth = self.model().len();
 
         let mut cost = T::zero();
         let params = self.params.clone();
 
-        for (i, layer) in self.params[1..].iter_mut().enumerate() {
+        
+
+        for (i, layer) in self.params[..(depth - 1)].iter_mut().enumerate() {
             // compute the prediction of the model
-            let pred = params[i - 1].forward(data);
+            let pred = params[i + 1].forward(data);
             // compute the error of the prediction
             let errors = &pred - targets;
             // compute the gradient of the objective function w.r.t. the error's

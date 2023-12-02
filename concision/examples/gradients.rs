@@ -13,9 +13,9 @@ fn main() -> anyhow::Result<()> {
 
     let (epochs, gamma) = (1000, 0.005);
 
-    // sample_gradient(epochs, features, gamma, samples)?;
+    sample_gradient(epochs, features, gamma, samples)?;
 
-    sample_model(epochs, features, gamma, samples)?;
+    // sample_model(epochs, features, gamma, samples)?;
 
     Ok(())
 }
@@ -76,7 +76,7 @@ pub fn sample_model(
         // let cost = model.grad(gamma, &x, &y);
         losses[e] = cost;
     }
-    model = opt.model().clone();
+    // model = opt.model().clone();
     // println!("Losses:\n\n{:?}\n", &losses);
     // println!("Trained:\n\n{:?}", model.forward(&x));
     Ok(())
