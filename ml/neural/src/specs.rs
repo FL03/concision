@@ -4,8 +4,18 @@
 */
 use crate::core::BoxResult;
 use crate::func::loss::Loss;
-use ndarray::prelude::{Array, Axis, Dimension, Ix2};
+use ndarray::prelude::{Array, Array1, Axis, Dimension, Ix2};
 use num::Float;
+
+pub trait Backward<T>: Forward<T> {
+    fn backward(&mut self, args: &T, grad: &T);
+}
+
+pub trait Forward<T> {
+    type Output;
+
+    fn forward(&self, args: &T) -> Self::Output;
+}
 
 pub trait Compile<T = f64, D = Ix2>
 where
@@ -26,7 +36,7 @@ where
 
     fn predict(&self, input: &Array<T, D>) -> BoxResult<Self::Output>;
 
-    fn predict_batch(&self, input: &[Array<T, D>]) -> BoxResult<Vec<Self::Output>> {
+    fn predict_batch(&self, input: &[Array<T, D>]) -> BoxResult<Array1<Self::Output>> {
         let res = input.iter().map(|x| self.predict(x).expect("")).collect();
         Ok(res)
     }

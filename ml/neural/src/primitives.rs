@@ -11,9 +11,13 @@ pub(crate) mod constants {
 pub(crate) mod statics {}
 
 pub(crate) mod types {
+    use crate::prelude::Forward;
+    use ndarray::prelude::{Array, Ix2};
 
     pub type BoxedFunction<T> = Box<dyn Fn(T) -> T>;
-
+    ///
+    pub type ForwardDyn<T = f64, D = Ix2> = Box<dyn Forward<Array<T, D>, Output = Array<T, D>>>;
+    ///
     pub type LayerBias<T = f64> = ndarray::Array1<T>;
 
     pub type LayerWeight<T = f64> = ndarray::Array2<T>;

@@ -26,11 +26,12 @@ use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum MlError {
-    Data,
-    Dimension,
+    Data(String),
+    Dimension(String),
     #[default]
     Error(String),
     Network(NetworkError),
+    Process(ProcessError),
 }
 
 impl std::error::Error for MlError {}
@@ -78,9 +79,34 @@ impl From<NetworkError> for MlError {
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum ComputeError {
+pub enum PredictError {
     #[default]
-    Compute(String),
+    Other(String),
+}
+
+#[derive(
+    Clone,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIs,
+    EnumIter,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+    SmartDefault,
+)]
+#[non_exhaustive]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
+pub enum ProcessError {
+    Arithmetic(String),
+    #[default]
+    Process(String),
     ShapeError(String),
 }
 
@@ -104,7 +130,7 @@ pub enum ComputeError {
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum NetworkError {
-    Layer,
+    Layer(String),
     #[default]
     Network(String),
 }

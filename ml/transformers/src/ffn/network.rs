@@ -25,8 +25,8 @@ where
 {
     pub fn new(model: usize, network: usize) -> Self {
         Self {
-            input: Layer::new((model, network).into()),
-            output: Layer::new((network, model).into()),
+            input: Layer::from_features(model, network),
+            output: Layer::from_features(network, model),
             params: FFNParams::new(model, network),
         }
     }

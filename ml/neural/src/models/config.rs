@@ -17,4 +17,8 @@ impl ModelConfig {
     pub fn layers(&self) -> usize {
         self.layers
     }
+
+    pub fn n_hidden(&self) -> usize {
+        self.layers - 2
+    }
 }

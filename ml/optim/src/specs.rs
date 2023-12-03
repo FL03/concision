@@ -14,15 +14,10 @@ where
     fn apply_gradient(&mut self, gamma: T, gradients: &Array<T, D>);
 }
 
-pub trait Optimize<T = f64> {
-    type Model: Forward<Array2<T>, Output = Array2<T>>;
-
-    fn name(&self) -> &str;
-
-    // fn optimize(&mut self, model: &mut Self::Model, args: &Array2<T>, targets: &Array2<T>) -> T {
-    //     let gradients = model.backward(args, targets);
-    //     let loss = model.loss(args, targets);
-    //     self.update(model, &gradients);
-    //     loss
-    // }
+pub trait Autograd<T = f64, D = Ix2>
+where
+    D: Dimension,
+    T: Float,
+{
+    fn autograd(&mut self, loss: &Array<T, D>) -> Array<T, D>;
 }

@@ -2,6 +2,7 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::LayerConfig;
 use crate::func::activate::{Activate, Activator, Linear};
 use crate::layers::{LayerParams, LayerShape};
 use crate::prelude::{Features, Forward, Neuron, Node, Parameterized, Params};
@@ -15,8 +16,7 @@ where
     T: Float,
 {
     activator: Activator<T>,
-    pub features: LayerShape,
-    name: String,
+    config: LayerConfig,
     params: LayerParams<T>,
 }
 
@@ -24,13 +24,12 @@ impl<T> Layer<T>
 where
     T: Float,
 {
-    pub fn new(activator: impl Activate<T> + 'static, features: impl Into<LayerShape>) -> Self {
-        let features = features.into();
+    pub fn new(activator: impl Activate<T> + 'static, config: LayerConfig) -> Self {
+        let params = LayerParams::new(*config.features());
         Self {
             activator: Activator::new(Box::new(activator)),
-            features,
-            name: String::new(),
-            params: LayerParams::new(features),
+            config,
+            params,
         }
     }
 
@@ -38,12 +37,12 @@ where
         &self.activator
     }
 
-    pub fn name(&self) -> &str {
-        &self.name
+    pub fn config(&self) -> &LayerConfig {
+        &self.config
     }
 
-    pub fn set_name(&mut self, name: impl ToString) {
-        self.name = name.to_string();
+    pub fn config_mut(&mut self) -> &mut LayerConfig {
+        &mut self.config
     }
 
     pub fn set_node(&mut self, idx: usize, node: &Node<T>) {
@@ -55,11 +54,6 @@ where
             return self.features().inputs() == other.features().outputs();
         }
         self.features().outputs() == other.features().inputs()
-    }
-
-    pub fn with_name(mut self, name: impl ToString) -> Self {
-        self.name = name.to_string();
-        self
     }
 }
 
@@ -118,11 +112,11 @@ where
     type Params = LayerParams<T>;
 
     fn features(&self) -> &LayerShape {
-        &self.features
+        self.config().features()
     }
 
     fn features_mut(&mut self) -> &mut LayerShape {
-        &mut self.features
+        self.config_mut().features_mut()
     }
 
     fn params(&self) -> &LayerParams<T> {
@@ -149,7 +143,7 @@ where
     T: Float + 'static,
 {
     fn from(features: LayerShape) -> Self {
-        Self::new(Activator::linear(), features)
+        Self::new(Activator::linear(), features.into())
     }
 }
 
@@ -173,8 +167,7 @@ where
         let params = LayerParams::from_iter(nodes);
         Self {
             activator: Activator::linear(),
-            features: *params.features(),
-            name: String::new(),
+            config: LayerConfig::from(*params.features()),
             params,
         }
     }

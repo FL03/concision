@@ -4,7 +4,7 @@
 */
 use crate::neural::func::activate::Sigmoid;
 use crate::neural::models::ModelParams;
-use crate::neural::prelude::{Forward, Gradient, LayerParams,};
+use crate::neural::prelude::{Forward, Gradient, LayerParams};
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
@@ -65,8 +65,6 @@ where
         let mut cost = T::zero();
         let params = self.params.clone();
 
-        
-
         for (i, layer) in self.params[..(depth - 1)].iter_mut().enumerate() {
             // compute the prediction of the model
             let pred = params[i + 1].forward(data);
@@ -88,7 +86,11 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::prelude::linarr;
     use crate::neural::models::ModelParams;
+    use crate::neural::prelude::{Features, LayerShape};
+
+    use ndarray::prelude::Ix2;
 
     #[test]
     fn test_gradient() {
@@ -97,8 +99,14 @@ mod tests {
 
         let _shape = (samples, inputs);
 
-        let mut model = ModelParams::<f64>::new().build_layers([(inputs, outputs,), (outputs, outputs), (outputs, outputs)]).init_layers(false);
+        let features = LayerShape::new(inputs, outputs);
 
+        let x = linarr::<f64, Ix2>((samples, features.inputs())).unwrap();
+        let y = linarr::<f64, Ix2>((samples, features.outputs())).unwrap();
 
+        let mut shapes = vec![features];
+        shapes.extend((0..3).map(|_| LayerShape::new(features.outputs(), features.outputs())));
+
+        let mut model = ModelParams::<f64>::from_iter(shapes);
     }
 }

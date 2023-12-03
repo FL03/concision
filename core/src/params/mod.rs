@@ -6,25 +6,19 @@
 //!
 //! ## Overview
 //!
-pub use self::{kinds::*, param::*, utils::*};
+pub use self::{group::*, kinds::*, param::*, utils::*};
 
+pub(crate) mod group;
 pub(crate) mod kinds;
 pub(crate) mod param;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
 
-pub trait Parameter<T = f64, D = Ix2>
-where
-    D: Dimension,
-    T: Float,
-{
-    /// Returns an owned reference of the param
-    fn param(&self) -> &Array<T, D>;
-    /// Returns a mutable reference of the param
-    fn param_mut(&mut self) -> &mut Array<T, D>;
-    /// Sets the param
-    fn set_param(&mut self, param: Array<T, D>);
+pub trait Param {
+    fn kind(&self) -> ParamKind;
+
+    fn name(&self) -> &str;
 }
 
 pub trait Biased<T = f64, D = Ix2>
@@ -51,6 +45,19 @@ where
     fn weights_mut(&mut self) -> &mut Array<T, D>;
     /// Sets the weights of the layer.
     fn set_weights(&mut self, weights: Array<T, D>);
+}
+
+pub trait Params<T = f64, D = Ix2>
+where
+    D: Dimension,
+    T: Float,
+{
+    /// Returns an owned reference to the parameters of the layer.
+    fn params(&self) -> &Array<T, D>;
+    /// Returns a mutable reference to the parameters of the layer.
+    fn params_mut(&mut self) -> &mut Array<T, D>;
+    /// Sets the parameters of the layer.
+    fn set_params(&mut self, params: Array<T, D>);
 }
 
 pub(crate) mod utils {}

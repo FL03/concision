@@ -15,7 +15,7 @@ where
     T: Float,
 {
     bias: Array0<T>,
-    pub features: usize,
+    features: usize,
     weights: Array1<T>,
 }
 
@@ -31,8 +31,8 @@ where
         }
     }
 
-    pub fn features(&self) -> usize {
-        self.features
+    pub fn features(&self) -> &usize {
+        &self.features
     }
 
     pub fn features_mut(&mut self) -> &mut usize {
@@ -44,7 +44,7 @@ where
     }
 
     pub fn with_bias(mut self, bias: Array0<T>) -> Self {
-        self.bias = bias.into();
+        self.bias = bias;
         self
     }
 
@@ -87,6 +87,7 @@ where
 impl<T> Node<T>
 where
     T: FromPrimitive + NdFloat,
+    Self: Weighted<T, Ix1>,
 {
     pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
     where
@@ -102,7 +103,12 @@ where
     {
         activator(&self.linear(data))
     }
-
+}
+impl<T> Node<T>
+where
+    T: FromPrimitive + NdFloat,
+    Self: Biased<T, Ix1> + Weighted<T, Ix1>,
+{
     pub fn linear(&self, data: &Array2<T>) -> Array1<T> {
         data.dot(&self.weights().t()) + self.bias()
     }
@@ -110,7 +116,7 @@ where
 
 impl<T> Forward<Array1<T>> for Node<T>
 where
-    Self: Biased<T, Ix1>,
+    Self: Biased<T, Ix1> + Weighted<T, Ix1>,
     T: FromPrimitive + NdFloat,
 {
     type Output = T;
@@ -122,7 +128,7 @@ where
 
 impl<T> Forward<Array2<T>> for Node<T>
 where
-    Self: Biased<T, Ix1>,
+    Self: Biased<T, Ix1> + Weighted<T, Ix1>,
     T: FromPrimitive + NdFloat,
 {
     type Output = Array1<T>;

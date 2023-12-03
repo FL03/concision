@@ -5,10 +5,12 @@
 use super::LayerShape;
 use crate::core::prelude::GenerateRandom;
 use crate::prelude::{Biased, Features, Forward, Node, Weighted};
-use ndarray::prelude::{Array1, Array2, Axis, Ix2, NdFloat};
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
+use std::ops;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LayerParams<T = f64> {
@@ -148,25 +150,16 @@ where
     }
 }
 
-impl<T> Forward<Array1<T>> for LayerParams<T>
+impl<T, D> Forward<Array<T, D>> for LayerParams<T>
 where
+    D: Dimension,
     T: NdFloat,
+    Array<T, D>: Dot<Array2<T>, Output = Array<T, D>> + ops::Add<Array1<T>, Output = Array<T, D>>,
 {
-    type Output = Array1<T>;
+    type Output = Array<T, D>;
 
-    fn forward(&self, input: &Array1<T>) -> Self::Output {
-        input.dot(self.weights()) + self.bias()
-    }
-}
-
-impl<T> Forward<Array2<T>> for LayerParams<T>
-where
-    T: NdFloat,
-{
-    type Output = Array2<T>;
-
-    fn forward(&self, input: &Array2<T>) -> Self::Output {
-        input.dot(self.weights()) + self.bias()
+    fn forward(&self, input: &Array<T, D>) -> Self::Output {
+        input.dot(&self.weights().t().to_owned()) + self.bias().clone()
     }
 }
 
@@ -195,7 +188,7 @@ where
         let nodes = nodes.into_iter().collect::<Vec<_>>();
         let mut iter = nodes.iter();
         let node = iter.next().unwrap();
-        let shape = LayerShape::new(node.features(), nodes.len());
+        let shape = LayerShape::new(*node.features(), nodes.len());
         let mut params = LayerParams::new(shape);
         params.set_node(0, node.clone());
         for (i, node) in iter.into_iter().enumerate() {

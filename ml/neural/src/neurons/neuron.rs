@@ -17,7 +17,6 @@ where
     T: Float,
 {
     activation: A,
-    features: usize,
     node: Node<T>,
 }
 
@@ -26,14 +25,6 @@ where
     A: Activate<T, Ix1>,
     T: Float,
 {
-    pub fn activation(&self) -> &A {
-        &self.activation
-    }
-
-    pub fn features(&self) -> usize {
-        self.features
-    }
-
     pub fn node(&self) -> &Node<T> {
         &self.node
     }
@@ -54,7 +45,6 @@ where
     pub fn with_rho<B: Activate<T, Ix1>>(self, rho: B) -> Neuron<T, B> {
         Neuron {
             activation: rho,
-            features: self.features,
             node: self.node,
         }
     }
@@ -78,7 +68,6 @@ where
     pub fn new(features: usize) -> Self {
         Self {
             activation: A::default(),
-            features,
             node: Node::new(features),
         }
     }
@@ -171,11 +160,11 @@ where
     type Params = Node<T>;
 
     fn features(&self) -> &Self::Features {
-        &self.features
+        self.node.features()
     }
 
     fn features_mut(&mut self) -> &mut Self::Features {
-        &mut self.features
+        self.node.features_mut()
     }
 
     fn params(&self) -> &Self::Params {
@@ -217,7 +206,6 @@ where
     fn from((weights, bias): (Array1<T>, Array0<T>)) -> Self {
         Self {
             activation: A::default(),
-            features: weights.len(),
             node: Node::from((weights, bias)),
         }
     }
@@ -231,7 +219,6 @@ where
     fn from((weights, bias): (Array1<T>, T)) -> Self {
         Self {
             activation: A::default(),
-            features: weights.len(),
             node: Node::from((weights, bias)),
         }
     }
@@ -245,7 +232,6 @@ where
     fn from((weights, bias, activation): (Array1<T>, Array0<T>, A)) -> Self {
         Self {
             activation,
-            features: weights.len(),
             node: Node::from((weights, bias)),
         }
     }
@@ -259,7 +245,6 @@ where
     fn from((weights, bias, activation): (Array1<T>, T, A)) -> Self {
         Self {
             activation,
-            features: weights.len(),
             node: Node::from((weights, bias)),
         }
     }

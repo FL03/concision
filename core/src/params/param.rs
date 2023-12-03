@@ -3,31 +3,41 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::ParamKind;
+use crate::prelude::GenerateRandom;
 use ndarray::prelude::{Array, Dimension, Ix2};
+use ndarray::IntoDimension;
+use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct Param<T = f64, D = Ix2>
+pub struct Parameter<T = f64, D = Ix2>
 where
     T: Float,
     D: Dimension,
 {
+    features: D,
     kind: ParamKind,
     name: String,
     params: Array<T, D>,
 }
 
-impl<T, D> Param<T, D>
+impl<T, D> Parameter<T, D>
 where
     T: Float,
     D: Dimension,
 {
-    pub fn new(kind: ParamKind, name: impl ToString, params: Array<T, D>) -> Self {
+    pub fn new(
+        features: impl IntoDimension<Dim = D>,
+        kind: ParamKind,
+        name: impl ToString,
+    ) -> Self {
+        let features = features.into_dimension();
         Self {
+            features: features.clone(),
             kind,
             name: name.to_string(),
-            params,
+            params: Array::zeros(features),
         }
     }
 
@@ -79,6 +89,17 @@ where
 
     pub fn with_params(mut self, params: Array<T, D>) -> Self {
         self.params = params;
+        self
+    }
+}
+
+impl<T, D> Parameter<T, D>
+where
+    D: Dimension,
+    T: Float + SampleUniform,
+{
+    pub fn init_uniform(mut self, dk: T) -> Self {
+        self.params = Array::uniform_between(dk, self.clone().features);
         self
     }
 }

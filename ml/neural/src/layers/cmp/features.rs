@@ -61,7 +61,7 @@ impl IntoDimension for LayerShape {
 
 impl From<LayerShape> for Ix2 {
     fn from(features: LayerShape) -> Self {
-        ndarray::Ix2(features.outputs, features.inputs)
+        features.into_dimension()
     }
 }
 

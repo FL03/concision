@@ -4,9 +4,10 @@
 */
 //! # Graph Neural Network
 //!
-pub use self::{model::*, utils::*};
+pub use self::{model::*, tasks::*, utils::*};
 
 pub(crate) mod model;
+pub(crate) mod tasks;
 
 use num::Float;
 

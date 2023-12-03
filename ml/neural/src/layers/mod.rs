@@ -13,19 +13,23 @@ pub(crate) mod stack;
 pub mod exp;
 
 use crate::prelude::{Activate, ActivateDyn, Forward, Node};
-use ndarray::prelude::{Array2, Ix2};
+use ndarray::prelude::{Array2, Ix2, NdFloat};
 // use ndarray::IntoDimension;
 use num::Float;
 
 pub type LayerDyn<T = f64, D = Ix2> = Layer<T, ActivateDyn<T, D>>;
 
-pub trait L<T, A>: IntoIterator<Item = Node<T>>
+pub trait L<T, A>: Forward<Array2<T>>
 where
     A: Activate<T>,
     T: Float,
 {
+    fn activator(&self) -> &A;
+
     fn features(&self) -> LayerShape;
+
     fn name(&self) -> &str;
+
     fn params(&self) -> &LayerParams<T>;
 
     fn is_biased(&self) -> bool;
@@ -102,7 +106,7 @@ mod tests {
         let layer = Layer::<f64, Softmax>::from(features).init(true);
 
         for node in layer.into_iter() {
-            assert_eq!(node.features(), inputs);
+            assert_eq!(node.features(), &inputs);
             assert_eq!(node.bias().dim(), ());
         }
     }

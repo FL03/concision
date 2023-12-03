@@ -213,25 +213,24 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::prelude::GenerateRandom;
+    use crate::core::prelude::linarr;
     use crate::neural::prelude::{LayerShape, Sigmoid};
-    use ndarray::prelude::{Array, Array1};
 
     #[test]
     fn test_sgd() {
-        let (samples, inputs, outputs) = (20, 5, 4);
-        let shape = (samples, inputs);
+        let (samples, inputs) = (20, 5);
+        let outputs = 4;
 
         let features = LayerShape::new(inputs, outputs);
 
-        let (batch_size, epochs, gamma) = (10, 1, 0.01);
+        let (_bs, _epochs, _gamma) = (10, 1, 0.01);
         // Generate some example data
-        let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
-        let y = Array::linspace(1., 100., samples)
-            .into_shape(samples)
-            .unwrap();
+        let x = linarr::<f64, Ix2>((samples, inputs)).unwrap();
+        let _y = linarr::<f64, Ix2>((samples, outputs)).unwrap();
 
-        let mut model = Layer::<f64, Sigmoid>::new(features).init(true);
+        let model = Layer::<f64, Sigmoid>::from(features).init(true);
+
+        let _pred = model.forward(&x);
 
         // let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
         // sgd.sgd(&x, &y);

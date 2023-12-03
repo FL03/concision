@@ -2,6 +2,7 @@
     Appellation: linear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::Gradient;
 use ndarray::prelude::{Array, Dimension};
 use num::One;
 use serde::{Deserialize, Serialize};
@@ -44,15 +45,15 @@ impl Linear {
     }
 }
 
-// impl<T, D> Activate<T, D> for Linear
-// where
-//     D: Dimension,
-//     T: Clone,
-// {
-//     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-//         args.clone()
-//     }
-// }
+impl<T, D> Gradient<T, D> for Linear
+where
+    D: Dimension,
+    T: Clone + One,
+{
+    fn gradient(&self, args: &Array<T, D>) -> Array<T, D> {
+        args.mapv(|x| Self::derivative(x))
+    }
+}
 
 impl<T> Fn<(&T,)> for Linear
 where

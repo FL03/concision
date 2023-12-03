@@ -18,7 +18,7 @@ where
     T: Float,
 {
     activator: A,
-    pub features: LayerShape,
+    features: LayerShape,
     name: String,
     params: LayerParams<T>,
 }
@@ -28,7 +28,8 @@ where
     A: Default + Activate<T>,
     T: Float,
 {
-    pub fn new(features: LayerShape) -> Self {
+    pub fn from_features(inputs: usize, outputs: usize) -> Self {
+        let features = LayerShape::new(inputs, outputs);
         Self {
             activator: A::default(),
             features,
@@ -43,6 +44,15 @@ where
     A: Activate<T>,
     T: Float,
 {
+    pub fn new(activator: A, features: LayerShape, name: impl ToString) -> Self {
+        Self {
+            activator,
+            features,
+            name: name.to_string(),
+            params: LayerParams::new(features),
+        }
+    }
+
     pub fn activator(&self) -> &A {
         &self.activator
     }
@@ -114,7 +124,7 @@ where
     T: NdFloat,
 {
     pub fn linear(&self, args: &Array2<T>) -> Array2<T> {
-        args.dot(&self.params.weights().t()) + self.params.bias()
+        self.params().forward(args)
     }
 }
 
@@ -231,7 +241,12 @@ where
     T: Float,
 {
     fn from(features: LayerShape) -> Self {
-        Self::new(features)
+        Self {
+            activator: A::default(),
+            features,
+            name: String::new(),
+            params: LayerParams::new(features),
+        }
     }
 }
 

@@ -8,10 +8,13 @@ use ndarray::prelude::{Array2, NdFloat};
 #[derive(Clone, Debug, Default)]
 pub struct Transformer;
 
-impl<T> Transform<Array2<T>> for Transformer where T: NdFloat {
-   type Output = Array2<T>;
+impl<T> Transform<Array2<T>> for Transformer
+where
+    T: NdFloat,
+{
+    type Output = Array2<T>;
 
-   fn transform(&self, args: &Array2<T>) -> Self::Output {
-      args.clone()
-   }
+    fn transform(&self, args: &Array2<T>) -> Self::Output {
+        args.clone()
+    }
 }

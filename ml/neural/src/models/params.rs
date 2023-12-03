@@ -2,13 +2,47 @@
     Appellation: stack <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::prelude::{Features, LayerParams, LayerShape};
+use crate::prelude::{Features, LayerParams, LayerPosition, LayerShape};
 use ndarray::prelude::{Dimension, Ix2};
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
+
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::ops;
+
+pub struct ModelMap<T = f64>
+where
+    T: Float,
+{
+    store: HashMap<LayerPosition, LayerParams<T>>,
+}
+
+impl<T> ModelMap<T>
+where
+    T: Float,
+{
+    pub fn with_shapes<Sh>(shapes: impl IntoIterator<Item = Sh>) -> Self
+    where
+        Sh: IntoDimension<Dim = Ix2>,
+    {
+        let tmp = Vec::from_iter(shapes.into_iter().map(IntoDimension::into_dimension));
+        let mut store = HashMap::new();
+        for (i, (inputs, outputs)) in tmp.iter().map(|s| s.into_pattern()).enumerate() {
+            let features = LayerShape::new(inputs, outputs);
+            let position = if i == 0 {
+                LayerPosition::input()
+            } else if i == tmp.len() - 1 {
+                LayerPosition::output(i)
+            } else {
+                LayerPosition::hidden(i)
+            };
+            store.insert(position, LayerParams::new(features));
+        }
+        Self { store }
+    }
+}
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct ModelParams<T = f64>
@@ -38,12 +72,18 @@ where
     where
         Sh: IntoDimension<Dim = Ix2>,
     {
+        let tmp = Vec::from_iter(shapes.into_iter().map(IntoDimension::into_dimension));
         let mut children = Vec::new();
-        for (inputs, outputs) in shapes
-            .into_iter()
-            .map(|s| s.into_dimension().into_pattern())
-        {
+        for (i, (inputs, outputs)) in tmp.iter().map(|s| s.into_pattern()).enumerate() {
             let features = LayerShape::new(inputs, outputs);
+            let position = if i == 0 {
+                LayerPosition::input()
+            } else if i == tmp.len() - 1 {
+                LayerPosition::output(i)
+            } else {
+                LayerPosition::hidden(i)
+            };
+
             children.push(LayerParams::new(features));
         }
         Self { children }

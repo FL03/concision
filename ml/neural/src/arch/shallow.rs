@@ -65,8 +65,8 @@ where
         let s2 = LayerShape::new(outputs, outputs);
 
         let input = Layer::<T, I>::from(s1);
-        let hidden = Layer::<T, H>::new(s2);
-        let output = Layer::<T, O>::new(s2);
+        let hidden = Layer::<T, H>::from(s2);
+        let output = Layer::<T, O>::from(s2);
 
         Self::new(input, hidden, output)
     }

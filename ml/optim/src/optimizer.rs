@@ -31,3 +31,8 @@ where
     T: Float,
 {
 }
+
+pub struct Opt<T = f64> {
+    epochs: usize,
+    gamma: T,
+}

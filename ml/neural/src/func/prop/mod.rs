@@ -5,26 +5,11 @@
 //! # Propagation
 //!
 //! This module describes the propagation of data through a neural network.
-pub use self::{modes::*, propagation::*, utils::*};
+pub use self::{modes::*, utils::*};
 
 pub(crate) mod modes;
-pub(crate) mod propagation;
-
-// pub mod forward;
-use ndarray::prelude::{Array, Ix2};
-
-pub type ForwardDyn<T = f64, D = Ix2> = Box<dyn Forward<Array<T, D>, Output = Array<T, D>>>;
-
-pub trait Backward<T>: Forward<T> {
-    type Optim;
-
-    fn backward(&mut self, args: &T, grad: &T);
-}
-
-pub trait Forward<T> {
-    type Output;
-
-    fn forward(&self, args: &T) -> Self::Output;
-}
 
 pub(crate) mod utils {}
+
+#[cfg(test)]
+mod tests {}

@@ -5,7 +5,7 @@
 use crate::layers::{LayerKind, LayerShape};
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct LayerConfig {
     biased: bool,
     features: LayerShape,
@@ -27,8 +27,12 @@ impl LayerConfig {
         self.biased
     }
 
-    pub fn features(&self) -> LayerShape {
-        self.features
+    pub fn features(&self) -> &LayerShape {
+        &self.features
+    }
+
+    pub fn features_mut(&mut self) -> &mut LayerShape {
+        &mut self.features
     }
 
     pub fn kind(&self) -> LayerKind {
@@ -65,11 +69,6 @@ impl LayerConfig {
         self
     }
 
-    pub fn with_bias(mut self, biased: bool) -> Self {
-        self.biased = biased;
-        self
-    }
-
     pub fn with_features(mut self, features: LayerShape) -> Self {
         self.features = features;
         self
@@ -83,5 +82,16 @@ impl LayerConfig {
     pub fn with_name(mut self, name: String) -> Self {
         self.name = name;
         self
+    }
+}
+
+impl From<LayerShape> for LayerConfig {
+    fn from(features: LayerShape) -> Self {
+        Self {
+            biased: false,
+            features,
+            kind: LayerKind::default(),
+            name: String::new(),
+        }
     }
 }

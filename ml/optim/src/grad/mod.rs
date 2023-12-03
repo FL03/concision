@@ -3,10 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Gradient Descent
-pub use self::{descent::*, gradient::*, utils::*};
+pub use self::{descent::*, gradient::*, modes::*, utils::*};
 
 pub(crate) mod descent;
 pub(crate) mod gradient;
+pub(crate) mod modes;
 
 pub mod sgd;
 
