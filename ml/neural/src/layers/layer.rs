@@ -4,7 +4,7 @@
 */
 use super::{LayerParams, LayerShape};
 use crate::func::activate::{Activate, Gradient, Linear};
-use crate::prelude::{Features, Forward, Neuron, Node, Parameterized, Params};
+use crate::prelude::{Features, Forward, Node, Parameterized, Params, Perceptron};
 use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_stats::DeviationExt;
@@ -65,7 +65,7 @@ where
         self.name = name.to_string();
     }
 
-    pub fn set_node(&mut self, idx: usize, neuron: &Neuron<T, A>)
+    pub fn set_node(&mut self, idx: usize, neuron: &Perceptron<T, A>)
     where
         A: Activate<T, Ix1>,
     {
@@ -176,6 +176,20 @@ where
         self.features.outputs()
     }
 }
+
+// impl<T, D, A> Forward<Array2<T>> for Layer<T, A>
+// where
+//     A: Activate<T>,
+//     D: Dimension,
+//     T: NdFloat,
+//     Array<T, D>: Dot<Array2<T>, Output = Array<T>>,
+// {
+//     type Output = Array2<T>;
+
+//     fn forward(&self, args: &Array2<T>) -> Self::Output {
+//         self.activator.activate(&self.linear(args))
+//     }
+// }
 
 impl<T, A> Forward<Array2<T>> for Layer<T, A>
 where

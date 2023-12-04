@@ -5,7 +5,7 @@
 use super::LayerConfig;
 use crate::func::activate::{Activate, Activator, Linear};
 use crate::layers::{LayerParams, LayerShape};
-use crate::prelude::{Features, Forward, Neuron, Node, Parameterized, Params};
+use crate::prelude::{Features, Forward, Node, Parameterized, Params, Perceptron};
 use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;

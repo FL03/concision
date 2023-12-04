@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::prelude::{Features, LayerParams, LayerPosition, LayerShape};
-use ndarray::prelude::{Dimension, Ix2};
+use ndarray::prelude::{Dimension, Ix2, NdFloat};
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -74,16 +74,8 @@ where
     {
         let tmp = Vec::from_iter(shapes.into_iter().map(IntoDimension::into_dimension));
         let mut children = Vec::new();
-        for (i, (inputs, outputs)) in tmp.iter().map(|s| s.into_pattern()).enumerate() {
+        for (inputs, outputs) in tmp.iter().map(|s| s.into_pattern()) {
             let features = LayerShape::new(inputs, outputs);
-            let position = if i == 0 {
-                LayerPosition::input()
-            } else if i == tmp.len() - 1 {
-                LayerPosition::output(i)
-            } else {
-                LayerPosition::hidden(i)
-            };
-
             children.push(LayerParams::new(features));
         }
         Self { children }
@@ -142,6 +134,14 @@ where
         self
     }
 }
+
+impl<T> ModelParams<T>
+where
+    T: NdFloat,
+{
+
+}
+
 
 impl<T> AsRef<[LayerParams<T>]> for ModelParams<T>
 where

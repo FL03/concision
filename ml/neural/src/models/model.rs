@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{ModelConfig, ModelParams};
-use crate::prelude::{Forward, LayerParams};
-use ndarray::prelude::{Array2, NdFloat};
+use crate::prelude::{Forward, Gradient, LayerParams, Weighted};
+use ndarray::prelude::{Array1, Array2, NdFloat};
 use num::Float;
 
 #[derive(Clone, Debug)]
@@ -41,6 +41,43 @@ where
 
     pub fn params_mut(&mut self) -> &mut ModelParams<T> {
         &mut self.params
+    }
+
+    pub fn with_params(mut self, params: ModelParams<T>) -> Self {
+        self.params = params;
+        self
+    }
+}
+
+impl<T> Model<T>
+where
+    T: NdFloat,
+{
+    pub fn gradient(&mut self, data: &Array2<T>, targets: &Array2<T>, gamma: T, grad: impl Gradient<T>) -> anyhow::Result<()> {
+        let mut grads = Vec::new();
+        // let mut loss = Array1::zeros(self.params.len());
+        let mut store = vec![data.clone()];
+
+        for layer in self.clone().into_iter() {
+            let pred = layer.forward(&store.last().unwrap());
+            store.push(pred);
+        }
+       
+        let error = targets - store.last().unwrap();
+        let dz = &error * grad.gradient(&error);
+        grads.push(dz.clone());
+
+        for i in (1..self.params.len()).rev() {
+            let wt = self.params[i].weights().t();
+            let dz = &dz.dot(&wt) * grad.gradient(&store[i]);
+            grads[i - 1] = dz.clone();
+        }
+
+        for i in 0..self.params.len() {
+            let gradient = &store[i].t().dot(&grads[i]);
+            self.params[i].weights_mut().scaled_add(-gamma, &gradient.t());
+        }
+        Ok(())
     }
 }
 

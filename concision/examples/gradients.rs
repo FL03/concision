@@ -1,4 +1,4 @@
-use concision::neural::models::ModelParams;
+use concision::neural::models::{Model, ModelConfig, ModelParams};
 use concision::neural::prelude::{Layer, Sigmoid};
 use concision::optim::grad::*;
 use concision::prelude::{linarr, Features, Forward, LayerShape};
@@ -13,9 +13,9 @@ fn main() -> anyhow::Result<()> {
 
     let (epochs, gamma) = (1000, 0.005);
 
-    sample_gradient(epochs, features, gamma, samples)?;
+    // sample_gradient(epochs, features, gamma, samples)?;
 
-    // sample_model(epochs, features, gamma, samples)?;
+    sample_model(epochs, features, gamma, samples)?;
 
     Ok(())
 }
@@ -62,8 +62,10 @@ pub fn sample_model(
     let mut shapes = vec![features];
     shapes.extend((0..3).map(|_| LayerShape::new(features.outputs(), features.outputs())));
 
-    let model = ModelParams::<f64>::from_iter(shapes);
-    let mut opt = Grad::new(gamma, model.clone(), Sigmoid);
+    let config = ModelConfig::new(4);
+    let params = ModelParams::<f64>::from_iter(shapes);
+    let mut model = Model::<f64>::new(config).with_params(params);
+    // let mut opt = Grad::new(gamma, model.clone(), Sigmoid);
 
     // println!(
     //     "Targets (dim):\t{:?}\nPredictions:\n\n{:?}\n",
@@ -71,11 +73,12 @@ pub fn sample_model(
     //     model.forward(&x)
     // );
 
-    let mut losses = Array1::zeros(epochs);
+    // let mut losses = Array1::zeros(epochs);
     for e in 0..epochs {
-        let cost = opt.step(&x, &y)?;
+        let _cost = model.gradient(&x, &y, gamma, Sigmoid)?;
+        // let cost = opt.step(&x, &y)?;
         // let cost = model.grad(gamma, &x, &y);
-        losses[e] = cost;
+        // losses[e] = cost;
     }
     // model = opt.model().clone();
     // println!("Losses:\n\n{:?}\n", &losses);

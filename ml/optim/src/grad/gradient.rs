@@ -17,6 +17,7 @@ where
     gamma: T,
     params: ModelParams<T>,
     objective: O,
+
 }
 
 impl<T, O> Grad<T, O>
