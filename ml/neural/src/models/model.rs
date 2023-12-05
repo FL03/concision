@@ -4,8 +4,10 @@
 */
 use super::{ModelConfig, ModelParams};
 use crate::prelude::{Forward, Gradient, LayerParams, Weighted};
-use ndarray::prelude::{Array1, Array2, NdFloat};
-use num::Float;
+use ndarray::prelude::{Array2, NdFloat};
+use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_stats::DeviationExt;
+use num::{Float, Signed};
 
 #[derive(Clone, Debug)]
 pub struct Model<T = f64>
@@ -51,33 +53,55 @@ where
 
 impl<T> Model<T>
 where
-    T: NdFloat,
+    T: NdFloat + Signed,
 {
-    pub fn gradient(&mut self, data: &Array2<T>, targets: &Array2<T>, gamma: T, grad: impl Gradient<T>) -> anyhow::Result<()> {
-        let mut grads = Vec::new();
-        // let mut loss = Array1::zeros(self.params.len());
+    pub fn gradient(
+        &mut self,
+        data: &Array2<T>,
+        targets: &Array2<T>,
+        gamma: T,
+        grad: impl Gradient<T>,
+    ) -> anyhow::Result<f64> {
+        let mut grads = Vec::with_capacity(self.params().len());
+
         let mut store = vec![data.clone()];
 
         for layer in self.clone().into_iter() {
             let pred = layer.forward(&store.last().unwrap());
             store.push(pred);
         }
-       
-        let error = targets - store.last().unwrap();
+
+        let error = store.last().unwrap() - targets;
         let dz = &error * grad.gradient(&error);
         grads.push(dz.clone());
 
         for i in (1..self.params.len()).rev() {
             let wt = self.params[i].weights().t();
-            let dz = &dz.dot(&wt) * grad.gradient(&store[i]);
-            grads[i - 1] = dz.clone();
+            let delta = grads.last().unwrap().dot(&wt);
+            let dp = grad.gradient(&store[i]);
+            let gradient = delta * &dp;
+            grads.push(gradient);
         }
+        grads.reverse();
 
         for i in 0..self.params.len() {
             let gradient = &store[i].t().dot(&grads[i]);
-            self.params[i].weights_mut().scaled_add(-gamma, &gradient.t());
+            self.params[i]
+                .weights_mut()
+                .scaled_add(-gamma, &gradient.t());
         }
-        Ok(())
+        let loss = self.forward(data).mean_sq_err(targets)?;
+        Ok(loss)
+    }
+}
+
+impl<T> Model<T>
+where
+    T: Float + SampleUniform,
+{
+    pub fn init(mut self, biased: bool) -> Self {
+        self.params = self.params.init(biased);
+        self
     }
 }
 

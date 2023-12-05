@@ -127,21 +127,29 @@ impl<T> ModelParams<T>
 where
     T: Float + SampleUniform,
 {
-    pub fn init_layers(mut self, biased: bool) -> Self {
+    pub fn init(mut self, biased: bool) -> Self {
         self.children
             .iter_mut()
             .for_each(|l| *l = l.clone().init(biased));
         self
     }
+
+    pub fn init_bias(mut self) -> Self {
+        self.children
+            .iter_mut()
+            .for_each(|l| *l = l.clone().init_bias());
+        self
+    }
+
+    pub fn init_weight(mut self) -> Self {
+        self.children
+            .iter_mut()
+            .for_each(|l| *l = l.clone().init_weight());
+        self
+    }
 }
 
-impl<T> ModelParams<T>
-where
-    T: NdFloat,
-{
-
-}
-
+impl<T> ModelParams<T> where T: NdFloat {}
 
 impl<T> AsRef<[LayerParams<T>]> for ModelParams<T>
 where
@@ -332,9 +340,7 @@ mod tests {
 
         let shapes = [(inputs, outputs), (outputs, outputs), (outputs, 1)];
 
-        let params = ModelParams::<f64>::new()
-            .build_layers(shapes)
-            .init_layers(true);
+        let params = ModelParams::<f64>::new().build_layers(shapes).init(true);
 
         // validate the dimensions of the model params
         assert!(params.validate_shapes());

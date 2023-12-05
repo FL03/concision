@@ -1,6 +1,6 @@
 use concision::neural::models::{Model, ModelConfig, ModelParams};
 use concision::neural::prelude::{Layer, Sigmoid};
-use concision::optim::grad::*;
+// use concision::optim::grad::*;
 use concision::prelude::{linarr, Features, Forward, LayerShape};
 
 use ndarray::prelude::{Array1, Ix2};
@@ -11,7 +11,7 @@ fn main() -> anyhow::Result<()> {
 
     let features = LayerShape::new(inputs, outputs);
 
-    let (epochs, gamma) = (1000, 0.005);
+    let (epochs, gamma) = (100000, 0.0005);
 
     // sample_gradient(epochs, features, gamma, samples)?;
 
@@ -55,6 +55,8 @@ pub fn sample_model(
     gamma: f64,
     samples: usize,
 ) -> anyhow::Result<()> {
+    let mut losses = Array1::zeros(epochs);
+
     // Generate some example data
     let x = linarr::<f64, Ix2>((samples, features.inputs()))?;
     let y = linarr::<f64, Ix2>((samples, features.outputs()))?;
@@ -64,24 +66,22 @@ pub fn sample_model(
 
     let config = ModelConfig::new(4);
     let params = ModelParams::<f64>::from_iter(shapes);
-    let mut model = Model::<f64>::new(config).with_params(params);
+    let mut model = Model::<f64>::new(config).with_params(params).init(false);
     // let mut opt = Grad::new(gamma, model.clone(), Sigmoid);
 
-    // println!(
-    //     "Targets (dim):\t{:?}\nPredictions:\n\n{:?}\n",
-    //     &y.shape(),
-    //     model.forward(&x)
-    // );
+    println!(
+        "Targets (dim):\t{:?}\nPredictions:\n\n{:?}\n",
+        &y.shape(),
+        model.forward(&x)
+    );
 
-    // let mut losses = Array1::zeros(epochs);
     for e in 0..epochs {
-        let _cost = model.gradient(&x, &y, gamma, Sigmoid)?;
+        let cost = model.gradient(&x, &y, gamma, Sigmoid)?;
         // let cost = opt.step(&x, &y)?;
         // let cost = model.grad(gamma, &x, &y);
-        // losses[e] = cost;
+        losses[e] = cost;
     }
-    // model = opt.model().clone();
-    // println!("Losses:\n\n{:?}\n", &losses);
-    // println!("Trained:\n\n{:?}", model.forward(&x));
+    println!("Losses:\n\n{:?}\n", &losses);
+    println!("Trained:\n\n{:?}", model.forward(&x));
     Ok(())
 }

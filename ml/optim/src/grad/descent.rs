@@ -12,8 +12,9 @@ pub struct GradientDescent<T = f64>
 where
     T: Float,
 {
-    pub gamma: T,
+    gamma: T,
     model: Layer<T>,
+    store: Vec<Array2<T>>,
 }
 
 impl<T> GradientDescent<T>
@@ -21,7 +22,11 @@ where
     T: Float,
 {
     pub fn new(gamma: T, model: Layer<T>) -> Self {
-        Self { gamma, model }
+        Self {
+            gamma,
+            model,
+            store: Vec::new(),
+        }
     }
 
     pub fn gamma(&self) -> T {
