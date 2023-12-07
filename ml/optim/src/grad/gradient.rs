@@ -4,7 +4,7 @@
 */
 use crate::neural::func::activate::Sigmoid;
 use crate::neural::models::ModelParams;
-use crate::neural::prelude::{Forward, Gradient, LayerParams};
+use crate::neural::prelude::{Forward, Gradient, Weighted};
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
@@ -58,28 +58,46 @@ where
     O: Gradient<T>,
     T: NdFloat + Signed,
 {
-    pub fn step(&mut self, data: &Array2<T>, targets: &Array2<T>) -> anyhow::Result<T> {
-        let ns = T::from(data.shape()[0]).unwrap();
+    pub fn gradient(&mut self, data: &Array2<T>, targets: &Array2<T>) -> anyhow::Result<f64> {
+        let lr = self.gamma();
+        // the number of layers in the model
         let depth = self.model().len();
-
-        let mut cost = T::zero();
-        let params = self.params.clone();
-
-        for (i, layer) in self.params[..(depth - 1)].iter_mut().enumerate() {
-            // compute the prediction of the model
-            let pred = params[i + 1].forward(data);
-            // compute the error of the prediction
-            let errors = &pred - targets;
-            // compute the gradient of the objective function w.r.t. the error's
-            let dz = errors * self.objective.gradient(&pred);
-            // compute the gradient of the objective function w.r.t. the model's weights
-            let dw = data.t().dot(&dz) / ns;
-            layer.update_with_gradient(self.gamma, &dw.t().to_owned());
-            let loss = targets.mean_sq_err(&pred)?;
-            cost += T::from(loss).unwrap();
+        // the gradients for each layer
+        let mut grads = Vec::with_capacity(self.model().len());
+        // a store for the predictions of each layer
+        let mut store = vec![data.clone()];
+        // compute the predictions for each layer
+        for layer in self.model().clone().into_iter() {
+            let pred = layer.forward(&store.last().unwrap());
+            store.push(pred);
         }
+        // compute the error for the last layer
+        let error = store.last().unwrap() - targets;
+        // compute the error gradient for the last layer
+        let dz = &error * self.objective.gradient(&error);
+        // push the error gradient for the last layer
+        grads.push(dz.clone());
 
-        Ok(cost)
+        for i in (1..depth).rev() {
+            // get the weights for the current layer
+            let wt = self.params[i].weights().t();
+            // compute the delta for the current layer w.r.t. the previous layer
+            let dw = grads.last().unwrap().dot(&wt);
+            // compute the gradient w.r.t. the current layer's predictions
+            let dp = self.objective.gradient(&store[i]);
+            // compute the gradient for the current layer
+            let gradient = dw * &dp;
+            grads.push(gradient);
+        }
+        // reverse the gradients so that they are in the correct order
+        grads.reverse();
+        // update the parameters for each layer
+        for i in 0..depth {
+            let gradient = &store[i].t().dot(&grads[i]);
+            self.params[i].weights_mut().scaled_add(-lr, &gradient.t());
+        }
+        let loss = self.model().forward(data).mean_sq_err(targets)?;
+        Ok(loss)
     }
 }
 
@@ -88,9 +106,18 @@ mod tests {
     use super::*;
     use crate::core::prelude::linarr;
     use crate::neural::models::ModelParams;
-    use crate::neural::prelude::{Features, LayerShape};
+    use crate::neural::prelude::{Features, LayerShape, Sigmoid};
 
     use ndarray::prelude::Ix2;
+
+    pub fn assert_ok<T, E>(result: Result<T, E>) -> T
+    where
+        E: std::fmt::Debug,
+        T: std::fmt::Debug,
+    {
+        assert!(result.is_ok(), "{:?}", result);
+        result.unwrap()
+    }
 
     #[test]
     fn test_gradient() {
@@ -107,6 +134,19 @@ mod tests {
         let mut shapes = vec![features];
         shapes.extend((0..3).map(|_| LayerShape::new(features.outputs(), features.outputs())));
 
-        let mut model = ModelParams::<f64>::from_iter(shapes);
+        let mut model = ModelParams::<f64>::from_iter(shapes).init(true);
+
+        let mut grad = Grad::new(0.01, model.clone(), Sigmoid);
+
+        let mut losses = Vec::new();
+
+        for _epoch in 0..3 {
+            let loss = assert_ok(grad.gradient(&x, &y));
+            losses.push(loss);
+        }
+
+        model = grad.model().clone();
+
+        assert!(losses.first().unwrap() > losses.last().unwrap());
     }
 }

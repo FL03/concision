@@ -62,29 +62,39 @@ where
         gamma: T,
         grad: impl Gradient<T>,
     ) -> anyhow::Result<f64> {
+        // the number of layers in the model
+        let depth = self.params().len();
+        // the gradients for each layer
         let mut grads = Vec::with_capacity(self.params().len());
-
+        // a store for the predictions of each layer
         let mut store = vec![data.clone()];
-
+        // compute the predictions for each layer
         for layer in self.clone().into_iter() {
             let pred = layer.forward(&store.last().unwrap());
             store.push(pred);
         }
-
+        // compute the error for the last layer
         let error = store.last().unwrap() - targets;
+        // compute the error gradient for the last layer
         let dz = &error * grad.gradient(&error);
+        // push the error gradient for the last layer
         grads.push(dz.clone());
 
-        for i in (1..self.params.len()).rev() {
+        for i in (1..depth).rev() {
+            // get the weights for the current layer
             let wt = self.params[i].weights().t();
-            let delta = grads.last().unwrap().dot(&wt);
+            // compute the delta for the current layer w.r.t. the previous layer
+            let dw = grads.last().unwrap().dot(&wt);
+            // compute the gradient w.r.t. the current layer's predictions
             let dp = grad.gradient(&store[i]);
-            let gradient = delta * &dp;
+            // compute the gradient for the current layer
+            let gradient = dw * &dp;
             grads.push(gradient);
         }
+        // reverse the gradients so that they are in the correct order
         grads.reverse();
-
-        for i in 0..self.params.len() {
+        // update the parameters for each layer
+        for i in 0..depth {
             let gradient = &store[i].t().dot(&grads[i]);
             self.params[i]
                 .weights_mut()

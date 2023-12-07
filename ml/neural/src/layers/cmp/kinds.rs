@@ -33,6 +33,30 @@ pub enum LayerKind {
     Output,
 }
 
+impl LayerKind {
+    pub fn input() -> Self {
+        Self::Input
+    }
+
+    pub fn hidden() -> Self {
+        Self::Hidden
+    }
+
+    pub fn output() -> Self {
+        Self::Output
+    }
+
+    pub fn create_kind(idx: usize, layers: usize) -> Self {
+        if idx == 0 {
+            Self::Input
+        } else if idx == layers - 1 {
+            Self::Output
+        } else {
+            Self::Hidden
+        }
+    }
+}
+
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
