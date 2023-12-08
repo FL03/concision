@@ -5,9 +5,12 @@
 use crate::core::prelude::GenerateRandom;
 
 use crate::prelude::{Biased, Forward, Weighted};
-use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, Ix1, NdFloat};
+use ndarray::RemoveAxis;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::{Float, FromPrimitive};
+use std::ops;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Node<T = f64>
@@ -114,29 +117,44 @@ where
     }
 }
 
-impl<T> Forward<Array1<T>> for Node<T>
+impl<T, D> Forward<Array<T, D>> for Node<T>
 where
     Self: Biased<T, Ix1> + Weighted<T, Ix1>,
+    D: Dimension + RemoveAxis,
     T: FromPrimitive + NdFloat,
+    Array<T, D>: Dot<Array1<T>, Output = Array<T, D::Smaller>>,
+    Array<T, D::Smaller>: ops::Add<Array0<T>, Output = Array<T, D::Smaller>>,
 {
-    type Output = T;
+    type Output = Array<T, D::Smaller>;
 
-    fn forward(&self, data: &Array1<T>) -> Self::Output {
-        data.dot(&self.weights().t()) + self.bias().first().unwrap().clone()
+    fn forward(&self, data: &Array<T, D>) -> Self::Output {
+        data.dot(&self.weights().t().to_owned()) + self.bias().clone()
     }
 }
 
-impl<T> Forward<Array2<T>> for Node<T>
-where
-    Self: Biased<T, Ix1> + Weighted<T, Ix1>,
-    T: FromPrimitive + NdFloat,
-{
-    type Output = Array1<T>;
+// impl<T> Forward<Array1<T>> for Node<T>
+// where
+//     Self: Biased<T, Ix1> + Weighted<T, Ix1>,
+//     T: FromPrimitive + NdFloat,
+// {
+//     type Output = T;
 
-    fn forward(&self, data: &Array2<T>) -> Self::Output {
-        data.dot(&self.weights().t()) + self.bias()
-    }
-}
+//     fn forward(&self, data: &Array1<T>) -> Self::Output {
+//         data.dot(&self.weights().t()) + self.bias().first().unwrap().clone()
+//     }
+// }
+
+// impl<T> Forward<Array2<T>> for Node<T>
+// where
+//     Self: Biased<T, Ix1> + Weighted<T, Ix1>,
+//     T: FromPrimitive + NdFloat,
+// {
+//     type Output = Array1<T>;
+
+//     fn forward(&self, data: &Array2<T>) -> Self::Output {
+//         data.dot(&self.weights().t()) + self.bias().clone()
+//     }
+// }
 
 impl<T> Biased<T, Ix1> for Node<T>
 where

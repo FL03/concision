@@ -5,7 +5,7 @@
 use super::{Biased, Weighted};
 use crate::core::prelude::GenerateRandom;
 use crate::prelude::{Forward, Node};
-use ndarray::prelude::{Array, Axis, Dimension, Ix1, Ix2};
+use ndarray::prelude::{s, Array, Axis, Dimension, Ix1, Ix2};
 use ndarray::{IntoDimension, RemoveAxis};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
@@ -46,6 +46,10 @@ where
         &self.features
     }
 
+    pub fn features_mut(&mut self) -> &mut D {
+        &mut self.features
+    }
+
     pub fn inputs(&self) -> usize {
         self.weights.shape().last().unwrap().clone()
     }
@@ -56,6 +60,15 @@ where
         }
         self.weights.shape().first().unwrap().clone()
     }
+
+    // pub fn set_node(&mut self, idx: usize, node: ParamGroup<T, D::Smaller>) {
+    //     let dim = self.features();
+
+    //     self.weights
+    //                 .slice_mut(s![idx, ..])
+    //         .assign(&node.weights);
+    //     self.bias.slice_mut(s![idx, ..]).assign(&node.bias);
+    // }
 }
 
 impl<T, D> ParamGroup<T, D>
@@ -180,19 +193,64 @@ where
     }
 }
 
-impl<T> IntoIterator for ParamGroup<T, Ix2>
+// impl<T> IntoIterator for ParamGroup<T, Ix2>
+// where
+//     T: Float,
+// {
+//     type Item = Node<T>;
+//     type IntoIter = std::vec::IntoIter<Self::Item>;
+
+//     fn into_iter(self) -> Self::IntoIter {
+//         self.weights()
+//             .axis_iter(Axis(0))
+//             .zip(self.bias().axis_iter(Axis(0)))
+//             .map(|(w, b)| (w.to_owned(), b.to_owned()).into())
+//             .collect::<Vec<_>>()
+//             .into_iter()
+//     }
+// }
+
+impl<T, D> IntoIterator for ParamGroup<T, D>
 where
+    D: Dimension + RemoveAxis,
     T: Float,
+    <D as Dimension>::Smaller: Dimension + RemoveAxis,
 {
-    type Item = Node<T>;
+    type Item = (
+        Array<T, D::Smaller>,
+        Array<T, <D::Smaller as Dimension>::Smaller>,
+    );
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.weights()
             .axis_iter(Axis(0))
             .zip(self.bias().axis_iter(Axis(0)))
-            .map(|(w, b)| (w.to_owned(), b.to_owned()).into())
+            .map(|(w, b)| (w.to_owned(), b.to_owned()))
             .collect::<Vec<_>>()
             .into_iter()
     }
 }
+
+// impl<T, D> FromIterator<ParamGroup<T, D::Smaller>> for ParamGroup<T, D>
+// where
+//     T: Float,
+//     D: Dimension + RemoveAxis,
+//     <D as Dimension>::Smaller: Dimension + RemoveAxis,
+// {
+//     fn from_iter<I>(iter: I) -> Self
+//     where
+//         I: IntoIterator<Item = ParamGroup<T, D::Smaller>>,
+//     {
+//         let store = Vec::from_iter(iter);
+//         let mut features = vec![store.len()];
+//         features.extend(store.first().unwrap().weights().shape());
+
+//         let mut group = Self::new(features.as_slice());
+//         let mut iter = iter.into_iter();
+//         let mut group = Self::new(weights.shape());
+//         group.set_weights(weights);
+//         group.set_bias(bias);
+//         group
+//     }
+// }

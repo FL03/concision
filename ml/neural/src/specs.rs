@@ -17,6 +17,19 @@ pub trait Forward<T> {
     fn forward(&self, args: &T) -> Self::Output;
 }
 
+pub trait ForwardIter<I, T>: Forward<T> + IntoIterator<Item = I>
+where
+    I: Forward<T>,
+{
+}
+
+impl<S, I, T> ForwardIter<I, T> for S
+where
+    I: Forward<T>,
+    S: Forward<T> + IntoIterator<Item = I>,
+{
+}
+
 pub trait Compile<T = f64, D = Ix2>
 where
     D: Dimension,

@@ -4,10 +4,12 @@
 */
 use super::{ModelConfig, ModelParams};
 use crate::prelude::{Forward, Gradient, LayerParams, Weighted};
-use ndarray::prelude::{Array2, NdFloat};
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
+use std::ops;
 
 #[derive(Clone, Debug)]
 pub struct Model<T = f64>
@@ -155,19 +157,20 @@ where
     }
 }
 
-impl<T> Forward<Array2<T>> for Model<T>
+impl<T, D> Forward<Array<T, D>> for Model<T>
 where
+    D: Dimension,
     T: NdFloat,
+    Array<T, D>: Dot<Array2<T>, Output = Array<T, D>> + ops::Add<Array1<T>, Output = Array<T, D>>,
 {
-    type Output = Array2<T>;
+    type Output = Array<T, D>;
 
-    fn forward(&self, input: &Array2<T>) -> Array2<T> {
-        let mut iter = self.clone().into_iter();
-
-        let mut output = iter.next().unwrap().forward(input);
-        for layer in iter {
-            output = layer.forward(&output);
+    fn forward(&self, input: &Array<T, D>) -> Self::Output {
+        let mut store = vec![input.clone()];
+        for layer in self.clone().into_iter() {
+            let pred = layer.forward(&store.last().unwrap());
+            store.push(pred);
         }
-        output
+        store.last().unwrap().clone()
     }
 }

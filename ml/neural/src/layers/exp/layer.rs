@@ -5,19 +5,20 @@
 use super::LayerConfig;
 use crate::func::activate::{Activate, Activator, Linear};
 use crate::layers::{LayerParams, LayerShape};
-use crate::prelude::{Features, Forward, Node, Parameterized, Params, Perceptron};
-use ndarray::prelude::{Array2, Ix1, NdFloat};
+use crate::prelude::{Features, Forward, Node, ParamGroup, Parameterized, Params};
+use ndarray::prelude::{Array2, Dimension, Ix1, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 
-pub struct Layer<T = f64>
+pub struct Layer<T = f64, D = Ix2>
 where
+    D: Dimension,
     T: Float,
 {
-    activator: Activator<T>,
+    activator: Activator<T, D>,
     config: LayerConfig,
-    params: LayerParams<T>,
+    params: ParamGroup<T, D>,
 }
 
 impl<T> Layer<T>
@@ -25,7 +26,7 @@ where
     T: Float,
 {
     pub fn new(activator: impl Activate<T> + 'static, config: LayerConfig) -> Self {
-        let params = LayerParams::new(*config.features());
+        let params = ParamGroup::new(*config.features());
         Self {
             activator: Activator::new(Box::new(activator)),
             config,
@@ -45,16 +46,19 @@ where
         &mut self.config
     }
 
-    pub fn set_node(&mut self, idx: usize, node: &Node<T>) {
-        self.params.set_node(idx, node.clone());
-    }
+    // pub fn set_node(&mut self, idx: usize, node: &Node<T>) {
+    //     self.params
+    //         .weights_mut()
+    //         .slice_mut(s![idx, ..])
+    //         .assign(&node.weights());
+    // }
 
-    pub fn validate_layer(&self, other: &Self, next: bool) -> bool {
-        if next {
-            return self.features().inputs() == other.features().outputs();
-        }
-        self.features().outputs() == other.features().inputs()
-    }
+    // pub fn validate_layer(&self, other: &Self, next: bool) -> bool {
+    //     if next {
+    //         return self.features().inputs() == other.features().outputs();
+    //     }
+    //     self.features().outputs() == other.features().inputs()
+    // }
 }
 
 impl<T> Layer<T>
@@ -104,26 +108,27 @@ where
     }
 }
 
-impl<T> Parameterized<T> for Layer<T>
+impl<T, D> Parameterized<T, D> for Layer<T, D>
 where
+    D: Dimension,
     T: Float,
 {
-    type Features = LayerShape;
-    type Params = LayerParams<T>;
+    type Features = D;
+    type Params = ParamGroup<T, D>;
 
-    fn features(&self) -> &LayerShape {
-        self.config().features()
+    fn features(&self) -> &D {
+        self.params().features()
     }
 
-    fn features_mut(&mut self) -> &mut LayerShape {
-        self.config_mut().features_mut()
+    fn features_mut(&mut self) -> &mut D {
+        self.params_mut().features_mut()
     }
 
-    fn params(&self) -> &LayerParams<T> {
+    fn params(&self) -> &Self::Params {
         &self.params
     }
 
-    fn params_mut(&mut self) -> &mut LayerParams<T> {
+    fn params_mut(&mut self) -> &mut Self::Params {
         &mut self.params
     }
 }
@@ -147,28 +152,28 @@ where
     }
 }
 
-impl<T> IntoIterator for Layer<T>
-where
-    T: Float,
-{
-    type Item = Node<T>;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
+// impl<T> IntoIterator for Layer<T>
+// where
+//     T: Float,
+// {
+//     type Item = Node<T>;
+//     type IntoIter = std::vec::IntoIter<Self::Item>;
 
-    fn into_iter(self) -> Self::IntoIter {
-        self.params.into_iter()
-    }
-}
+//     fn into_iter(self) -> Self::IntoIter {
+//         self.params.into_iter()
+//     }
+// }
 
-impl<T> FromIterator<Node<T>> for Layer<T>
-where
-    T: Float,
-{
-    fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
-        let params = LayerParams::from_iter(nodes);
-        Self {
-            activator: Activator::linear(),
-            config: LayerConfig::from(*params.features()),
-            params,
-        }
-    }
-}
+// impl<T> FromIterator<Node<T>> for Layer<T>
+// where
+//     T: Float,
+// {
+//     fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
+//         let params = LayerParams::from_iter(nodes);
+//         Self {
+//             activator: Activator::linear(),
+//             config: LayerConfig::from(*params.features()),
+//             params,
+//         }
+//     }
+// }

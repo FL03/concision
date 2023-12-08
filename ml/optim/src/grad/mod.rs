@@ -28,11 +28,25 @@ pub struct DescentParams {
 
 pub(crate) mod utils {
     use crate::neural::func::activate::Gradient;
-    use crate::neural::prelude::{Forward, Parameterized, Params};
+    use crate::neural::prelude::{Forward, ForwardIter, Parameterized, Params};
     use ndarray::linalg::Dot;
     use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
     use ndarray_stats::DeviationExt;
     use num::{FromPrimitive, Signed};
+
+    pub fn gradient_descent<M, T, D>(
+        gamma: T,
+        model: &mut M,
+        objective: impl Gradient<T, D>,
+    ) -> anyhow::Result<f64>
+    where
+        D: Dimension,
+        M: Forward<Array2<T>, Output = Array<T, D>> + Parameterized<T, D>,
+        T: FromPrimitive + NdFloat,
+    {
+        let loss = 0.0;
+        Ok(loss)
+    }
 
     pub fn gradient<T, D, A>(
         gamma: T,
@@ -71,35 +85,6 @@ pub(crate) mod utils {
             .expect("Error when calculating the MSE of the model");
         loss
     }
-
-    pub fn gradient_descent<T, D>(
-        params: &mut Array<T, D>,
-        epochs: usize,
-        gamma: T,
-        partial: impl Fn(&Array<T, D>) -> Array<T, D>,
-    ) -> Array1<T>
-    where
-        D: Dimension,
-        T: FromPrimitive + NdFloat,
-    {
-        let mut losses = Array1::zeros(epochs);
-        for e in 0..epochs {
-            let grad = partial(params);
-            params.scaled_add(-gamma, &grad);
-            losses[e] = params.mean().unwrap_or_else(T::zero);
-        }
-        losses
-    }
-
-    // pub fn gradient_descent_step<T, A>(
-    //     args: &Array2<T>,
-    //     layer: &mut Layer<T, A>,
-    //     gamma: T,
-    //     partial: impl Fn(&Array2<T>) -> Array2<T>,
-    // ) -> T where A: Activate<Array2<T>>, T: FromPrimitive + NdFloat {
-    //     let grad = partial(args);
-    //     layer.weights_mut().scaled_add(-gamma, &grad);
-    // }
 }
 
 #[cfg(test)]
@@ -112,16 +97,8 @@ mod tests {
     use ndarray::prelude::{Array, Array1, Dimension};
     use num::Float;
 
-    fn test_grad<T, D>(args: &Array<T, D>) -> Array<T, D>
-    where
-        D: Dimension,
-        T: Float,
-    {
-        args.clone()
-    }
-
     #[test]
-    fn descent() {
+    fn test_gradient_descent() {
         let (_samples, inputs, outputs) = (20, 5, 1);
 
         let (epochs, gamma) = (10, 0.001);
@@ -130,12 +107,12 @@ mod tests {
 
         let mut model = Layer::<f64, Linear>::from(features).init(true);
 
-        let losses = gradient_descent(
-            &mut model.params_mut().weights_mut(),
-            epochs,
-            gamma,
-            test_grad,
-        );
+        let mut losses = Array1::zeros(epochs);
+        for e in 0..epochs {
+            let cost =
+                gradient_descent(gamma, &mut model, Sigmoid).expect("Gradient Descent Error");
+            losses[e] = cost;
+        }
         assert_eq!(losses.len(), epochs);
     }
 

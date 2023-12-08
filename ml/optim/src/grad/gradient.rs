@@ -5,7 +5,7 @@
 use crate::neural::func::activate::Sigmoid;
 use crate::neural::models::ModelParams;
 use crate::neural::prelude::{Forward, Gradient, Weighted};
-use ndarray::prelude::{Array2, NdFloat};
+use ndarray::prelude::{Array2, Axis, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
 
@@ -63,7 +63,7 @@ where
         // the number of layers in the model
         let depth = self.model().len();
         // the gradients for each layer
-        let mut grads = Vec::with_capacity(self.model().len());
+        let mut grads = Vec::with_capacity(depth);
         // a store for the predictions of each layer
         let mut store = vec![data.clone()];
         // compute the predictions for each layer
@@ -93,8 +93,11 @@ where
         grads.reverse();
         // update the parameters for each layer
         for i in 0..depth {
-            let gradient = &store[i].t().dot(&grads[i]);
-            self.params[i].weights_mut().scaled_add(-lr, &gradient.t());
+            let grad = &grads[i];
+            println!("Layer ({}) Gradient (dim): {:?}", i, grad.shape());
+            let wg = &store[i].t().dot(grad);
+            let _bg = grad.sum_axis(Axis(0));
+            self.params[i].weights_mut().scaled_add(-lr, &wg.t());
         }
         let loss = self.model().forward(data).mean_sq_err(targets)?;
         Ok(loss)
