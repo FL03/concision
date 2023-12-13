@@ -2,8 +2,7 @@
     Appellation: specs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::prelude::Forward;
-use ndarray::prelude::{Array, Array2, Dimension, Ix2};
+use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
 
 pub trait ApplyGradient<T = f64, D = Ix2>
@@ -21,3 +20,4 @@ where
 {
     fn autograd(&mut self, loss: &Array<T, D>) -> Array<T, D>;
 }
+

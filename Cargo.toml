@@ -20,7 +20,7 @@ itertools = { features = [], version = "0.12" }
 lazy_static = "1"
 linfa = { features = [], version = "0.7" }
 ndarray = { features = ["serde-1"], version = "0.15" }
-# ndarray-linalg = { features = [], version = "0.16" }
+ndarray-linalg = { features = ["openblas-system"], version = "0.16" }
 ndarray-rand = { features = [], version = "0.14" }
 ndarray-stats = { features = [], version = "0.5.1" }
 num = { features = ["serde"], version = "0.4" }

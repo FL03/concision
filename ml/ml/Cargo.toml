@@ -21,6 +21,7 @@ full = [
     "neural",
     "nlp",
     "optim",
+    "s4",
     "transformers",
 ]
 
@@ -34,6 +35,10 @@ nlp = [
 
 optim = [
     "concision-optim",
+]
+
+s4 = [
+    "concision-s4"
 ]
 
 transformers = [
@@ -52,6 +57,7 @@ test = true
 concision-neural = { features = [], optional = true, path = "../neural", version = "0.1.12" }
 concision-nlp = { features = [], optional = true, path = "../nlp", version = "0.1.12" }
 concision-optim = { features = [], optional = true, path = "../optim", version = "0.1.12" }
+concision-s4 = { features = [], optional = true, path = "../s4", version = "0.1.12" }
 concision-transformers = { features = [], optional = true, path = "../transformers", version = "0.1.12" }
 
 [dev-dependencies]

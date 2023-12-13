@@ -52,6 +52,7 @@ ml = [
     "neural",
     "nlp",
     "optim",
+    "s4",
     "transformers",
 ]
 
@@ -65,6 +66,10 @@ nlp = [
 
 optim = [
     "concision-optim",
+]
+
+s4 = [
+    "concision-s4"
 ]
 
 transformers = [
@@ -90,6 +95,7 @@ concision-math = { features = [], optional = true, path = "../math", version = "
 concision-neural = { features = [], optional = true, path = "../ml/neural", version = "0.1.12" }
 concision-nlp = { features = [], optional = true, path = "../ml/nlp", version = "0.1.12" }
 concision-optim = { features = [], optional = true, path = "../ml/optim", version = "0.1.12" }
+concision-s4 = { features = [], optional = true, path = "../ml/s4", version = "0.1.12" }
 concision-transformers = { features = [], optional = true, path = "../ml/transformers", version = "0.1.12" }
 
 [dev-dependencies]

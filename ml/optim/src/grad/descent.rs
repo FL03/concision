@@ -2,29 +2,33 @@
     Appellation: grad <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::prelude::{Forward, Gradient, Layer};
+use crate::neural::prelude::{Forward, Gradient, Layer, Sigmoid};
 use ndarray::prelude::{Array2, Ix2, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
 
 #[derive(Clone)]
-pub struct GradientDescent<T = f64>
+pub struct GradientDescent<T = f64, O = Sigmoid>
 where
+    O: Gradient<T, Ix2>,
     T: Float,
 {
     gamma: T,
     model: Layer<T>,
+    objective: O,
     store: Vec<Array2<T>>,
 }
 
-impl<T> GradientDescent<T>
+impl<T, O> GradientDescent<T, O>
 where
+    O: Gradient<T, Ix2>,
     T: Float,
 {
-    pub fn new(gamma: T, model: Layer<T>) -> Self {
+    pub fn new(gamma: T, model: Layer<T>, objective: O) -> Self {
         Self {
             gamma,
             model,
+            objective,
             store: Vec::new(),
         }
     }
@@ -64,15 +68,15 @@ where
     }
 }
 
-impl<T> GradientDescent<T>
+impl<T, O> GradientDescent<T, O>
 where
+    O: Gradient<T, Ix2>,
     T: NdFloat + Signed,
 {
     pub fn gradient(
         &mut self,
         data: &Array2<T>,
         targets: &Array2<T>,
-        grad: impl Gradient<T, Ix2>,
     ) -> anyhow::Result<T> {
         let lr = self.gamma();
         let ns = T::from(data.shape()[0]).unwrap();
@@ -81,7 +85,7 @@ where
         let scale = T::from(2).unwrap() * ns;
 
         let errors = &pred - targets;
-        let dz = errors * grad.gradient(&pred);
+        let dz = errors * self.objective.gradient(&pred);
         let dw = data.t().dot(&dz) / scale;
 
         self.model_mut()
@@ -120,16 +124,16 @@ mod tests {
         let features = LayerShape::new(inputs, outputs);
         let model = Layer::from(features).init(true);
 
-        let mut grad = GradientDescent::new(gamma, model);
+        let mut grad = GradientDescent::new(gamma, model, Sigmoid);
 
         let l1 = {
-            let tmp = grad.gradient(&x, &y, Sigmoid);
+            let tmp = grad.gradient(&x, &y,);
             assert!(tmp.is_ok());
             tmp.unwrap()
         };
 
         let l2 = {
-            let tmp = grad.gradient(&x, &y, Sigmoid);
+            let tmp = grad.gradient(&x, &y,);
             assert!(tmp.is_ok());
             tmp.unwrap()
         };

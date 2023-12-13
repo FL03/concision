@@ -6,7 +6,7 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-macros"
+name = "concision-s4"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
@@ -14,17 +14,34 @@ version.workspace = true
 [features]
 default = []
 
+
 [lib]
-bench = false
+bench = true
 crate-type = ["cdylib", "rlib"]
 doctest = false
-test = false
+test = true
+
+[build-dependencies]
 
 [dependencies]
+concision-core.workspace = true
+concision-data = { path = "../../data" }
+concision-neural = { path = "../neural" }
+
+anyhow.workspace = true
+lazy_static.workspace = true
 ndarray.workspace = true
-proc-macro2 = "1"
-quote = "1"
-syn = { features = ["full"], version = "2" }
+ndarray-linalg.workspace = true
+ndarray-rand.workspace = true
+ndarray-stats.workspace = true
+num.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+smart-default.workspace = true
+strum.workspace = true
+
+[dev-dependencies]
+approx = "0.5"
 
 [package.metadata.docs.rs]
 all-features = true

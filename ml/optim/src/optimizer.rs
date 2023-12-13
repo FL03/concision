@@ -16,14 +16,9 @@ where
 
     fn name(&self) -> &str;
 
-    fn step(&mut self, data: &Array2<T>, targets: &Array2<T>) -> T;
+    fn load(&mut self, data: &Array2<T>, targets: &Array2<T>);
 
-    fn step_with(
-        &mut self,
-        data: &Array2<T>,
-        targets: &Array2<T>,
-        params: &mut Box<dyn Params<T>>,
-    ) -> T;
+    fn step(&mut self, params: impl Params) -> T;
 }
 
 pub trait OptimizerExt<T = f64>: Optimizer<T>

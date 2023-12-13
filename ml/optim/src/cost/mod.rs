@@ -12,11 +12,10 @@ use ndarray::prelude::{Array, Array1};
 use ndarray::Dimension;
 use num::Float;
 
-pub trait Cost<T = f64>
-where
-    T: Float,
-{
-    fn cost(&self, other: &Self) -> T;
+pub trait Cost {
+    type Output;
+
+    fn cost(&self, other: &Self) -> Self::Output;
 }
 
 pub trait CostArr<T = f64>
