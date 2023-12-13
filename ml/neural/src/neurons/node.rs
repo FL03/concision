@@ -5,9 +5,12 @@
 use crate::core::prelude::GenerateRandom;
 
 use crate::prelude::{Biased, Forward, Weighted};
-use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, Ix1, NdFloat};
+use ndarray::RemoveAxis;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::{Float, FromPrimitive};
+use std::ops;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Node<T = f64>
@@ -15,7 +18,7 @@ where
     T: Float,
 {
     bias: Array0<T>,
-    pub features: usize,
+    features: usize,
     weights: Array1<T>,
 }
 
@@ -31,8 +34,8 @@ where
         }
     }
 
-    pub fn features(&self) -> usize {
-        self.features
+    pub fn features(&self) -> &usize {
+        &self.features
     }
 
     pub fn features_mut(&mut self) -> &mut usize {
@@ -44,7 +47,7 @@ where
     }
 
     pub fn with_bias(mut self, bias: Array0<T>) -> Self {
-        self.bias = bias.into();
+        self.bias = bias;
         self
     }
 
@@ -87,15 +90,14 @@ where
 impl<T> Node<T>
 where
     T: FromPrimitive + NdFloat,
+    Self: Weighted<T, Ix1>,
 {
     pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
     where
         G: Fn(&Array1<T>) -> Array1<T>,
     {
-        let mut grad = gradient(self.weights());
-        grad /= grad.mapv(|ws| ws.powi(2)).sum().sqrt();
+        let grad = gradient(self.weights());
         self.weights_mut().scaled_add(-gamma, &grad);
-        self.weights /= self.weights().mapv(|ws| ws.powi(2)).sum().sqrt();
     }
 
     pub fn activate<A>(&self, data: &Array2<T>, activator: A) -> Array1<T>
@@ -104,22 +106,55 @@ where
     {
         activator(&self.linear(data))
     }
-
+}
+impl<T> Node<T>
+where
+    T: FromPrimitive + NdFloat,
+    Self: Biased<T, Ix1> + Weighted<T, Ix1>,
+{
     pub fn linear(&self, data: &Array2<T>) -> Array1<T> {
         data.dot(&self.weights().t()) + self.bias()
     }
 }
 
-impl<T> Forward<Array2<T>> for Node<T>
+impl<T, D> Forward<Array<T, D>> for Node<T>
 where
+    Self: Biased<T, Ix1> + Weighted<T, Ix1>,
+    D: Dimension + RemoveAxis,
     T: FromPrimitive + NdFloat,
+    Array<T, D>: Dot<Array1<T>, Output = Array<T, D::Smaller>>,
+    Array<T, D::Smaller>: ops::Add<Array0<T>, Output = Array<T, D::Smaller>>,
 {
-    type Output = Array1<T>;
+    type Output = Array<T, D::Smaller>;
 
-    fn forward(&self, data: &Array2<T>) -> Self::Output {
-        data.dot(&self.weights().t()) + self.bias()
+    fn forward(&self, data: &Array<T, D>) -> Self::Output {
+        data.dot(&self.weights().t().to_owned()) + self.bias().clone()
     }
 }
+
+// impl<T> Forward<Array1<T>> for Node<T>
+// where
+//     Self: Biased<T, Ix1> + Weighted<T, Ix1>,
+//     T: FromPrimitive + NdFloat,
+// {
+//     type Output = T;
+
+//     fn forward(&self, data: &Array1<T>) -> Self::Output {
+//         data.dot(&self.weights().t()) + self.bias().first().unwrap().clone()
+//     }
+// }
+
+// impl<T> Forward<Array2<T>> for Node<T>
+// where
+//     Self: Biased<T, Ix1> + Weighted<T, Ix1>,
+//     T: FromPrimitive + NdFloat,
+// {
+//     type Output = Array1<T>;
+
+//     fn forward(&self, data: &Array2<T>) -> Self::Output {
+//         data.dot(&self.weights().t()) + self.bias().clone()
+//     }
+// }
 
 impl<T> Biased<T, Ix1> for Node<T>
 where
@@ -152,5 +187,57 @@ where
 
     fn weights_mut(&mut self) -> &mut Array1<T> {
         &mut self.weights
+    }
+}
+
+impl<T> FromIterator<T> for Node<T>
+where
+    T: Float,
+{
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = T>,
+    {
+        let weights = Array1::<T>::from_iter(iter);
+        Self {
+            bias: Array0::zeros(()),
+            features: weights.len(),
+            weights,
+        }
+    }
+}
+
+impl<T> From<(Array1<T>, Array0<T>)> for Node<T>
+where
+    T: Float,
+{
+    fn from((weights, bias): (Array1<T>, Array0<T>)) -> Self {
+        Self {
+            bias,
+            features: weights.len(),
+            weights,
+        }
+    }
+}
+
+impl<T> From<(Array1<T>, T)> for Node<T>
+where
+    T: NdFloat,
+{
+    fn from((weights, bias): (Array1<T>, T)) -> Self {
+        Self {
+            bias: Array0::ones(()) * bias,
+            features: weights.len(),
+            weights,
+        }
+    }
+}
+
+impl<T> From<Node<T>> for (Array1<T>, Array0<T>)
+where
+    T: Float,
+{
+    fn from(node: Node<T>) -> Self {
+        (node.weights, node.bias)
     }
 }

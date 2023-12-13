@@ -10,7 +10,7 @@
 //! - `batch`: The batch size
 //! - `heads`: The number of attention heads
 //! - `model`: The dimension of the model (embedding size)
-use crate::{HEADS, MODEL_SIZE, QUERY_SIZE};
+use crate::{HEADS, MODEL, QUERY_SIZE};
 use ndarray::prelude::{Ix2, Ix3, Ix4};
 use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
@@ -60,7 +60,7 @@ impl BaseShape {
     }
 
     pub fn std(batch: usize, seq: usize) -> Self {
-        Self::new(batch, seq, MODEL_SIZE)
+        Self::new(batch, seq, MODEL)
     }
 
     pub fn batch(&self) -> usize {

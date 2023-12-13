@@ -20,12 +20,12 @@ pub struct Encoder {
 impl Encoder {
     pub fn new(params: EncoderParams) -> Self {
         let attention = MultiHeadAttention::new(params.heads, params.model);
-        let network = FFN::new(params.model, None);
+        let network = FFN::new(params.model, crate::NETWORK);
         Self {
             attention,
             network,
-            norm_attention: LayerNorm::new(params.model),
-            norm_network: LayerNorm::new(params.model),
+            norm_attention: LayerNorm::new((params.model, params.model)),
+            norm_network: LayerNorm::new((params.model, params.model)),
             params,
         }
     }

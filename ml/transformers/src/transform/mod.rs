@@ -8,8 +8,6 @@ pub use self::{params::*, transformer::*, utils::*};
 pub(crate) mod params;
 pub(crate) mod transformer;
 
-pub trait Transform {}
-
 pub(crate) mod utils {}
 
 #[cfg(test)]

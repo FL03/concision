@@ -2,7 +2,7 @@
     Appellation: linear <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Activate, ActivationFn};
+use super::Gradient;
 use ndarray::prelude::{Array, Dimension};
 use num::One;
 use serde::{Deserialize, Serialize};
@@ -10,9 +10,9 @@ use serde::{Deserialize, Serialize};
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
-pub struct LinearActivation;
+pub struct Linear;
 
-impl LinearActivation {
+impl Linear {
     pub fn new() -> Self {
         Self::default()
     }
@@ -33,11 +33,11 @@ impl LinearActivation {
     }
 
     pub fn linear<T: Clone>(args: &T) -> T {
-        args.clone()
+        Linear::method()(args)
     }
 
-    pub fn method<T>() -> ActivationFn<T> {
-        |x| x
+    pub fn method<T: Clone>() -> fn(&T) -> T {
+        |x| x.clone()
     }
 
     pub fn rho<T>(args: T) -> T {
@@ -45,12 +45,41 @@ impl LinearActivation {
     }
 }
 
-impl<T, D> Activate<T, D> for LinearActivation
+impl<T, D> Gradient<T, D> for Linear
 where
     D: Dimension,
+    T: Clone + One,
+{
+    fn gradient(&self, args: &Array<T, D>) -> Array<T, D> {
+        args.mapv(|x| Self::derivative(x))
+    }
+}
+
+impl<T> Fn<(&T,)> for Linear
+where
     T: Clone,
 {
-    fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-        args.clone()
+    extern "rust-call" fn call(&self, args: (&T,)) -> T {
+        args.0.clone()
+    }
+}
+
+impl<T> FnMut<(&T,)> for Linear
+where
+    T: Clone,
+{
+    extern "rust-call" fn call_mut(&mut self, args: (&T,)) -> T {
+        args.0.clone()
+    }
+}
+
+impl<T> FnOnce<(&T,)> for Linear
+where
+    T: Clone,
+{
+    type Output = T;
+
+    extern "rust-call" fn call_once(self, args: (&T,)) -> Self::Output {
+        args.0.clone()
     }
 }

@@ -5,19 +5,32 @@
 //! # activate
 //!
 //! This module contains the activation functions for the neurons.
-pub use self::{activator::*, binary::*, linear::*, nonlinear::*, utils::*};
+pub use self::{activator::*, binary::*, linear::*, nl::*, utils::*};
 
 pub(crate) mod activator;
 pub(crate) mod binary;
 pub(crate) mod linear;
-pub(crate) mod nonlinear;
+pub(crate) mod nl;
 
-pub type ActivationFn<T = f64> = fn(T) -> T;
+// use crate::core::prelude::ShapeResult;
+use ndarray::prelude::{Array, Dimension, Ix2, IxDyn};
 
-pub type ActivateDyn<T = f64, D = Ix2> = Box<dyn Activate<T, D>>;
+pub type ActivationFn<T = f64, D = Ix2> = Box<dyn Fn(&Array<T, D>) -> Array<T, D>>;
 
-use ndarray::prelude::{Array, Dimension, Ix2};
-use num::Float;
+pub type ActivateDyn<T = f64, D = IxDyn> = Box<dyn Activate<T, D>>;
+
+pub trait Rho<T = f64> {
+    fn rho(&self, args: &T) -> T;
+}
+
+impl<T, F> Rho<T> for F
+where
+    F: Fn(&T) -> T,
+{
+    fn rho(&self, args: &T) -> T {
+        self.call((args,))
+    }
+}
 
 pub trait Activate<T = f64, D = Ix2>
 where
@@ -26,11 +39,31 @@ where
     fn activate(&self, args: &Array<T, D>) -> Array<T, D>;
 }
 
-// impl<T, D, S> Activate<T, D> for S where D: Dimension, S: Activation<T>, {
-//     fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
-//         Activation::activate::<D>(self, args)
-//     }
-// }
+pub trait ActivateExt<T = f64, D = Ix2>: Activate<T, D> + Clone + 'static
+where
+    D: Dimension,
+{
+    fn boxed(&self) -> ActivateDyn<T, D> {
+        Box::new(self.clone())
+    }
+}
+
+impl<T, D, F> ActivateExt<T, D> for F
+where
+    D: Dimension,
+    F: Activate<T, D> + Clone + 'static,
+{
+}
+
+impl<T, D, F> Activate<T, D> for F
+where
+    D: Dimension,
+    F: Fn(&Array<T, D>) -> Array<T, D>,
+{
+    fn activate(&self, args: &Array<T, D>) -> Array<T, D> {
+        self.call((args,))
+    }
+}
 
 impl<T, D> Activate<T, D> for Box<dyn Activate<T, D>>
 where
@@ -41,18 +74,33 @@ where
     }
 }
 
-pub trait ActivateExt<T = f64, D = Ix2>: Activate<T, D>
+pub trait Gradient<T = f64, D = Ix2>
 where
     D: Dimension,
-    T: Float,
 {
     fn gradient(&self, args: &Array<T, D>) -> Array<T, D>;
 }
 
+// impl<T, D> Objective<T, D> for fn(&Array<T, D>) -> Array<T, D>
+// where
+//     D: Dimension,
+// {
+//     fn gradient(&self, args: &Array<T, D>) -> Array<T, D> {
+//         self.call((args,))
+//     }
+// }
+
+impl<T, D> Gradient<T, D> for Box<dyn Gradient<T, D>>
+where
+    D: Dimension,
+{
+    fn gradient(&self, args: &Array<T, D>) -> Array<T, D> {
+        self.as_ref().gradient(args)
+    }
+}
+
 pub(crate) mod utils {
-    use ndarray::prelude::{Array, Axis, Dimension, NdFloat};
-    use ndarray::RemoveAxis;
-    use num::{Float, One, Zero};
+    use num::{One, Zero};
 
     pub fn linear_activation<T>(args: &T) -> T
     where
@@ -71,58 +119,28 @@ pub(crate) mod utils {
             T::zero()
         }
     }
-
-    pub fn relu<T>(args: &T) -> T
-    where
-        T: Clone + PartialOrd + Zero,
-    {
-        if args > &T::zero() {
-            args.clone()
-        } else {
-            T::zero()
-        }
-    }
-
-    pub fn sigmoid<T>(args: &T) -> T
-    where
-        T: Float,
-    {
-        T::one() / (T::one() + (-args.clone()).exp())
-    }
-
-    pub fn softmax<T, D>(args: &Array<T, D>) -> Array<T, D>
-    where
-        D: Dimension,
-        T: Float,
-    {
-        let denom = args.mapv(|x| x.exp()).sum();
-        args.mapv(|x| x.exp() / denom)
-    }
-
-    pub fn softmax_axis<T, D>(args: &Array<T, D>, axis: Option<usize>) -> Array<T, D>
-    where
-        D: Dimension + RemoveAxis,
-        T: NdFloat,
-    {
-        let exp = args.mapv(|x| x.exp());
-        if let Some(axis) = axis {
-            let denom = exp.sum_axis(Axis(axis));
-            exp / denom
-        } else {
-            let denom = exp.sum();
-            exp / denom
-        }
-    }
-
-    pub fn tanh<T>(args: &T) -> T
-    where
-        T: Float,
-    {
-        args.tanh()
-    }
 }
 
 #[cfg(test)]
 mod tests {
-    // use super::*;
+    use super::*;
+    use ndarray::array;
+
+    #[test]
+    fn test_heavyside() {
+        let exp = array![0.0, 0.0, 1.0];
+        let args = array![-1.0, 0.0, 1.0];
+
+        assert_eq!(Heavyside::new().activate(&args), exp);
+        assert_eq!(Heavyside(&args), exp);
+    }
+
+    #[test]
+    fn test_linear() {
+        let exp = array![0.0, 1.0, 2.0];
+        let args = array![0.0, 1.0, 2.0];
+
+        assert_eq!(Linear::new().activate(&args), exp);
+        assert_eq!(Linear(&args), exp);
+    }
 }

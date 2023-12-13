@@ -5,13 +5,25 @@
 //! # Architecture
 //!
 //! This module describes the architecture of various components of the neural network.
+//!
+//! ## Contents
+//!
+//! ## Verification
+//!
+//! - Each layer must have the same number of inputs as the previous layer has outputs.
+//! - Input Layers should be unbiased
 pub use self::{architecture::*, deep::*, shallow::*, utils::*};
 
 pub(crate) mod architecture;
 pub(crate) mod deep;
 pub(crate) mod shallow;
 
-pub trait Arch {}
+pub trait NetworkOps {}
+
+pub trait Arch {
+    /// Validates the dimensions of the network. Each
+    fn validate_layers(&self) -> bool;
+}
 
 pub(crate) mod utils {}
 
@@ -19,8 +31,8 @@ pub(crate) mod utils {}
 mod tests {
     use super::*;
     use crate::core::prelude::linarr;
-    use crate::models::stack::Stack;
-    use crate::prelude::{Forward, Layer, LayerShape, Sigmoid};
+    use crate::func::activate::{ReLU, Sigmoid, Softmax};
+    use crate::prelude::{Forward, Layer, LayerShape, Stack};
     use ndarray::prelude::Ix2;
 
     #[test]
@@ -62,10 +74,13 @@ mod tests {
         let _y = linarr::<f64, Ix2>((samples, outputs)).unwrap();
 
         // layers
-        let input = Layer::<f64>::from(LayerShape::new(inputs, outputs)).init(false);
-        let output = Layer::<f64>::from(LayerShape::new(outputs, outputs)).init(false);
+        let in_features = LayerShape::new(inputs, outputs);
+        let out_features = LayerShape::new(outputs, outputs);
+        let input = Layer::<f64>::from(in_features).init(false);
+        let hidden = Layer::<f64, ReLU>::from(out_features).init(false);
+        let output = Layer::<f64, Softmax>::from(out_features).init(false);
 
-        let network = ShallowNetwork::new(input, output);
+        let network = ShallowNetwork::new(input, hidden, output);
         assert!(network.validate_dims());
 
         let pred = network.forward(&x);

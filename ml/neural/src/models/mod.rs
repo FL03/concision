@@ -4,20 +4,15 @@
 */
 //! # Model
 //!
-pub use self::{config::*, model::*, stack::*, utils::*};
+pub use self::{config::*, model::*, params::*, utils::*};
 
 pub(crate) mod config;
 pub(crate) mod model;
-pub(crate) mod stack;
+pub(crate) mod params;
 
-use ndarray::prelude::Array2;
-
-pub trait Module<T = f64> {
-    fn add_module(&mut self, module: impl Module<T>);
-
-    fn layers(&self) -> &[impl Module<T>];
-
-    fn forward(&self, args: &Array2<T>) -> Array2<T>;
-}
+pub mod exp;
 
 pub(crate) mod utils {}
+
+#[cfg(test)]
+mod tests {}

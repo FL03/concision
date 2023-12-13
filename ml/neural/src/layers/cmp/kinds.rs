@@ -29,8 +29,32 @@ use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
 pub enum LayerKind {
     #[default]
     Input = 0,
-    Hidden(usize),
+    Hidden,
     Output,
+}
+
+impl LayerKind {
+    pub fn input() -> Self {
+        Self::Input
+    }
+
+    pub fn hidden() -> Self {
+        Self::Hidden
+    }
+
+    pub fn output() -> Self {
+        Self::Output
+    }
+
+    pub fn create_kind(idx: usize, layers: usize) -> Self {
+        if idx == 0 {
+            Self::Input
+        } else if idx == layers - 1 {
+            Self::Output
+        } else {
+            Self::Hidden
+        }
+    }
 }
 
 #[derive(
@@ -51,7 +75,7 @@ impl LayerPosition {
     }
 
     pub fn hidden(idx: usize) -> Self {
-        Self::new(idx, LayerKind::Hidden(idx))
+        Self::new(idx, LayerKind::Hidden)
     }
 
     pub fn output(idx: usize) -> Self {

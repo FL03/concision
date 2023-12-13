@@ -10,9 +10,9 @@ pub(crate) mod constants {
     /// The default number of heads in the multi-head attention layer
     pub const HEADS: usize = 8;
     /// The default dimension of the model (embedding size)
-    pub const MODEL_SIZE: usize = 512;
-    /// The default dimension of the feed-forward network
-    pub const NETWORK_SIZE: usize = 2048;
+    pub const MODEL: usize = 512;
+    /// The default number of parameters in the feed-forward network
+    pub const NETWORK: usize = 2048;
     /// The default number of samples to draw from the attention distribution
     pub const SAMPLES: usize = 10000;
 }
@@ -23,7 +23,7 @@ pub(crate) mod statics {
 
     lazy_static! {
         /// The default dimensions of the query, key, and value tensors w/r/2 a single head
-        pub static ref QUERY_SIZE: usize = MODEL_SIZE / HEADS;
+        pub static ref QUERY_SIZE: usize = MODEL / HEADS;
     }
 }
 

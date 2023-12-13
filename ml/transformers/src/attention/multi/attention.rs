@@ -15,8 +15,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct MultiHeadAttention<T: Float = f64> {
+    features: MultiHeadParams,
     linear: Layer<T>,
-    params: MultiHeadParams,
     weights: Weight<T>,
 }
 
@@ -28,8 +28,8 @@ where
         &self.linear
     }
 
-    pub fn params(&self) -> MultiHeadParams {
-        self.params
+    pub fn features(&self) -> MultiHeadParams {
+        self.features
     }
 
     pub fn weights(&self) -> &Weight<T> {
@@ -42,11 +42,11 @@ where
     T: Float + SampleUniform,
 {
     pub fn new(heads: usize, model: usize) -> Self {
-        let params = MultiHeadParams::new(heads, model);
+        let features = MultiHeadParams::new(heads, model);
         let weights = Weight::uniform((model, model));
         Self {
-            linear: Layer::input((model, model).into()),
-            params,
+            features,
+            linear: Layer::from_features(model, model),
             weights,
         }
     }
@@ -58,7 +58,7 @@ where
 {
     pub fn attention(&self, data: &Array2<T>, mask: &Mask<T>) -> Result<Array2<T>, ShapeError> {
         let weighted = data * self.weights();
-        let (q, k, v) = weighted.split(self.params().heads())?;
+        let (q, k, v) = weighted.split(self.features().heads())?;
         let score = multihead(&q, &k, &v, mask)?;
         let res = self.linear().forward(&score);
         Ok(res)
@@ -83,10 +83,13 @@ where
 //     }
 // }
 
-// impl<T: Float + ScalarOperand> Forward<Array2<T>> for MultiHeadAttention<T> {
-//     type Output = Result<Array2<T>, ShapeError>;
+impl<T> Forward<Array2<T>> for MultiHeadAttention<T>
+where
+    T: NdFloat,
+{
+    type Output = Result<Array2<T>, ShapeError>;
 
-//     fn forward(&self, data: &Array2<T>) -> Self::Output {
-//         self.attention(data)
-//     }
-// }
+    fn forward(&self, data: &Array2<T>) -> Self::Output {
+        self.attention(&data, &Mask::Unmasked)
+    }
+}

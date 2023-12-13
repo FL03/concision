@@ -3,35 +3,59 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::FFNParams;
-use crate::neural::func::activate::{Activate, ReLU};
-use crate::neural::prelude::{Forward, Layer};
-use ndarray::prelude::Array2;
+use crate::neural::prelude::{Forward, Layer, ReLU};
+use crate::prelude::{MODEL, NETWORK};
+use ndarray::prelude::{Array2, NdFloat};
+use num::Float;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct FFN {
-    input: Layer,
-    output: Layer,
+pub struct FFN<T = f64>
+where
+    T: Float,
+{
+    input: Layer<T>,
+    output: Layer<T>,
     pub params: FFNParams,
 }
 
-impl FFN {
-    pub fn new(model: usize, network: Option<usize>) -> Self {
-        let network = network.unwrap_or(crate::NETWORK_SIZE);
-        let features = network / model;
+impl<T> FFN<T>
+where
+    T: Float,
+{
+    pub fn new(model: usize, network: usize) -> Self {
         Self {
-            input: Layer::input((model, features).into()),
-            output: Layer::output((features, model).into(), 1),
+            input: Layer::from_features(model, network),
+            output: Layer::from_features(network, model),
             params: FFNParams::new(model, network),
         }
     }
+
+    pub fn input(&self) -> &Layer<T> {
+        &self.input
+    }
+
+    pub fn output(&self) -> &Layer<T> {
+        &self.output
+    }
 }
 
-impl Forward<Array2<f64>> for FFN {
-    type Output = Array2<f64>;
+impl<T> Default for FFN<T>
+where
+    T: Float,
+{
+    fn default() -> Self {
+        Self::new(MODEL, NETWORK)
+    }
+}
 
-    fn forward(&self, data: &Array2<f64>) -> Self::Output {
-        self.output
-            .forward(&ReLU::default().activate(&self.input.forward(data)))
+impl<T> Forward<Array2<T>> for FFN<T>
+where
+    T: NdFloat,
+{
+    type Output = Array2<T>;
+
+    fn forward(&self, data: &Array2<T>) -> Self::Output {
+        self.output.forward(&ReLU(&self.input.forward(data)))
     }
 }

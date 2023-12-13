@@ -2,64 +2,10 @@
    Appellation: features <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::Ix2;
+use super::Features;
+use ndarray::prelude::{Dimension, Ix2};
 use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
-
-pub trait Features {
-    fn inputs(&self) -> usize;
-
-    fn outputs(&self) -> usize;
-
-    fn in_by_out(&self) -> (usize, usize) {
-        (self.inputs(), self.outputs())
-    }
-
-    fn out_by_in(&self) -> (usize, usize) {
-        (self.outputs(), self.inputs())
-    }
-
-    fn input_scale<T: num::Float>(&self) -> T {
-        (T::one() / T::from(self.inputs()).unwrap()).sqrt()
-    }
-}
-
-pub trait FeaturesExt: Features + IntoDimension<Dim = Ix2> {
-    fn new(inputs: usize, outputs: usize) -> Self;
-
-    fn single(inputs: usize) -> Self
-    where
-        Self: Sized,
-    {
-        Self::new(inputs, 1)
-    }
-}
-
-// impl<T> FeaturesExt for T
-// where
-//     T: Features + IntoDimension<Dim = Ix2>,
-// {
-//     fn new(inputs: usize, outputs: usize) -> Self {
-//         Self::from_dimension(ndarray::Ix2(outputs, inputs))
-//     }
-// }
-
-pub trait FromFeatures<Sh: Features> {
-    fn from_features(features: LayerShape) -> Self;
-}
-
-pub trait IntoFeatures {
-    fn into_features(self) -> LayerShape;
-}
-
-impl<S> IntoFeatures for S
-where
-    S: Into<LayerShape>,
-{
-    fn into_features(self) -> LayerShape {
-        self.into()
-    }
-}
 
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
@@ -74,28 +20,18 @@ impl LayerShape {
         Self { inputs, outputs }
     }
 
+    pub fn from_dimension(shape: impl IntoDimension<Dim = Ix2>) -> Self {
+        let dim = shape.into_dimension();
+        let (outputs, inputs) = dim.into_pattern();
+        Self::new(inputs, outputs)
+    }
+
     pub fn neuron(inputs: usize) -> Self {
         Self::new(inputs, 1)
     }
 
     pub fn uniform_scale<T: num::Float>(&self) -> T {
         (T::one() / T::from(self.inputs()).unwrap()).sqrt()
-    }
-
-    pub fn inputs(&self) -> usize {
-        self.inputs
-    }
-
-    pub fn outputs(&self) -> usize {
-        self.outputs
-    }
-
-    pub fn in_by_out(&self) -> (usize, usize) {
-        (self.inputs, self.outputs)
-    }
-
-    pub fn out_by_in(&self) -> (usize, usize) {
-        (self.outputs, self.inputs)
     }
 }
 
@@ -116,16 +52,16 @@ impl Features for LayerShape {
 }
 
 impl IntoDimension for LayerShape {
-    type Dim = ndarray::Ix2;
+    type Dim = Ix2;
 
     fn into_dimension(self) -> Self::Dim {
         ndarray::Ix2(self.outputs, self.inputs)
     }
 }
 
-impl From<LayerShape> for ndarray::Ix2 {
+impl From<LayerShape> for Ix2 {
     fn from(features: LayerShape) -> Self {
-        ndarray::Ix2(features.outputs, features.inputs)
+        features.into_dimension()
     }
 }
 
@@ -144,8 +80,8 @@ impl From<LayerShape> for [usize; 2] {
 impl From<[usize; 2]> for LayerShape {
     fn from(features: [usize; 2]) -> Self {
         Self {
-            inputs: features[0],
-            outputs: features[1],
+            inputs: features[1],
+            outputs: features[0],
         }
     }
 }

@@ -26,7 +26,7 @@ mod tests {
         let x = linarr::<f64, Ix2>((samples, model)).unwrap();
         let _y = linarr::<f64, Ix2>((samples, model)).unwrap();
 
-        let ffn = FFN::new(model, Some(network));
+        let ffn = FFN::new(model, network);
         // assert!(network.validate_dims());
 
         let pred = ffn.forward(&x);

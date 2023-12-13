@@ -5,7 +5,8 @@
 //! # Stochastic Gradient Descent (SGD)
 //!
 //!
-use crate::neural::prelude::{Activate, Forward, Layer, Parameterized, Weighted};
+
+use crate::neural::prelude::{Activate, Features, Forward, Layer, Parameterized, Weighted};
 // use crate::prelude::ObjectiveFn;
 use ndarray::prelude::{s, Array1, Array2, Axis, Ix2, NdFloat};
 use ndarray_stats::DeviationExt;
@@ -38,8 +39,6 @@ where
 
         let pred = model.forward(&xs);
         let error = &pred - &ys;
-        let grad_w = xs.dot(&error.t()).sum() * (-2.0 / batch_size as f64);
-        let grad_b = error.sum() * (-2.0 / batch_size as f64);
 
         for batch in (0..samples).step_by(batch_size) {
             let mut gradient = Array2::zeros((features.outputs(), features.inputs()));
@@ -214,25 +213,24 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::prelude::GenerateRandom;
+    use crate::core::prelude::linarr;
     use crate::neural::prelude::{LayerShape, Sigmoid};
-    use ndarray::prelude::{Array, Array1};
 
     #[test]
     fn test_sgd() {
-        let (samples, inputs, outputs) = (20, 5, 4);
-        let shape = (samples, inputs);
+        let (samples, inputs) = (20, 5);
+        let outputs = 4;
 
         let features = LayerShape::new(inputs, outputs);
 
-        let (batch_size, epochs, gamma) = (10, 1, 0.01);
+        let (_bs, _epochs, _gamma) = (10, 1, 0.01);
         // Generate some example data
-        let x = Array::linspace(1., 100., 100).into_shape(shape).unwrap();
-        let y = Array::linspace(1., 100., samples)
-            .into_shape(samples)
-            .unwrap();
+        let x = linarr::<f64, Ix2>((samples, inputs)).unwrap();
+        let _y = linarr::<f64, Ix2>((samples, outputs)).unwrap();
 
-        let mut model = Layer::<f64, Sigmoid>::hidden(features, 5).init(true);
+        let model = Layer::<f64, Sigmoid>::from(features).init(true);
+
+        let _pred = model.forward(&x);
 
         // let mut sgd = StochasticGradientDescent::new(batch_size, epochs, gamma, model);
         // sgd.sgd(&x, &y);

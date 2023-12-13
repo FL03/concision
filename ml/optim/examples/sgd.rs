@@ -13,7 +13,7 @@ fn main() -> anyhow::Result<()> {
     // Generate some example data
     let (x, y) = sample_data::<f64>(inputs, outputs, samples)?;
 
-    let mut model = Layer::<f64, Sigmoid>::input(features);
+    let mut model = Layer::<f64, Sigmoid>::from(features);
 
     let cost = sgd(&x, &y, &mut model, epochs, gamma, batch_size).unwrap();
     println!("Losses {:?}", cost);

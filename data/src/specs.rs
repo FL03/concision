@@ -3,13 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-pub trait Records {
+pub trait Records<T> {
     fn features(&self) -> usize;
 
     fn samples(&self) -> usize;
 }
 
-impl<S> Records for S
+impl<S, T> Records<T> for S
 where
     S: AsRef<(usize, usize)>,
 {

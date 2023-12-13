@@ -2,19 +2,17 @@
     Appellation: sublayers <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Layer;
-use crate::func::activate::{Activate, LinearActivation};
-use crate::ops::LayerNorm;
-use crate::prelude::Forward;
+use crate::layers::Layer;
+use crate::prelude::{Activate, Forward, LayerNorm, Linear};
 
-use ndarray::prelude::{Array2, Ix2, NdFloat};
+use ndarray::prelude::{Array2, NdFloat};
 use num::{Float, FromPrimitive};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Sublayer<T = f64, A = LinearActivation>
+pub struct Sublayer<T = f64, A = Linear>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     layer: Layer<T, A>,
@@ -23,7 +21,7 @@ where
 
 impl<T, A> Sublayer<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     pub fn new(layer: Layer<T, A>, norm: LayerNorm<T>) -> Self {
@@ -33,7 +31,7 @@ where
 
 impl<T, A> Forward<Array2<T>> for Sublayer<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: FromPrimitive + NdFloat,
 {
     type Output = Array2<T>;

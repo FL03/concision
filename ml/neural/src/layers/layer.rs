@@ -2,103 +2,81 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{LayerKind, LayerParams, LayerPosition, LayerShape};
-use crate::prelude::{Activate, Forward, LinearActivation, Parameterized, Params};
-use ndarray::prelude::{Array2, Ix2, NdFloat};
+use super::{LayerParams, LayerShape};
+use crate::func::activate::{Activate, Gradient, Linear};
+use crate::prelude::{Features, Forward, Node, Parameterized, Params, Perceptron};
+use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
-use num::Float;
+use ndarray_stats::DeviationExt;
+use num::{Float, Signed};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Layer<T = f64, A = LinearActivation>
+pub struct Layer<T = f64, A = Linear>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     activator: A,
-    pub features: LayerShape,
+    features: LayerShape,
     name: String,
     params: LayerParams<T>,
-    position: LayerPosition,
 }
 
 impl<T, A> Layer<T, A>
 where
-    A: Default + Activate<T, Ix2>,
+    A: Default + Activate<T>,
     T: Float,
 {
-    pub fn new(features: LayerShape, position: LayerPosition) -> Self {
+    pub fn from_features(inputs: usize, outputs: usize) -> Self {
+        let features = LayerShape::new(inputs, outputs);
         Self {
             activator: A::default(),
             features,
             name: String::new(),
             params: LayerParams::new(features),
-            position,
         }
-    }
-
-    pub fn input(features: LayerShape) -> Self {
-        Self::new(features, LayerPosition::input())
-    }
-
-    pub fn hidden(features: LayerShape, index: usize) -> Self {
-        Self::new(features, LayerPosition::hidden(index))
-    }
-
-    pub fn output(features: LayerShape, index: usize) -> Self {
-        Self::new(features, LayerPosition::output(index))
     }
 }
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
+    pub fn new(activator: A, features: LayerShape, name: impl ToString) -> Self {
+        Self {
+            activator,
+            features,
+            name: name.to_string(),
+            params: LayerParams::new(features),
+        }
+    }
+
     pub fn activator(&self) -> &A {
         &self.activator
-    }
-
-    pub fn index(&self) -> usize {
-        self.position().index()
-    }
-
-    pub fn kind(&self) -> &LayerKind {
-        self.position().kind()
     }
 
     pub fn name(&self) -> &str {
         &self.name
     }
 
-    pub fn position(&self) -> &LayerPosition {
-        &self.position
-    }
-
     pub fn set_name(&mut self, name: impl ToString) {
         self.name = name.to_string();
     }
 
-    pub fn update_position(&mut self, idx: usize, output: bool) {
-        self.position = if idx == 0 {
-            LayerPosition::input()
-        } else if output {
-            LayerPosition::output(idx)
-        } else {
-            LayerPosition::hidden(idx)
-        };
+    pub fn set_node(&mut self, idx: usize, neuron: &Perceptron<T, A>)
+    where
+        A: Activate<T, Ix1>,
+    {
+        self.params.set_node(idx, neuron.node().clone());
     }
 
-    pub fn validate_layer(&self, other: &Self) -> bool {
-        let pos = self.position().index().abs_diff(other.position().index());
-        if pos == 1 {
-            if self.position().index() > other.position().index() {
-                return self.features().inputs() == other.features().outputs();
-            } else {
-                return self.features().outputs() == other.features().inputs();
-            }
+    pub fn validate_layer(&self, other: &Self, next: bool) -> bool {
+        if next {
+            return self.features().inputs() == other.features().outputs();
         }
-        false
+        self.features().outputs() == other.features().inputs()
     }
 
     pub fn with_name(mut self, name: impl ToString) -> Self {
@@ -109,9 +87,32 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T> + Clone + 'static,
+    T: Float,
+{
+    pub fn as_dyn(&self) -> Layer<T, Box<dyn Activate<T>>> {
+        Layer {
+            activator: Box::new(self.activator.clone()),
+            features: self.features.clone(),
+            name: self.name.clone(),
+            params: self.params.clone(),
+        }
+    }
+}
+
+impl<T, A> Layer<T, A>
+where
+    A: Activate<T>,
     T: Float + 'static,
 {
+    pub fn apply_gradient<F>(&mut self, gamma: T, gradient: F)
+    where
+        F: Fn(&Array2<T>) -> Array2<T>,
+    {
+        let grad = gradient(&self.params.weights());
+        self.params.weights_mut().scaled_add(-gamma, &grad);
+    }
+
     pub fn update_with_gradient(&mut self, gamma: T, grad: &Array2<T>) {
         self.params.weights_mut().scaled_add(-gamma, grad);
     }
@@ -119,17 +120,41 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: NdFloat,
 {
     pub fn linear(&self, args: &Array2<T>) -> Array2<T> {
-        args.dot(&self.params.weights().t()) + self.params.bias()
+        self.params().forward(args)
     }
 }
 
 impl<T, A> Layer<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T> + Gradient<T>,
+    T: NdFloat + Signed,
+{
+    pub fn grad(&mut self, gamma: T, args: &Array2<T>, targets: &Array2<T>) -> T {
+        let ns = T::from(args.shape()[0]).unwrap();
+        let pred = self.forward(args);
+
+        let scale = T::from(2).unwrap() * ns;
+
+        let errors = &pred - targets;
+        let dz = errors * self.activator.gradient(&pred);
+        let dw = args.t().dot(&dz) / scale;
+
+        self.params_mut().weights_mut().scaled_add(-gamma, &dw.t());
+
+        let loss = targets
+            .mean_sq_err(&pred)
+            .expect("Failed to calculate loss");
+        T::from(loss).unwrap()
+    }
+}
+
+impl<T, A> Layer<T, A>
+where
+    A: Activate<T>,
     T: Float + SampleUniform,
 {
     pub fn init(mut self, biased: bool) -> Self {
@@ -138,9 +163,37 @@ where
     }
 }
 
+impl<T, A> Features for Layer<T, A>
+where
+    A: Activate<T>,
+    T: Float,
+{
+    fn inputs(&self) -> usize {
+        self.features.inputs()
+    }
+
+    fn outputs(&self) -> usize {
+        self.features.outputs()
+    }
+}
+
+// impl<T, D, A> Forward<Array2<T>> for Layer<T, A>
+// where
+//     A: Activate<T>,
+//     D: Dimension,
+//     T: NdFloat,
+//     Array<T, D>: Dot<Array2<T>, Output = Array<T>>,
+// {
+//     type Output = Array2<T>;
+
+//     fn forward(&self, args: &Array2<T>) -> Self::Output {
+//         self.activator.activate(&self.linear(args))
+//     }
+// }
+
 impl<T, A> Forward<Array2<T>> for Layer<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: NdFloat,
 {
     type Output = Array2<T>;
@@ -152,7 +205,7 @@ where
 
 impl<T, A> Parameterized<T> for Layer<T, A>
 where
-    A: Activate<T, Ix2>,
+    A: Activate<T>,
     T: Float,
 {
     type Features = LayerShape;
@@ -175,22 +228,67 @@ where
     }
 }
 
-impl<T, A> PartialOrd for Layer<T, A>
-where
-    A: Activate<T, Ix2> + PartialEq,
-    T: Float,
-{
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.position.partial_cmp(&other.position)
-    }
-}
+// impl<T, A> PartialOrd for Layer<T, A>
+// where
+//     A: Activate<T> + PartialEq,
+//     T: Float,
+// {
+//     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+//         self.position.partial_cmp(&other.position)
+//     }
+// }
+
+// impl<T, A> From<S> for Layer<T, A>
+// where
+//     A: Activate<T> + Default,
+//     S: IntoDimension<Ix2>
+//     T: Float,
+// {
+//     fn from(features: LayerShape) -> Self {
+//         Self::new(features, LayerPosition::input())
+//     }
+// }
 
 impl<T, A> From<LayerShape> for Layer<T, A>
 where
-    A: Activate<T, Ix2> + Default,
+    A: Activate<T> + Default,
     T: Float,
 {
     fn from(features: LayerShape) -> Self {
-        Self::new(features, LayerPosition::input())
+        Self {
+            activator: A::default(),
+            features,
+            name: String::new(),
+            params: LayerParams::new(features),
+        }
+    }
+}
+
+impl<T, A> IntoIterator for Layer<T, A>
+where
+    A: Activate<T> + Default,
+    T: Float,
+{
+    type Item = Node<T>;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.params.into_iter()
+    }
+}
+
+impl<T, A> FromIterator<Node<T>> for Layer<T, A>
+where
+    A: Activate<T> + Default,
+    T: Float,
+{
+    fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
+        let params = LayerParams::from_iter(nodes);
+        Self {
+            activator: A::default(),
+            features: *params.features(),
+            name: String::new(),
+            params,
+        }
     }
 }

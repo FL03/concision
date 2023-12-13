@@ -12,16 +12,26 @@ pub(crate) mod utils;
 pub mod epochs;
 pub mod errors;
 pub mod masks;
+pub mod params;
 pub mod states;
 pub mod step;
+pub mod vars;
+
+pub trait Transform<T> {
+    type Output;
+
+    fn transform(&self, args: &T) -> Self::Output;
+}
 
 pub mod prelude {
+    pub use super::Transform;
 
     pub use crate::epochs::*;
     pub use crate::errors::*;
     pub use crate::masks::*;
     pub use crate::states::*;
     pub use crate::step::*;
+    // pub use crate::vars::*;
 
     pub use crate::primitives::*;
     pub use crate::specs::*;

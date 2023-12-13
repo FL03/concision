@@ -3,11 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # neurons
-pub use self::{neuron::*, node::*, params::*, synapse::*, utils::*};
+pub use self::{node::*, perceptron::*, synapse::*, utils::*};
 
-pub(crate) mod neuron;
 pub(crate) mod node;
-pub(crate) mod params;
+pub(crate) mod perceptron;
 pub(crate) mod synapse;
 
 use crate::func::activate::Activate;
@@ -61,9 +60,7 @@ mod tests {
 
         let data = array![[10.0, 10.0, 6.0, 1.0, 8.0]];
         let weights = array![2.0, 1.0, 10.0, 1.0, 7.0];
-        let neuron = Neuron::new(5)
-            .with_rho(Softmax::default())
-            .with_weights(weights.clone());
+        let neuron = Perceptron::<f64, Softmax>::new(5).with_weights(weights.clone());
 
         let linear = data.dot(&weights) + bias;
         let exp = softmax(&linear);

@@ -23,7 +23,7 @@ use crate::prelude::BaseDim;
 
 use ndarray::prelude::{Array, Array2, Ix2, NdFloat};
 use num::Float;
-use std::ops::{self, Mul};
+use std::ops;
 
 /// (batch, sample, seq, model)
 pub type InputArray<T> = Array<T, BaseDim>;
@@ -89,18 +89,6 @@ where
 
     fn value(&self) -> &Array2<T> {
         &self[QKV::Value]
-    }
-}
-
-pub trait Weights<T: Float>: Mul<Array2<T>, Output = Self> {
-    fn key(&self) -> &Array2<T>;
-
-    fn query(&self) -> &Array2<T>;
-
-    fn value(&self) -> &Array2<T>;
-
-    fn qkv(&self) -> (&Array2<T>, &Array2<T>, &Array2<T>) {
-        (self.query(), self.key(), self.value())
     }
 }
 

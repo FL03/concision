@@ -2,6 +2,10 @@
    Appellation: params <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::neural::prelude::Features;
+use crate::prelude::{MODEL, NETWORK};
+use ndarray::prelude::Ix2;
+use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -15,20 +19,39 @@ impl FFNParams {
         Self { model, network }
     }
 
-    pub fn model_size(&self) -> usize {
+    pub fn model(&self) -> usize {
         self.model
     }
 
-    pub fn network_size(&self) -> usize {
+    pub fn network(&self) -> usize {
         self.network
+    }
+
+    pub fn features(&self) -> usize {
+        self.network / self.model
     }
 }
 
 impl Default for FFNParams {
     fn default() -> Self {
-        Self {
-            model: crate::MODEL_SIZE,
-            network: crate::NETWORK_SIZE,
-        }
+        Self::new(MODEL, NETWORK)
+    }
+}
+
+impl Features for FFNParams {
+    fn inputs(&self) -> usize {
+        self.model
+    }
+
+    fn outputs(&self) -> usize {
+        self.network
+    }
+}
+
+impl IntoDimension for FFNParams {
+    type Dim = Ix2;
+
+    fn into_dimension(self) -> Ix2 {
+        (self.model(), self.network()).into_dimension()
     }
 }
