@@ -20,4 +20,3 @@ where
 {
     fn autograd(&mut self, loss: &Array<T, D>) -> Array<T, D>;
 }
-

@@ -16,11 +16,14 @@ concision-core = { path = "core", version = "0.1.12" }
 computare = { features = ["full"], branch = "v0.1.0", git = "https://github.com/FL03/computare", version = "0.1.0" }
 
 anyhow = "1"
+
+faer = { features = ["ndarray"], version = "0.16" }
+faer-core = "0.16"
 itertools = { features = [], version = "0.12" }
 lazy_static = "1"
 linfa = { features = [], version = "0.7" }
 ndarray = { features = ["serde-1"], version = "0.15" }
-ndarray-linalg = { features = ["openblas-system"], version = "0.16" }
+ndarray-linalg = { features = [], version = "0.16" }
 ndarray-rand = { features = [], version = "0.14" }
 ndarray-stats = { features = [], version = "0.5.1" }
 num = { features = ["serde"], version = "0.4" }
@@ -37,14 +40,19 @@ default-members = [
 ]
 
 members = [
-    "bin/*",
     "concision",
     "core",
     "data",
     "derive",
     "macros",
     "math",
-    "ml/*",
+    # "ml/*",
+    "ml/ml",
+    "ml/neural",
+    "ml/nlp",
+    "ml/optim",
+    "ml/s4",
+    "ml/transformers",
 ]
 
 resolver = "2"

@@ -4,7 +4,7 @@
 */
 pub use self::math::*;
 
-use ndarray::prelude::{Array, Axis, Dimension, Ix2,};
+use ndarray::prelude::{Array, Axis, Dimension, Ix2};
 use ndarray::IntoDimension;
 // use ndarray::linalg::Dot;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -15,7 +15,6 @@ use num::Float;
 pub trait Discritize<T> {
     fn discritize(&self, step: T) -> Self;
 }
-
 
 pub trait Apply<T> {
     fn apply<F>(&self, f: F) -> Self
@@ -42,9 +41,6 @@ pub trait ApplyTo<T> {
 pub trait As<T>: AsRef<T> + AsMut<T> {}
 
 impl<S, T> As<T> for S where S: AsRef<T> + AsMut<T> {}
-
-
-
 
 pub trait GenerateRandom<T = f64, D = Ix2>
 where
@@ -103,7 +99,7 @@ pub(crate) mod math {
     pub trait FloatExt: FromPrimitive + NdFloat + Signed + SampleUniform {}
 
     impl<T> FloatExt for T where T: FromPrimitive + NdFloat + Signed + SampleUniform {}
-    
+
     pub trait Arithmetic<S, T>:
         ops::Add<S, Output = T>
         + ops::Div<S, Output = T>

@@ -2,22 +2,39 @@
    Appellation: tensor <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use ndarray::prelude::{Array, Dimension, Ix2};
+use ndarray::IntoDimension;
+use num::Float;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
-pub struct Tensor {
-    data: Vec<String>,
+pub struct Tensor<T = f64, D = Ix2>
+where
+    D: Dimension,
+    T: Float,
+{
+    data: Array<T, D>,
 }
 
-impl Tensor {
-    pub fn new() -> Self {
-        Self { data: Vec::new() }
+impl<T, D> Tensor<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    pub fn new(shape: impl IntoDimension<Dim = D>) -> Self {
+        Self {
+            data: Array::zeros(shape),
+        }
     }
 }
 
-impl std::fmt::Display for Tensor {
+impl<T, D> std::fmt::Display for Tensor<T, D>
+where
+    D: Dimension,
+    T: Float + std::fmt::Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", serde_json::to_string(self).unwrap())
+        write!(f, "{:?}", self.data)
     }
 }

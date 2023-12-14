@@ -85,14 +85,10 @@ where
     }
 }
 
-pub trait Module<T = f64, D = Ix2>: Forward<Array<T, D>, Output=Array<T, D>>
+pub trait Module<T = f64, D = Ix2>: Forward<Array<T, D>, Output = Array<T, D>>
 where
     D: Dimension,
     T: Float,
 {
     type Config;
-
-    
-
-
 }

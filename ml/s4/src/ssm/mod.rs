@@ -5,15 +5,14 @@
 //! # State Space Models (SSM)
 //!
 //!  
-pub use self::{config::*, model::*, utils::*};
+pub use self::{config::*, model::*, params::*, utils::*};
 
 pub(crate) mod config;
 pub(crate) mod model;
+pub(crate) mod params;
 
 pub trait StateSpace {
     fn features(&self) -> usize;
-
-
 }
 
 pub(crate) mod utils {}
@@ -24,6 +23,10 @@ mod tests {
 
     #[test]
     fn test_ssm() {
-        let model = SSM::create(9);
+        let step = 0.001;
+
+        let config = SSMConfig::new(true, 9);
+        let mut model = SSM::<f64>::create(config);
+        assert!(model.descretize(step).is_ok());
     }
 }

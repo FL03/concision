@@ -5,6 +5,4 @@
 use ndarray::prelude::Array2;
 use num::Float;
 
-pub struct RNN {
-
-}
+pub struct RNN {}

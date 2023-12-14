@@ -7,8 +7,6 @@ use ndarray::prelude::{Array, Axis, Dimension};
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
 use num::Float;
 
-
-
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where
     D: RemoveAxis,

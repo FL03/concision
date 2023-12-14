@@ -73,11 +73,7 @@ where
     O: Gradient<T, Ix2>,
     T: NdFloat + Signed,
 {
-    pub fn gradient(
-        &mut self,
-        data: &Array2<T>,
-        targets: &Array2<T>,
-    ) -> anyhow::Result<T> {
+    pub fn gradient(&mut self, data: &Array2<T>, targets: &Array2<T>) -> anyhow::Result<T> {
         let lr = self.gamma();
         let ns = T::from(data.shape()[0]).unwrap();
         let pred = self.model.forward(data);
@@ -127,13 +123,13 @@ mod tests {
         let mut grad = GradientDescent::new(gamma, model, Sigmoid);
 
         let l1 = {
-            let tmp = grad.gradient(&x, &y,);
+            let tmp = grad.gradient(&x, &y);
             assert!(tmp.is_ok());
             tmp.unwrap()
         };
 
         let l2 = {
-            let tmp = grad.gradient(&x, &y,);
+            let tmp = grad.gradient(&x, &y);
             assert!(tmp.is_ok());
             tmp.unwrap()
         };

@@ -25,7 +25,7 @@ test = true
 
 [dependencies]
 concision-core.workspace = true
-concision-data = { path = "../../data" }
+# concision-data = { path = "../../data" }
 concision-neural = { path = "../neural" }
 
 anyhow.workspace = true
