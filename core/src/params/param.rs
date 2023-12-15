@@ -2,7 +2,7 @@
     Appellation: param <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::ParamKind;
+use super::{Param, ParamKind};
 use crate::prelude::GenerateRandom;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
@@ -101,5 +101,19 @@ where
     pub fn init_uniform(mut self, dk: T) -> Self {
         self.params = Array::uniform_between(dk, self.clone().features);
         self
+    }
+}
+
+impl<T, D> Param for Parameter<T, D>
+where
+    T: Float,
+    D: Dimension,
+{
+    fn kind(&self) -> &ParamKind {
+        &self.kind
+    }
+
+    fn name(&self) -> &str {
+        &self.name
     }
 }

@@ -15,8 +15,6 @@ pub use concision_data as data;
 pub use concision_derive::*;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
-#[cfg(feature = "math")]
-pub use concision_math as math;
 // #[cfg(feature = "ml")]
 // pub use concision_ml as ml;
 #[cfg(feature = "neural")]
@@ -39,8 +37,6 @@ pub mod prelude {
     pub use concision_derive::*;
     #[cfg(feature = "macros")]
     pub use concision_macros::*;
-    #[cfg(feature = "math")]
-    pub use concision_math::prelude::*;
     // #[cfg(feature = "ml")]
     // pub use concision_ml::prelude::*;
     #[cfg(feature = "neural")]

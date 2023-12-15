@@ -43,14 +43,14 @@ where
         let ds = step / T::from(2).unwrap();
         let eye = Array2::<T>::eye(self.config.features());
         let bl = &eye - &self.a * ds;
+        let pos = &eye + &self.a * ds; // positive
         let mut bi = bl.view().into_faer().qr().inverse();
         let be = {
             let arr = &bi.view_mut().into_ndarray();
             arr.mapv(|i| T::from(i).unwrap())
         };
-        let ab = (&eye + &self.a * ds);
-        // let ab = &bl | (&eye + &self.a * ds);
-        // let bb = &self.b * ds | self.b;
+        let ab = &be.dot(&pos);
+        let bb = (&self.b * ds).dot(&self.b);
 
         Ok(())
     }

@@ -5,6 +5,11 @@
 use serde::{Deserialize, Serialize};
 use strum::{EnumIs, EnumIter, EnumString, EnumVariantNames};
 
+pub trait ParamType: Eq + std::hash::Hash {
+
+    fn ptype(&self) -> &str;
+}
+
 #[derive(
     Clone,
     Debug,

@@ -6,17 +6,18 @@
 //!
 //! ## Overview
 //!
-pub use self::{group::*, kinds::*, param::*, utils::*};
+pub use self::{group::*, kinds::*, param::*, store::*, utils::*};
 
 pub(crate) mod group;
 pub(crate) mod kinds;
 pub(crate) mod param;
+pub(crate) mod store;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
 
 pub trait Param {
-    fn kind(&self) -> ParamKind;
+    fn kind(&self) -> &ParamKind;
 
     fn name(&self) -> &str;
 }

@@ -45,7 +45,6 @@ members = [
     "data",
     "derive",
     "macros",
-    "math",
     # "ml/*",
     "ml/ml",
     "ml/neural",

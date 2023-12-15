@@ -25,4 +25,6 @@ where
     fn modules(&self) -> Vec<&impl Module<T>>;
 
     fn name(&self) -> &str;
+
+    fn parameters(&self) -> Vec<&Array2<T>>;
 }
