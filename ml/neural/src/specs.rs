@@ -61,6 +61,14 @@ where
     }
 }
 
+impl<T, D, O> Predict<T, D> for Box<dyn Predict<T, D, Output = O>> where D: Dimension, T: Float, {
+    type Output = O;
+
+    fn predict(&self, input: &Array<T, D>) -> BoxResult<O> {
+        self.as_ref().predict(input)
+    }
+}
+
 pub trait Train<T = f64>
 where
     T: Float,

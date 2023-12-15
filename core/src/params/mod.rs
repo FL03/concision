@@ -64,4 +64,21 @@ where
 pub(crate) mod utils {}
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+    use crate::linarr;
+    use ndarray::linalg::Dot;
+    use ndarray::prelude::{Ix1, Ix2};
+
+    #[test]
+    fn test_parameter() {
+        let a = linarr::<f64, Ix1>((3,)).unwrap();
+        let p = linarr::<f64, Ix2>((3, 3)).unwrap();
+        let mut param = Parameter::<f64, Ix2>::new((10, 1), ParamKind::Bias, "bias");
+        param.set_params(p.clone());
+
+        assert_eq!(param.kind(), &ParamKind::Bias);
+        assert_eq!(param.name(), "bias");
+        assert_eq!(param.dot(&a), p.dot(&a));
+    }
+}

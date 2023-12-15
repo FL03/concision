@@ -5,10 +5,12 @@
 use serde::{Deserialize, Serialize};
 use strum::{EnumIs, EnumIter, EnumString, EnumVariantNames};
 
-pub trait ParamType: Eq + std::hash::Hash {
+pub trait ParamType: ToString {
 
-    fn ptype(&self) -> &str;
+    fn kind(&self) -> String;
 }
+
+
 
 #[derive(
     Clone,

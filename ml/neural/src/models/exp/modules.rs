@@ -4,27 +4,23 @@
 */
 //! # Model
 //!
-use crate::prelude::Forward;
+use crate::prelude::Predict;
 use ndarray::prelude::Array2;
 use num::Float;
+use std::collections::HashMap;
 
-pub trait Module<T = f64>: Forward<Array2<T>, Output = Array2<T>>
+pub type ModuleParams<K, V> = HashMap<K, Array2<V>>;
+
+
+
+pub trait Module<T = f64>: Predict<T>
 where
     T: Float,
 {
-    type Config;
-
-    fn add_module(&mut self, module: impl Module<T>);
-
-    fn compile(&mut self);
-    /// Returns a collection of all proceeding [Module]s in the network
-    fn children(&self) -> &Vec<impl Module<T>>;
-
-    fn children_mut(&mut self) -> &mut Vec<impl Module<T>>;
-    /// Returns a collection of all [Module]s in the network
-    fn modules(&self) -> Vec<&impl Module<T>>;
-
     fn name(&self) -> &str;
 
-    fn parameters(&self) -> Vec<&Array2<T>>;
+    fn parameters(&self) -> &ModuleParams<&str, T>;
+
+    fn parameters_mut(&mut self) -> &mut ModuleParams<&str, T>;
 }
+

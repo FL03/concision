@@ -32,7 +32,7 @@ serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true
 strum.workspace = true
-tokenizers = { features = [], version = "0.14" }
+tokenizers = { features = [], version = "0.15" }
 
 [dev-dependencies]
 computare.workspace = true

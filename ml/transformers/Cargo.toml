@@ -24,7 +24,7 @@ test = true
 [build-dependencies]
 
 [dependencies]
-concision-core.workspace = true
+concision-core = { path = "../../core", version = "0.1.12" }
 # concision-data = { path = "../../data" }
 concision-neural = { path = "../neural" }
 

@@ -5,8 +5,10 @@
 use super::{ParamKind, Parameter};
 use ndarray::prelude::{Dimension, Ix2};
 use num::Float;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ParamStore<T = f64, D = Ix2> where T: Float, D: Dimension {
     store: HashMap<ParamKind, Parameter<T, D>>,
 }
@@ -23,6 +25,7 @@ impl<T, D> ParamStore<T, D> where D: Dimension, T: Float, {
     }
 
 }
+
 
 impl<T, D> Extend<Parameter<T, D>> for ParamStore<T, D> where D: Dimension, T: Float, {
     fn extend<I: IntoIterator<Item = Parameter<T, D>>>(&mut self, iter: I) {
