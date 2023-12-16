@@ -25,8 +25,8 @@ mod tests {
     fn test_ssm() {
         let step = 0.001;
 
-        let config = SSMConfig::new(true, 9);
+        let config = SSMConfig::new(true, 9, 2);
         let mut model = SSM::<f64>::create(config);
-        assert!(model.descretize(step).is_ok());
+        assert!(model.discretize(step).is_ok());
     }
 }

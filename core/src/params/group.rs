@@ -103,9 +103,9 @@ where
     }
 }
 
-impl<T, D> Biased<T, D> for ParamGroup<T, D>
+impl<T, D> Biased<T, D::Smaller> for ParamGroup<T, D>
 where
-    D: Dimension + RemoveAxis,
+    D: RemoveAxis,
     T: Float,
 {
     fn bias(&self) -> &Array<T, D::Smaller> {

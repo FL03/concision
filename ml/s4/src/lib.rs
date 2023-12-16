@@ -11,6 +11,7 @@ pub(crate) mod primitives;
 pub(crate) mod specs;
 pub(crate) mod utils;
 
+pub mod ops;
 pub mod ssm;
 
 pub(crate) use concision_core as core;
@@ -20,4 +21,7 @@ pub mod prelude {
     pub use crate::primitives::*;
     pub use crate::specs::*;
     pub use crate::utils::*;
+
+    pub use crate::ops::*;
+    pub use crate::ssm::*;
 }

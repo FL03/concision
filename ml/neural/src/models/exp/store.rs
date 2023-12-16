@@ -12,14 +12,14 @@ use num::Float;
 use std::collections::HashMap;
 // use std::ops;
 
-pub struct ModelMap<T = f64>
+pub struct ModelStore<T = f64>
 where
     T: Float,
 {
     store: HashMap<LayerPosition, LayerParams<T>>,
 }
 
-impl<T> ModelMap<T>
+impl<T> ModelStore<T>
 where
     T: Float,
 {
@@ -72,7 +72,7 @@ where
     }
 }
 
-impl<T> ModelMap<T>
+impl<T> ModelStore<T>
 where
     T: Float + SampleUniform,
 {
@@ -98,7 +98,7 @@ where
     }
 }
 
-impl<T> IntoIterator for ModelMap<T>
+impl<T> IntoIterator for ModelStore<T>
 where
     T: Float,
 {
@@ -120,7 +120,7 @@ mod tests {
 
         let shapes = [(inputs, outputs), (outputs, outputs), (outputs, 1)];
 
-        let params = ModelMap::<f64>::new().build_layers(shapes).init(true);
+        let params = ModelStore::<f64>::new().build_layers(shapes).init(true);
 
         // validate the dimensions of the model params
         // assert!(params.validate_shapes());

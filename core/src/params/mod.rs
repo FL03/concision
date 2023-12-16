@@ -6,9 +6,10 @@
 //!
 //! ## Overview
 //!
-pub use self::{group::*, kinds::*, param::*, store::*, utils::*};
+pub use self::{group::*, iter::*, kinds::*, param::*, store::*};
 
 pub(crate) mod group;
+pub(crate) mod iter;
 pub(crate) mod kinds;
 pub(crate) mod param;
 pub(crate) mod store;
@@ -28,11 +29,11 @@ where
     T: Float,
 {
     /// Returns an owned reference to the bias of the layer.
-    fn bias(&self) -> &Array<T, D::Smaller>;
+    fn bias(&self) -> &Array<T, D>;
     /// Returns a mutable reference to the bias of the layer.
-    fn bias_mut(&mut self) -> &mut Array<T, D::Smaller>;
+    fn bias_mut(&mut self) -> &mut Array<T, D>;
     /// Sets the bias of the layer.
-    fn set_bias(&mut self, bias: Array<T, D::Smaller>);
+    fn set_bias(&mut self, bias: Array<T, D>);
 }
 
 pub trait Weighted<T = f64, D = Ix2>
@@ -60,8 +61,6 @@ where
     /// Sets the parameters of the layer.
     fn set_params(&mut self, params: Array<T, D>);
 }
-
-pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {

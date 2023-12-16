@@ -4,9 +4,9 @@
 */
 use super::{Param, ParamKind};
 use crate::prelude::GenerateRandom;
+use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
-use ndarray::linalg::Dot;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};

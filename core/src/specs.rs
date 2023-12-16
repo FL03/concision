@@ -12,10 +12,6 @@ use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Uniform};
 use ndarray_rand::RandomExt;
 use num::Float;
 
-pub trait Discritize<T> {
-    fn discritize(&self, step: T) -> Self;
-}
-
 pub trait Apply<T> {
     fn apply<F>(&self, f: F) -> Self
     where

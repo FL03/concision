@@ -61,7 +61,11 @@ where
     }
 }
 
-impl<T, D, O> Predict<T, D> for Box<dyn Predict<T, D, Output = O>> where D: Dimension, T: Float, {
+impl<T, D, O> Predict<T, D> for Box<dyn Predict<T, D, Output = O>>
+where
+    D: Dimension,
+    T: Float,
+{
     type Output = O;
 
     fn predict(&self, input: &Array<T, D>) -> BoxResult<O> {

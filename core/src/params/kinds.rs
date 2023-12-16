@@ -6,11 +6,8 @@ use serde::{Deserialize, Serialize};
 use strum::{EnumIs, EnumIter, EnumString, EnumVariantNames};
 
 pub trait ParamType: ToString {
-
     fn kind(&self) -> String;
 }
-
-
 
 #[derive(
     Clone,

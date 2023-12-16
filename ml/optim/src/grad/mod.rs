@@ -9,6 +9,7 @@ pub(crate) mod descent;
 pub(crate) mod gradient;
 pub(crate) mod modes;
 
+pub mod adam;
 pub mod sgd;
 
 pub struct BatchParams {
