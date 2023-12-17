@@ -34,6 +34,12 @@ where
     Ok((ab, bb, c.clone()))
 }
 
+pub enum DiscretizeArgs {}
+
+pub struct Discretize<T = f64> {
+    pub step: T,
+}
+
 pub struct Discretized<T> {
     pub a: Array2<T>,
     pub b: Array2<T>,

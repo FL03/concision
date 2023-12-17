@@ -3,11 +3,16 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::SSMParams;
-use ndarray::prelude::Array2;
+use crate::core::prelude::GenerateRandom;
+use crate::prelude::scanner;
+use ndarray::prelude::{Array1, Array2, NdFloat};
+use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::ops;
+
+pub struct B(Box<dyn ops::Index<SSMParams, Output = Array2<f64>>>);
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SSMStore<T = f64>
@@ -85,6 +90,29 @@ where
 
     pub fn d_mut(&mut self) -> &mut Array2<T> {
         &mut self.d
+    }
+}
+
+impl<T> SSMStore<T>
+where
+    T: NdFloat,
+{
+    pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
+        scanner(&self.a, &self.b, &self.c, u, x0)
+    }
+}
+
+impl<T> SSMStore<T>
+where
+    T: Float + SampleUniform,
+{
+    pub fn uniform(features: usize) -> Self {
+        let dk = T::one() / T::from(features).unwrap().sqrt();
+        let a = Array2::<T>::uniform_between(dk, (features, features));
+        let b = Array2::<T>::uniform_between(dk, (features, 1));
+        let c = Array2::<T>::uniform_between(dk, (1, features));
+        let d = Array2::<T>::ones((1, 1));
+        Self::new(a, b, c, d)
     }
 }
 

@@ -33,17 +33,19 @@ faer-core.workspace = true
 faer.workspace = true
 lazy_static.workspace = true
 ndarray.workspace = true
+ndarray-conv = "0.2"
 # ndarray-linalg.workspace = true
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
 num.workspace = true
+rustfft = { features = [], version = "6" }
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
 [dev-dependencies]
-approx = "0.5"
+approx.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

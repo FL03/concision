@@ -28,6 +28,7 @@ concision-core = { path = "../../core", version = "0.1.12" }
 concision-neural = { path = "../neural" }
 
 anyhow.workspace = true
+itertools.workspace = true
 lazy_static.workspace = true
 ndarray.workspace = true
 # ndarray-linalg.workspace = true

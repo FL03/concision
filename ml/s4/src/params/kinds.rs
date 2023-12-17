@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames, VariantNames};
+use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
 
 #[derive(
     Clone,
@@ -12,6 +12,7 @@ use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames, VariantName
     Default,
     Deserialize,
     Display,
+    EnumCount,
     EnumIs,
     EnumIter,
     EnumString,
@@ -54,7 +55,7 @@ impl SSMParams {
 
 impl From<usize> for SSMParams {
     fn from(i: usize) -> Self {
-        match i % SSMParams::VARIANTS.len() {
+        match i % SSMParams::COUNT {
             0 => Self::A,
             1 => Self::B,
             2 => Self::C,

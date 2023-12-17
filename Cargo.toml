@@ -14,11 +14,12 @@ version = "0.1.12" # TODO - Update the cargo package version
 computare = { features = ["full"], branch = "v0.1.0", git = "https://github.com/FL03/computare", version = "0.1.0" }
 
 anyhow = "1"
-
+approx = "0.5"
 faer = { features = ["ndarray"], version = "0.16" }
 faer-core = "0.16"
 itertools = { features = [], version = "0.12" }
 lazy_static = "1"
+nalgebra = { features = [], version = "0.32" }
 ndarray = { features = ["serde-1"], version = "0.15" }
 # ndarray-linalg = { features = [], version = "0.16" }
 ndarray-rand = { features = [], version = "0.14" }

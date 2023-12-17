@@ -2,17 +2,22 @@
     Appellation: config <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use num::Float;
+use num::{Complex, Float};
 use serde::{Deserialize, Serialize};
 
+pub struct S4Training {
+    pub lambda: Complex<f64>,
+    pub log_step: f64,
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
-pub struct SSMConfig {
+pub struct S4Config {
     pub decode: bool,
     pub features: usize, // n
     pub samples: usize,  // l_max
 }
 
-impl SSMConfig {
+impl S4Config {
     pub fn new(decode: bool, features: usize, samples: usize) -> Self {
         Self {
             decode,

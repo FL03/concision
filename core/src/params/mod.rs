@@ -16,6 +16,7 @@ pub(crate) mod store;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
+use std::collections::HashMap;
 
 pub trait Param {
     fn kind(&self) -> &ParamKind;
@@ -49,17 +50,30 @@ where
     fn set_weights(&mut self, weights: Array<T, D>);
 }
 
-pub trait Params<T = f64, D = Ix2>
+pub trait Params<K = String, T = f64, D = Ix2>
 where
     D: Dimension,
     T: Float,
+    Self: IntoIterator<Item = (K, Array<T, D>)>,
 {
-    /// Returns an owned reference to the parameters of the layer.
-    fn params(&self) -> &Array<T, D>;
-    /// Returns a mutable reference to the parameters of the layer.
-    fn params_mut(&mut self) -> &mut Array<T, D>;
-    /// Sets the parameters of the layer.
-    fn set_params(&mut self, params: Array<T, D>);
+    fn get(&self, param: &K) -> Option<&Array<T, D>>;
+
+    fn get_mut(&mut self, param: &K) -> Option<&mut Array<T, D>>;
+}
+
+impl<K, T, D> Params<K, T, D> for HashMap<K, Array<T, D>>
+where
+    D: Dimension,
+    K: std::cmp::Eq + std::hash::Hash,
+    T: Float,
+{
+    fn get(&self, param: &K) -> Option<&Array<T, D>> {
+        self.get(param)
+    }
+
+    fn get_mut(&mut self, param: &K) -> Option<&mut Array<T, D>> {
+        self.get_mut(param)
+    }
 }
 
 #[cfg(test)]

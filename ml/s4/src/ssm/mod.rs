@@ -5,17 +5,16 @@
 //! # State Space Models (SSM)
 //!
 //!  
-pub use self::{config::*, model::*, params::*, utils::*};
+pub use self::{config::*, model::*};
 
 pub(crate) mod config;
 pub(crate) mod model;
-pub(crate) mod params;
 
 pub trait StateSpace {
     fn features(&self) -> usize;
-}
 
-pub(crate) mod utils {}
+    fn scan(&self, step: f64) -> Result<(), String>;
+}
 
 #[cfg(test)]
 mod tests {
