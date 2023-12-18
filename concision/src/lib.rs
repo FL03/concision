@@ -13,6 +13,8 @@ pub use concision_core as core;
 pub use concision_data as data;
 #[cfg(feature = "derive")]
 pub use concision_derive::*;
+#[cfg(feature = "linear")]
+pub use concision_linear as linear;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
 // #[cfg(feature = "ml")]
@@ -35,6 +37,8 @@ pub mod prelude {
     pub use concision_data::prelude::*;
     #[cfg(feature = "derive")]
     pub use concision_derive::*;
+    #[cfg(feature = "linear")]
+    pub use concision_linear::prelude::*;
     #[cfg(feature = "macros")]
     pub use concision_macros::*;
     // #[cfg(feature = "ml")]

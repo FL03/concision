@@ -2,9 +2,24 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{s, Array1, Array2, ArrayView1, Axis, NdFloat};
+use ndarray::prelude::{s, Array1, Array2, ArrayView1, NdFloat};
 use ndarray::IntoDimension;
+use num::Float;
 use rustfft::{FftNum, FftPlanner};
+
+pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
+where
+    T: Float + 'static,
+{
+    if !a.is_square() {
+        panic!("Matrix must be square");
+    }
+    let mut res = a.clone();
+    for _ in 0..n {
+        res = res.dot(a);
+    }
+    res
+}
 
 pub fn casual_colvolution<T>(a: &Array2<T>, b: &Array2<T>) -> Array2<T>
 where
@@ -14,23 +29,6 @@ where
     let fft = planner.plan_fft_forward(a.len());
 
     a.clone()
-}
-
-pub fn k_convolve<T>(a: &Array2<T>, b: &Array2<T>, c: &Array2<T>, l: usize) -> Array2<T>
-where
-    T: FftNum,
-{
-    let b = b.clone().remove_axis(Axis(1));
-    let mut res = Array2::<T>::zeros((l, a.shape()[0]));
-    for i in 0..l {
-        let mut tmp = a.clone();
-        for _ in 0..i {
-            tmp = tmp.dot(a);
-        }
-        let out = c.dot(&tmp.dot(&b));
-        res.slice_mut(s![i, ..]).assign(&out);
-    }
-    res
 }
 
 pub fn scanner<T>(

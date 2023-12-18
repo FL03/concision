@@ -3,9 +3,23 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-use ndarray::prelude::{Array, Axis, Dimension};
+use ndarray::prelude::{Array, Array1, Axis, Dimension};
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
+use num::cast::AsPrimitive;
 use num::Float;
+
+pub fn arange<T>(a: T, b: T, h: T) -> Array1<T>
+where
+    T: AsPrimitive<usize> + Float,
+{
+    let n: usize = ((b - a) / h).as_();
+    let mut res = Array1::<T>::zeros(n);
+    res[0] = a;
+    for i in 1..n {
+        res[i] = res[i - 1] + h;
+    }
+    res
+}
 
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where

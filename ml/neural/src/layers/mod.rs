@@ -11,7 +11,6 @@ pub(crate) mod params;
 pub(crate) mod stack;
 
 pub mod exp;
-pub mod linear;
 
 use crate::prelude::{Activate, ActivateDyn, Forward, Node};
 use ndarray::prelude::{Array2, Ix2};

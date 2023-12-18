@@ -6,8 +6,9 @@ use super::S4Config;
 use crate::neural::prelude::Forward;
 use crate::prelude::SSMStore;
 use ndarray::prelude::{Array1, Array2, NdFloat};
-use ndarray_conv::Conv2DFftExt;
+use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
 use num::Float;
+use rustfft::FftNum;
 
 use crate::prelude::SSMParams::*;
 
@@ -44,13 +45,17 @@ where
 
 impl<T> Forward<Array2<T>> for S4<T>
 where
-    T: NdFloat,
+    T: FftNum + NdFloat,
 {
     type Output = Array2<T>;
 
     fn forward(&self, args: &Array2<T>) -> Self::Output {
         if !self.config.decode {
-            unimplemented!()
+            let mode = PaddingMode::<2, T>::Const(T::zero());
+            let size = PaddingSize::Full;
+            return args
+                .conv_2d_fft(&self.kernal.clone().unwrap(), size, mode)
+                .expect("convolution failed");
         }
         let scan = self.store.scan(args, &self.cache);
         scan + args * &self.store[D]

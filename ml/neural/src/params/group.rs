@@ -182,7 +182,7 @@ where
 impl<T, D> Serialize for ParamGroup<T, D>
 where
     T: Float + Serialize,
-    D: Dimension + RemoveAxis + Serialize,
+    D: RemoveAxis + Serialize,
     <D as Dimension>::Smaller: Dimension + Serialize,
 {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
@@ -212,9 +212,9 @@ where
 
 impl<T, D> IntoIterator for ParamGroup<T, D>
 where
-    D: Dimension + RemoveAxis,
+    D: RemoveAxis,
     T: Float,
-    <D as Dimension>::Smaller: Dimension + RemoveAxis,
+    <D as Dimension>::Smaller: RemoveAxis,
 {
     type Item = (
         Array<T, D::Smaller>,
