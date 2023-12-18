@@ -24,30 +24,30 @@ pub trait Param {
     fn name(&self) -> &str;
 }
 
-pub trait Biased<T = f64, D = Ix2>
+pub trait Biased<T = f64>
 where
-    D: Dimension,
     T: Float,
 {
+    type Dim: Dimension;
     /// Returns an owned reference to the bias of the layer.
-    fn bias(&self) -> &Array<T, D>;
+    fn bias(&self) -> &Array<T, Self::Dim>;
     /// Returns a mutable reference to the bias of the layer.
-    fn bias_mut(&mut self) -> &mut Array<T, D>;
+    fn bias_mut(&mut self) -> &mut Array<T, Self::Dim>;
     /// Sets the bias of the layer.
-    fn set_bias(&mut self, bias: Array<T, D>);
+    fn set_bias(&mut self, bias: Array<T, Self::Dim>);
 }
 
-pub trait Weighted<T = f64, D = Ix2>
+pub trait Weighted<T = f64>
 where
-    D: Dimension,
     T: Float,
 {
+    type Dim: Dimension;
     /// Returns an owned reference to the weights of the layer.
-    fn weights(&self) -> &Array<T, D>;
+    fn weights(&self) -> &Array<T, Self::Dim>;
     /// Returns a mutable reference to the weights of the layer.
-    fn weights_mut(&mut self) -> &mut Array<T, D>;
+    fn weights_mut(&mut self) -> &mut Array<T, Self::Dim>;
     /// Sets the weights of the layer.
-    fn set_weights(&mut self, weights: Array<T, D>);
+    fn set_weights(&mut self, weights: Array<T, Self::Dim>);
 }
 
 pub trait Params<K = String, T = f64, D = Ix2>
