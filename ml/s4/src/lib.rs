@@ -12,6 +12,7 @@ pub(crate) mod primitives;
 pub(crate) mod specs;
 pub(crate) mod utils;
 
+pub mod cmp;
 pub mod ops;
 pub mod params;
 pub mod ssm;

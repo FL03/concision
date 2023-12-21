@@ -16,7 +16,7 @@ pub struct S4<T = f64>
 where
     T: Float,
 {
-    cache: Array1<T>,
+    cache: Array1<T>, // make complex
     config: S4Config,
     kernal: Option<Array2<T>>,
     store: SSMStore<T>,
@@ -41,6 +41,18 @@ where
             store,
         }
     }
+
+    pub fn cache(&self) -> &Array1<T> {
+        &self.cache
+    }
+
+    pub fn config(&self) -> &S4Config {
+        &self.config
+    }
+
+    pub fn config_mut(&mut self) -> &mut S4Config {
+        &mut self.config
+    }
 }
 
 impl<T> Forward<Array2<T>> for S4<T>
@@ -50,14 +62,15 @@ where
     type Output = Array2<T>;
 
     fn forward(&self, args: &Array2<T>) -> Self::Output {
-        if !self.config.decode {
+        let res = if !self.config().decode() {
             let mode = PaddingMode::<2, T>::Const(T::zero());
             let size = PaddingSize::Full;
-            return args
+            args
                 .conv_2d_fft(&self.kernal.clone().unwrap(), size, mode)
-                .expect("convolution failed");
-        }
-        let scan = self.store.scan(args, &self.cache);
-        scan + args * &self.store[D]
+                .expect("convolution failed")
+        } else {
+            self.store.scanner(args, &self.cache)
+        };
+        res + args * &self.store[D]
     }
 }

@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-use ndarray::prelude::{Array, Array1, Axis, Dimension};
+use ndarray::prelude::{Array, Array1, Axis, Dimension, NdFloat};
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
 use num::cast::AsPrimitive;
 use num::Float;
@@ -19,6 +19,14 @@ where
         res[i] = res[i - 1] + h;
     }
     res
+}
+
+pub fn cauchy_dot<T, D>(a: &Array<T, D>, lambda: &Array<T, D>, omega: &Array<T, D>) -> T
+where
+    D: Dimension,
+    T: NdFloat,
+{
+    (a / (omega - lambda)).sum()
 }
 
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>

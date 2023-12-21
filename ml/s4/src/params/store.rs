@@ -97,7 +97,15 @@ impl<T> SSMStore<T>
 where
     T: NdFloat,
 {
+    pub fn scanner(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
+        scanner(&self.a, &self.b, &self.c, u, x0)
+    }
+    
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
+        scanner(&self.a, &self.b, &self.c, u, x0)
+    }
+
+    pub fn scan_complex(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
         scanner(&self.a, &self.b, &self.c, u, x0)
     }
 }

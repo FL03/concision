@@ -54,3 +54,18 @@ where
     }
     res
 }
+
+pub fn scan_ssm_step<'a, T>(
+    a: &'a Array2<T>,
+    b: &'a Array2<T>,
+    c: &'a Array2<T>,
+) -> impl Fn(&'a mut Array1<T>, ArrayView1<'a, T>) -> Option<Array1<T>>
+where
+    T: NdFloat,
+{
+    |xs, us | {
+        let x1 = a.dot(xs) + b.dot(&us);
+        let y1 = c.dot(&x1);
+        Some(y1)
+    }
+}
