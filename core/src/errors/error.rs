@@ -54,7 +54,7 @@ pub struct Error {
 
 impl Error {
     pub fn new(kind: Errors, message: String) -> Self {
-        let ts = crate::now();
+        let ts = crate::prelude::now();
         Self { kind, message, ts }
     }
 
@@ -91,7 +91,7 @@ impl Error {
     }
 
     fn on_update(&mut self) {
-        self.ts = crate::now();
+        self.ts = crate::prelude::now();
     }
 }
 

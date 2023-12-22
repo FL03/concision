@@ -21,3 +21,5 @@ where
         self.as_ref().0
     }
 }
+
+pub trait NdArrayExt<T> {}

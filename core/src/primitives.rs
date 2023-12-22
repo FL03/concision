@@ -4,6 +4,7 @@
 */
 pub use self::{constants::*, statics::*, types::*};
 
+pub use ndarray::ShapeError;
 pub use ndarray_rand::rand_distr::uniform::SampleUniform;
 
 /// Collection of constants used throughout the system

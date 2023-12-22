@@ -7,10 +7,12 @@ use ndarray::IntoDimension;
 use num::{Complex, Float};
 use rustfft::{FftNum, FftPlanner};
 
-pub fn cauchy<T>(v: &Array1<T>, omega: &Array1<T>, lambda: &Array1<T>) -> Array1<T> where T: NdFloat {
-    let cdot = | b: T | (v / (lambda * T::one().neg() + b)).sum();
+pub fn cauchy<T>(v: &Array1<T>, omega: &Array1<T>, lambda: &Array1<T>) -> Array1<T>
+where
+    T: NdFloat,
+{
+    let cdot = |b: T| (v / (lambda * T::one().neg() + b)).sum();
     omega.mapv(cdot)
-    
 }
 
 pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
@@ -21,7 +23,7 @@ where
         panic!("Matrix must be square");
     }
     let mut res = a.clone();
-    for _ in 0..n {
+    for _ in 1..n {
         res = res.dot(a);
     }
     res
@@ -93,7 +95,7 @@ pub fn scan_ssm_step<'a, T>(
 where
     T: NdFloat,
 {
-    |xs, us | {
+    |xs, us| {
         let x1 = a.dot(xs) + b.dot(&us);
         let y1 = c.dot(&x1);
         Some(y1)

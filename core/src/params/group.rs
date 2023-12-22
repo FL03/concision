@@ -62,7 +62,7 @@ impl<T, D> ParamGroup<T, D>
 where
     D: Dimension,
     T: NdFloat,
-    Self: Biased<T, Dim=D> + Weighted<T, Dim=D>,
+    Self: Biased<T, Dim = D> + Weighted<T, Dim = D>,
 {
     pub fn linear<D2>(&self, data: &Array<T, D2>) -> Array<T, D>
     where

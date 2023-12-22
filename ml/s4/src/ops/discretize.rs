@@ -15,8 +15,7 @@ pub fn discretize_nalgebra(
     b: &Array2<f64>,
     c: &Array2<f64>,
     step: f64,
-) -> anyhow::Result<(Array2<f64>, Array2<f64>, Array2<f64>)>
-{
+) -> anyhow::Result<(Array2<f64>, Array2<f64>, Array2<f64>)> {
     let ss = step / 2.0; // half step
     let eye = Array2::<f64>::eye(a.shape()[0]);
     let bl = &eye - a * ss;

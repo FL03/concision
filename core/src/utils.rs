@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-use ndarray::prelude::{Array, Array1, Axis, Dimension, NdFloat};
+use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, NdFloat};
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
 use num::cast::AsPrimitive;
 use num::Float;
@@ -52,9 +52,15 @@ where
     Array::linspace(T::one(), T::from(n).unwrap(), n).into_shape(dim)
 }
 
-pub fn now() -> u128 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_millis()
+pub fn tril<T>(a: &Array2<T>) -> Array2<T>
+where
+    T: NdFloat,
+{
+    let mut out = a.clone();
+    for i in 0..a.shape()[0] {
+        for j in i + 1..a.shape()[1] {
+            out[[i, j]] = T::zero();
+        }
+    }
+    out
 }

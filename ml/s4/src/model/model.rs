@@ -12,13 +12,6 @@ use rustfft::FftNum;
 
 use crate::prelude::SSMParams::*;
 
-pub struct S4Params<T = f64> where T: Float {
-    pub lambda: Array2<Complex<T>>,
-    
-    pub c: Array2<Complex<T>>,
-    pub d: Array2<T>,
-}
-
 pub struct S4<T = f64>
 where
     T: Float,
@@ -67,7 +60,6 @@ where
     T: Float,
 {
     pub fn setup(mut self) -> Self {
-        
         self
     }
 }
@@ -82,11 +74,10 @@ where
         let res = if !self.config().decode() {
             let mode = PaddingMode::<2, T>::Const(T::zero());
             let size = PaddingSize::Full;
-            args
-                .conv_2d_fft(&self.kernal.clone().unwrap(), size, mode)
+            args.conv_2d_fft(&self.kernal.clone().unwrap(), size, mode)
                 .expect("convolution failed")
         } else {
-            self.store.scanner(args, &self.cache)
+            self.store.scan(args, &self.cache)
         };
         res + args * &self.store[D]
     }
