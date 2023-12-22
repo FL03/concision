@@ -1,15 +1,15 @@
 /*
-    Appellation: kernal <mod>
+    Appellation: kernel <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::Array2;
 use num::Float;
 
-pub struct Kernal<T = f64> {
+pub struct Kernel<T = f64> {
     kernal: Array2<T>,
 }
 
-impl<T> Kernal<T>
+impl<T> Kernel<T>
 where
     T: Float,
 {

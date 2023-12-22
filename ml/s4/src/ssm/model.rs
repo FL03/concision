@@ -4,6 +4,7 @@
 */
 use super::SSMConfig;
 use crate::prelude::scanner;
+use crate::params::SSMStore;
 use faer::prelude::{FaerMat, IntoFaer, SolverCore};
 use faer::IntoNdarray;
 use faer_core::zip::ViewMut;

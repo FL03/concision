@@ -7,10 +7,17 @@ use crate::neural::prelude::Forward;
 use crate::prelude::SSMStore;
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
-use num::Float;
+use num::{Complex, Float};
 use rustfft::FftNum;
 
 use crate::prelude::SSMParams::*;
+
+pub struct S4Params<T = f64> where T: Float {
+    pub lambda: Array2<Complex<T>>,
+    
+    pub c: Array2<Complex<T>>,
+    pub d: Array2<T>,
+}
 
 pub struct S4<T = f64>
 where
@@ -52,6 +59,16 @@ where
 
     pub fn config_mut(&mut self) -> &mut S4Config {
         &mut self.config
+    }
+}
+
+impl<T> S4<T>
+where
+    T: Float,
+{
+    pub fn setup(mut self) -> Self {
+        
+        self
     }
 }
 

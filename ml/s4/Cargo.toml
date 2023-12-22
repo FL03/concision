@@ -32,11 +32,13 @@ anyhow.workspace = true
 faer-core.workspace = true
 faer.workspace = true
 lazy_static.workspace = true
+nalgebra.workspace = true
 ndarray.workspace = true
 ndarray-conv = "0.2"
 # ndarray-linalg.workspace = true
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
+nshare = "0.9"
 num.workspace = true
 rustfft = { features = [], version = "6" }
 serde.workspace = true

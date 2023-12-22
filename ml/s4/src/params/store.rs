@@ -12,8 +12,6 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::ops;
 
-pub struct B(Box<dyn ops::Index<SSMParams, Output = Array2<f64>>>);
-
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SSMStore<T = f64>
 where
