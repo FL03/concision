@@ -117,6 +117,19 @@ impl<T> SSM<T>
 where
     T: NdFloat,
 {
+    pub fn setup(&mut self) -> &mut Self {
+        
+        self.kernel = crate::ops::k_convolve(&self.params[A], &self.params[B], &self.params[C], self.config().samples());
+        
+        self.ssm = self.discretize(T::from(0.1).unwrap()).expect("");
+        self
+    }
+}
+
+impl<T> SSM<T>
+where
+    T: NdFloat,
+{
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
         scanner(&self.params[A], &self.params[B], &self.params[C], u, x0)
     }
@@ -126,12 +139,10 @@ impl<T> SSM<T>
 where
     T: NdFloat,
 {
-    pub fn discretize(&mut self, step: T) -> anyhow::Result<&Discrete<T>> {
+    pub fn discretize(&self, step: T) -> anyhow::Result<Discrete<T>> {
         let discrete =
             crate::prelude::discretize(&self.params[A], &self.params[B], &self.params[C], step)?;
-
-        self.ssm = discrete.into();
-        Ok(&self.ssm)
+        Ok(discrete.into())
     }
 }
 
