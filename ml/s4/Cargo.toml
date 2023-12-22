@@ -48,6 +48,7 @@ strum.workspace = true
 
 [dev-dependencies]
 approx.workspace = true
+computare.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

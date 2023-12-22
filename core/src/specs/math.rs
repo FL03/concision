@@ -4,12 +4,47 @@
 */
 use ndarray::prelude::{Array, Dimension, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
-use num::{Float, FromPrimitive, One, Signed, Zero};
+use num::{Complex, Float, FromPrimitive, Num, One, Signed, Zero};
 use std::ops;
 
 pub trait Binary: One + Zero {}
 
 impl<T> Binary for T where T: One + Zero {}
+
+pub trait Conjugate {
+    fn conj(&self) -> Self;
+}
+
+impl Conjugate for f32 {
+    fn conj(&self) -> Self {
+        *self
+    }
+}
+
+impl Conjugate for f64 {
+    fn conj(&self) -> Self {
+        *self
+    }
+}
+
+impl<T> Conjugate for Complex<T>
+where
+    T: Copy + Num + Signed,
+{
+    fn conj(&self) -> Self {
+        Complex::<T>::new(self.re, -self.im)
+    }
+}
+
+impl<T, D> Conjugate for Array<T, D>
+where
+    D: Dimension,
+    T: Clone + Conjugate,
+{
+    fn conj(&self) -> Self {
+        self.mapv(|x| x.conj())
+    }
+}
 
 pub trait FloatExt: FromPrimitive + NdFloat + Signed + SampleUniform {}
 

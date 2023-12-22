@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, NdFloat};
+use ndarray::prelude::{s, Array, Array1, Array2, Axis, Dimension, NdFloat};
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
 use num::cast::AsPrimitive;
 use num::Float;
@@ -29,6 +29,50 @@ where
     (a / (omega - lambda)).sum()
 }
 
+pub fn compute_inverse<T: NdFloat>(matrix: &Array2<T>) -> Option<Array2<T>> {
+    let (rows, cols) = matrix.dim();
+
+    if rows != cols {
+        return None; // Matrix must be square for inversion
+    }
+
+    let identity = Array2::eye(rows);
+
+    // Concatenate the original matrix with an identity matrix
+    let mut augmented_matrix = Array2::zeros((rows, 2 * cols));
+    augmented_matrix.slice_mut(s![.., ..cols]).assign(matrix);
+    augmented_matrix.slice_mut(s![.., cols..]).assign(&identity);
+
+    // Perform Gaussian elimination to reduce the left half to the identity matrix
+    for i in 0..rows {
+        let pivot = augmented_matrix[[i, i]];
+
+        if pivot == T::zero() {
+            return None; // Matrix is singular
+        }
+
+        augmented_matrix
+            .slice_mut(s![i, ..])
+            .mapv_inplace(|x| x / pivot);
+
+        for j in 0..rows {
+            if i != j {
+                let am = augmented_matrix.clone();
+                let factor = augmented_matrix[[j, i]];
+                let rhs = am.slice(s![i, ..]);
+                augmented_matrix
+                    .slice_mut(s![j, ..])
+                    .zip_mut_with(&rhs, |x, &y| *x -= y * factor);
+            }
+        }
+    }
+
+    // Extract the inverted matrix from the augmented matrix
+    let inverted = augmented_matrix.slice(s![.., cols..]);
+
+    Some(inverted.to_owned())
+}
+
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where
     D: RemoveAxis,
@@ -50,6 +94,21 @@ where
     let dim = dim.into_dimension();
     let n = dim.as_array_view().product();
     Array::linspace(T::one(), T::from(n).unwrap(), n).into_shape(dim)
+}
+
+pub fn linspace<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
+where
+    D: Dimension,
+    T: Float,
+{
+    let dim = dim.into_dimension();
+    let n = dim.as_array_view().product();
+    Array::linspace(T::zero(), T::from(n - 1).unwrap(), n).into_shape(dim)
+}
+
+pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
+    let factor = T::from(10).expect("").powi(decimals as i32);
+    (val * factor).round() / factor
 }
 
 pub fn tril<T>(a: &Array2<T>) -> Array2<T>

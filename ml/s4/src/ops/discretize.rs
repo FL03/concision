@@ -2,13 +2,34 @@
     Appellation: discretize <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::core::prelude::Inverse;
 use faer::prelude::{FaerMat, IntoFaer, SolverCore};
 use faer::IntoNdarray;
 use faer_core::zip::ViewMut;
-use faer_core::{Conjugate, SimpleEntity};
+use faer_core::{ComplexField, Conjugate, SimpleEntity};
 use ndarray::prelude::{Array2, NdFloat};
 use nshare::{ToNalgebra, ToNdarray2};
-use num::ToPrimitive;
+use num::{Float, ToPrimitive};
+
+pub fn discretize<T>(
+    a: &Array2<T>,
+    b: &Array2<T>,
+    c: &Array2<T>,
+    step: T,
+) -> anyhow::Result<(Array2<T>, Array2<T>, Array2<T>)>
+where
+    T: NdFloat,
+{
+    let ss = step / T::from(2).unwrap(); // half step
+    let eye = Array2::<T>::eye(a.shape()[0]);
+
+    let be = (&eye - a * ss).inverse().expect("Could not invert matrix");
+
+    let ab = be.dot(&(&eye + a * ss));
+    let bb = (b * ss).dot(&b.t());
+
+    Ok((ab, bb, c.clone()))
+}
 
 pub fn discretize_nalgebra(
     a: &Array2<f64>,
@@ -41,7 +62,7 @@ pub fn discretize_faer<T>(
 ) -> (Array2<T>, Array2<T>, Array2<T>)
 where
     T: NdFloat + Conjugate + SimpleEntity,
-    <T as Conjugate>::Canonical: faer_core::ComplexField + SimpleEntity + ToPrimitive,
+    <T as Conjugate>::Canonical: ComplexField + SimpleEntity + ToPrimitive,
 {
     let ss = step / T::from(2).unwrap(); // half step
     let eye = Array2::<T>::eye(a.shape()[0]);
@@ -57,9 +78,13 @@ where
     (ab, bb, c.clone())
 }
 
-pub trait Discretize<T> {
+pub trait Discretize<T = f64>
+where
+    T: Float,
+{
     type Output;
-    fn discretize(&self, step: impl num::Float) -> Self::Output;
+
+    fn discretize(&self, step: T) -> Self::Output;
 }
 
 pub enum DiscretizeArgs {}
