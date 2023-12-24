@@ -93,3 +93,28 @@ where
     Self: Arithmetic<Array<T, A>, Array<T, B>>,
 {
 }
+
+pub trait SquareRoot {
+    fn sqrt(self) -> Self;
+}
+
+impl SquareRoot for f32 {
+    fn sqrt(self) -> Self {
+        f32::sqrt(self)
+    }
+}
+
+impl SquareRoot for f64 {
+    fn sqrt(self) -> Self {
+        f64::sqrt(self)
+    }
+}
+
+impl<T> SquareRoot for Complex<T>
+where
+    T: Float,
+{
+    fn sqrt(self) -> Self {
+        Complex::<T>::sqrt(self)
+    }
+}

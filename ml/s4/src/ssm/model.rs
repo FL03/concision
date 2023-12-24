@@ -4,8 +4,8 @@
 */
 use super::SSMConfig;
 use crate::neural::Forward;
-use crate::params::SSMParams::*;
-use crate::prelude::{scanner, SSMStore};
+use crate::params::{SSMParams::*, SSMStore};
+use crate::prelude::{discretize, scanner, k_convolve,};
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
 use num::Float;
@@ -117,11 +117,10 @@ impl<T> SSM<T>
 where
     T: NdFloat,
 {
-    pub fn setup(&mut self) -> &mut Self {
-        
-        self.kernel = crate::ops::k_convolve(&self.params[A], &self.params[B], &self.params[C], self.config().samples());
-        
-        self.ssm = self.discretize(T::from(0.1).unwrap()).expect("");
+    pub fn setup(mut self) -> Self {        
+        self.kernel = self.gen_filter();
+
+        self.ssm = self.discretize(self.config().step_size()).expect("");
         self
     }
 }
@@ -133,16 +132,24 @@ where
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
         scanner(&self.params[A], &self.params[B], &self.params[C], u, x0)
     }
-}
 
-impl<T> SSM<T>
-where
-    T: NdFloat,
-{
+    pub fn conv(&self, u: &Array2<T>) -> anyhow::Result<Array2<T>> where T: FftNum {
+        let mode = PaddingMode::<2, T>::Const(T::zero());
+        let size = PaddingSize::Full;
+        if let Some(res) = u.conv_2d_fft(&self.kernel, size, mode) {
+            Ok(res)
+        } else {
+            Err(anyhow::anyhow!("convolution failed"))
+        }
+    }
+
     pub fn discretize(&self, step: T) -> anyhow::Result<Discrete<T>> {
-        let discrete =
-            crate::prelude::discretize(&self.params[A], &self.params[B], &self.params[C], step)?;
+        let discrete = discretize(&self.params[A], &self.params[B], &self.params[C], step)?;
         Ok(discrete.into())
+    }
+
+    pub fn gen_filter(&self) -> Array2<T> {
+        k_convolve(&self.params[A], &self.params[B], &self.params[C], self.config().samples())
     }
 }
 
@@ -154,10 +161,7 @@ where
 
     fn forward(&self, args: &Array2<T>) -> Array2<T> {
         let res = if !self.config().decode() {
-            let mode = PaddingMode::<2, T>::Const(T::zero());
-            let size = PaddingSize::Full;
-            args.conv_2d_fft(&self.kernel, size, mode)
-                .expect("convolution failed")
+            self.conv(args).expect("convolution failed")
         } else {
             self.scan(args, &self.cache)
         };

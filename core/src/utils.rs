@@ -6,7 +6,7 @@
 use ndarray::prelude::{s, Array, Array1, Array2, Axis, Dimension, NdFloat};
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
 use num::cast::AsPrimitive;
-use num::Float;
+use num::{Float, Num, NumCast, Zero};
 
 pub fn arange<T>(a: T, b: T, h: T) -> Array1<T>
 where
@@ -106,20 +106,41 @@ where
     Array::linspace(T::zero(), T::from(n - 1).unwrap(), n).into_shape(dim)
 }
 
+/// creates a matrix from the given shape filled with numerical elements [0, n) spaced evenly by 1
+pub fn rangespace<T, D>(dim: impl IntoDimension<Dim = D>) -> Array<T, D> where D: Dimension, T: Num + NumCast {
+    let dim = dim.into_dimension();
+    let iter = (0..dim.size()).map(|i| T::from(i).unwrap());
+    Array::from_shape_vec(dim, iter.collect()).unwrap()
+}
+
 pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
     let factor = T::from(10).expect("").powi(decimals as i32);
     (val * factor).round() / factor
 }
 
-pub fn tril<T>(a: &Array2<T>) -> Array2<T>
-where
-    T: NdFloat,
-{
-    let mut out = a.clone();
-    for i in 0..a.shape()[0] {
-        for j in i + 1..a.shape()[1] {
-            out[[i, j]] = T::zero();
+    /// Returns the upper triangular portion of a matrix.
+    pub fn triu<T>(a: &Array2<T>) -> Array2<T>
+    where
+        T: Clone + Zero,
+    {
+        let mut out = a.clone();
+        for i in 0..a.shape()[0] {
+            for j in 0..i {
+                out[[i, j]] = T::zero();
+            }
         }
+        out
     }
-    out
-}
+    /// Returns the lower triangular portion of a matrix.
+    pub fn tril<T>(a: &Array2<T>) -> Array2<T>
+    where
+        T: Clone + Zero,
+    {
+        let mut out = a.clone();
+        for i in 0..a.shape()[0] {
+            for j in i + 1..a.shape()[1] {
+                out[[i, j]] = T::zero();
+            }
+        }
+        out
+    }

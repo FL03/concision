@@ -2,17 +2,40 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::prelude::{AsComplex, Conjugate};
-use nalgebra::ComplexField;
 use ndarray::prelude::*;
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::Uniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
 use nshare::{ToNalgebra, ToNdarray1, ToNdarray2};
-use num::traits::FloatConst;
-use num::{Complex, Float, Zero};
+use num::complex::ComplexFloat;
+use num::{Complex, Float,};
 use rustfft::{FftNum, FftPlanner};
+
+pub fn stdnorm<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    StandardNormal: Distribution<T>,
+{
+    Array::random(shape, StandardNormal)
+}
+
+pub fn randcomplex<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
+where
+    D: Dimension,
+    T: ComplexFloat,
+    StandardNormal: Distribution<T>,
+{
+    let dim = shape.into_dimension();
+    let re = Array::random(dim.clone(), StandardNormal);
+    let im = Array::random(dim.clone(), StandardNormal);
+    let mut res = Array::zeros(dim);
+    ndarray::azip!((re in &re, im in &im, res in &mut res) {
+        *res = Complex::new(*re, *im);
+    });
+    res
+}
 
 pub fn cauchy<T>(v: &Array1<T>, omega: &Array1<T>, lambda: &Array1<T>) -> Array1<T>
 where
@@ -82,7 +105,7 @@ where
     D: Dimension,
     T: NdFloat + SampleUniform,
 {
-    move |shape| Array::random(shape, Uniform::new(a, b)) * (b.ln() - a.ln()) + a.ln()
+    move |shape| logstep(a, b, shape)
 }
 
 pub fn scanner<T>(

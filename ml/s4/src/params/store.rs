@@ -6,6 +6,8 @@ use super::SSMParams;
 use crate::core::prelude::GenerateRandom;
 use crate::prelude::scanner;
 use ndarray::prelude::{Array1, Array2, NdFloat};
+use ndarray_rand::RandomExt;
+use ndarray_rand::rand_distr::{StandardNormal, Distribution};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use num::Float;
 use serde::{Deserialize, Serialize};
@@ -103,7 +105,15 @@ where
 impl<T> SSMStore<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
+    pub fn init(mut self, features: usize) -> Self {
+        // let (lambda, p, b, _v) = dplr_hippo(features);
+        self.c = Array2::<T>::random((1, features), StandardNormal);
+        self.d = Array2::<T>::ones((1, 1));
+        self
+    }
+
     pub fn uniform(features: usize) -> Self {
         let dk = T::one() / T::from(features).unwrap().sqrt();
         let a = Array2::<T>::uniform_between(dk, (features, features));
@@ -154,6 +164,16 @@ where
         (store.a, store.b, store.c, store.d)
     }
 }
+
+impl<'a, T> From<&'a SSMStore<T>> for (&'a Array2<T>, &'a Array2<T>, &'a Array2<T>, &'a Array2<T>)
+where
+    T: Float,
+{
+    fn from(store: &'a SSMStore<T>) -> Self {
+        (&store.a, &store.b, &store.c, &store.d)
+    }
+}
+
 
 impl<T> From<(Array2<T>, Array2<T>, Array2<T>, Array2<T>)> for SSMStore<T>
 where
