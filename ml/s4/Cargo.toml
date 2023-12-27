@@ -29,13 +29,11 @@ concision-core = { path = "../../core", version = "0.1.12" }
 concision-neural = { path = "../neural" }
 
 anyhow.workspace = true
-faer-core.workspace = true
-faer.workspace = true
 lazy_static.workspace = true
 nalgebra.workspace = true
 ndarray.workspace = true
 ndarray-conv = "0.2"
-# ndarray-linalg.workspace = true
+ndarray-linalg.workspace = true
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
 nshare = "0.9"
@@ -48,7 +46,6 @@ strum.workspace = true
 
 [dev-dependencies]
 approx.workspace = true
-computare.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

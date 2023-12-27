@@ -30,6 +30,19 @@ where
     }
 }
 
+pub trait RoundTo {
+    fn round_to(&self, places: usize) -> Self;
+}
+
+impl<T> RoundTo for T
+where
+    T: num::Float,
+{
+    fn round_to(&self, places: usize) -> Self {
+        crate::round_to(*self, places)
+    }
+}
+
 #[cfg(test)]
 mod tests {
 

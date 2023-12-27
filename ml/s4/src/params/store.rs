@@ -6,9 +6,9 @@ use super::SSMParams;
 use crate::core::prelude::GenerateRandom;
 use crate::prelude::scanner;
 use ndarray::prelude::{Array1, Array2, NdFloat};
-use ndarray_rand::RandomExt;
-use ndarray_rand::rand_distr::{StandardNormal, Distribution};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
+use ndarray_rand::RandomExt;
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -173,7 +173,6 @@ where
         (&store.a, &store.b, &store.c, &store.d)
     }
 }
-
 
 impl<T> From<(Array2<T>, Array2<T>, Array2<T>, Array2<T>)> for SSMStore<T>
 where

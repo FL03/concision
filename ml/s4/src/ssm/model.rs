@@ -5,7 +5,7 @@
 use super::SSMConfig;
 use crate::neural::Forward;
 use crate::params::{SSMParams::*, SSMStore};
-use crate::prelude::{discretize, scanner, k_convolve,};
+use crate::prelude::{discretize, k_convolve, scanner};
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
 use num::Float;
@@ -117,7 +117,7 @@ impl<T> SSM<T>
 where
     T: NdFloat,
 {
-    pub fn setup(mut self) -> Self {        
+    pub fn setup(mut self) -> Self {
         self.kernel = self.gen_filter();
 
         self.ssm = self.discretize(self.config().step_size()).expect("");
@@ -133,7 +133,10 @@ where
         scanner(&self.params[A], &self.params[B], &self.params[C], u, x0)
     }
 
-    pub fn conv(&self, u: &Array2<T>) -> anyhow::Result<Array2<T>> where T: FftNum {
+    pub fn conv(&self, u: &Array2<T>) -> anyhow::Result<Array2<T>>
+    where
+        T: FftNum,
+    {
         let mode = PaddingMode::<2, T>::Const(T::zero());
         let size = PaddingSize::Full;
         if let Some(res) = u.conv_2d_fft(&self.kernel, size, mode) {
@@ -149,7 +152,12 @@ where
     }
 
     pub fn gen_filter(&self) -> Array2<T> {
-        k_convolve(&self.params[A], &self.params[B], &self.params[C], self.config().samples())
+        k_convolve(
+            &self.params[A],
+            &self.params[B],
+            &self.params[C],
+            self.config().samples(),
+        )
     }
 }
 

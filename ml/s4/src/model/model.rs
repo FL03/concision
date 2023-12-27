@@ -7,7 +7,8 @@ use crate::neural::prelude::Forward;
 use crate::prelude::SSMStore;
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
-use num::{Complex, Float};
+use num::Float;
+// use num::complex::{Complex, ComplexFloat};
 use rustfft::FftNum;
 
 use crate::prelude::SSMParams::*;

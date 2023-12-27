@@ -40,7 +40,7 @@ smart-default.workspace = true
 strum.workspace = true
 
 [dev-dependencies]
-computare.workspace = true
+# computare.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

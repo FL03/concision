@@ -67,9 +67,8 @@ pub(crate) mod utils {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::GenerateRandom;
+    use crate::core::{GenerateRandom, RoundTo};
     use crate::func::loss::Loss;
-    use computare::prelude::RoundTo;
     use ndarray::prelude::{Array, Ix2};
     use ndarray_stats::DeviationExt;
 

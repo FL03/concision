@@ -5,8 +5,4 @@
 //! # Word Embedding
 //!
 
-pub use self::utils::*;
-
 pub mod word2vec;
-
-pub(crate) mod utils {}

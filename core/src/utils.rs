@@ -107,7 +107,11 @@ where
 }
 
 /// creates a matrix from the given shape filled with numerical elements [0, n) spaced evenly by 1
-pub fn rangespace<T, D>(dim: impl IntoDimension<Dim = D>) -> Array<T, D> where D: Dimension, T: Num + NumCast {
+pub fn rangespace<T, D>(dim: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    T: Num + NumCast,
+{
     let dim = dim.into_dimension();
     let iter = (0..dim.size()).map(|i| T::from(i).unwrap());
     Array::from_shape_vec(dim, iter.collect()).unwrap()
@@ -118,29 +122,29 @@ pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
     (val * factor).round() / factor
 }
 
-    /// Returns the upper triangular portion of a matrix.
-    pub fn triu<T>(a: &Array2<T>) -> Array2<T>
-    where
-        T: Clone + Zero,
-    {
-        let mut out = a.clone();
-        for i in 0..a.shape()[0] {
-            for j in 0..i {
-                out[[i, j]] = T::zero();
-            }
+/// Returns the upper triangular portion of a matrix.
+pub fn triu<T>(a: &Array2<T>) -> Array2<T>
+where
+    T: Clone + Zero,
+{
+    let mut out = a.clone();
+    for i in 0..a.shape()[0] {
+        for j in 0..i {
+            out[[i, j]] = T::zero();
         }
-        out
     }
-    /// Returns the lower triangular portion of a matrix.
-    pub fn tril<T>(a: &Array2<T>) -> Array2<T>
-    where
-        T: Clone + Zero,
-    {
-        let mut out = a.clone();
-        for i in 0..a.shape()[0] {
-            for j in i + 1..a.shape()[1] {
-                out[[i, j]] = T::zero();
-            }
+    out
+}
+/// Returns the lower triangular portion of a matrix.
+pub fn tril<T>(a: &Array2<T>) -> Array2<T>
+where
+    T: Clone + Zero,
+{
+    let mut out = a.clone();
+    for i in 0..a.shape()[0] {
+        for j in i + 1..a.shape()[1] {
+            out[[i, j]] = T::zero();
         }
-        out
     }
+    out
+}

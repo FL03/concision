@@ -5,12 +5,11 @@
 use ndarray::prelude::*;
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
-use ndarray_rand::rand_distr::Uniform;
-use ndarray_rand::rand_distr::{Distribution, StandardNormal};
+use ndarray_rand::rand_distr::{Distribution, StandardNormal, Uniform};
 use ndarray_rand::RandomExt;
 use nshare::{ToNalgebra, ToNdarray1, ToNdarray2};
 use num::complex::ComplexFloat;
-use num::{Complex, Float,};
+use num::{Complex, Float};
 use rustfft::{FftNum, FftPlanner};
 
 pub fn stdnorm<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
@@ -117,6 +116,30 @@ pub fn scanner<T>(
 ) -> Array2<T>
 where
     T: NdFloat,
+{
+    let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
+        let x1 = a.dot(xs) + b.dot(&us);
+        let y1 = c.dot(&x1);
+        Some(y1)
+    };
+    let scan = u.outer_iter().scan(x0.clone(), step).collect::<Vec<_>>();
+    let shape = [scan.len(), scan[0].len()];
+    let mut res = Array2::<T>::zeros(shape.into_dimension());
+    for (i, s) in scan.iter().enumerate() {
+        res.slice_mut(s![i, ..]).assign(s);
+    }
+    res
+}
+
+pub fn scan_ssm<T>(
+    a: &Array2<T>,
+    b: &Array2<T>,
+    c: &Array2<T>,
+    u: &Array2<T>,
+    x0: &Array1<T>,
+) -> Array2<T>
+where
+    T: ComplexFloat + 'static,
 {
     let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
         let x1 = a.dot(xs) + b.dot(&us);

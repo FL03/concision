@@ -29,9 +29,8 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
 #[strum(serialize_all = "lowercase")]
 pub enum Rank {
     #[default]
-    Low
+    Low,
 }
-
 
 #[derive(
     Clone,

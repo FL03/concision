@@ -24,6 +24,7 @@ test = true
 [build-dependencies]
 
 [dependencies]
+
 anyhow.workspace = true
 finalfusion = "0.18"
 ndarray.workspace = true
@@ -35,7 +36,7 @@ strum.workspace = true
 tokenizers = { features = [], version = "0.15" }
 
 [dev-dependencies]
-computare.workspace = true
+concision-core = { features = [], path = "../../core", version = "0.1.12" }
 
 [package.metadata.docs.rs]
 all-features = true

@@ -5,8 +5,8 @@
 use super::utils::*;
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
-use num::Float;
 use num::complex::ComplexFloat;
+use num::Float;
 
 pub enum HiPPOs<T = f64> {
     HiPPO(Array2<T>),
@@ -22,8 +22,6 @@ pub enum HiPPOs<T = f64> {
         c: Array2<T>,
     },
 }
-
-
 
 pub struct HiPPO<T = f64>(Array2<T>);
 
@@ -48,7 +46,6 @@ impl<T> HiPPO<T>
 where
     T: ComplexFloat + ScalarOperand,
 {
-
     pub fn square(features: usize) -> Self {
         Self(make_hippo(features))
     }
@@ -57,6 +54,4 @@ where
         let (hippo, p, b) = make_nplr_hippo(features);
         Self(hippo)
     }
-
-
 }
