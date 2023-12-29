@@ -14,10 +14,13 @@ version.workspace = true
 [features]
 default = []
 
+blas = [
+    "ndarray/blas",
+]
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 doctest = false
 test = true
 
@@ -27,7 +30,7 @@ test = true
 
 anyhow.workspace = true
 finalfusion = "0.18"
-ndarray.workspace = true
+ndarray = { features = ["serde-1"], version = "0.15" }
 num.workspace = true
 serde.workspace = true
 serde_json.workspace = true

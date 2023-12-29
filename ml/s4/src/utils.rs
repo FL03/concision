@@ -7,7 +7,6 @@ use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal, Uniform};
 use ndarray_rand::RandomExt;
-use nshare::{ToNalgebra, ToNdarray1, ToNdarray2};
 use num::complex::ComplexFloat;
 use num::{Complex, Float};
 use rustfft::{FftNum, FftPlanner};
@@ -44,28 +43,28 @@ where
     omega.mapv(cdot)
 }
 
-pub fn eig_sym(args: &Array2<f64>) -> (Array1<f64>, Array2<f64>) {
-    let sym = args.clone().into_nalgebra().symmetric_eigen();
-    (
-        sym.eigenvalues.into_ndarray1(),
-        sym.eigenvectors.into_ndarray2(),
-    )
-}
+// pub fn eig_sym(args: &Array2<f64>) -> (Array1<f64>, Array2<f64>) {
+//     let sym = args.clone().into_nalgebra().symmetric_eigen();
+//     (
+//         sym.eigenvalues.into_ndarray1(),
+//         sym.eigenvectors.into_ndarray2(),
+//     )
+// }
 
-pub fn eig_csym(args: &Array2<Complex<f64>>) -> (Array1<f64>, Array2<Complex<f64>>) {
-    let sym = args.clone().into_nalgebra().symmetric_eigen();
-    let (eig, v) = (sym.eigenvalues, sym.eigenvectors);
-    (eig.into_ndarray1(), v.into_ndarray2())
-}
+// pub fn eig_csym(args: &Array2<Complex<f64>>) -> (Array1<f64>, Array2<Complex<f64>>) {
+//     let sym = args.clone().into_nalgebra().symmetric_eigen();
+//     let (eig, v) = (sym.eigenvalues, sym.eigenvectors);
+//     (eig.into_ndarray1(), v.into_ndarray2())
+// }
 
-pub fn eigh(args: &Array2<f64>) -> (Array1<f64>, Array2<f64>) {
-    let na = args.clone().into_nalgebra();
-    let sym = na.symmetric_eigen();
-    let v = sym.eigenvectors;
-    let eig = sym.eigenvalues.into_ndarray1();
-    let eigval = v.into_ndarray2();
-    (eig, eigval)
-}
+// pub fn eigh(args: &Array2<f64>) -> (Array1<f64>, Array2<f64>) {
+//     let na = args.clone().into_nalgebra();
+//     let sym = na.symmetric_eigen();
+//     let v = sym.eigenvectors;
+//     let eig = sym.eigenvalues.into_ndarray1();
+//     let eigval = v.into_ndarray2();
+//     (eig, eigval)
+// }
 
 pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
 where
@@ -187,7 +186,7 @@ pub fn scan_ssm_step<'a, T>(
 where
     T: NdFloat,
 {
-    |xs, us| {
+    move |xs, us| {
         let x1 = a.dot(xs) + b.dot(&us);
         let y1 = c.dot(&x1);
         Some(y1)
@@ -227,18 +226,29 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::round_to;
-    use approx::assert_relative_eq;
-    use ndarray::prelude::array;
+    use ndarray::prelude::{array, Array1, Array2};
+    use ndarray_linalg::eig::Eig;
+    use num::complex::{Complex, ComplexFloat};
+
+    fn round_to<T: Float>(a: T, precision: usize) -> T {
+        let factor = T::from(10).unwrap().powi(precision as i32);
+        (a * factor).round() / factor
+    }
 
     #[test]
-    fn test_eig_sym() {
+    fn test_eig() {
         let a = array![[1.0, 2.0], [2.0, 1.0]];
-        let (eig, eigval) = eig_sym(&a);
-        let exp_eig = array![3.0, -1.0];
-        let exp_eigval = array![[0.70710678, -0.70710678], [0.70710678, 0.70710678]];
+        let (eig, eigval): (Array1<Complex<f64>>, Array2<Complex<f64>>) = a.eig().unwrap();
 
-        assert_relative_eq!(eig, exp_eig);
-        assert_relative_eq!(eigval.mapv(|i| round_to(i, 8)), exp_eigval);
+        let eig = eig.mapv(|i| Complex::new(i.re().round(), i.im().round()));
+        let eigval = eigval.mapv(|i| Complex::new(round_to(i.re(), 8), round_to(i.im(), 8)));
+
+        let exp_eig: Array1<Complex<f64>> = array![3.0, -1.0].mapv(|i| Complex::new(i, 0.0));
+        let exp_eigval: Array2<Complex<f64>> =
+            array![[0.70710678, -0.70710678], [0.70710678, 0.70710678]]
+                .mapv(|i| Complex::new(i, 0.0));
+
+        assert_eq!(eig, exp_eig);
+        assert_eq!(eigval, exp_eigval);
     }
 }

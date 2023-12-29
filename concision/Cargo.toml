@@ -51,7 +51,6 @@ ml = [
     "neural",
     "nlp",
     "optim",
-    "s4",
     "transformers",
 ]
 
@@ -68,16 +67,53 @@ optim = [
 ]
 
 s4 = [
-    "concision-s4"
+    "blas",
+    "concision-s4",
 ]
 
 transformers = [
     "concision-transformers"
 ]
 
+blas = [
+    "concision-core/blas",
+    "concision-data/blas",
+    "concision-linear/blas",
+    "concision-neural/blas",
+    "concision-nlp/blas",
+    "concision-optim/blas",
+    "concision-s4/blas",
+    "concision-transformers/blas",
+]
+
+intel-mkl-system = [
+    "concision-s4/intel-mkl-system",
+]
+
+intel-mkl-static = [
+    "concision-s4/intel-mkl-static",
+
+]
+
+netlib-system = [
+    "concision-s4/netlib-system",
+]
+
+netlib-static = [
+    "concision-s4/netlib-static",
+]
+
+openblas-system = [
+    "concision-s4/openblas-system",
+]
+
+openblas-static = [
+    "concision-s4/openblas-static",
+]
+
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 doctest = false
 test = true
 
@@ -89,7 +125,6 @@ concision-data = { features = [], optional = true, path = "../data", version = "
 concision-derive = { features = [], optional = true, path = "../derive", version = "0.1.12" }
 concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.12" }
 
-# concision-ml = { features = [], optional = true, path = "../ml/ml", version = "0.1.12" }
 concision-linear = { features = [], optional = true, path = "../ml/linear", version = "0.1.12" }
 concision-neural = { features = [], optional = true, path = "../ml/neural", version = "0.1.12" }
 concision-nlp = { features = [], optional = true, path = "../ml/nlp", version = "0.1.12" }
@@ -98,8 +133,8 @@ concision-s4 = { features = [], optional = true, path = "../ml/s4", version = "0
 concision-transformers = { features = [], optional = true, path = "../ml/transformers", version = "0.1.12" }
 
 [dev-dependencies]
-anyhow.workspace = true
-ndarray.workspace = true
+anyhow = "1"
+ndarray = "0.15"
 
 [package.metadata.docs.rs]
 all-features = true

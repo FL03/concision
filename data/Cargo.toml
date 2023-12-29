@@ -14,10 +14,39 @@ version.workspace = true
 [features]
 default = []
 
+blas = [
+    "ndarray/blas",
+]
+
+# intel-mkl-system = [
+#     "linfa/intel-mkl-system",
+# ]
+
+# intel-mkl-static = [
+#     "linfa/intel-mkl-static",
+# ]
+
+# netlib-system = [
+#     "linfa/netlib-system",
+# ]
+
+# netlib-static = [
+#     "linfa/netlib-static",
+# ]
+
+# openblas-system = [
+#     "linfa/openblas-system",
+# ]
+
+# openblas-static = [
+#     "linfa/openblas-static",
+# ]
+
+
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 doctest = false
 test = true
 
@@ -25,8 +54,8 @@ test = true
 
 [dependencies]
 anyhow.workspace = true
-# linfa = { features = [], version = "0.7" }
-ndarray.workspace = true
+linfa = { features = ["serde"], version = "0.7" }
+ndarray = { features = ["serde-1"], version = "0.15" }
 num.workspace = true
 serde.workspace = true
 serde_json.workspace = true

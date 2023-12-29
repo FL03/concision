@@ -6,7 +6,6 @@ use crate::core::prelude::Inverse;
 
 use ndarray::prelude::{Array2, NdFloat};
 
-use nshare::{ToNalgebra, ToNdarray2};
 use num::{Float, ToPrimitive};
 
 pub fn discretize<T>(

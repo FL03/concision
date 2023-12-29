@@ -14,10 +14,15 @@ version.workspace = true
 [features]
 default = []
 
+blas = [
+    "ndarray/blas",
+    "concision-core/blas",
+    "concision-neural/blas",
+]
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 doctest = false
 test = true
 
@@ -28,14 +33,13 @@ concision-core = { path = "../../core", version = "0.1.12" }
 concision-neural = { path = "../neural" }
 
 anyhow.workspace = true
-itertools.workspace = true
+itertools = { features = [], version = "0.12" }
 lazy_static.workspace = true
-ndarray.workspace = true
-# ndarray-linalg.workspace = true
+ndarray = { features = ["serde-1"], version = "0.15" }
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
 num.workspace = true
-rand.workspace = true
+rand = "0.8"
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true

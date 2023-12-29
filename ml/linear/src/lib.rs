@@ -15,4 +15,6 @@ pub mod params;
 pub(crate) use concision_core as core;
 pub(crate) use concision_neural as neural;
 
-pub mod prelude {}
+pub mod prelude {
+    pub use crate::model::*;
+}

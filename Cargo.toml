@@ -15,16 +15,13 @@ version = "0.1.12" # TODO - Update the cargo package version
 
 anyhow = "1"
 approx = "0.5"
-itertools = { features = [], version = "0.12" }
 lazy_static = "1"
-nalgebra = { features = [], version = "0.32" }
-ndarray = { features = ["blas", "serde-1"], version = "0.15" }
-ndarray-linalg = { features = ["intel-mkl-system"], version = "0.16" }
+# ndarray = { features = ["serde-1"], version = "0.15" }
+# ndarray-linalg = { features = [], version = "0.16" }
 ndarray-rand = { features = [], version = "0.14" }
-ndarray-stats = { features = [], version = "0.5.1" }
+ndarray-stats = { features = [], version = "0.5" }
 num = { features = ["serde"], version = "0.4" }
-petgraph = { features = ["serde-1"], version = "0.6" }
-rand = "0.8"
+
 serde = { features = ["derive"], version = "1" }
 serde_json = "1"
 smart-default = "0.7"
@@ -41,9 +38,7 @@ members = [
     "data",
     "derive", 
     "macros",
-    # "ml/*",
     "ml/linear",
-    "ml/ml",
     "ml/neural",
     "ml/nlp",
     "ml/optim",

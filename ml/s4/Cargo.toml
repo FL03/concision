@@ -12,31 +12,65 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = ["blas"]
+
+blas = [
+    # "ndarray/blas",
+    # "concision-core/blas",
+    # "concision-neural/blas",
+]
+
+intel-mkl-system = [
+    "blas",
+    "ndarray-linalg/intel-mkl-system",
+]
+
+intel-mkl-static = [
+    "blas",
+    "ndarray-linalg/intel-mkl-static",
+]
+
+netlib-system = [
+    "blas",
+    "ndarray-linalg/netlib-system",
+]
+
+netlib-static = [
+    "blas",
+    "ndarray-linalg/netlib-static",
+]
+
+openblas-system = [
+    "blas",
+    "ndarray-linalg/openblas-system",
+]
+
+openblas-static = [
+    "blas",
+    "ndarray-linalg/openblas-static",
+]
+
 
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 doctest = false
 test = true
 
 [build-dependencies]
 
 [dependencies]
-concision-core = { path = "../../core", version = "0.1.12" }
-# concision-data = { path = "../../data" }
-concision-neural = { path = "../neural" }
+concision-core = { features = ["blas"], path = "../../core", version = "0.1.12" }
+concision-neural = { features = ["blas"], path = "../neural" }
 
 anyhow.workspace = true
 lazy_static.workspace = true
-nalgebra.workspace = true
-ndarray.workspace = true
+ndarray = { features = ["blas", "serde-1"], version = "0.15" }
 ndarray-conv = "0.2"
-ndarray-linalg.workspace = true
+ndarray-linalg = { features = [], version = "0.16" }
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
-nshare = "0.9"
 num.workspace = true
 rustfft = { features = [], version = "6" }
 serde.workspace = true
