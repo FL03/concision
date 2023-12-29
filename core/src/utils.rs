@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-use ndarray::prelude::{s, Array, Array1, Array2, Axis, Dimension, NdFloat};
+use ndarray::prelude::*;
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
 use num::cast::AsPrimitive;
 use num::{Float, Num, NumCast, Zero};
@@ -120,6 +120,21 @@ where
 pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
     let factor = T::from(10).expect("").powi(decimals as i32);
     (val * factor).round() / factor
+}
+
+pub fn stack_iter<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
+where
+    T: Clone + Num,
+{
+    let mut iter = iter.into_iter();
+    let first = iter.next().unwrap();
+    let shape = [iter.size_hint().0 + 1, first.len()];
+    let mut res = Array2::<T>::zeros(shape);
+    res.slice_mut(s![0, ..]).assign(&first);
+    for (i, s) in iter.enumerate() {
+        res.slice_mut(s![i + 1, ..]).assign(&s);
+    }
+    res
 }
 
 /// Returns the upper triangular portion of a matrix.

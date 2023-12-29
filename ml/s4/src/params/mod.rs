@@ -7,15 +7,15 @@ pub use self::{kinds::*, store::*};
 pub(crate) mod kinds;
 pub(crate) mod store;
 
-use ndarray::prelude::Array2;
-use num::Float;
+use ndarray::prelude::{Array, Array1, Array2, Ix2};
+use num::Num;
 use std::collections::HashMap;
 
-pub type SSMMap<T = f64> = HashMap<SSMParams, Array2<T>>;
+pub type SSMMap<T = f64, D = Ix2> = HashMap<SSMParams, Array<T, D>>;
 
 pub trait SSMParamGroup<T = f64>
 where
-    T: Float,
+    T: Num,
 {
     fn a(&self) -> &Array2<T>;
     fn b(&self) -> &Array2<T>;
@@ -25,7 +25,7 @@ where
 
 impl<T> SSMParamGroup<T> for SSMStore<T>
 where
-    T: Float,
+    T: Num,
 {
     fn a(&self) -> &Array2<T> {
         &self.a
@@ -46,7 +46,7 @@ where
 
 impl<T> SSMParamGroup<T> for SSMMap<T>
 where
-    T: Float,
+    T: Num,
 {
     fn a(&self) -> &Array2<T> {
         self.get(&SSMParams::A).unwrap()
@@ -67,7 +67,7 @@ where
 
 impl<T> SSMParamGroup<T> for &[Array2<T>; 4]
 where
-    T: Float,
+    T: Num,
 {
     fn a(&self) -> &Array2<T> {
         &self[0]
@@ -88,7 +88,7 @@ where
 
 impl<T> SSMParamGroup<T> for (Array2<T>, Array2<T>, Array2<T>, Array2<T>)
 where
-    T: Float,
+    T: Num,
 {
     fn a(&self) -> &Array2<T> {
         &self.0

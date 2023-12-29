@@ -97,3 +97,5 @@ where
         crate::compute_inverse(self)
     }
 }
+
+// pub trait Stack

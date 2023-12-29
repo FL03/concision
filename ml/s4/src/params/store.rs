@@ -4,21 +4,21 @@
 */
 use super::SSMParams;
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::scanner;
-use ndarray::prelude::{Array1, Array2, NdFloat};
+use crate::prelude::stack_arrays;
+use ndarray::prelude::{Array1, Array2, ArrayView1, NdFloat};
+use ndarray_linalg::error::LinalgError;
+use ndarray_linalg::{vstack, Scalar};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
-use num::Float;
+use num::complex::ComplexFloat;
+use num::{Float, Num};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::ops;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct SSMStore<T = f64>
-where
-    T: Float,
-{
+pub struct SSMStore<T = f64> {
     pub(crate) a: Array2<T>,
     pub(crate) b: Array2<T>,
     pub(crate) c: Array2<T>,
@@ -27,7 +27,7 @@ where
 
 impl<T> SSMStore<T>
 where
-    T: Float,
+    T: Clone + Num,
 {
     pub fn new(a: Array2<T>, b: Array2<T>, c: Array2<T>, d: Array2<T>) -> Self {
         Self { a, b, c, d }
@@ -95,10 +95,20 @@ where
 
 impl<T> SSMStore<T>
 where
-    T: NdFloat,
+    T: Scalar,
 {
-    pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
-        scanner(&self.a, &self.b, &self.c, u, x0)
+    pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
+        let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
+            let x1 = self.a().dot(xs) + self.b().t().dot(&us);
+            let y1 = self.c().dot(&x1.t());
+            Some(y1)
+        };
+        vstack(
+            u.outer_iter()
+                .scan(x0.clone(), step)
+                .collect::<Vec<_>>()
+                .as_slice(),
+        )
     }
 }
 

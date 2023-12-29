@@ -7,6 +7,7 @@ use crate::neural::prelude::Forward;
 use crate::prelude::SSMStore;
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
+use ndarray_linalg::Scalar;
 use num::Float;
 // use num::complex::{Complex, ComplexFloat};
 use rustfft::FftNum;
@@ -67,7 +68,7 @@ where
 
 impl<T> Forward<Array2<T>> for S4<T>
 where
-    T: FftNum + NdFloat,
+    T: FftNum + NdFloat + Scalar,
 {
     type Output = Array2<T>;
 
@@ -78,7 +79,7 @@ where
             args.conv_2d_fft(&self.kernal.clone().unwrap(), size, mode)
                 .expect("convolution failed")
         } else {
-            self.store.scan(args, &self.cache)
+            self.store.scan(args, &self.cache).expect("scan failed")
         };
         res + args * &self.store[D]
     }
