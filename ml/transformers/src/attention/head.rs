@@ -7,6 +7,7 @@ use super::Weight;
 use crate::neural::func::activate::{Activate, Softmax};
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
@@ -52,6 +53,7 @@ where
 impl<T> AttentionHead<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn new(dim: HeadShape) -> Self {
         Self {

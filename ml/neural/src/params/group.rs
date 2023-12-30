@@ -4,10 +4,11 @@
 */
 use super::{Biased, Weighted};
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::{Forward, Node};
-use ndarray::prelude::{s, Array, Axis, Dimension, Ix1, Ix2};
+use crate::prelude::Forward;
+use ndarray::prelude::{Array, Axis, Dimension, Ix1, Ix2};
 use ndarray::{IntoDimension, RemoveAxis};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 
@@ -75,6 +76,7 @@ impl<T, D> ParamGroup<T, D>
 where
     T: Float + SampleUniform,
     D: Dimension + RemoveAxis,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         if biased {

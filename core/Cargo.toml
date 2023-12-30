@@ -32,6 +32,7 @@ chrono = "0.4"
 ndarray = { features = ["serde-1"], version = "0.15" }
 ndarray-rand.workspace = true
 num.workspace = true
+rand = { features = [], version = "0.8" }
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true

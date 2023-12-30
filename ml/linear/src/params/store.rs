@@ -9,6 +9,7 @@ use crate::neural::prelude::{Biased, Features, Forward, Node, Weighted};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
@@ -83,6 +84,7 @@ where
 impl<T> LayerParams<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         if biased {

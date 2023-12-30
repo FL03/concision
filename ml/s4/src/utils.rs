@@ -10,8 +10,8 @@ use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal, Uniform};
 use ndarray_rand::RandomExt;
 use num::complex::{Complex, ComplexFloat};
-use num::traits::FloatConst;
-use num::{Float, Num, Signed};
+use num::traits::float::{Float, FloatConst, FloatCore};
+use num::{Num, Signed};
 use rustfft::{FftNum, FftPlanner};
 
 pub fn stdnorm<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
@@ -148,18 +148,6 @@ where
     res
 }
 
-pub fn stack_arrays<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
-where
-    T: Clone + Num,
-{
-    let iter = Vec::from_iter(iter);
-    let mut res = Array2::<T>::zeros((iter.len(), iter.first().unwrap().len()));
-    for (i, s) in iter.iter().enumerate() {
-        res.slice_mut(s![i, ..]).assign(s);
-    }
-    res
-}
-
 pub fn kernel_dplr<T>(
     lambda: &Array2<T>,
     p: &Array2<T>,
@@ -175,7 +163,7 @@ where
     <T as Scalar>::Complex: ComplexFloat,
 {
     let omega_l = {
-        let f = | i: usize | {
+        let f = |i: usize| {
             T::from(i).unwrap()
                 * T::from(Complex::new(T::one(), -T::PI() / T::from(l).unwrap())).unwrap()
         };

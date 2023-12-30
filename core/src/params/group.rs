@@ -8,6 +8,7 @@ use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Axis, Dimension, Ix2, NdFloat};
 use ndarray::{IntoDimension, RemoveAxis};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 
@@ -77,6 +78,7 @@ impl<T, D> ParamGroup<T, D>
 where
     D: Dimension + RemoveAxis,
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         if biased {

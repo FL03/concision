@@ -7,6 +7,7 @@ use crate::func::activate::{Activate, Gradient, Linear};
 use crate::prelude::{Features, Forward, Node, Parameterized, Params, Perceptron};
 use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
 use serde::{Deserialize, Serialize};
@@ -156,6 +157,7 @@ impl<T, A> Layer<T, A>
 where
     A: Activate<T>,
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         self.params = self.params.init(biased);

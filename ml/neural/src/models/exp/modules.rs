@@ -4,8 +4,8 @@
 */
 //! # Model
 //!
-use crate::prelude::{Forward, Weighted};
-use ndarray::prelude::{Array2, NdFloat};
+use crate::prelude::Forward;
+use ndarray::prelude::Array2;
 use num::Float;
 use std::collections::HashMap;
 

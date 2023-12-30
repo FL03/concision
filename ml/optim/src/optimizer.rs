@@ -20,14 +20,3 @@ where
 
     fn step(&mut self, params: impl Params) -> T;
 }
-
-pub trait OptimizerExt<T = f64>: Optimizer<T>
-where
-    T: Float,
-{
-}
-
-pub struct Opt<T = f64> {
-    epochs: usize,
-    gamma: T,
-}

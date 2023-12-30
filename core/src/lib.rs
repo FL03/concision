@@ -10,6 +10,7 @@ pub(crate) mod primitives;
 pub(crate) mod utils;
 
 pub mod errors;
+pub mod id;
 pub mod masks;
 pub mod params;
 pub mod specs;
@@ -29,6 +30,7 @@ pub mod prelude {
     pub use crate::utils::*;
 
     pub use crate::errors::*;
+    pub use crate::id::*;
     pub use crate::masks::*;
     pub use crate::specs::*;
     pub use crate::states::*;

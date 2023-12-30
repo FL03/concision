@@ -6,6 +6,7 @@ use crate::prelude::{LayerParams, LayerPosition, LayerShape};
 use ndarray::prelude::{Dimension, Ix2};
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 
 // use serde::{Deserialize, Serialize};
@@ -75,6 +76,7 @@ where
 impl<T> ModelStore<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         self.store.iter_mut().for_each(|(_, l)| {

@@ -2,9 +2,10 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array1, Array2, ArrayView1, NdFloat};
-use num::complex::{Complex, ComplexFloat};
-use num::Float;
+use ndarray::prelude::{Array1, Array2, ArrayView1};
+use ndarray_linalg::error::LinalgError;
+use ndarray_linalg::{vstack, Scalar};
+use num::complex::ComplexFloat;
 
 pub struct S4Store<T = f64>
 where
@@ -67,15 +68,20 @@ where
 
 impl<T> S4Store<T>
 where
-    T: ComplexFloat + 'static,
+    T: ComplexFloat + Scalar + 'static,
 {
-    pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
+    pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
         let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
             let x1 = self.a.dot(xs) + self.b.t().dot(&us);
             let y1 = self.c.dot(&x1.t());
             Some(y1)
         };
-        crate::stack_arrays(u.outer_iter().scan(x0.clone(), step))
+        vstack(
+            u.outer_iter()
+                .scan(x0.clone(), step)
+                .collect::<Vec<_>>()
+                .as_slice(),
+        )
     }
 }
 

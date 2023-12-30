@@ -8,6 +8,7 @@ use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 
@@ -98,6 +99,7 @@ impl<T, D> Parameter<T, D>
 where
     D: Dimension,
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init_uniform(mut self, dk: T) -> Self {
         let dim = self.params.dim();

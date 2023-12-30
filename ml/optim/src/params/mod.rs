@@ -6,8 +6,6 @@
 //!
 //! ## Overview
 //!
-pub use self::utils::*;
-
 use num::Float;
 
 pub trait Minimize<T> {
@@ -43,8 +41,6 @@ where
 
     fn nestrov(&self) -> bool;
 }
-
-pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {}

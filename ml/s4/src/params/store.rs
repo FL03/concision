@@ -4,14 +4,12 @@
 */
 use super::SSMParams;
 use crate::core::prelude::GenerateRandom;
-use crate::prelude::stack_arrays;
-use ndarray::prelude::{Array1, Array2, ArrayView1, NdFloat};
+use ndarray::prelude::{Array1, Array2, ArrayView1};
 use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::{vstack, Scalar};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
-use num::complex::ComplexFloat;
 use num::{Float, Num};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

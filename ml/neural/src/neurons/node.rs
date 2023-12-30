@@ -9,6 +9,7 @@ use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, Ix1, NdFloat};
 use ndarray::RemoveAxis;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::{Float, FromPrimitive};
 use std::ops;
 
@@ -65,6 +66,7 @@ where
 impl<T> Node<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         if biased {

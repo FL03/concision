@@ -31,6 +31,7 @@ use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array2, Array3, Ix2};
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
@@ -98,6 +99,7 @@ where
 impl<T> Weight<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn uniform(dim: impl IntoDimension<Dim = Ix2>) -> Self {
         let dim = dim.into_dimension();

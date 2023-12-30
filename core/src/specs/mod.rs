@@ -9,7 +9,12 @@ pub(crate) mod base;
 pub(crate) mod init;
 pub(crate) mod math;
 
+use num::traits::float::FloatCore;
 use num::{Complex, Num, Zero};
+
+pub trait CncFloat: FloatCore {}
+
+impl<T> CncFloat for T where T: FloatCore {}
 
 pub trait AsComplex: Num {
     fn as_complex(&self) -> Complex<Self>;
@@ -47,11 +52,20 @@ where
 mod tests {
 
     use super::*;
+    use ndarray::prelude::*;
 
     #[test]
     fn test_as_complex() {
         let x = 1.0;
         let y = x.as_complex();
         assert_eq!(y, Complex::new(1.0, 0.0));
+    }
+
+    #[test]
+    fn test_affine() {
+        let x = array![[0.0, 1.0], [2.0, 3.0]];
+
+        let y = x.affine(4.0, -2.0).unwrap();
+        assert_eq!(y, array![[-2.0, 2.0], [6.0, 10.0]]);
     }
 }

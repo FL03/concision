@@ -5,6 +5,8 @@
 
 use ndarray::prelude::*;
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
+use ndarray_rand::rand_distr::{Bernoulli, BernoulliError};
+use ndarray_rand::RandomExt;
 use num::cast::AsPrimitive;
 use num::{Float, Num, NumCast, Zero};
 
@@ -21,6 +23,17 @@ where
     res
 }
 
+pub fn bernoulli<D>(
+    dim: impl IntoDimension<Dim = D>,
+    p: Option<f64>,
+) -> Result<Array<bool, D>, BernoulliError>
+where
+    D: Dimension,
+{
+    let dist = Bernoulli::new(p.unwrap_or(0.5))?;
+    Ok(Array::random(dim.into_dimension(), dist))
+}
+
 pub fn cauchy_dot<T, D>(a: &Array<T, D>, lambda: &Array<T, D>, omega: &Array<T, D>) -> T
 where
     D: Dimension,
@@ -32,7 +45,7 @@ where
 pub fn compute_inverse<T: NdFloat>(matrix: &Array2<T>) -> Option<Array2<T>> {
     let (rows, cols) = matrix.dim();
 
-    if rows != cols {
+    if !matrix.is_square() {
         return None; // Matrix must be square for inversion
     }
 
@@ -162,4 +175,28 @@ where
         }
     }
     out
+}
+
+pub fn hstack<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
+where
+    T: Clone + Num,
+{
+    let iter = Vec::from_iter(iter);
+    let mut res = Array2::<T>::zeros((iter.first().unwrap().len(), iter.len()));
+    for (i, s) in iter.iter().enumerate() {
+        res.slice_mut(s![.., i]).assign(s);
+    }
+    res
+}
+
+pub fn vstack<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
+where
+    T: Clone + Num,
+{
+    let iter = Vec::from_iter(iter);
+    let mut res = Array2::<T>::zeros((iter.len(), iter.first().unwrap().len()));
+    for (i, s) in iter.iter().enumerate() {
+        res.slice_mut(s![i, ..]).assign(s);
+    }
+    res
 }

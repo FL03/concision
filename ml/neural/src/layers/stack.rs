@@ -4,6 +4,8 @@
 */
 use crate::layers::{Layer, LayerShape};
 use crate::prelude::{Activate, Features, Linear, Parameterized};
+use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 use std::ops;
@@ -80,7 +82,8 @@ where
 impl<T, A> Stack<T, A>
 where
     A: Activate<T> + Clone + Default,
-    T: Float + crate::core::prelude::SampleUniform,
+    T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init_layers(mut self, biased: bool) -> Self {
         self.children

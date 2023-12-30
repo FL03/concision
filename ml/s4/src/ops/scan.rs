@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::SSMStore;
-use crate::prelude::stack_arrays;
+
 use num::Float;
 
 pub struct Scan<'a, T = f64>

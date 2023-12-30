@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Experimental Models
-pub use self::{modules::*, store::*, utils::*};
+pub use self::{modules::*, store::*};
 
 pub(crate) mod modules;
 pub(crate) mod store;
@@ -33,8 +33,6 @@ where
         self.modules().iter().find(|m| m.name() == name)
     }
 }
-
-pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {}

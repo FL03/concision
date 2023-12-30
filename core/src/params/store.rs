@@ -28,8 +28,20 @@ where
         }
     }
 
+    pub fn get(&self, kind: &ParamKind) -> Option<&Parameter<T, D>> {
+        self.store.get(kind)
+    }
+
+    pub fn get_mut(&mut self, kind: &ParamKind) -> Option<&mut Parameter<T, D>> {
+        self.store.get_mut(kind)
+    }
+
     pub fn insert(&mut self, param: Parameter<T, D>) {
         self.store.insert(param.kind().clone(), param);
+    }
+
+    pub fn remove(&mut self, kind: &ParamKind) -> Option<Parameter<T, D>> {
+        self.store.remove(kind)
     }
 }
 
@@ -55,6 +67,19 @@ where
 
     fn into_iter(self) -> Self::IntoIter {
         self.store.into_iter()
+    }
+}
+
+impl<'a, T, D> IntoIterator for &'a mut ParamStore<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    type Item = (&'a ParamKind, &'a mut Parameter<T, D>);
+    type IntoIter = std::collections::hash_map::IterMut<'a, ParamKind, Parameter<T, D>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.store.iter_mut()
     }
 }
 

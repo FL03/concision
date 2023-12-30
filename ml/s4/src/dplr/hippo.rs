@@ -16,8 +16,9 @@ pub enum HiPPOs<T = f64> {
         b: Array2<T>,
     },
     DPLR {
-        a: Array2<T>,
+        lambda: Array2<T>,
         p: Array2<T>,
+        q: Array2<T>,
         b: Array2<T>,
         c: Array2<T>,
     },

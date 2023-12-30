@@ -2,15 +2,15 @@
    Appellation: errors <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{error::*, utils::*};
+pub use self::{error::*, kinds::*};
 
 pub(crate) mod error;
+pub(crate) mod kinds;
 
-pub(crate) mod utils {
+pub trait KindOf {
+    type Kind;
 
-    pub fn random_err() -> String {
-        String::new()
-    }
+    fn kind(&self) -> Self::Kind;
 }
 
 #[cfg(test)]

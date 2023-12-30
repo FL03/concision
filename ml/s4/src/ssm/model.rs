@@ -5,9 +5,10 @@
 use super::SSMConfig;
 use crate::neural::Forward;
 use crate::params::{SSMParams::*, SSMStore};
-use crate::prelude::{discretize, k_convolve, scanner};
+use crate::prelude::{discretize, k_convolve};
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
+use ndarray_linalg::{Lapack, Scalar};
 use num::Float;
 use rustfft::FftNum;
 
@@ -115,7 +116,7 @@ where
 
 impl<T> SSM<T>
 where
-    T: NdFloat,
+    T: Lapack + NdFloat + Scalar,
 {
     pub fn setup(mut self) -> Self {
         self.kernel = self.gen_filter();
@@ -127,10 +128,14 @@ where
 
 impl<T> SSM<T>
 where
-    T: NdFloat,
+    T: NdFloat + Lapack + Scalar,
 {
-    pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Array2<T> {
-        scanner(&self.params[A], &self.params[B], &self.params[C], u, x0)
+    pub fn scan(
+        &self,
+        u: &Array2<T>,
+        x0: &Array1<T>,
+    ) -> Result<Array2<T>, ndarray_linalg::error::LinalgError> {
+        self.params.scan(u, x0)
     }
 
     pub fn conv(&self, u: &Array2<T>) -> anyhow::Result<Array2<T>>
@@ -163,16 +168,17 @@ where
 
 impl<T> Forward<Array2<T>> for SSM<T>
 where
-    T: FftNum + NdFloat,
+    T: FftNum + Lapack + NdFloat + Scalar,
 {
-    type Output = Array2<T>;
+    type Output = anyhow::Result<Array2<T>>;
 
-    fn forward(&self, args: &Array2<T>) -> Array2<T> {
+    fn forward(&self, args: &Array2<T>) -> Self::Output {
         let res = if !self.config().decode() {
-            self.conv(args).expect("convolution failed")
+            self.conv(args)?
         } else {
-            self.scan(args, &self.cache)
+            self.scan(args, &self.cache)?
         };
-        res + args * &self.params[D]
+        let pred = res + args * &self.params[D];
+        Ok(pred)
     }
 }

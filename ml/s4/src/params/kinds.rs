@@ -63,3 +63,34 @@ impl From<usize> for SSMParams {
         }
     }
 }
+
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deserialize,
+    Display,
+    EnumCount,
+    EnumIs,
+    EnumIter,
+    EnumString,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+)]
+#[repr(usize)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
+pub enum DPLRParams {
+    #[default]
+    Lambda = 0,
+    P = 1,
+    Q = 2,
+    B = 3,
+    C = 4,
+}
