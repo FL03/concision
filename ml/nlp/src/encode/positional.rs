@@ -143,7 +143,7 @@ impl PositionalEncoderParams {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use computare::prelude::RoundTo;
+    use crate::core::prelude::RoundTo;
     use ndarray::prelude::{array, Array};
 
     #[test]

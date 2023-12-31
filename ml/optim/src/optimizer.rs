@@ -16,23 +16,7 @@ where
 
     fn name(&self) -> &str;
 
-    fn step(&mut self, data: &Array2<T>, targets: &Array2<T>) -> T;
+    fn load(&mut self, data: &Array2<T>, targets: &Array2<T>);
 
-    fn step_with(
-        &mut self,
-        data: &Array2<T>,
-        targets: &Array2<T>,
-        params: &mut Box<dyn Params<T>>,
-    ) -> T;
-}
-
-pub trait OptimizerExt<T = f64>: Optimizer<T>
-where
-    T: Float,
-{
-}
-
-pub struct Opt<T = f64> {
-    epochs: usize,
-    gamma: T,
+    fn step(&mut self, params: impl Params) -> T;
 }

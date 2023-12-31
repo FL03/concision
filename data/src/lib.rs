@@ -3,8 +3,12 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Concision Data
-pub use self::{primitives::*, specs::*, utils::*};
+//!
+#![feature(associated_type_defaults)]
 
+pub use self::{misc::*, primitives::*, specs::*, utils::*};
+
+pub(crate) mod misc;
 pub(crate) mod primitives;
 pub(crate) mod specs;
 pub(crate) mod utils;
@@ -15,7 +19,7 @@ pub mod flows;
 pub mod tensors;
 
 pub mod prelude {
-    pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
+    // pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
 
     pub use crate::datasets::*;
     pub use crate::df::*;

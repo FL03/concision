@@ -14,28 +14,32 @@ version.workspace = true
 [features]
 default = []
 
+blas = [
+    "ndarray/blas",
+]
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 doctest = false
 test = true
 
 [build-dependencies]
 
 [dependencies]
+
 anyhow.workspace = true
 finalfusion = "0.18"
-ndarray.workspace = true
+ndarray = { features = ["serde-1"], version = "0.15" }
 num.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true
 strum.workspace = true
-tokenizers = { features = [], version = "0.14" }
+tokenizers = { features = [], version = "0.15" }
 
 [dev-dependencies]
-computare.workspace = true
+concision-core = { features = [], path = "../../core", version = "0.1.12" }
 
 [package.metadata.docs.rs]
 all-features = true

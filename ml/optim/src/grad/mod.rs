@@ -9,6 +9,7 @@ pub(crate) mod descent;
 pub(crate) mod gradient;
 pub(crate) mod modes;
 
+pub mod adam;
 pub mod sgd;
 
 pub struct BatchParams {
@@ -28,23 +29,28 @@ pub struct DescentParams {
 
 pub(crate) mod utils {
     use crate::neural::func::activate::Gradient;
+    use crate::neural::params::{Biased, Weighted};
     use crate::neural::prelude::{Forward, ForwardIter, Parameterized, Params};
     use ndarray::linalg::Dot;
-    use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
+    use ndarray::prelude::{Array, Array2, Dimension, NdFloat};
     use ndarray_stats::DeviationExt;
     use num::{FromPrimitive, Signed};
 
-    pub fn gradient_descent<M, T, D>(
+    pub fn gradient_descent<M, I, T, D>(
         gamma: T,
         model: &mut M,
         objective: impl Gradient<T, D>,
+        data: &Array2<T>,
+        targets: &Array<T, D>,
     ) -> anyhow::Result<f64>
     where
         D: Dimension,
-        M: Forward<Array2<T>, Output = Array<T, D>> + Parameterized<T, D>,
-        T: FromPrimitive + NdFloat,
+        M: Clone + ForwardIter<Array2<T>, I, Output = Array<T, D>>,
+        I: Forward<Array2<T>, Output = Array<T, D>> + Biased<T, D> + Weighted<T, D>,
+        T: FromPrimitive + NdFloat + Signed,
+        Array2<T>: Dot<Array<T, D>, Output = Array<T, D>>,
     {
-        let loss = 0.0;
+        let loss = model.forward(data).mean_sq_err(targets)?;
         Ok(loss)
     }
 
@@ -93,24 +99,32 @@ mod tests {
     use super::*;
     use crate::core::prelude::linarr;
     use crate::neural::func::activate::{Linear, Sigmoid};
-    use crate::neural::prelude::{Features, Layer, LayerShape, Parameterized, Weighted};
-    use ndarray::prelude::{Array, Array1, Dimension};
-    use num::Float;
+    use crate::neural::models::ModelParams;
+    use crate::neural::prelude::{Features, Layer, LayerShape};
+    use ndarray::prelude::{Array1, Ix2};
 
     #[test]
     fn test_gradient_descent() {
-        let (_samples, inputs, outputs) = (20, 5, 1);
-
         let (epochs, gamma) = (10, 0.001);
+        let (samples, inputs) = (20, 5);
+        let outputs = 4;
+
+        let _shape = (samples, inputs);
 
         let features = LayerShape::new(inputs, outputs);
 
-        let mut model = Layer::<f64, Linear>::from(features).init(true);
+        let x = linarr::<f64, Ix2>((samples, features.inputs())).unwrap();
+        let y = linarr::<f64, Ix2>((samples, features.outputs())).unwrap();
+
+        let mut shapes = vec![features];
+        shapes.extend((0..3).map(|_| LayerShape::new(features.outputs(), features.outputs())));
+
+        let mut model = ModelParams::<f64>::from_iter(shapes).init(true);
 
         let mut losses = Array1::zeros(epochs);
         for e in 0..epochs {
-            let cost =
-                gradient_descent(gamma, &mut model, Sigmoid).expect("Gradient Descent Error");
+            let cost = gradient_descent(gamma, &mut model, Sigmoid, &x, &y)
+                .expect("Gradient Descent Error");
             losses[e] = cost;
         }
         assert_eq!(losses.len(), epochs);

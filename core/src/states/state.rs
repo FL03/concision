@@ -2,6 +2,7 @@
    Appellation: state <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::time::now;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -14,11 +15,10 @@ pub struct State {
 
 impl State {
     pub fn new(kind: impl ToString, message: String) -> Self {
-        let ts = crate::now();
         Self {
             kind: kind.to_string(),
             message,
-            ts,
+            ts: now(),
         }
     }
 
@@ -55,7 +55,7 @@ impl State {
     }
 
     fn on_update(&mut self) {
-        self.ts = crate::now();
+        self.ts = now();
     }
 }
 

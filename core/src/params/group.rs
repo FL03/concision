@@ -8,6 +8,7 @@ use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Axis, Dimension, Ix2, NdFloat};
 use ndarray::{IntoDimension, RemoveAxis};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 
@@ -25,7 +26,7 @@ where
 impl<T, D> ParamGroup<T, D>
 where
     T: Float,
-    D: Dimension + RemoveAxis,
+    D: RemoveAxis,
 {
     pub fn new(dim: impl IntoDimension<Dim = D>) -> Self {
         let dim = dim.into_dimension();
@@ -62,7 +63,7 @@ impl<T, D> ParamGroup<T, D>
 where
     D: Dimension,
     T: NdFloat,
-    Self: Biased<T, D> + Weighted<T, D>,
+    Self: Biased<T, Dim = D> + Weighted<T, Dim = D>,
 {
     pub fn linear<D2>(&self, data: &Array<T, D2>) -> Array<T, D>
     where
@@ -77,6 +78,7 @@ impl<T, D> ParamGroup<T, D>
 where
     D: Dimension + RemoveAxis,
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         if biased {
@@ -103,38 +105,42 @@ where
     }
 }
 
-impl<T, D> Biased<T, D> for ParamGroup<T, D>
+impl<T, D> Biased<T> for ParamGroup<T, D>
 where
-    D: Dimension + RemoveAxis,
+    D: RemoveAxis,
     T: Float,
 {
-    fn bias(&self) -> &Array<T, D::Smaller> {
+    type Dim = D::Smaller;
+
+    fn bias(&self) -> &Array<T, Self::Dim> {
         &self.bias
     }
 
-    fn bias_mut(&mut self) -> &mut Array<T, D::Smaller> {
+    fn bias_mut(&mut self) -> &mut Array<T, Self::Dim> {
         &mut self.bias
     }
 
-    fn set_bias(&mut self, bias: Array<T, D::Smaller>) {
+    fn set_bias(&mut self, bias: Array<T, Self::Dim>) {
         self.bias = bias;
     }
 }
 
-impl<T, D> Weighted<T, D> for ParamGroup<T, D>
+impl<T, D> Weighted<T> for ParamGroup<T, D>
 where
     D: Dimension,
     T: Float,
 {
-    fn weights(&self) -> &Array<T, D> {
+    type Dim = D;
+
+    fn weights(&self) -> &Array<T, Self::Dim> {
         &self.weights
     }
 
-    fn weights_mut(&mut self) -> &mut Array<T, D> {
+    fn weights_mut(&mut self) -> &mut Array<T, Self::Dim> {
         &mut self.weights
     }
 
-    fn set_weights(&mut self, weights: Array<T, D>) {
+    fn set_weights(&mut self, weights: Array<T, Self::Dim>) {
         self.weights = weights;
     }
 }

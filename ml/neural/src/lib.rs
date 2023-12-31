@@ -13,7 +13,7 @@ pub(crate) mod primitives;
 pub(crate) mod specs;
 pub(crate) mod utils;
 
-pub mod arch;
+pub mod cmp;
 pub mod errors;
 pub mod func;
 pub mod layers;
@@ -26,7 +26,11 @@ pub mod params;
 pub(crate) use concision_core as core;
 
 pub mod prelude {
-    pub use crate::arch::*;
+    pub use crate::primitives::*;
+    pub use crate::specs::*;
+    pub use crate::utils::*;
+
+    pub use crate::cmp::*;
     pub use crate::errors::*;
     pub use crate::func::{activate::*, loss::*, prop::*, rms::*};
     pub use crate::layers::*;
@@ -34,8 +38,4 @@ pub mod prelude {
     pub use crate::nn::*;
     pub use crate::ops::*;
     pub use crate::params::*;
-
-    pub use crate::primitives::*;
-    pub use crate::specs::*;
-    pub use crate::utils::*;
 }

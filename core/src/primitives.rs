@@ -4,10 +4,13 @@
 */
 pub use self::{constants::*, statics::*, types::*};
 
+pub use ndarray::ShapeError;
 pub use ndarray_rand::rand_distr::uniform::SampleUniform;
 
 /// Collection of constants used throughout the system
-mod constants {}
+mod constants {
+    pub const DEFAULT_MODEL_SIZE: usize = 2048;
+}
 
 /// Collection of static references used throughout
 mod statics {}

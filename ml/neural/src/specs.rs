@@ -17,18 +17,24 @@ pub trait Forward<T> {
     fn forward(&self, args: &T) -> Self::Output;
 }
 
-pub trait ForwardIter<I, T>: Forward<T> + IntoIterator<Item = I>
+pub trait ForwardIter<T, I>: Forward<T> + IntoIterator<Item = I>
 where
-    I: Forward<T>,
+    I: Forward<T, Output = Self::Output>,
 {
 }
 
-impl<S, I, T> ForwardIter<I, T> for S
+impl<S, T, I> ForwardIter<T, I> for S
 where
-    I: Forward<T>,
     S: Forward<T> + IntoIterator<Item = I>,
+    I: Forward<T, Output = Self::Output>,
 {
 }
+
+// impl<S, T> ForwardIter<T> for S
+// where
+//     S: Forward<T> + IntoIterator<Item = dyn Forward<T, Output = Self::Output>>,
+// {
+// }
 
 pub trait Compile<T = f64, D = Ix2>
 where
@@ -55,6 +61,18 @@ where
     }
 }
 
+impl<T, D, O> Predict<T, D> for Box<dyn Predict<T, D, Output = O>>
+where
+    D: Dimension,
+    T: Float,
+{
+    type Output = O;
+
+    fn predict(&self, input: &Array<T, D>) -> BoxResult<O> {
+        self.as_ref().predict(input)
+    }
+}
+
 pub trait Train<T = f64>
 where
     T: Float,
@@ -77,4 +95,12 @@ where
             .sum();
         Ok(res)
     }
+}
+
+pub trait Module<T = f64, D = Ix2>: Forward<Array<T, D>, Output = Array<T, D>>
+where
+    D: Dimension,
+    T: Float,
+{
+    type Config;
 }

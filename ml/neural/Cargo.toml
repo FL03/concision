@@ -15,32 +15,35 @@ version.workspace = true
 [features]
 default = []
 
+blas = [
+    "ndarray/blas",
+    "concision-core/blas",
+]
+
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 doctest = false
 test = true
 
 [build-dependencies]
 
 [dependencies]
-concision-core.workspace = true
+concision-core = { path = "../../core", version = "0.1.12" }
 
 anyhow.workspace = true
-ndarray.workspace = true
-# ndarray-linalg.workspace = true
+ndarray = { features = ["serde-1"], version = "0.15" }
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
 num.workspace = true
-petgraph.workspace = true
-rand.workspace = true
+petgraph = { features = ["serde-1"], version = "0.6" }
 serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
 [dev-dependencies]
-computare.workspace = true
+# computare.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

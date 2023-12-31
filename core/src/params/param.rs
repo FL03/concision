@@ -2,11 +2,13 @@
     Appellation: param <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::ParamKind;
+use super::{Param, ParamKind};
 use crate::prelude::GenerateRandom;
+use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 
@@ -97,9 +99,38 @@ impl<T, D> Parameter<T, D>
 where
     D: Dimension,
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init_uniform(mut self, dk: T) -> Self {
-        self.params = Array::uniform_between(dk, self.clone().features);
+        let dim = self.params.dim();
+        self.params = Array::uniform_between(dk, dim);
         self
+    }
+}
+
+impl<T, D> Param for Parameter<T, D>
+where
+    T: Float,
+    D: Dimension,
+{
+    fn kind(&self) -> &ParamKind {
+        &self.kind
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl<S, T, D, O> Dot<S> for Parameter<T, D>
+where
+    Array<T, D>: Dot<S, Output = O>,
+    D: Dimension,
+    T: Float,
+{
+    type Output = O;
+
+    fn dot(&self, rhs: &S) -> Self::Output {
+        self.params.dot(rhs)
     }
 }

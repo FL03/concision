@@ -2,8 +2,6 @@
    Appellation: encode <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::utils::*;
-
 pub mod positional;
 
 use ndarray::prelude::{Array, Array2};
@@ -20,4 +18,6 @@ pub trait EncodeArr<T> {
 
     fn encode(&self, data: &Array<T, Self::Dim>) -> Array2<T>;
 }
-pub(crate) mod utils {}
+
+#[cfg(test)]
+mod tests {}

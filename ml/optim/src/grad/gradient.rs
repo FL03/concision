@@ -94,7 +94,6 @@ where
         // update the parameters for each layer
         for i in 0..depth {
             let grad = &grads[i];
-            println!("Layer ({}) Gradient (dim): {:?}", i, grad.shape());
             let wg = &store[i].t().dot(grad);
             let _bg = grad.sum_axis(Axis(0));
             self.params[i].weights_mut().scaled_add(-lr, &wg.t());

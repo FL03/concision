@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # neurons
-pub use self::{node::*, perceptron::*, synapse::*, utils::*};
+pub use self::{node::*, perceptron::*, synapse::*};
 
 pub(crate) mod node;
 pub(crate) mod perceptron;
@@ -32,8 +32,6 @@ where
 
     fn weights(&self) -> &Array1<T>;
 }
-
-pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {

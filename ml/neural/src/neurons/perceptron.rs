@@ -7,6 +7,7 @@ use crate::func::activate::{Activate, Linear};
 use crate::prelude::{Forward, Parameterized, ParameterizedExt, Weighted};
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 
 /// Artificial Neuron
@@ -95,6 +96,7 @@ impl<T, A> Perceptron<T, A>
 where
     T: Float + SampleUniform,
     A: Activate<T, Ix1>,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         if biased {

@@ -10,6 +10,7 @@ use crate::ops::Split;
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray::ShapeError;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use serde::{Deserialize, Serialize};
 
@@ -40,6 +41,7 @@ where
 impl<T> MultiHeadAttention<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn new(heads: usize, model: usize) -> Self {
         let features = MultiHeadParams::new(heads, model);

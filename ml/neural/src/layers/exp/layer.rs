@@ -3,13 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::LayerConfig;
-use crate::func::activate::{Activate, Activator, Linear};
-use crate::layers::{LayerParams, LayerShape};
-use crate::prelude::{Features, Forward, Node, ParamGroup, Parameterized, Params};
+use crate::func::activate::{Activate, Activator};
+use crate::layers::LayerShape;
+use crate::prelude::{Forward, ParamGroup, Parameterized, Params};
 use ndarray::prelude::{Array2, Dimension, Ix1, Ix2, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
-use serde::{Deserialize, Serialize};
 
 pub struct Layer<T = f64, D = Ix2>
 where
@@ -90,6 +90,7 @@ where
 impl<T> Layer<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         self.params = self.params.init(biased);

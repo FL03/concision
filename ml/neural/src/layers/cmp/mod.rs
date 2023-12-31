@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Layers
-pub use self::{features::*, kinds::*, utils::*};
+pub use self::{features::*, kinds::*};
 
 pub(crate) mod features;
 pub(crate) mod kinds;
@@ -100,8 +100,6 @@ where
         self.into()
     }
 }
-
-pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {}

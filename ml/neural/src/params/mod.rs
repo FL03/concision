@@ -6,13 +6,11 @@
 //!
 //! ## Overview
 //!
-pub use self::{bias::*, group::*, param::*, shapes::*, utils::*, weight::*};
+pub use self::{group::*, param::*, shapes::*};
 
-pub(crate) mod bias;
 pub(crate) mod group;
 pub(crate) mod param;
 pub(crate) mod shapes;
-pub(crate) mod weight;
 
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
@@ -214,8 +212,6 @@ where
 //         self.params_mut().bias_mut()
 //     }
 // }
-
-pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {}

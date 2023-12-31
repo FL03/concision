@@ -4,7 +4,3 @@
 */
 //! # Contextual Embedding
 //!
-
-pub use self::utils::*;
-
-pub(crate) mod utils {}

@@ -24,7 +24,7 @@ permissions: write-all
 
 jobs:
   build:
-    name: Build and Test
+    name: Build
     strategy:
       matrix:
         platform: [ ubuntu-latest ]
@@ -35,9 +35,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: setup (langspace)
         run: |
-          rustup update
           rustup default ${{ matrix.toolchain }}
-      - name: Build
+          rustup update
+      - name: Build (release)
         run: cargo build -r -v --workspace
       - name: Cache build
         uses: actions/cache@v3
@@ -47,8 +47,47 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target/release
-      - name: Test
-        run: cargo test --all-features -r -v --workspace
+
+  bench:
+    name: Bench
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup (langspace)
+        run: |
+          rustup default nightly
+          rustup update
       - name: Bench
-        if: matrix.toolchain == 'nightly'
         run: cargo bench --all -v
+  test:
+    name: Test
+    strategy:
+      matrix:
+        platform: [ ubuntu-latest ]
+        target: [ wasm32-unknown-unknown, wasm32-wasi ]
+        toolchain: [ stable, nightly ]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup (langspace)
+        run: |
+          rustup default ${{ matrix.toolchain }}
+          rustup update
+      - name: Test
+        run: cargo test --features full -v --workspace
+  blas:
+    name: Test (blas)
+    strategy:
+      matrix:
+        platform: [ ubuntu-latest ]
+        target: [ wasm32-unknown-unknown, wasm32-wasi ]
+        toolchain: [ stable, nightly ]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup (langspace)
+        run: |
+          rustup default ${{ matrix.toolchain }}
+          rustup update
+      - name: Test
+        run: cargo test --features blas -v --workspace

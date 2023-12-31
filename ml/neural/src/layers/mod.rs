@@ -13,7 +13,7 @@ pub(crate) mod stack;
 pub mod exp;
 
 use crate::prelude::{Activate, ActivateDyn, Forward, Node};
-use ndarray::prelude::{Array2, Ix2, NdFloat};
+use ndarray::prelude::{Array2, Ix2};
 // use ndarray::IntoDimension;
 use num::Float;
 

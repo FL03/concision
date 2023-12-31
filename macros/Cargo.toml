@@ -14,14 +14,16 @@ version.workspace = true
 [features]
 default = []
 
+
 [lib]
 bench = false
+crate-type = ["rlib"]
 doctest = false
-proc-macro = true
 test = false
 
 [dependencies]
-proc-macro2 = "1.0.69"
+ndarray = { features = [], version = "0.15" }
+proc-macro2 = "1"
 quote = "1"
 syn = { features = ["full"], version = "2" }
 

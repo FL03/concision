@@ -6,6 +6,7 @@ use crate::prelude::{Features, Forward, LayerParams, LayerShape};
 use ndarray::prelude::{Array2, Dimension, Ix2, NdFloat};
 use ndarray::IntoDimension;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 
 use serde::{Deserialize, Serialize};
@@ -93,6 +94,7 @@ where
 impl<T> ModelParams<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         self.children

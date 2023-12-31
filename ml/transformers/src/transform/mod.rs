@@ -3,12 +3,10 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Transform
-pub use self::{params::*, transformer::*, utils::*};
+pub use self::{config::*, transformer::*};
 
-pub(crate) mod params;
+pub(crate) mod config;
 pub(crate) mod transformer;
-
-pub(crate) mod utils {}
 
 #[cfg(test)]
 mod tests {

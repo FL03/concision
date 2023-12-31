@@ -40,8 +40,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::prelude::linarr;
-    use computare::prelude::RoundTo;
+    use crate::core::prelude::{linarr, RoundTo};
     use ndarray::prelude::Ix1;
 
     #[test]

@@ -21,7 +21,7 @@ proc-macro = true
 test = false
 
 [dependencies]
-proc-macro2 = "1.0.69"
+proc-macro2 = "1"
 quote = "1"
 syn = { features = ["full"], version = "2" }
 

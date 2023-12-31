@@ -12,6 +12,9 @@ pub(crate) mod utils;
 pub mod embed;
 pub mod encode;
 
+#[cfg(test)]
+pub use concision_core as core;
+
 pub mod prelude {
     pub use crate::embed::*;
     pub use crate::encode::*;

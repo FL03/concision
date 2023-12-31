@@ -7,6 +7,7 @@ use crate::prelude::{Forward, Gradient, LayerParams, Weighted};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
 use std::ops;
@@ -110,6 +111,7 @@ where
 impl<T> Model<T>
 where
     T: Float + SampleUniform,
+    StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
         self.params = self.params.init(biased);

@@ -13,7 +13,7 @@ pub(crate) mod utils {}
 mod tests {
     use super::*;
     use crate::prelude::Forward;
-    use computare::prelude::RoundTo;
+    use concision_core::prelude::RoundTo;
     use ndarray::prelude::{array, Array, Ix2};
 
     #[test]

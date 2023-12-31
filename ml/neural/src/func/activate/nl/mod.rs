@@ -70,8 +70,8 @@ pub(crate) mod utils {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::prelude::RoundTo;
     use crate::prelude::Activate;
-    use computare::prelude::RoundTo;
     use ndarray::array;
 
     #[test]
