@@ -16,17 +16,23 @@ pub(crate) mod utils;
 pub mod datasets;
 pub mod df;
 pub mod flows;
+pub mod shape;
+pub mod store;
 pub mod tensors;
+
+pub(crate) use concision_core as core;
 
 pub mod prelude {
     // pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
 
-    pub use crate::datasets::*;
-    pub use crate::df::*;
-    pub use crate::flows::*;
-    pub use crate::tensors::*;
-
     pub use crate::primitives::*;
     pub use crate::specs::*;
     pub use crate::utils::*;
+
+    pub use crate::datasets::*;
+    pub use crate::df::*;
+    pub use crate::flows::*;
+    pub use crate::shape::*;
+    pub use crate::store::*;
+    pub use crate::tensors::*;
 }

@@ -41,22 +41,22 @@ where
     }
 }
 
-impl<T> Module<T> for LinearModel<T>
-where
-    T: NdFloat,
-{
-    fn name(&self) -> &str {
-        "LinearModel"
-    }
+// impl<T> Module<Array2<T>> for LinearModel<Array2<T>>
+// where
+//     T: NdFloat,
+// {
+//     fn name(&self) -> &str {
+//         "LinearModel"
+//     }
 
-    fn parameters(&self) -> &ModuleParams<String, T> {
-        &self.params
-    }
+//     fn parameters(&self) -> &ModuleParams<String, T> {
+//         &self.params
+//     }
 
-    fn parameters_mut(&mut self) -> &mut ModuleParams<String, T> {
-        &mut self.params
-    }
-}
+//     fn parameters_mut(&mut self) -> &mut ModuleParams<String, T> {
+//         &mut self.params
+//     }
+// }
 
 impl<T> Biased<T> for LinearModel<T>
 where
@@ -83,23 +83,6 @@ where
 {
     type Dim = ndarray::Ix2;
 
-    fn weights(&self) -> &Array2<T> {
-        &self.params["weight"]
-    }
-
-    fn weights_mut(&mut self) -> &mut Array2<T> {
-        self.params.get_mut("weight").unwrap()
-    }
-
-    fn set_weights(&mut self, weights: Array2<T>) {
-        self.params.insert("weight".to_string(), weights);
-    }
-}
-
-impl<T> crate::neural::prelude::Weighted<T> for LinearModel<T>
-where
-    T: NdFloat,
-{
     fn weights(&self) -> &Array2<T> {
         &self.params["weight"]
     }

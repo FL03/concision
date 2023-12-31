@@ -12,7 +12,7 @@ pub trait Records<T> {
 
 impl<T> Records<T> for Array1<T> {
     fn features(&self) -> usize {
-        self.shape()[1]
+        1
     }
 
     fn samples(&self) -> usize {

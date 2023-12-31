@@ -2,19 +2,18 @@
    Appellation: norm <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::MatrixOps;
 use crate::prelude::Forward;
 use ndarray::prelude::{Array, Axis, Dimension, Ix2, NdFloat};
 use ndarray::{IntoDimension, RemoveAxis};
 use num::{Float, FromPrimitive};
 use serde::{Deserialize, Serialize};
-use std::ops::{Add, Mul};
+use std::ops::{Add, Div, Mul};
 
 pub fn norm<T, D>(x: &Array<T, D>, axis: usize) -> Array<T, D>
 where
     D: Dimension + RemoveAxis,
     T: FromPrimitive + NdFloat,
-    Array<T, D>: MatrixOps<T, D::Smaller, D>,
+    Array<T, D>: Div<Array<T, D::Smaller>, Output = Array<T, D>>,
 {
     let axis = Axis(axis);
     let epsilon = T::from(1e-6).unwrap();

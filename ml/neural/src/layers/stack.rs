@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::layers::{Layer, LayerShape};
-use crate::prelude::{Activate, Features, Linear, Parameterized};
+use crate::prelude::{Activate, Features, Linear};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;

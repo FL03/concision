@@ -2,6 +2,7 @@
    Appellation: tensor <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::core::id::AtomicId;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
 use num::Float;
@@ -14,6 +15,7 @@ where
     D: Dimension,
     T: Float,
 {
+    id: AtomicId,
     data: Array<T, D>,
 }
 
@@ -24,6 +26,7 @@ where
 {
     pub fn new(shape: impl IntoDimension<Dim = D>) -> Self {
         Self {
+            id: AtomicId::new(),
             data: Array::zeros(shape),
         }
     }

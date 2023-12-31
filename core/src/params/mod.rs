@@ -19,6 +19,8 @@ use num::Float;
 use std::collections::HashMap;
 
 pub trait Param {
+    type Dim: Dimension;
+
     fn kind(&self) -> &ParamKind;
 
     fn name(&self) -> &str;

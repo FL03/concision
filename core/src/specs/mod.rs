@@ -35,6 +35,10 @@ where
     }
 }
 
+pub trait Named {
+    fn name(&self) -> &str;
+}
+
 pub trait RoundTo {
     fn round_to(&self, places: usize) -> Self;
 }

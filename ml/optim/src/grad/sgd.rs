@@ -6,7 +6,7 @@
 //!
 //!
 
-use crate::neural::prelude::{Activate, Features, Forward, Layer, Parameterized, Weighted};
+use crate::neural::prelude::{Activate, Features, Forward, Layer};
 // use crate::prelude::ObjectiveFn;
 use ndarray::prelude::{s, Array1, Array2, Axis, Ix2, NdFloat};
 use ndarray_stats::DeviationExt;

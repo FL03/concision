@@ -11,6 +11,7 @@ use ndarray_rand::rand_distr as distr;
 use ndarray_rand::RandomExt;
 
 use num::{Float, Num};
+use std::ops;
 
 pub trait Affine<T = f64>: Sized {
     type Error;
@@ -18,15 +19,16 @@ pub trait Affine<T = f64>: Sized {
     fn affine(&self, mul: T, add: T) -> Result<Self, Self::Error>;
 }
 
-impl<T, D> Affine<T> for Array<T, D>
+impl<S, T, D> Affine<S> for Array<T, D>
 where
     T: Num + ScalarOperand,
     D: Dimension,
+    Array<T, D>: ops::Mul<S, Output = Array<T, D>> + ops::Add<S, Output = Array<T, D>>,
 {
     type Error = ShapeError;
 
-    fn affine(&self, mul: T, add: T) -> Result<Self, Self::Error> {
-        Ok(self * mul + add)
+    fn affine(&self, mul: S, add: S) -> Result<Self, Self::Error> {
+        Ok(self.clone() * mul + add)
     }
 }
 

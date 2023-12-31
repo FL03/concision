@@ -15,6 +15,7 @@ version = "0.1.12" # TODO - Update the cargo package version
 
 anyhow = "1"
 approx = "0.5"
+itertools = { features = [], version = "0.12" }
 lazy_static = "1"
 # ndarray = { features = ["serde-1"], version = "0.15" }
 # ndarray-linalg = { features = [], version = "0.16" }

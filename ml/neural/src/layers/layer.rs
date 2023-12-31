@@ -4,7 +4,7 @@
 */
 use super::{LayerParams, LayerShape};
 use crate::func::activate::{Activate, Gradient, Linear};
-use crate::prelude::{Features, Forward, Node, Parameterized, Params, Perceptron};
+use crate::prelude::{Features, Forward, Node, Perceptron};
 use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
@@ -58,8 +58,24 @@ where
         &self.activator
     }
 
+    pub fn features(&self) -> &LayerShape {
+        &self.features
+    }
+
+    pub fn features_mut(&mut self) -> &mut LayerShape {
+        &mut self.features
+    }
+
     pub fn name(&self) -> &str {
         &self.name
+    }
+
+    pub fn params(&self) -> &LayerParams<T> {
+        &self.params
+    }
+
+    pub fn params_mut(&mut self) -> &mut LayerParams<T> {
+        &mut self.params
     }
 
     pub fn set_name(&mut self, name: impl ToString) {
@@ -202,31 +218,6 @@ where
 
     fn forward(&self, args: &Array2<T>) -> Self::Output {
         self.activator.activate(&self.linear(args))
-    }
-}
-
-impl<T, A> Parameterized<T> for Layer<T, A>
-where
-    A: Activate<T>,
-    T: Float,
-{
-    type Features = LayerShape;
-    type Params = LayerParams<T>;
-
-    fn features(&self) -> &LayerShape {
-        &self.features
-    }
-
-    fn features_mut(&mut self) -> &mut LayerShape {
-        &mut self.features
-    }
-
-    fn params(&self) -> &LayerParams<T> {
-        &self.params
-    }
-
-    fn params_mut(&mut self) -> &mut LayerParams<T> {
-        &mut self.params
     }
 }
 

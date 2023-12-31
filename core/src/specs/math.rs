@@ -50,24 +50,22 @@ pub trait FloatExt: FromPrimitive + NdFloat + Signed + SampleUniform {}
 
 impl<T> FloatExt for T where T: FromPrimitive + NdFloat + Signed + SampleUniform {}
 
-pub trait Arithmetic<S, T>:
-    ops::Add<S, Output = T>
-    + ops::Div<S, Output = T>
-    + ops::Mul<S, Output = T>
-    + ops::Sub<S, Output = T>
-{
+pub trait Arithmetic<S>: ops::Add<S> + ops::Div<S> + ops::Mul<S> + ops::Sub<S> {
+    type Output;
 }
 
-impl<A, S, T> Arithmetic<S, T> for A where
+impl<A, S, T> Arithmetic<S> for A
+where
     A: ops::Add<S, Output = T>
         + ops::Div<S, Output = T>
         + ops::Mul<S, Output = T>
-        + ops::Sub<S, Output = T>
+        + ops::Sub<S, Output = T>,
 {
+    type Output = T;
 }
 
 pub trait MatrixOps<T = f64, A = Ix2, B = Ix2>:
-    Arithmetic<Array<T, A>, Array<T, B>> + Sized
+    Arithmetic<Array<T, A>, Output = Array<T, B>> + Sized
 where
     A: Dimension,
     B: Dimension,
@@ -79,8 +77,8 @@ where
     A: Dimension,
     B: Dimension,
     D: Dimension,
-    T: Float,
-    Self: Arithmetic<Array<T, A>, Array<T, B>>,
+    T: Arithmetic<T>,
+    Self: Arithmetic<Array<T, A>, Output = Array<T, B>>,
 {
 }
 
@@ -89,8 +87,8 @@ where
     A: Dimension,
     B: Dimension,
     D: Dimension,
-    T: Float,
-    Self: Arithmetic<Array<T, A>, Array<T, B>>,
+    T: Arithmetic<T>,
+    Self: Arithmetic<Array<T, A>, Output = Array<T, B>>,
 {
 }
 

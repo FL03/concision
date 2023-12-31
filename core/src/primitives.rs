@@ -18,7 +18,7 @@ mod statics {}
 /// Collection of types used throughout the system
 mod types {
     ///
-    pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
+    pub type BoxError = Box<dyn std::error::Error + Send + Sync + 'static>;
     ///
     pub type BoxResult<T = ()> = std::result::Result<T, BoxError>;
 

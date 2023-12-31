@@ -113,6 +113,8 @@ where
     T: Float,
     D: Dimension,
 {
+    type Dim = D;
+
     fn kind(&self) -> &ParamKind {
         &self.kind
     }
