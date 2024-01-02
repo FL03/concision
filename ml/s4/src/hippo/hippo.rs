@@ -2,30 +2,26 @@
     Appellation: hippo <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::dplr::DPLR;
+// use super::dplr::DPLR;
 use super::nplr::NPLR;
-use crate::core::prelude::{rangespace, Conjugate};
-use crate::prelude::S4Float;
-use ndarray::prelude::{Array2, Axis};
-use ndarray::{LinalgScalar, ScalarOperand};
-use ndarray_linalg::{Eigh, IntoTriangular, UPLO};
-use num::complex::{Complex, ComplexFloat};
-use num::traits::Num;
+use super::utils::genspace;
+use crate::core::prelude::SquareRoot;
+use ndarray::prelude::Array2;
+use ndarray::ScalarOperand;
+use ndarray_linalg::{IntoTriangular, UPLO};
+use num::traits::{Num, NumCast, Signed};
 // use num::traits::{Float, FloatConst};
 use serde::{Deserialize, Serialize};
 
-pub enum HiPPOs<T = f64>
-where
-    T: Clone + Num,
-{
+pub enum HiPPOs<T = f64> {
     HiPPO(HiPPO<T>),
-    DPLR(DPLR<T>),
+    // DPLR(DPLR<T>),
     NPLR(NPLR<T>),
 }
 
 impl<T> HiPPOs<T>
 where
-    T: ComplexFloat + ScalarOperand,
+    T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
 {
     pub fn new(features: usize) -> Self {
         Self::HiPPO(HiPPO::new(features))
@@ -36,15 +32,15 @@ where
     }
 }
 
-impl<T> HiPPOs<T>
-where
-    T: S4Float,
-    Complex<<T as ComplexFloat>::Real>: LinalgScalar + ScalarOperand,
-{
-    pub fn dplr(features: usize) -> Self {
-        Self::DPLR(DPLR::new(features))
-    }
-}
+// impl<T> HiPPOs<T>
+// where
+//     T: S4Float,
+//     Complex<<T as ComplexFloat>::Real>: LinalgScalar + ScalarOperand,
+// {
+//     pub fn dplr(features: usize) -> Self {
+//         Self::DPLR(DPLR::new(features))
+//     }
+// }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct HiPPO<T = f64> {
@@ -60,19 +56,17 @@ impl<T> HiPPO<T> {
 
 impl<T> HiPPO<T>
 where
-    T: ComplexFloat + ScalarOperand,
+    T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
 {
     pub fn new(features: usize) -> Self {
-        let base = rangespace((features, 1));
-        let p = (&base * T::from(2).unwrap() + T::one()).mapv(T::sqrt);
-        let mut a = &p * &p.t();
-        a = &a.into_triangular(UPLO::Lower) - &base.diag();
-
-        Self { features, data: -a }
+        Self {
+            features,
+            data: super::hippo(features),
+        }
     }
 
     pub fn nplr(&self) -> NPLR<T> {
-        let base = rangespace(self.features());
+        let base = genspace(self.features());
         let p = (&base + T::one() / T::from(2).unwrap()).mapv(T::sqrt);
         let b = (&base * T::from(2).unwrap() + T::one()).mapv(T::sqrt);
         NPLR {
@@ -83,40 +77,40 @@ where
     }
 }
 
-impl<T> HiPPO<T>
-where
-    T: S4Float,
-{
-    pub fn dplr(&self) -> DPLR<T> {
-        let (a, p, b) = super::make_nplr_hippo(self.features).into();
+// impl<T> HiPPO<T>
+// where
+//     T: S4Float,
+// {
+//     pub fn dplr(&self) -> DPLR<T> {
+//         let (a, p, b) = super::make_nplr_hippo(self.features).into();
 
-        //
-        let s = &a
-            + p.clone()
-                .insert_axis(Axis(1))
-                .dot(&p.clone().insert_axis(Axis(0)));
-        //
-        let sd = s.diag();
+//         //
+//         let s = &a
+//             + p.clone()
+//                 .insert_axis(Axis(1))
+//                 .dot(&p.clone().insert_axis(Axis(0)));
+//         //
+//         let sd = s.diag();
 
-        let a = Array2::ones(s.dim()) * sd.mean().expect("Average of diagonal is NaN");
+//         let a = Array2::ones(s.dim()) * sd.mean().expect("Average of diagonal is NaN");
 
-        // TODO: replace with eigh
-        let (e, v) = &(&s * T::from(T::one().neg().as_imag()).unwrap())
-            .eigh(UPLO::Lower)
-            .expect("");
-        let e = e.mapv(|x| T::from(x).unwrap());
+//         // TODO: replace with eigh
+//         let (e, v) = &(&s * T::from(T::one().neg().as_im()).unwrap())
+//             .eigh(UPLO::Lower)
+//             .expect("");
+//         let e = e.mapv(|x| T::from(x).unwrap());
 
-        let a = a + &e * T::from(T::one().as_imag()).unwrap();
-        let p = v.conj().t().dot(&p);
-        let b = v.conj().t().dot(&b);
-        DPLR {
-            lambda: a,
-            p,
-            b,
-            v: v.clone(),
-        }
-    }
-}
+//         let a = a + &e * T::from(T::one().as_im()).unwrap();
+//         let p = v.conj().t().dot(&p);
+//         let b = v.conj().t().dot(&b);
+//         DPLR {
+//             lambda: a,
+//             p,
+//             b,
+//             v: v.clone(),
+//         }
+//     }
+// }
 
 impl<T> AsRef<Array2<T>> for HiPPO<T> {
     fn as_ref(&self) -> &Array2<T> {

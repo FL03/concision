@@ -37,7 +37,7 @@ where
     fn fft(&self, args: &Self) -> Self::Output {
         let dim = args.dim();
         let mut out = Self::ones(args.dim());
-        let mut buffer = vec![T::zero().as_complex(); args.len()];
+        let mut buffer = vec![T::zero().as_re(); args.len()];
         let mut planner = FftPlanner::new();
         let fft = planner.plan_fft_forward(args.len());
         fft.process(buffer.as_mut_slice());
@@ -51,7 +51,7 @@ where
     fn ifft(&self, args: &Self) -> Self::Output {
         let dim = args.dim();
         let mut out = Self::ones(args.dim());
-        let mut buffer = vec![T::zero().as_complex(); args.len()];
+        let mut buffer = vec![T::zero().as_re(); args.len()];
         let mut planner = FftPlanner::new();
         let fft = planner.plan_fft_inverse(args.len());
         fft.process(buffer.as_mut_slice());

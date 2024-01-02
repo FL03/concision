@@ -3,6 +3,8 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Tensors
+//!
+//! A tensor is a generalization of vectors and matrices to potentially higher dimensions.
 pub use self::tensor::*;
 
 pub(crate) mod tensor;

@@ -172,3 +172,37 @@ where
 }
 
 // pub trait Stack
+
+pub trait Genspace<T = f64> {
+    fn arange(start: T, stop: T, step: T) -> Self;
+
+    fn linspace(start: T, stop: T, n: usize) -> Self;
+
+    fn logspace(start: T, stop: T, n: usize) -> Self;
+
+    fn geomspace(start: T, stop: T, n: usize) -> Self;
+
+    fn ones(n: usize) -> Self;
+
+    fn zeros(n: usize) -> Self;
+}
+
+pub trait ArrayLike {
+    fn ones_like(&self) -> Self;
+
+    fn zeros_like(&self) -> Self;
+}
+
+impl<T, D> ArrayLike for Array<T, D>
+where
+    T: Clone + Num,
+    D: Dimension,
+{
+    fn ones_like(&self) -> Self {
+        Array::ones(self.dim())
+    }
+
+    fn zeros_like(&self) -> Self {
+        Array::zeros(self.dim())
+    }
+}

@@ -2,36 +2,40 @@
    Appellation: specs <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{arrays::*, base::*, init::*, math::*};
+pub use self::{arrays::*, base::*, init::*, math::*, numerical::*};
 
 pub(crate) mod arrays;
 pub(crate) mod base;
 pub(crate) mod init;
 pub(crate) mod math;
+pub(crate) mod numerical;
 
-use num::traits::float::FloatCore;
-use num::{Complex, Num, Zero};
+use num::complex::Complex;
+use num::traits::{Float, Num};
 
-pub trait CncFloat: FloatCore {}
+pub trait AsComplex: Sized {
+    fn as_complex(self, real: bool) -> Complex<Self>;
 
-impl<T> CncFloat for T where T: FloatCore {}
+    fn as_re(self) -> Complex<Self> {
+        self.as_complex(true)
+    }
 
-pub trait AsComplex: Num {
-    fn as_complex(&self) -> Complex<Self>;
-
-    fn as_imag(&self) -> Complex<Self>;
+    fn as_im(self) -> Complex<Self> {
+        self.as_complex(false)
+    }
 }
 
 impl<T> AsComplex for T
 where
-    T: Copy + Num + Zero,
+    T: Num,
 {
-    fn as_complex(&self) -> Complex<Self> {
-        Complex::new(*self, T::zero())
-    }
-
-    fn as_imag(&self) -> Complex<Self> {
-        Complex::new(T::zero(), *self)
+    fn as_complex(self, real: bool) -> Complex<Self> {
+        let (re, im): (Self, Self) = if real {
+            (self, Self::zero())
+        } else {
+            (Self::zero(), self)
+        };
+        Complex::new(re, im)
     }
 }
 
@@ -45,7 +49,7 @@ pub trait RoundTo {
 
 impl<T> RoundTo for T
 where
-    T: num::Float,
+    T: Float,
 {
     fn round_to(&self, places: usize) -> Self {
         crate::round_to(*self, places)
@@ -61,7 +65,7 @@ mod tests {
     #[test]
     fn test_as_complex() {
         let x = 1.0;
-        let y = x.as_complex();
+        let y = x.as_re();
         assert_eq!(y, Complex::new(1.0, 0.0));
     }
 

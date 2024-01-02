@@ -2,14 +2,10 @@
    Appellation: math <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Dimension, Ix2, NdFloat};
-use ndarray_rand::rand_distr::uniform::SampleUniform;
-use num::{Complex, Float, FromPrimitive, Num, One, Signed, Zero};
+use ndarray::prelude::{Array, Dimension, Ix2};
+use num::complex::Complex;
+use num::{Float, Num, Signed};
 use std::ops;
-
-pub trait Binary: One + Zero {}
-
-impl<T> Binary for T where T: One + Zero {}
 
 pub trait Conjugate {
     fn conj(&self) -> Self;
@@ -29,12 +25,21 @@ impl Conjugate for f64 {
 
 impl<T> Conjugate for Complex<T>
 where
-    T: Copy + Num + Signed,
+    T: Clone + Num + Signed,
 {
     fn conj(&self) -> Self {
-        Complex::<T>::new(self.re, -self.im)
+        Complex::<T>::new(self.re.clone(), -self.im.clone())
     }
 }
+
+// impl<T> Conjugate for T
+// where
+//     T: ComplexFloat,
+// {
+//     fn conj(&self) -> Self {
+//         ComplexFloat::conj(self)
+//     }
+// }
 
 impl<T, D> Conjugate for Array<T, D>
 where
@@ -46,11 +51,10 @@ where
     }
 }
 
-pub trait FloatExt: FromPrimitive + NdFloat + Signed + SampleUniform {}
-
-impl<T> FloatExt for T where T: FromPrimitive + NdFloat + Signed + SampleUniform {}
-
-pub trait Arithmetic<S>: ops::Add<S> + ops::Div<S> + ops::Mul<S> + ops::Sub<S> {
+pub trait Arithmetic<S>
+where
+    Self: ops::Add<S> + ops::Div<S> + ops::Mul<S> + ops::Sub<S>,
+{
     type Output;
 }
 
@@ -114,5 +118,15 @@ where
 {
     fn sqrt(self) -> Self {
         Complex::<T>::sqrt(self)
+    }
+}
+
+impl<T, D> SquareRoot for Array<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    fn sqrt(self) -> Self {
+        self.mapv(|x| x.sqrt())
     }
 }

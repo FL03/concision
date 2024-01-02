@@ -6,17 +6,18 @@
 //!
 #![feature(associated_type_defaults)]
 
-pub use self::{misc::*, primitives::*, specs::*, utils::*};
+pub use self::{misc::*, primitives::*, utils::*};
 
 pub(crate) mod misc;
 pub(crate) mod primitives;
-pub(crate) mod specs;
 pub(crate) mod utils;
 
 pub mod datasets;
 pub mod df;
 pub mod flows;
+pub mod mat;
 pub mod shape;
+pub mod specs;
 pub mod store;
 pub mod tensors;
 
@@ -26,13 +27,14 @@ pub mod prelude {
     // pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
 
     pub use crate::primitives::*;
-    pub use crate::specs::*;
+
     pub use crate::utils::*;
 
     pub use crate::datasets::*;
     pub use crate::df::*;
     pub use crate::flows::*;
     pub use crate::shape::*;
+    pub use crate::specs::*;
     pub use crate::store::*;
     pub use crate::tensors::*;
 }

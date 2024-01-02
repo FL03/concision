@@ -7,11 +7,24 @@
 //!
 use super::utils::*;
 
+use crate::core::prelude::{rangespace, SquareRoot};
 use ndarray::prelude::{Array1, Array2};
 use ndarray::ScalarOperand;
 use num::complex::ComplexFloat;
-// use num::traits::{Float, FloatConst};
+use num::traits::{Num, NumCast, Signed};
 use serde::{Deserialize, Serialize};
+
+fn nplr<T>(features: usize) -> (Array2<T>, Array1<T>, Array1<T>)
+where
+    T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
+{
+    let hippo = hippo::<T>(features);
+
+    let base = genspace::<T>(features);
+    let p = (&base + (T::one() / T::from(2).unwrap())).mapv(T::sqrt);
+    let b = (&base * T::from(2).unwrap() + T::one()).mapv(T::sqrt);
+    (hippo, p, b)
+}
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct NPLR<T = f64> {
@@ -22,10 +35,10 @@ pub struct NPLR<T = f64> {
 
 impl<T> NPLR<T>
 where
-    T: ComplexFloat + ScalarOperand,
+    T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
 {
     pub fn new(features: usize) -> Self {
-        make_nplr_hippo(features)
+        nplr(features).into()
     }
 }
 

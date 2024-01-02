@@ -10,7 +10,7 @@ use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, NdFloat};
 use ndarray::{RemoveAxis, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-use num::Float;
+use num::{Float, Num};
 use std::ops;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -22,7 +22,7 @@ pub struct Node<T = f64> {
 
 impl<T> Node<T>
 where
-    T: Float,
+    T: Clone + Num,
 {
     pub fn create(biased: bool, features: usize) -> Self {
         let bias = if biased {
@@ -44,7 +44,11 @@ where
     pub fn new(features: usize) -> Self {
         Self::create(false, features)
     }
-
+}
+impl<T> Node<T>
+where
+    T: Num,
+{
     pub fn bias(&self) -> Option<&Array0<T>> {
         self.bias.as_ref()
     }
@@ -59,18 +63,6 @@ where
 
     pub fn is_biased(&self) -> bool {
         self.bias.is_some()
-    }
-
-    pub fn linear(&self, data: &Array2<T>) -> Array1<T>
-    where
-        T: 'static,
-    {
-        let w = self.weights().t().to_owned();
-        if let Some(bias) = self.bias() {
-            data.dot(&w) + bias
-        } else {
-            data.dot(&w)
-        }
     }
 
     pub fn set_bias(&mut self, bias: Option<Array0<T>>) {
@@ -109,6 +101,20 @@ where
     }
 }
 
+impl<T> Node<T>
+where
+    T: Num + ScalarOperand + 'static,
+    Array2<T>: Dot<Array1<T>, Output = Array1<T>>,
+{
+    pub fn linear(&self, data: &Array2<T>) -> Array1<T> {
+        let w = self.weights().t().to_owned();
+        if let Some(bias) = self.bias() {
+            data.dot(&w) + bias
+        } else {
+            data.dot(&w)
+        }
+    }
+}
 impl<T> Node<T>
 where
     T: Float + SampleUniform,

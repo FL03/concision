@@ -7,9 +7,10 @@ use crate::core::prelude::GenerateRandom;
 use crate::neural::prelude::{Features, Forward, Node};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, NdFloat};
+use ndarray::{LinalgScalar, ShapeError};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-use num::Float;
+use num::{Float, Num, Signed};
 use serde::{Deserialize, Serialize};
 use std::ops;
 
@@ -20,11 +21,80 @@ pub struct LinearParams<T = f64> {
     weights: Array2<T>,
 }
 
+impl<T> LinearParams<T> {
+    pub fn bias(&self) -> Option<&Array1<T>> {
+        self.bias.as_ref()
+    }
+
+    pub fn bias_mut(&mut self) -> Option<&mut Array1<T>> {
+        self.bias.as_mut()
+    }
+
+    pub fn features(&self) -> &LayerShape {
+        &self.features
+    }
+
+    pub fn features_mut(&mut self) -> &mut LayerShape {
+        &mut self.features
+    }
+
+    pub fn is_biased(&self) -> bool {
+        self.bias.is_some()
+    }
+
+    pub fn reshape(&mut self, features: LayerShape) -> Result<(), ShapeError>
+    where
+        T: Clone,
+    {
+        self.features = features;
+        self.weights = self.weights().clone().into_shape(features.out_by_in())?;
+        if let Some(bias) = self.bias_mut() {
+            *bias = bias.clone().into_shape(features.outputs())?;
+        }
+        Ok(())
+    }
+
+    pub fn set_bias(&mut self, bias: Option<Array1<T>>) {
+        self.bias = bias;
+    }
+
+    pub fn set_weights(&mut self, weights: Array2<T>) {
+        self.weights = weights;
+    }
+
+    pub fn weights(&self) -> &Array2<T> {
+        &self.weights
+    }
+
+    pub fn weights_mut(&mut self) -> &mut Array2<T> {
+        &mut self.weights
+    }
+
+    pub fn with_bias(mut self, bias: Option<Array1<T>>) -> Self {
+        self.bias = bias;
+        self
+    }
+
+    pub fn with_weights(mut self, weights: Array2<T>) -> Self {
+        self.weights = weights;
+        self
+    }
+}
+
 impl<T> LinearParams<T>
 where
-    T: Float,
+    T: Clone + Num,
 {
-    pub fn new(biased: bool, features: LayerShape) -> Self {
+    pub fn new(bias: Option<Array1<T>>, weights: Array2<T>) -> Self {
+        let features = LayerShape::new(weights.ncols(), weights.nrows());
+        Self {
+            bias,
+            features,
+            weights,
+        }
+    }
+
+    pub fn zeros(biased: bool, features: LayerShape) -> Self {
         let bias = if biased {
             Some(Array1::zeros(features.outputs()))
         } else {
@@ -38,19 +108,14 @@ where
     }
 
     pub fn biased(features: LayerShape) -> Self {
-        Self::new(true, features)
+        Self::zeros(true, features)
     }
 
-    pub fn features(&self) -> &LayerShape {
-        &self.features
-    }
-
-    pub fn features_mut(&mut self) -> &mut LayerShape {
-        &mut self.features
-    }
-
-    pub fn is_biased(&self) -> bool {
-        self.bias.is_some()
+    pub fn reset(&mut self) {
+        if let Some(bias) = self.bias_mut() {
+            *bias = Array1::zeros(bias.dim());
+        }
+        self.weights = Array2::zeros(self.weights.dim());
     }
 
     pub fn set_node(&mut self, idx: usize, node: Node<T>) {
@@ -71,60 +136,14 @@ where
             .index_axis_mut(Axis(0), idx)
             .assign(&node.weights());
     }
-
-    pub fn with_bias(mut self, bias: Option<Array1<T>>) -> Self {
-        self.bias = bias;
-        self
-    }
-
-    pub fn with_weights(mut self, weights: Array2<T>) -> Self {
-        self.weights = weights;
-        self
-    }
-
-    pub fn bias(&self) -> Option<&Array1<T>> {
-        self.bias.as_ref()
-    }
-
-    pub fn bias_mut(&mut self) -> Option<&mut Array1<T>> {
-        self.bias.as_mut()
-    }
-
-    pub fn set_bias(&mut self, bias: Option<Array1<T>>) {
-        self.bias = bias;
-    }
-
-    pub fn set_weights(&mut self, weights: Array2<T>) {
-        self.weights = weights;
-    }
-
-    pub fn weights(&self) -> &Array2<T> {
-        &self.weights
-    }
-
-    pub fn weights_mut(&mut self) -> &mut Array2<T> {
-        &mut self.weights
-    }
 }
 
 impl<T> LinearParams<T>
 where
-    T: Float + 'static,
+    T: LinalgScalar + Signed,
 {
     pub fn update_with_gradient(&mut self, gamma: T, gradient: &Array2<T>) {
         self.weights_mut().scaled_add(-gamma, gradient);
-    }
-}
-
-impl<T> LinearParams<T>
-where
-    T: NdFloat,
-{
-    pub fn reset(&mut self) {
-        if let Some(bias) = self.bias_mut() {
-            *bias = Array1::zeros(bias.dim());
-        }
-        self.weights *= T::zero();
     }
 }
 
@@ -153,10 +172,7 @@ where
     }
 }
 
-impl<T> Features for LinearParams<T>
-where
-    T: Float,
-{
+impl<T> Features for LinearParams<T> {
     fn inputs(&self) -> usize {
         self.features.inputs()
     }
@@ -217,7 +233,7 @@ where
         let mut iter = nodes.iter();
         let node = iter.next().unwrap();
         let shape = LayerShape::new(node.features(), nodes.len());
-        let mut params = Self::new(true, shape);
+        let mut params = Self::zeros(true, shape);
         params.set_node(0, node.clone());
         for (i, node) in iter.into_iter().enumerate() {
             params.set_node(i + 1, node.clone());

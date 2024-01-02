@@ -1,7 +1,11 @@
 /*
-    Appellation: specs <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+   Appellation: specs <mod>
+   Contrib: FL03 <jo3mccain@icloud.com>
 */
+pub use self::elements::*;
+
+pub(crate) mod elements;
+
 use ndarray::prelude::{Array1, Array2};
 
 pub trait Records<T> {
@@ -30,14 +34,5 @@ impl<T> Records<T> for Array2<T> {
     }
 }
 
-pub trait NdArrayExt<T> {}
-
-pub trait Store<K, V> {
-    fn get(&self, key: &K) -> Option<&V>;
-
-    fn get_mut(&mut self, key: &K) -> Option<&mut V>;
-
-    fn insert(&mut self, key: K, value: V) -> Option<V>;
-
-    fn remove(&mut self, key: &K) -> Option<V>;
-}
+#[cfg(test)]
+mod tests {}

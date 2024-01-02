@@ -7,6 +7,7 @@
 
 use crate::func::activate::{Activate, Linear, ReLU, Softmax};
 use crate::layers::{Layer, LayerShape, Stack};
+
 use crate::prelude::{Features, Forward};
 
 use ndarray::prelude::{Array2, Ix2, NdFloat};
