@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Decode
-pub use self::{decoder::*, params::*, utils::*};
+pub use self::decoder::*;
 
 pub(crate) mod decoder;
 pub(crate) mod params;

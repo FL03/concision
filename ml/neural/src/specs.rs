@@ -4,7 +4,7 @@
 */
 use crate::core::BoxResult;
 use crate::func::loss::Loss;
-use ndarray::prelude::{Array, Axis, Dimension, Ix2};
+use ndarray::prelude::{Array, Axis, Ix2};
 use num::Float;
 
 pub trait Backward<T>: Forward<T> {

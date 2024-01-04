@@ -6,14 +6,14 @@ use crate::params::SSMStore;
 
 use num::Float;
 
-pub struct Scan<'a, T = f64>
+pub struct Scanner<'a, T = f64>
 where
     T: Float,
 {
     model: &'a mut SSMStore<T>,
 }
 
-impl<'a, T> Scan<'a, T>
+impl<'a, T> Scanner<'a, T>
 where
     T: Float,
 {

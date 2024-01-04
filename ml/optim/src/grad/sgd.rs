@@ -38,7 +38,7 @@ where
         let ys = y.select(Axis(0), pos);
 
         let pred = model.forward(&xs);
-        let error = &pred - &ys;
+        let _error = &pred - &ys;
 
         for batch in (0..samples).step_by(batch_size) {
             let mut gradient = Array2::zeros((features.outputs(), features.inputs()));
@@ -54,7 +54,7 @@ where
 
                 let inner = y - &prediction;
                 let partial_w = (-2.0 / batch_size as f64) * input.dot(&inner);
-                let partial_b = (-2.0 / batch_size as f64) * inner;
+                let _partial_b = (-2.0 / batch_size as f64) * inner;
                 gradient -= partial_w.sum();
                 // let mut weights = model.weights_mut().slice_mut(s![])
                 // model.set_weights(weights)
@@ -83,7 +83,7 @@ pub fn sgd_step<A>(
     x: &Array2<f64>,
     y: &Array1<f64>,
     model: &mut Layer<f64, A>,
-    learning_rate: f64,
+    _learning_rate: f64,
     batch_size: usize,
 ) -> anyhow::Result<f64>
 where
@@ -91,17 +91,17 @@ where
 {
     let layer = model.clone();
     let features = layer.features();
-    let (samples, _inputs) = x.dim();
+    let (_samples, _inputs) = x.dim();
     let mut indices: Vec<usize> = (0..features.outputs()).collect();
-    let mut losses = 0.0;
+    let losses = 0.0;
 
     indices.shuffle(&mut rand::thread_rng());
     let pos = &indices[..batch_size];
 
     let xs = x.select(Axis(0), pos);
-    let ys = y.select(Axis(0), pos);
+    let _ys = y.select(Axis(0), pos);
 
-    let pred = model.forward(&xs);
+    let _pred = model.forward(&xs);
 
     Ok(losses)
 }
@@ -114,7 +114,7 @@ pub struct Sgd {
 
 impl Sgd {
     pub fn step(&mut self) -> f64 {
-        let mut loss = 0.0;
+        let loss = 0.0;
 
         loss
     }

@@ -12,9 +12,8 @@ pub(crate) mod group;
 pub(crate) mod param;
 pub(crate) mod shapes;
 
-use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
-use ndarray::IntoDimension;
+
 use num::Float;
 
 pub trait Biased<T = f64, D = Ix2>

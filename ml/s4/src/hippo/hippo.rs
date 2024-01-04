@@ -80,7 +80,7 @@ where
 //     T: S4Float,
 // {
 //     pub fn dplr(&self) -> DPLR<T> {
-        
+
 //     }
 // }
 

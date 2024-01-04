@@ -6,7 +6,7 @@ use super::LayerShape;
 use crate::core::prelude::GenerateRandom;
 use crate::prelude::{Features, Forward, Node};
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, Ix2, NdFloat};
+use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;

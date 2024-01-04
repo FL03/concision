@@ -10,7 +10,7 @@ use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal, Uniform};
 use ndarray_rand::RandomExt;
 use num::complex::{Complex, ComplexFloat};
-use num::traits::float::{Float, FloatConst,};
+use num::traits::float::{Float, FloatConst};
 use num::{Num, Signed};
 use rustfft::{FftNum, FftPlanner};
 
@@ -98,12 +98,12 @@ where
     res
 }
 
-pub fn casual_colvolution<T>(a: &Array2<T>, b: &Array2<T>) -> Array2<T>
+pub fn casual_colvolution<T>(a: &Array2<T>, _b: &Array2<T>) -> Array2<T>
 where
     T: FftNum,
 {
     let mut planner = FftPlanner::<T>::new();
-    let fft = planner.plan_fft_forward(a.len());
+    let _fft = planner.plan_fft_forward(a.len());
 
     a.clone()
 }

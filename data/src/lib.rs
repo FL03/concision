@@ -6,7 +6,7 @@
 //!
 #![feature(associated_type_defaults)]
 
-pub use self::{misc::*, primitives::*, utils::*};
+pub use self::misc::*;
 
 pub(crate) mod misc;
 pub(crate) mod primitives;
@@ -25,10 +25,6 @@ pub(crate) use concision_core as core;
 
 pub mod prelude {
     // pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
-
-    pub use crate::primitives::*;
-
-    pub use crate::utils::*;
 
     pub use crate::datasets::*;
     pub use crate::df::*;

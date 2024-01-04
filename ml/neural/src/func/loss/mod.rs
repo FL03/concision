@@ -8,7 +8,7 @@
 //! Overall, neural network models aim to minimize the average loss by adjusting certain hyperparameters,
 //! the weights and biases.
 
-pub use self::{kinds::*, utils::*};
+pub use self::kinds::*;
 
 pub(crate) mod kinds;
 

@@ -13,12 +13,6 @@ pub trait Scan<S, T> {
     fn scan(&self, args: &T, initial_state: &S) -> Self::Output;
 }
 
-pub trait StateSpace<T> {
-    type Config;
-
-    fn config(&self) -> &Self::Config;
-}
-
 pub trait NdFft {
     type Output;
 

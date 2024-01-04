@@ -7,7 +7,7 @@ pub use self::{kinds::*, store::*};
 pub(crate) mod kinds;
 pub(crate) mod store;
 
-use ndarray::prelude::{Array, Array1, Array2, Ix2};
+use ndarray::prelude::{Array, Array2, Ix2};
 use num::Num;
 use std::collections::HashMap;
 

@@ -10,12 +10,20 @@ use crate::core::prelude::{AsComplex, Conjugate, SquareRoot};
 use ndarray::prelude::{Array, Array1, Array2, Axis};
 use ndarray::ScalarOperand;
 use ndarray_linalg::{Eigh, Lapack, Scalar, UPLO};
-use num::{Complex, Num, Signed};
 use num::traits::NumOps;
+use num::{Complex, Num, Signed};
 use serde::{Deserialize, Serialize};
 use std::ops::{Mul, Neg};
 
-pub(crate) trait DPLRScalar: AsComplex + Conjugate + Scalar<Real = Self> + ScalarOperand + Signed + SquareRoot + NumOps + NumOps<Complex<Self>, Complex<Self>> 
+pub(crate) trait DPLRScalar:
+    AsComplex
+    + Conjugate
+    + Scalar<Real = Self>
+    + ScalarOperand
+    + Signed
+    + SquareRoot
+    + NumOps
+    + NumOps<Complex<Self>, Complex<Self>>
 where
     Complex<Self>: Lapack,
     <Self as Scalar>::Real: Mul<Complex<Self>, Output = Complex<Self>>,
@@ -24,7 +32,14 @@ where
 
 impl<T> DPLRScalar for T
 where
-    T: AsComplex + Conjugate + NumOps + NumOps<Complex<T>, Complex<T>> + Scalar<Real = T> + ScalarOperand + Signed + SquareRoot,
+    T: AsComplex
+        + Conjugate
+        + NumOps
+        + NumOps<Complex<T>, Complex<T>>
+        + Scalar<Real = T>
+        + ScalarOperand
+        + Signed
+        + SquareRoot,
     Complex<T>: Lapack,
     <T as Scalar>::Real: Mul<Complex<T>, Output = Complex<T>>,
 {
@@ -84,7 +99,14 @@ where
 
 impl<T> DPLR<T>
 where
-    T: AsComplex + Conjugate + NumOps + NumOps<Complex<T>, Complex<T>> + Scalar<Real = T> + ScalarOperand + Signed + SquareRoot,
+    T: AsComplex
+        + Conjugate
+        + NumOps
+        + NumOps<Complex<T>, Complex<T>>
+        + Scalar<Real = T>
+        + ScalarOperand
+        + Signed
+        + SquareRoot,
     Complex<T>: Lapack,
     <T as Scalar>::Real: NumOps<Complex<T>, Complex<T>>,
 {

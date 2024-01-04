@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Encode
-pub use self::{encoder::*, params::*, stack::*, utils::*};
+pub use self::{encoder::*, params::*, stack::*};
 
 pub(crate) mod encoder;
 pub(crate) mod params;

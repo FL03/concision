@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Decode
-pub use self::{network::*, params::*, utils::*};
+pub use self::{network::*, params::*};
 
 pub(crate) mod network;
 pub(crate) mod params;

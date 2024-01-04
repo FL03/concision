@@ -3,7 +3,6 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Codec
-pub use self::utils::*;
 
 pub mod decode;
 pub mod encode;

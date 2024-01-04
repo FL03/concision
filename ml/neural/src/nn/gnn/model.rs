@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::prelude::Node;
-use ndarray::prelude::Array;
+
 use num::Float;
 use petgraph::prelude::{Directed, Graph};
 

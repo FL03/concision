@@ -39,9 +39,9 @@ pub(crate) mod utils {
     use std::ops::Sub;
 
     pub fn gradient_descent<M, I, T, D>(
-        gamma: T,
+        _gamma: T,
         model: &mut M,
-        objective: impl Gradient<T, D>,
+        _objective: impl Gradient<T, D>,
         data: &Array2<T>,
         targets: &Array<T, D>,
     ) -> anyhow::Result<f64>
@@ -137,17 +137,17 @@ mod tests {
     fn test_gradient() {
         let (samples, inputs, outputs) = (20, 5, 1);
 
-        let (epochs, gamma) = (10, 0.001);
+        let (_epochs, _gamma) = (10, 0.001);
 
         let features = LayerShape::new(inputs, outputs);
 
         // Generate some example data
         let x = linarr::<f64, Ix2>((samples, features.inputs())).unwrap();
-        let y = linarr::<f64, Ix2>((samples, features.outputs())).unwrap();
+        let _y = linarr::<f64, Ix2>((samples, features.outputs())).unwrap();
 
-        let mut model = Layer::<f64, Linear>::from(features).init(true);
+        let model = Layer::<f64, Linear>::from(features).init(true);
 
-        let pred = model.forward(&x);
+        let _pred = model.forward(&x);
 
         // let mut losses = Array1::zeros(epochs);
         // for e in 0..epochs {
