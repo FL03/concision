@@ -34,7 +34,7 @@ pub struct NPLR<T = f64> {
 
 impl<T> NPLR<T>
 where
-    T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
+    T: NumCast + ScalarOperand + Signed + SquareRoot,
 {
     pub fn new(features: usize) -> Self {
         nplr(features).into()

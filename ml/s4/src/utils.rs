@@ -10,7 +10,7 @@ use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal, Uniform};
 use ndarray_rand::RandomExt;
 use num::complex::{Complex, ComplexFloat};
-use num::traits::float::{Float, FloatConst, FloatCore};
+use num::traits::float::{Float, FloatConst,};
 use num::{Num, Signed};
 use rustfft::{FftNum, FftPlanner};
 

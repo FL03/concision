@@ -8,9 +8,7 @@ use super::utils::genspace;
 use crate::core::prelude::SquareRoot;
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
-use ndarray_linalg::{IntoTriangular, UPLO};
 use num::traits::{Num, NumCast, Signed};
-// use num::traits::{Float, FloatConst};
 use serde::{Deserialize, Serialize};
 
 pub enum HiPPOs<T = f64> {
@@ -82,33 +80,7 @@ where
 //     T: S4Float,
 // {
 //     pub fn dplr(&self) -> DPLR<T> {
-//         let (a, p, b) = super::make_nplr_hippo(self.features).into();
-
-//         //
-//         let s = &a
-//             + p.clone()
-//                 .insert_axis(Axis(1))
-//                 .dot(&p.clone().insert_axis(Axis(0)));
-//         //
-//         let sd = s.diag();
-
-//         let a = Array2::ones(s.dim()) * sd.mean().expect("Average of diagonal is NaN");
-
-//         // TODO: replace with eigh
-//         let (e, v) = &(&s * T::from(T::one().neg().as_im()).unwrap())
-//             .eigh(UPLO::Lower)
-//             .expect("");
-//         let e = e.mapv(|x| T::from(x).unwrap());
-
-//         let a = a + &e * T::from(T::one().as_im()).unwrap();
-//         let p = v.conj().t().dot(&p);
-//         let b = v.conj().t().dot(&b);
-//         DPLR {
-//             lambda: a,
-//             p,
-//             b,
-//             v: v.clone(),
-//         }
+        
 //     }
 // }
 

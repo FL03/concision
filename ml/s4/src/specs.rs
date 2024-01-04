@@ -5,7 +5,7 @@
 use crate::core::prelude::AsComplex;
 use ndarray::prelude::{Array, Dimension};
 use num::complex::ComplexFloat;
-use rustfft::{Fft, FftNum, FftPlanner};
+use rustfft::{FftNum, FftPlanner};
 
 pub trait Scan<S, T> {
     type Output;
@@ -35,8 +35,6 @@ where
     type Output = Self;
 
     fn fft(&self, args: &Self) -> Self::Output {
-        let dim = args.dim();
-        let mut out = Self::ones(args.dim());
         let mut buffer = vec![T::zero().as_re(); args.len()];
         let mut planner = FftPlanner::new();
         let fft = planner.plan_fft_forward(args.len());
@@ -49,8 +47,6 @@ where
     }
 
     fn ifft(&self, args: &Self) -> Self::Output {
-        let dim = args.dim();
-        let mut out = Self::ones(args.dim());
         let mut buffer = vec![T::zero().as_re(); args.len()];
         let mut planner = FftPlanner::new();
         let fft = planner.plan_fft_inverse(args.len());
