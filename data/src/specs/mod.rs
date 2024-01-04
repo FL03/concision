@@ -2,8 +2,11 @@
    Appellation: specs <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+pub use self::{elements::*, export::*, import::*};
 
 pub(crate) mod elements;
+pub(crate) mod export;
+pub(crate) mod import;
 
 use ndarray::prelude::{Array1, Array2};
 

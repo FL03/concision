@@ -66,24 +66,10 @@ where
     }
 }
 
-pub trait RandNum: SampleUniform
-where
-    StandardNormal: Distribution<Self>,
-{
-}
-
-impl<T> RandNum for T
-where
-    T: SampleUniform,
-    StandardNormal: Distribution<T>,
-{
-}
-
 pub trait GenerateRandom<T = f64, D = Ix2>: Sized
 where
     D: Dimension,
-    T: Float + SampleUniform,
-    StandardNormal: Distribution<T>,
+    T: Float,
 {
     fn rand<IdS>(dim: impl IntoDimension<Dim = D>, distr: IdS) -> Self
     where
@@ -97,17 +83,26 @@ where
         Ok(Self::rand(dim.into_dimension(), dist))
     }
 
-    fn stdnorm(dim: impl IntoDimension<Dim = D>) -> Self {
+    fn stdnorm(dim: impl IntoDimension<Dim = D>) -> Self
+    where
+        StandardNormal: Distribution<T>,
+    {
         Self::rand(dim, StandardNormal)
     }
 
-    fn uniform(axis: usize, dim: impl IntoDimension<Dim = D>) -> Self {
+    fn uniform(axis: usize, dim: impl IntoDimension<Dim = D>) -> Self
+    where
+        T: SampleUniform,
+    {
         let dim = dim.into_dimension();
         let dk = T::from(dim[axis]).unwrap().recip().sqrt();
         Self::uniform_between(dk, dim)
     }
 
-    fn uniform_between(dk: T, dim: impl IntoDimension<Dim = D>) -> Self {
+    fn uniform_between(dk: T, dim: impl IntoDimension<Dim = D>) -> Self
+    where
+        T: SampleUniform,
+    {
         Self::rand(dim, Uniform::new(-dk, dk))
     }
 }

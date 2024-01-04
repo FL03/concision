@@ -4,4 +4,3 @@
 */
 
 pub trait Dimension {}
-

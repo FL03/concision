@@ -10,4 +10,15 @@ pub(crate) mod rank;
 pub(crate) mod shape;
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_shape() {
+        let mut shape = Shape::default();
+        shape.extend([1, 1, 1]);
+        assert_eq!(shape, Shape::new(vec![1, 1, 1]));
+        assert_eq!(shape.elements(), 1);
+        assert_eq!(shape.rank(), 3);
+    }
+}

@@ -101,7 +101,7 @@ mod tests {
 
     use super::*;
     use crate::core::prelude::linarr;
-    use crate::neural::func::activate::{Linear, Sigmoid};
+    use crate::neural::func::activate::{LinearActivation, Sigmoid};
     use crate::neural::models::ModelParams;
     use crate::neural::prelude::{Features, Forward, Layer, LayerShape};
     use ndarray::prelude::{Array1, Ix2};
@@ -145,7 +145,7 @@ mod tests {
         let x = linarr::<f64, Ix2>((samples, features.inputs())).unwrap();
         let _y = linarr::<f64, Ix2>((samples, features.outputs())).unwrap();
 
-        let model = Layer::<f64, Linear>::from(features).init(true);
+        let model = Layer::<f64, LinearActivation>::from(features).init(true);
 
         let _pred = model.forward(&x);
 

@@ -17,8 +17,41 @@ impl Shape {
         self.0.iter().product()
     }
 
+    pub fn include(mut self, dim: usize) -> Self {
+        self.0.push(dim);
+        self
+    }
+
+    pub fn push(&mut self, dim: usize) {
+        self.0.push(dim)
+    }
+
     pub fn rank(&self) -> usize {
         self.0.len()
+    }
+
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self(Vec::with_capacity(capacity))
+    }
+
+    pub fn zero() -> Self {
+        Self::default()
+    }
+
+    pub fn zeros(rank: usize) -> Self {
+        Self(vec![0; rank])
+    }
+}
+
+impl AsRef<[usize]> for Shape {
+    fn as_ref(&self) -> &[usize] {
+        &self.0
+    }
+}
+
+impl AsMut<[usize]> for Shape {
+    fn as_mut(&mut self) -> &mut [usize] {
+        &mut self.0
     }
 }
 
@@ -66,3 +99,50 @@ impl ops::IndexMut<usize> for Shape {
     }
 }
 
+impl ops::Index<ops::Range<usize>> for Shape {
+    type Output = [usize];
+
+    fn index(&self, index: ops::Range<usize>) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::Index<ops::RangeTo<usize>> for Shape {
+    type Output = [usize];
+
+    fn index(&self, index: ops::RangeTo<usize>) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::Index<ops::RangeFrom<usize>> for Shape {
+    type Output = [usize];
+
+    fn index(&self, index: ops::RangeFrom<usize>) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::Index<ops::RangeFull> for Shape {
+    type Output = [usize];
+
+    fn index(&self, index: ops::RangeFull) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::Index<ops::RangeInclusive<usize>> for Shape {
+    type Output = [usize];
+
+    fn index(&self, index: ops::RangeInclusive<usize>) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::Index<ops::RangeToInclusive<usize>> for Shape {
+    type Output = [usize];
+
+    fn index(&self, index: ops::RangeToInclusive<usize>) -> &Self::Output {
+        &self.0[index]
+    }
+}

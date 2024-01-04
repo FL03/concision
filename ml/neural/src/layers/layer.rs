@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{LayerParams, LayerShape};
-use crate::func::activate::{Activate, Gradient, Linear};
+use crate::func::activate::{Activate, Gradient, LinearActivation};
 use crate::prelude::{Features, Forward, Node, Perceptron};
 use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -13,7 +13,7 @@ use num::{Float, Signed};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Layer<T = f64, A = Linear>
+pub struct Layer<T = f64, A = LinearActivation>
 where
     A: Activate<T>,
     T: Float,

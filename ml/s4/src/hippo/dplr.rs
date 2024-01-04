@@ -48,6 +48,7 @@ where
 pub(crate) fn dplr<T>(features: usize) -> DPLR<T>
 where
     T: DPLRScalar,
+
     Complex<T>: Lapack,
     <T as Scalar>::Real: Mul<Complex<T>, Output = Complex<T>>,
 {
@@ -55,12 +56,14 @@ where
 
     //
     let s = {
+        // reshape the p-array from NPLR into a two-dimensional matrix
         let p2 = p.clone().insert_axis(Axis(1));
+        // compute s
         &a + p2.dot(&p2.t())
     };
-    //
+    // find the diagonal of s
     let sd = s.diag();
-
+    // create a matrix from the diagonals of s
     let lambda_re = Array::ones(sd.dim()) * sd.mean().expect("");
 
     let (e, v) = s

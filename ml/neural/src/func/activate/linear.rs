@@ -10,9 +10,9 @@ use serde::{Deserialize, Serialize};
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
-pub struct Linear;
+pub struct LinearActivation;
 
-impl Linear {
+impl LinearActivation {
     pub fn new() -> Self {
         Self::default()
     }
@@ -33,7 +33,7 @@ impl Linear {
     }
 
     pub fn linear<T: Clone>(args: &T) -> T {
-        Linear::method()(args)
+        LinearActivation::method()(args)
     }
 
     pub fn method<T: Clone>() -> fn(&T) -> T {
@@ -45,7 +45,7 @@ impl Linear {
     }
 }
 
-impl<T, D> Gradient<T, D> for Linear
+impl<T, D> Gradient<T, D> for LinearActivation
 where
     D: Dimension,
     T: Clone + One,
@@ -55,7 +55,7 @@ where
     }
 }
 
-impl<T> Fn<(&T,)> for Linear
+impl<T> Fn<(&T,)> for LinearActivation
 where
     T: Clone,
 {
@@ -64,7 +64,7 @@ where
     }
 }
 
-impl<T> FnMut<(&T,)> for Linear
+impl<T> FnMut<(&T,)> for LinearActivation
 where
     T: Clone,
 {
@@ -73,7 +73,7 @@ where
     }
 }
 
-impl<T> FnOnce<(&T,)> for Linear
+impl<T> FnOnce<(&T,)> for LinearActivation
 where
     T: Clone,
 {

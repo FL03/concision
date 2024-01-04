@@ -2,7 +2,7 @@
    Appellation: block <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::func::activate::{Activate, Linear, ReLU, Softmax};
+use crate::func::activate::{Activate, LinearActivation, ReLU, Softmax};
 use num::Float;
 use std::marker::PhantomData;
 
@@ -15,7 +15,7 @@ pub struct FuncBlock<T = f64> {
     method: Vec<fn(&T) -> T>,
 }
 
-pub struct FFNBlock<T = f64, I = Linear, H = ReLU, O = Softmax>
+pub struct FFNBlock<T = f64, I = LinearActivation, H = ReLU, O = Softmax>
 where
     I: Activate<T>,
     H: Activate<T>,

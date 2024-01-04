@@ -19,6 +19,7 @@ pub trait GradStore<T = f64> {
 }
 
 pub trait NdTensor<T = f64> {
+    fn affine(&self, a: T, b: T) -> Self;
 
     fn apply<F>(&self, f: F) -> Self
     where

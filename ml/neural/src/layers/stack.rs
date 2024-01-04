@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::layers::{Layer, LayerShape};
-use crate::prelude::{Activate, Features, Linear};
+use crate::prelude::{Activate, Features, LinearActivation};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
@@ -30,7 +30,7 @@ where
 /// A [Stack] is a collection of [Layer]s, typically used to construct the hidden
 /// layers of a deep neural network.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
-pub struct Stack<T = f64, A = Linear>
+pub struct Stack<T = f64, A = LinearActivation>
 where
     A: Activate<T>,
     T: Float,

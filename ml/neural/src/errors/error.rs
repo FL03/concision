@@ -26,12 +26,12 @@ use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum MlError {
+    Compute(ComputeError),
     Data(String),
     Dimension(String),
     #[default]
     Error(String),
     Network(NetworkError),
-    Process(ProcessError),
 }
 
 impl std::error::Error for MlError {}
@@ -103,7 +103,7 @@ pub enum PredictError {
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum ProcessError {
+pub enum ComputeError {
     Arithmetic(String),
     #[default]
     Process(String),

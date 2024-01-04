@@ -39,7 +39,7 @@ pub enum Errors {
     IO,
     Null,
     Parse,
-    Process,
+    Process(ProcessError),
     Runtime,
     Syntax,
     Unknown,

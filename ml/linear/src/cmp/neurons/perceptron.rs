@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Node;
-use crate::prelude::{Activate, Forward, LinearActivation};
+use crate::neural::prelude::{Activate, Forward, LinearActivation};
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};

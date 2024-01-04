@@ -25,7 +25,7 @@ where
 pub fn randcomplex<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
 where
     D: Dimension,
-    T: ComplexFloat,
+    T: Copy + Num,
     StandardNormal: Distribution<T>,
 {
     let dim = shape.into_dimension();

@@ -3,8 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::LayerShape;
+use crate::cmp::neurons::Node;
 use crate::core::prelude::GenerateRandom;
-use crate::neural::prelude::{Features, Forward, Node};
+use crate::neural::prelude::{Features, Forward};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, NdFloat};
 use ndarray::{LinalgScalar, ShapeError};

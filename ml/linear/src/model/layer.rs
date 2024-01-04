@@ -2,9 +2,11 @@
     Appellation: model <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::func::activate::{Activate, Gradient};
-use crate::neural::prelude::{Features, Forward, Node, Perceptron};
-use crate::params::{LayerShape, LinearParams as LayerParams};
+use crate::cmp::neurons::{Node, Perceptron};
+use crate::cmp::params::LayerShape;
+use crate::cmp::params::LinearParams as LayerParams;
+use crate::neural::prelude::{Activate, Features, Forward, Gradient};
+
 use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray::ShapeError;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
