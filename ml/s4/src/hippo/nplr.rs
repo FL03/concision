@@ -7,10 +7,9 @@
 //!
 use super::utils::*;
 
-use crate::core::prelude::{rangespace, SquareRoot};
+use crate::core::prelude::SquareRoot;
 use ndarray::prelude::{Array1, Array2};
 use ndarray::ScalarOperand;
-use num::complex::ComplexFloat;
 use num::traits::{Num, NumCast, Signed};
 use serde::{Deserialize, Serialize};
 

@@ -6,74 +6,90 @@
 //!
 //!
 use super::nplr::NPLR;
-use crate::core::prelude::{Conjugate, SquareRoot};
-use crate::prelude::S4Float;
-use ndarray::prelude::{Array1, Array2, Axis};
-use ndarray::{LinalgScalar, ScalarOperand};
-use ndarray_linalg::{Eigh, IntoTriangular, Lapack, Scalar, UPLO};
-use num::complex::{Complex, ComplexFloat};
-use num::{FromPrimitive, Num, One, Signed};
+use crate::core::prelude::{AsComplex, Conjugate, SquareRoot};
+use ndarray::prelude::{Array, Array1, Array2, Axis};
+use ndarray::ScalarOperand;
+use ndarray_linalg::{Eigh, Lapack, Scalar, UPLO};
+use num::{Complex, Num, Signed};
 use serde::{Deserialize, Serialize};
-use std::ops::{Add, Mul, Neg};
+use std::ops::{Mul, Neg};
 
-// #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
-#[derive(Clone, Debug, PartialEq)]
+pub(crate) fn dplr<T>(features: usize) -> DPLR<T>
+where
+    T: AsComplex
+        + Conjugate
+        + Lapack
+        + Num
+        + Scalar<Real = T>
+        + ScalarOperand
+        + Signed
+        + SquareRoot
+        + Mul<Complex<T>, Output = Complex<T>>,
+    Complex<T>: Lapack,
+    <T as Scalar>::Real: Mul<Complex<T>, Output = Complex<T>>,
+{
+    let (a, p, b) = NPLR::<T>::new(features).into();
+
+    //
+    let s = {
+        let p2 = p.clone().insert_axis(Axis(1));
+        &a + p2.dot(&p2.t())
+    };
+    //
+    let sd = s.diag();
+
+    let lambda_re = Array::ones(sd.dim()) * sd.mean().expect("");
+
+    let (e, v) = s
+        .mapv(|i: T| i * Complex::i().neg())
+        .eigh(UPLO::Lower)
+        .expect("");
+
+    let lambda = {
+        // let lambda_im = e.mapv(|i| i * Complex::i());
+        let iter = lambda_re
+            .into_iter()
+            .zip(e.into_iter())
+            .map(|(i, j)| Complex::new(i, T::zero()) + T::from(j).unwrap() * Complex::i());
+        Array::from_iter(iter)
+    };
+    let p = p.mapv(AsComplex::as_re);
+    let b = b.mapv(AsComplex::as_re);
+    DPLR {
+        lambda,
+        p: v.conj().t().dot(&p),
+        b: v.conj().t().dot(&b),
+        v,
+    }
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct DPLR<T = f64>
 where
-    T: Clone + Num + Scalar,
+    T: Clone + Num,
 {
-    pub lambda: Array2<Complex<<T as Scalar>::Real>>,
-    pub p: Array1<T>,
-    pub b: Array1<T>,
-    pub v: Array2<T>,
+    pub lambda: Array1<Complex<T>>,
+    pub p: Array1<Complex<T>>,
+    pub b: Array1<Complex<T>>,
+    pub v: Array2<Complex<T>>,
 }
 
 impl<T> DPLR<T>
 where
-    T: Conjugate + Lapack + Scalar + ScalarOperand + Signed + SquareRoot,
-    T: Add<Complex<<T as Scalar>::Real>, Output = Complex<<T as Scalar>::Real>>
-        + Mul<Complex<<T as Scalar>::Real>, Output = Complex<<T as Scalar>::Real>>,
-    Complex<<T as Scalar>::Real>: Mul<T, Output = Complex<<T as Scalar>::Real>>,
-    Complex<<T as Scalar>::Real>:
-        Mul<Complex<<T as Scalar>::Real>, Output = Complex<<T as Scalar>::Real>>,
-    Complex<T>: Add<Complex<<T as Scalar>::Real>, Output = Complex<T>>
-        + Mul<Complex<<T as Scalar>::Real>, Output = Complex<T>>,
+    T: AsComplex
+        + Conjugate
+        + Lapack
+        + Num
+        + Scalar<Real = T>
+        + ScalarOperand
+        + Signed
+        + SquareRoot
+        + Mul<Complex<T>, Output = Complex<T>>,
+    Complex<T>: Lapack,
+    <T as Scalar>::Real: Mul<Complex<T>, Output = Complex<T>>,
 {
     pub fn create(features: usize) -> Self {
-        let (a, p, b) = NPLR::<T>::new(features).into();
-
-        //
-        let s = {
-            let p2 = p.clone().insert_axis(Axis(1));
-            &a + p2.dot(&p2.t())
-        };
-        //
-        let sd = s.diag().mean().expect("Average of diagonal is NaN");
-
-        let a = Array2::ones(s.dim()) * sd;
-
-        // TODO: Fix this
-        // let (ee, vv) = {
-        //     let si =
-        // };
-        // let (e, v) = s.mapv(|i: T| T::from(Complex::new(i.re(), i.im()) * Complex::i().neg()).unwrap())
-        //     .eigh(UPLO::Lower)
-        //     .expect("");
-        let (e, v) = s.conj().eigh(UPLO::Lower).expect("");
-
-        // let a = a + &e * Complex::new(<<T as ComplexFloat>::Real>::one(), <<T as ComplexFloat>::Real>::one());
-        let a = a + e.mapv(|i: <T as Scalar>::Real| {
-            Complex::new(i.re(), i.im())
-                * Complex::new(<T as Scalar>::Real::one(), <T as Scalar>::Real::one().neg())
-        });
-        let p = v.conj().t().dot(&p);
-        let b = v.conj().t().dot(&b);
-        Self {
-            lambda: a,
-            p,
-            b,
-            v: v.clone(),
-        }
+        dplr(features)
     }
 }
 
