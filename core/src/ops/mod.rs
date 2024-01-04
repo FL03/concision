@@ -13,5 +13,16 @@ pub trait Operation<T> {
     fn eval(&self, args: &T) -> Self::Output;
 }
 
+impl<F, S, T> Operation<T> for F
+where
+    F: Fn(&T) -> S,
+{
+    type Output = S;
+
+    fn eval(&self, args: &T) -> Self::Output {
+        self(args)
+    }
+}
+
 #[cfg(test)]
 mod tests {}

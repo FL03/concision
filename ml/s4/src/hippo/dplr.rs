@@ -110,7 +110,7 @@ where
     Complex<T>: Lapack,
     <T as Scalar>::Real: NumOps<Complex<T>, Complex<T>>,
 {
-    pub fn create(features: usize) -> Self {
+    pub fn new(features: usize) -> Self {
         dplr(features)
     }
 }

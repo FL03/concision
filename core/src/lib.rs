@@ -12,6 +12,7 @@ pub(crate) mod utils;
 pub mod errors;
 pub mod id;
 pub mod masks;
+pub mod ops;
 pub mod params;
 pub mod specs;
 pub mod states;

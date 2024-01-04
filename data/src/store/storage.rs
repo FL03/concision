@@ -5,8 +5,3 @@
 
 pub struct Storage {}
 
-pub enum Rank<T> {
-    Zero(T),
-    One(Vec<T>),
-    N(Vec<Self>),
-}

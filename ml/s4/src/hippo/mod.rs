@@ -64,7 +64,7 @@ mod tests {
         let features = 8;
 
         let nplr = NPLR::<f64>::new(features);
-        let dplr = DPLR::<f64>::create(features);
+        let dplr = DPLR::<f64>::new(features);
 
         let hippo = nplr.a.clone();
 
