@@ -2,9 +2,10 @@
    Appellation: math <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::complex::Complex;
-use num::{Float, Num, Signed};
+use num::{Float, Integer, Signed};
 use std::ops;
 
 pub trait Conjugate {
@@ -25,10 +26,10 @@ impl Conjugate for f64 {
 
 impl<T> Conjugate for Complex<T>
 where
-    T: Clone + Num + Signed,
+    T: Clone + Signed,
 {
     fn conj(&self) -> Self {
-        Complex::<T>::new(self.re.clone(), -self.im.clone())
+        Complex::<T>::conj(self)
     }
 }
 
@@ -128,5 +129,36 @@ where
 {
     fn sqrt(self) -> Self {
         self.mapv(|x| x.sqrt())
+    }
+}
+
+pub trait Power<Rhs> {
+    type Output;
+
+    fn pow(&self, rhs: Rhs) -> Self::Output;
+}
+
+// impl<S, T> Power<T> for S where S: Pow<T> {
+//     type Output = <S as Pow<T>>::Output;
+
+//     fn pow(self, rhs: T) -> Self::Output {
+//         <Self as Pow<T>>::pow(self, rhs)
+//     }
+// }
+
+impl<T, D> Power<usize> for Array<T, D>
+where
+    D: Dimension,
+    T: Clone,
+    Array<T, D>: Dot<Self, Output = Self>,
+{
+    type Output = Self;
+
+    fn pow(&self, rhs: usize) -> Self::Output {
+        let mut res = self.clone();
+        for _ in 1..rhs {
+            res = res.dot(&self);
+        }
+        res
     }
 }

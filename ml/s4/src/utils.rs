@@ -3,6 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::core::prelude::{AsComplex, Conjugate};
+use ndarray::linalg::Dot;
 use ndarray::prelude::*;
 use ndarray::{IntoDimension, ScalarOperand};
 use ndarray_linalg::Scalar;
@@ -10,9 +11,9 @@ use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal, Uniform};
 use ndarray_rand::RandomExt;
 use num::complex::{Complex, ComplexFloat};
-use num::traits::float::{Float, FloatConst};
-use num::{Num, Signed};
+use num::traits::{Float, FloatConst, FromPrimitive, Num, Signed};
 use rustfft::{FftNum, FftPlanner};
+use std::ops::Neg;
 
 pub fn stdnorm<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
 where
@@ -38,10 +39,11 @@ where
     res
 }
 
-pub fn cauchy<T, D>(v: &Array<T, D>, omega: &Array<T, D>, lambda: &Array<T, D>) -> Array<T, D>
+pub fn cauchy<T, A, B>(v: &Array<T, A>, omega: &Array<T, B>, lambda: &Array<T, A>) -> Array<T, B>
 where
-    D: Dimension,
-    T: Clone + Num + ScalarOperand + Signed,
+    A: Dimension,
+    B: Dimension,
+    T: Num + Neg<Output = T> + ScalarOperand,
 {
     let cdot = |b: T| (v / (lambda * T::one().neg() + b)).sum();
     omega.mapv(cdot)
@@ -86,7 +88,22 @@ where
 
 pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
 where
-    T: Float + 'static,
+    T: Clone + 'static,
+    Array2<T>: Dot<Array2<T>, Output = Array2<T>>,
+{
+    if !a.is_square() {
+        panic!("Matrix must be square");
+    }
+    let mut res = a.clone();
+    for _ in 1..n {
+        res = res.dot(a);
+    }
+    res
+}
+
+pub fn powmatc<T>(a: &Array2<T>, n: usize) -> Array2<T>
+where
+    T: ComplexFloat + 'static,
 {
     if !a.is_square() {
         panic!("Matrix must be square");
@@ -156,10 +173,10 @@ pub fn kernel_dplr<T>(
     c: &Array2<T>,
     step: T,
     l: usize,
-) -> Array1<Complex<<T as ComplexFloat>::Real>>
+) -> Array1<<T as ComplexFloat>::Real>
 where
     T: AsComplex + ComplexFloat + Conjugate + FloatConst + Scalar + ScalarOperand,
-    <T as ComplexFloat>::Real: NdFloat + Num + Signed + num::FromPrimitive + num::Zero,
+    <T as ComplexFloat>::Real: NdFloat + FromPrimitive + Signed,
     <T as Scalar>::Complex: ComplexFloat,
 {
     let omega_l = {
@@ -182,7 +199,7 @@ where
     let k10 = cauchy_complex(&(&aterm.1 * bterm.0), &g, lambda);
     let k11 = cauchy_complex(&(&aterm.1 * bterm.1), &g, lambda);
 
-    let at_roots = &c * (&k00 - k01 * (&k11 + T::one()).mapv(|i| T::one() / i) * &k10);
+    let at_roots = &c * (&k00 - k01 * (&k11 + T::one()).mapv(<T as ComplexFloat>::recip) * &k10);
 
     let mut fft_planner = FftPlanner::new();
     let fft = fft_planner.plan_fft_inverse(l);
@@ -190,5 +207,5 @@ where
         .mapv(|i| Complex::new(i.re(), i.im()))
         .into_raw_vec();
     fft.process(buffer.as_mut_slice());
-    Array::from_vec(buffer)
+    Array::from_iter(buffer.into_iter().map(|i| i.re()))
 }

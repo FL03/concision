@@ -17,6 +17,7 @@ where
 {
     id: AtomicId,
     data: Array<T, D>,
+    dtype: DType,
 }
 
 impl<T, D> Tensor<T, D>
@@ -28,6 +29,7 @@ where
         Self {
             id: AtomicId::new(),
             data: Array::zeros(shape),
+            dtype: DType::default(),
         }
     }
 }

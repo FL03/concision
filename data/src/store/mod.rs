@@ -9,8 +9,13 @@ pub(crate) mod layout;
 pub(crate) mod storage;
 
 use std::collections::{BTreeMap, HashMap};
+use std::ops;
 
 pub trait Store<K, V> {
+    fn contains(&self, key: &K) -> bool {
+        self.get(key).is_some()
+    }
+
     fn get(&self, key: &K) -> Option<&V>;
 
     fn get_mut(&mut self, key: &K) -> Option<&mut V>;
@@ -19,6 +24,8 @@ pub trait Store<K, V> {
 
     fn remove(&mut self, key: &K) -> Option<V>;
 }
+
+pub trait StoreExt<K, V>: Store<K, V> + ops::Index<K, Output = V> {}
 
 impl<K, V> Store<K, V> for BTreeMap<K, V>
 where

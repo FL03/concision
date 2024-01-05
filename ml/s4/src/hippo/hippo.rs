@@ -4,8 +4,7 @@
 */
 // use super::dplr::DPLR;
 use super::nplr::NPLR;
-use super::utils::genspace;
-use crate::core::prelude::SquareRoot;
+use crate::core::prelude::{genspace, SquareRoot};
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
 use num::traits::{Num, NumCast, Signed};

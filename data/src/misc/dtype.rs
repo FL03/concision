@@ -2,6 +2,9 @@
    Appellation: dtype <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use serde::{Deserialize, Serialize};
+use smart_default::SmartDefault;
+use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
 
 pub trait DataType {
     fn dtype(&self) -> DType;
@@ -16,10 +19,41 @@ where
     }
 }
 
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumCount,
+    EnumIs,
+    EnumIter,
+    EnumString,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+    SmartDefault,
+)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum DType {
+    #[default]
     FloatingPoint(FloatingPoint),
     Integer(Integer),
     Unsigned(Unsigned),
+}
+
+impl DType {
+    pub fn detect<T>(var: T) -> Self
+    where
+        T: Clone + Default + Into<DType>,
+    {
+        var.dtype()
+    }
 }
 
 impl From<f32> for DType {
@@ -106,8 +140,30 @@ impl From<usize> for DType {
     }
 }
 
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deserialize,
+    Display,
+    EnumCount,
+    EnumIs,
+    EnumIter,
+    EnumString,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum FloatingPoint {
     F32,
+    #[default]
     F64,
 }
 
@@ -129,12 +185,66 @@ impl From<FloatingPoint> for DType {
     }
 }
 
+pub struct Int {
+    size: IntSize,
+}
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumCount,
+    EnumIs,
+    EnumIter,
+    EnumString,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
+pub enum IntSize {
+    S8 = 8,
+    S16 = 16,
+    S32 = 32,
+    S64 = 64,
+    S128 = 128,
+    SSize,
+}
+
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deserialize,
+    Display,
+    EnumCount,
+    EnumIs,
+    EnumIter,
+    EnumString,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum Integer {
     I8,
     I16,
     I32,
     I64,
     I128,
+    #[default]
     ISIZE,
 }
 
@@ -179,13 +289,34 @@ impl From<Integer> for DType {
         DType::Integer(dtype)
     }
 }
-
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deserialize,
+    Display,
+    EnumCount,
+    EnumIs,
+    EnumIter,
+    EnumString,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum Unsigned {
     U8,
     U16,
     U32,
     U64,
     U128,
+    #[default]
     USIZE,
 }
 

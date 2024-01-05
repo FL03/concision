@@ -5,8 +5,6 @@
 
 use ndarray::prelude::*;
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
-use ndarray_rand::rand_distr::{Bernoulli, BernoulliError};
-use ndarray_rand::RandomExt;
 use num::cast::AsPrimitive;
 use num::{Float, Num, NumCast, Zero};
 
@@ -21,17 +19,6 @@ where
         res[i] = res[i - 1] + h;
     }
     res
-}
-
-pub fn bernoulli<D>(
-    dim: impl IntoDimension<Dim = D>,
-    p: Option<f64>,
-) -> Result<Array<bool, D>, BernoulliError>
-where
-    D: Dimension,
-{
-    let dist = Bernoulli::new(p.unwrap_or(0.5))?;
-    Ok(Array::random(dim.into_dimension(), dist))
 }
 
 pub fn cauchy_dot<T, D>(a: &Array<T, D>, lambda: &Array<T, D>, omega: &Array<T, D>) -> T
@@ -97,6 +84,10 @@ where
         out = concatenate!(Axis(axis), out, i);
     }
     out
+}
+
+pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
+    Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
 }
 
 pub fn linarr<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>

@@ -19,6 +19,7 @@ pub mod params;
 pub mod ssm;
 
 pub(crate) use concision_core as core;
+pub(crate) use concision_data as data;
 pub(crate) use concision_neural as neural;
 
 pub mod prelude {

@@ -15,9 +15,10 @@ version.workspace = true
 default = ["blas"]
 
 blas = [
-    # "ndarray/blas",
-    # "concision-core/blas",
-    # "concision-neural/blas",
+    "ndarray/blas",
+    "concision-core/blas",
+    "concision-data/blas",
+    "concision-neural/blas",
 ]
 
 intel-mkl-system = [
@@ -62,6 +63,7 @@ test = true
 
 [dependencies]
 concision-core = { features = ["blas"], path = "../../core", version = "0.1.12" }
+concision-data = { features = ["blas"], path = "../../data", version = "0.1.12" }
 concision-neural = { features = ["blas"], path = "../neural" }
 
 anyhow.workspace = true

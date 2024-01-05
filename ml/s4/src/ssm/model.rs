@@ -4,57 +4,14 @@
 */
 use super::SSMConfig;
 use crate::neural::Forward;
+use crate::ops::Discrete;
 use crate::params::{SSMParams::*, SSMStore};
 use crate::prelude::{discretize, k_convolve};
-use ndarray::prelude::{Array1, Array2, NdFloat};
+use ndarray::prelude::{Array1, Array2, Axis, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
 use ndarray_linalg::{Lapack, Scalar};
 use num::Float;
 use rustfft::FftNum;
-
-#[derive(Clone, Debug)]
-pub struct Discrete<T = f64> {
-    pub a: Array2<T>,
-    pub b: Array2<T>,
-    pub c: Array2<T>,
-}
-
-impl<T> Discrete<T>
-where
-    T: Float,
-{
-    pub fn new(a: Array2<T>, b: Array2<T>, c: Array2<T>) -> Self {
-        Self { a, b, c }
-    }
-
-    pub fn from_features(features: usize) -> Self
-    where
-        T: Default,
-    {
-        let a = Array2::<T>::eye(features);
-        let b = Array2::<T>::zeros((features, 1));
-        let c = Array2::<T>::zeros((features, features));
-        Self { a, b, c }
-    }
-}
-
-impl<T> From<(Array2<T>, Array2<T>, Array2<T>)> for Discrete<T>
-where
-    T: Float,
-{
-    fn from((a, b, c): (Array2<T>, Array2<T>, Array2<T>)) -> Self {
-        Self { a, b, c }
-    }
-}
-
-impl<T> From<Discrete<T>> for (Array2<T>, Array2<T>, Array2<T>)
-where
-    T: Float,
-{
-    fn from(discrete: Discrete<T>) -> Self {
-        (discrete.a, discrete.b, discrete.c)
-    }
-}
 
 pub struct SSM<T = f64>
 where
@@ -62,7 +19,7 @@ where
 {
     cache: Array1<T>,
     config: SSMConfig,
-    kernel: Array2<T>,
+    kernel: Array1<T>,
     params: SSMStore<T>,
     ssm: Discrete<T>,
 }
@@ -78,7 +35,7 @@ where
         let features = config.features();
 
         let cache = Array1::<T>::zeros(features);
-        let kernel = Array2::<T>::zeros((features, features));
+        let kernel = Array1::<T>::zeros(features);
         let params = SSMStore::from_features(features);
         Self {
             cache,
@@ -97,11 +54,11 @@ where
         &mut self.config
     }
 
-    pub fn kernel(&self) -> &Array2<T> {
+    pub fn kernel(&self) -> &Array1<T> {
         &self.kernel
     }
 
-    pub fn kernel_mut(&mut self) -> &mut Array2<T> {
+    pub fn kernel_mut(&mut self) -> &mut Array1<T> {
         &mut self.kernel
     }
 
@@ -144,7 +101,7 @@ where
     {
         let mode = PaddingMode::<2, T>::Const(T::zero());
         let size = PaddingSize::Full;
-        if let Some(res) = u.conv_2d_fft(&self.kernel, size, mode) {
+        if let Some(res) = u.conv_2d_fft(&self.kernel.clone().insert_axis(Axis(1)), size, mode) {
             Ok(res)
         } else {
             Err(anyhow::anyhow!("convolution failed"))
@@ -156,7 +113,7 @@ where
         Ok(discrete.into())
     }
 
-    pub fn gen_filter(&self) -> Array2<T> {
+    pub fn gen_filter(&self) -> Array1<T> {
         k_convolve(
             &self.params[A],
             &self.params[B],

@@ -5,9 +5,9 @@
 //! # Normal Plus Low Rank (NPLR)
 //!
 //!
-use super::utils::*;
+use super::HiPPO;
 
-use crate::core::prelude::SquareRoot;
+use crate::core::prelude::{genspace, SquareRoot};
 use ndarray::prelude::{Array1, Array2};
 use ndarray::ScalarOperand;
 use num::traits::{Num, NumCast, Signed};
@@ -17,12 +17,12 @@ fn nplr<T>(features: usize) -> (Array2<T>, Array1<T>, Array1<T>)
 where
     T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
 {
-    let hippo = hippo::<T>(features);
+    let hippo = HiPPO::<T>::new(features);
 
     let base = genspace::<T>(features);
     let p = (&base + (T::one() / T::from(2).unwrap())).mapv(T::sqrt);
     let b = (&base * T::from(2).unwrap() + T::one()).mapv(T::sqrt);
-    (hippo, p, b)
+    (hippo.into(), p, b)
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]

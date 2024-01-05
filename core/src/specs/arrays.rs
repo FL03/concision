@@ -32,6 +32,40 @@ where
     }
 }
 
+pub enum ArangeArgs<T> {
+    Arange { start: T, stop: T, step: T },
+    Between { start: T, stop: T },
+    Until { stop: T },
+}
+
+impl<T> From<(T, T, T)> for ArangeArgs<T> {
+    fn from(args: (T, T, T)) -> Self {
+        ArangeArgs::Arange {
+            start: args.0,
+            stop: args.1,
+            step: args.2,
+        }
+    }
+}
+
+impl<T> From<(T, T)> for ArangeArgs<T> {
+    fn from(args: (T, T)) -> Self {
+        ArangeArgs::Between {
+            start: args.0,
+            stop: args.1,
+        }
+    }
+}
+
+impl<T> From<T> for ArangeArgs<T>
+where
+    T: Num,
+{
+    fn from(args: T) -> Self {
+        ArangeArgs::Until { stop: args }
+    }
+}
+
 pub trait Arange<T> {
     fn arange(start: T, stop: T, step: T) -> Self;
 }

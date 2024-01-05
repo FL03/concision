@@ -5,7 +5,8 @@
 //! # HiPPO
 //!
 //!
-pub use self::{hippo::*, kinds::*, utils::*};
+pub(crate) use self::utils::*;
+pub use self::{hippo::*, kinds::*};
 
 pub(crate) mod hippo;
 pub(crate) mod kinds;
@@ -18,15 +19,11 @@ pub struct LowRank {
 }
 
 pub(crate) mod utils {
-    use crate::core::prelude::SquareRoot;
-    use ndarray::prelude::{Array1, Array2, Axis};
+    use crate::core::prelude::{genspace, SquareRoot};
+    use ndarray::prelude::{Array2, Axis};
     use ndarray::ScalarOperand;
     use ndarray_linalg::{IntoTriangular, UPLO};
     use num::traits::{Num, NumCast, Signed};
-
-    pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
-        Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
-    }
 
     pub(crate) fn hippo<T>(features: usize) -> Array2<T>
     where
