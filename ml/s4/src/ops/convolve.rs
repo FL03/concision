@@ -19,3 +19,16 @@ where
 {
     Array::from_iter((0..l).map(|i| c.dot(&a.pow(i).dot(b)).sum()))
 }
+
+pub fn k_conv<T>(a: &Array2<T>, b: &Array2<T>, c: &Array2<T>, l: usize) -> Array1<T>
+where
+    T: Num + ScalarOperand,
+    Array2<T>: Dot<Array2<T>, Output = Array2<T>> + Dot<Array1<T>, Output = Array1<T>>,
+{
+    let mut store =Vec::new();
+    for i in 0..l {
+        let tmp = c.dot(&a.pow(i).dot(b);
+        store.extend(tmp);
+    }
+    Array::from_iter(store)
+}
