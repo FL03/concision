@@ -5,7 +5,7 @@
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::complex::Complex;
-use num::{Float, Integer, Signed};
+use num::{Float, Num, Signed};
 use std::ops;
 
 pub trait Conjugate {
@@ -146,15 +146,17 @@ pub trait Power<Rhs> {
 //     }
 // }
 
-impl<T, D> Power<usize> for Array<T, D>
+impl<T> Power<usize> for Array<T, Ix2>
 where
-    D: Dimension,
-    T: Clone,
-    Array<T, D>: Dot<Self, Output = Self>,
+    T: Clone + Num,
+    Array<T, Ix2>: Dot<Self, Output = Self>,
 {
     type Output = Self;
 
     fn pow(&self, rhs: usize) -> Self::Output {
+        if rhs == 0 {
+            return Array::eye(self.shape()[0]);
+        }
         let mut res = self.clone();
         for _ in 1..rhs {
             res = res.dot(&self);

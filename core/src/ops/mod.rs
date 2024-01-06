@@ -7,6 +7,8 @@ pub use self::kinds::*;
 
 pub(crate) mod kinds;
 
+pub mod fft;
+
 pub trait Operation<T> {
     type Output;
 

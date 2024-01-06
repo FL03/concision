@@ -29,6 +29,7 @@ where
     Ok((ab, bb, c.clone()).into())
 }
 
+
 pub fn discretize_dplr<T>(
     lambda: &Array1<T>,
     p: &Array1<T>,

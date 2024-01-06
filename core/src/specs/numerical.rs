@@ -3,65 +3,56 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use num::complex::Complex;
-use num::traits::{NumAssignOps, NumOps, Signed};
-use std::ops::{Add, Div, Mul, Sub};
+use num::traits::{Num, NumAssignOps, NumOps, Signed};
+// use num::traits::real::Real;
 
-pub trait Algebraic<T>
-where
-    Self: Add<T> + Div<T> + Mul<T> + Sub<T> + Sized,
-{
-    type Output;
+pub trait Algebraic<S = Self, T = Self>: NumOps<S, T> + Sized {
 }
 
-pub trait AlgebraicExt<T>
+pub trait AlgebraicExt<S, T>
 where
-    Self: Algebraic<T> + NumAssignOps,
+    Self: Algebraic<S, T> + NumAssignOps + Sized,
 {
 }
 
-impl<A, B, C> Algebraic<B> for A
+impl<A, B, C> Algebraic<B, C> for A
 where
-    A: Add<B, Output = C> + Div<B, Output = C> + Mul<B, Output = C> + Sub<B, Output = C>,
+    A: NumOps<B, C> + Sized,
 {
-    type Output = C;
 }
 
-impl<A, B, C> AlgebraicExt<B> for A where A: Algebraic<B, Output = C> + NumAssignOps {}
-
-pub trait ComplexNum
-where
-    Self: Algebraic<Self, Output = Self> + Algebraic<Self::DType, Output = Self>,
-{
-    type DType;
+pub trait ComplexNum: Sized {
+    type Real: Algebraic + Algebraic<Self, Self>;
 
     fn complex(self) -> Self;
 
-    fn im(self) -> Self::DType;
+    fn im(self) -> Self::Real;
 
-    fn re(self) -> Self::DType;
+    fn re(self) -> Self::Real;
 }
 
-pub trait Imaginary:
-    Algebraic<Self, Output = Self> + Algebraic<Self::DType, Output = Self>
+pub trait Imaginary<T>: Sized
+where 
+    T: Algebraic + Algebraic<Self::Complex, Self::Complex>,
 {
-    type DType;
+    type Complex: Algebraic + Algebraic<T>;
 
-    fn im(self) -> Self::DType;
+    fn im(self) -> T;
 
-    fn re(self) -> Self::DType;
+    fn re(self) -> T;
 }
 
-impl<T> Imaginary for num::Complex<T>
+impl<T> Imaginary<T> for Complex<T>
 where
-    T: Clone + num::Num,
+    T: Algebraic + Algebraic<Complex<T>, Complex<T>> + Clone + Num,
 {
-    type DType = T;
+    type Complex = Complex<T>;
 
-    fn im(self) -> Self::DType {
+    fn im(self) -> T {
         self.im
     }
 
-    fn re(self) -> Self::DType {
+    fn re(self) -> T {
         self.re
     }
 }
@@ -96,7 +87,7 @@ impl Number for f32 {}
 
 impl Number for f64 {}
 
-impl<S, T> Number for S where S: ComplexNum<DType = T> {}
+impl<S, T> Number for S where S: ComplexNum<Real = T> {}
 
 pub trait Abs {
     fn abs(&self) -> Self;
@@ -111,12 +102,12 @@ where
     }
 }
 pub trait Scalar {
-    type Complex: NumOps + NumOps<Self::Real, Self::Complex>;
+    type Complex: NumOps + NumOps<Self::Real>;
     type Real: NumOps + NumOps<Self::Complex, Self::Complex>;
 }
 
-pub trait Numerical: Algebraic<Self, Output = Self> {
-    type Elem: Algebraic<Self::Elem, Output = Self::Elem> + Number;
+pub trait Numerical: Sized {
+    type Elem: Algebraic + Number;
 
     fn abs(&self) -> Self
     where

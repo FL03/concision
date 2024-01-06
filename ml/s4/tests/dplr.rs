@@ -6,14 +6,36 @@ use concision_core as core;
 use concision_s4 as s4;
 
 use ndarray::prelude::*;
+use ndarray::IntoDimension;
 use ndarray_linalg::flatten;
+use ndarray_rand::RandomExt;
+use ndarray_rand::rand::{rngs::StdRng, SeedableRng};
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
+use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use num::complex::ComplexFloat;
 
 use core::prelude::{AsComplex, Conjugate, GenerateRandom, Power};
-use s4::cmp::{kernel_dplr, DPLRParams};
+use s4::cmp::kernel::{kernel_dplr, DPLRParams};
 use s4::hippo::dplr::DPLR;
-use s4::ops::{discretize, k_convolve};
-use s4::prelude::randcomplex;
+use s4::ops::{discretize, k_conv};
+
+const RNGKEY: u64 = 1;
+
+fn seeded_uniform<T, D>(key: u64, start: T, stop: T, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    T: SampleUniform,
+{
+    Array::random_using(shape, Uniform::new(start, stop), &mut StdRng::seed_from_u64(key))
+}
+
+fn seeded_stdnorm<T, D>(key: u64, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    StandardNormal: Distribution<T>,
+{
+    Array::random_using(shape, StandardNormal, &mut StdRng::seed_from_u64(key))
+}
 
 #[test]
 fn test_gen_dplr() {
@@ -25,14 +47,16 @@ fn test_gen_dplr() {
 
     let dplr = DPLR::<f64>::new(features);
 
+    let lambda = dplr.lambda.clone();
+
     let b2 = dplr.b.clone().insert_axis(Axis(1));
 
     let p2 = dplr.p.clone().insert_axis(Axis(1));
 
-    let a = Array::from_diag(&dplr.lambda) - p2.dot(&p2.conj().t());
+    let a = Array::from_diag(&lambda) - p2.dot(&p2.conj().t());
 
-    let c = randcomplex::<f64, Ix1>(features);
-    let c2 = c.clone().insert_axis(Axis(0));
+    let c = seeded_stdnorm(RNGKEY, features);
+    let c2 = c.clone().insert_axis(Axis(0)).mapv(AsComplex::as_re);
 
     let discrete = {
         let tmp = discretize(&a, &b2, &c2, step.as_re());
@@ -42,13 +66,15 @@ fn test_gen_dplr() {
 
     let (ab, bb, cb) = discrete.into();
     //
-    let ak = k_convolve(&ab, &bb, &cb.conj(), samples);
-    println!("Ak: {:?}", ak.shape());
+    let ak = k_conv(&ab, &bb, &cb.conj(), samples);
     //
-    let cc = (&eye - ab.pow(samples)).conj().t().dot(&flatten(cb));
+    let cc = {
+        let tmp = flatten(cb);
+        (&eye - ab.pow(samples)).conj().t().dot(&tmp)
+    };
     //
     let params = DPLRParams::new(
-        dplr.lambda.clone(),
+        lambda,
         dplr.p.clone(),
         dplr.p.clone(),
         dplr.b.clone(),
@@ -68,15 +94,3 @@ fn test_gen_dplr() {
     );
 }
 
-#[test]
-fn test_discretize_dplr() {
-    let (features, samples) = (8, 16);
-
-    let step = (samples as f64).recip();
-
-    let dplr = DPLR::<f64>::new(features);
-
-    let c = Array1::<f64>::stdnorm(features);
-
-    // let kernal = kernel_dplr(lambda, p, q, b, c, step, l)
-}

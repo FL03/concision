@@ -63,6 +63,12 @@ mod tests {
     use ndarray::prelude::*;
 
     #[test]
+    fn test_arange() {
+        let exp = array![0.0, 1.0, 2.0, 3.0, 4.0];
+        assert_eq!(&exp, &Array1::<f64>::arange(5))
+    }
+
+    #[test]
     fn test_as_complex() {
         let x = 1.0;
         let y = x.as_re();

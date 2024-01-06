@@ -196,13 +196,7 @@ where
     T: Float,
 {
     fn from(store: SSMStore<T>) -> Self {
-        let mut map = HashMap::new();
-
-        map.insert(SSMParams::A, store.a);
-        map.insert(SSMParams::B, store.b);
-        map.insert(SSMParams::C, store.c);
-        map.insert(SSMParams::D, store.d);
-        map
+        HashMap::from_iter(store.into_iter())
     }
 }
 
