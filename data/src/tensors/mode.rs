@@ -1,6 +1,6 @@
 /*
-    Appellation: direction <mod>
-    Contrib: FL03 <jo3mccain@icloud.com>
+   Appellation: mode <mod>
+   Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
@@ -27,34 +27,34 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum Direction {
-    Backward = 0,
+pub enum TensorKind {
     #[default]
-    Forward = 1,
+    Standard = 0,
+    Variable = 1,
 }
 
-impl Direction {
-    /// A functional alias for [Direction::Backward].
-    pub fn backward() -> Self {
-        Self::Backward
+impl TensorKind {
+    /// A functional alias for [TensorKind::Standard].
+    pub fn standard() -> Self {
+        Self::Standard
     }
-    /// A functional alias for [Direction::Forward].
-    pub fn forward() -> Self {
-        Self::Forward
-    }
-}
-
-impl From<Direction> for usize {
-    fn from(direction: Direction) -> Self {
-        direction as usize
+    /// A functional alias for [TensorKind::Variable].
+    pub fn variable() -> Self {
+        Self::Variable
     }
 }
 
-impl From<usize> for Direction {
+impl From<TensorKind> for usize {
+    fn from(var: TensorKind) -> Self {
+        var as usize
+    }
+}
+
+impl From<usize> for TensorKind {
     fn from(index: usize) -> Self {
         match index % Self::COUNT {
-            0 => Self::Backward,
-            _ => Self::Forward,
+            0 => Self::Standard,
+            _ => Self::Variable,
         }
     }
 }

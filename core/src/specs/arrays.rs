@@ -2,15 +2,14 @@
    Appellation: base <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Axis, Dimension, Ix1, Ix2, NdFloat};
+use ndarray::prelude::{Array, Axis, Dimension, Ix1, Ix2,};
 use ndarray::{IntoDimension, ScalarOperand, ShapeError};
-// use ndarray::linalg::Dot;
-use distr::uniform::SampleUniform;
-use distr::{Bernoulli, BernoulliError, Distribution, StandardNormal, Uniform};
-use ndarray_rand::rand_distr as distr;
+use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal,};
+use ndarray_rand::rand_distr::uniform::{Uniform, SampleUniform};
+use ndarray_rand::rand::rngs::StdRng;
+use ndarray_rand::rand::{Rng, SeedableRng};
 use ndarray_rand::RandomExt;
-
-use num::{Float, Num, ToPrimitive};
+use num::traits::{Float, Num, NumAssignOps, ToPrimitive};
 use num::traits::real::Real;
 use std::ops;
 
@@ -184,6 +183,11 @@ where
     where
         IdS: Distribution<T>;
 
+    fn rand_using<IdS, R: ?Sized>(dim: impl IntoDimension<Dim = D>, distr: IdS, rng: &mut R) -> Self
+    where
+        IdS: Distribution<T>,
+        R: Rng;
+
     fn bernoulli(dim: impl IntoDimension<Dim = D>, p: Option<f64>) -> Result<Self, BernoulliError>
     where
         Bernoulli: Distribution<T>,
@@ -197,6 +201,14 @@ where
         StandardNormal: Distribution<T>,
     {
         Self::rand(dim, StandardNormal)
+    }
+
+    fn normal_from_key<R: ?Sized>(key: u64, dim: impl IntoDimension<Dim = D>,) -> Self
+    where
+        StandardNormal: Distribution<T>,
+        R: Rng,
+    {
+        Self::rand_using(dim.into_dimension(), StandardNormal, &mut StdRng::seed_from_u64(key))
     }
 
     fn uniform(axis: usize, dim: impl IntoDimension<Dim = D>) -> Self
@@ -244,6 +256,14 @@ where
     {
         Self::random(dim.into_dimension(), distr)
     }
+
+    fn rand_using<IdS, R: ?Sized>(dim: impl IntoDimension<Dim = D>, distr: IdS, rng: &mut R) -> Self
+    where
+        IdS: Distribution<T>,
+        R: Rng,
+    {
+        Self::random_using(dim.into_dimension(), distr, rng)
+    }
 }
 
 pub trait IntoAxis {
@@ -259,19 +279,16 @@ where
     }
 }
 
-pub trait Inverse<T = f64>: Sized
-where
-    T: Float,
-{
+pub trait Inverse<T = f64>: Sized {
     fn inverse(&self) -> Option<Self>;
 }
 
 impl<T> Inverse<T> for Array<T, Ix2>
 where
-    T: NdFloat,
+    T: Copy + Num + NumAssignOps + ScalarOperand,
 {
     fn inverse(&self) -> Option<Self> {
-        crate::compute_inverse(self)
+        super::utils::inverse(self)
     }
 }
 

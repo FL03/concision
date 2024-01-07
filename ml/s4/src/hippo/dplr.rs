@@ -128,3 +128,22 @@ where
 //         make_dplr_hippo(features)
 //     }
 // }
+
+impl<T> From<(Array1<Complex<T>>, Array1<Complex<T>>, Array1<Complex<T>>, Array2<Complex<T>>)> for DPLR<T>
+where
+    T: Clone + Num,
+{
+    fn from((lambda, p, b, v): (Array1<Complex<T>>, Array1<Complex<T>>, Array1<Complex<T>>, Array2<Complex<T>>)) -> Self {
+
+        DPLR { lambda, p, b, v }
+    }
+}
+
+impl<T> From<DPLR<T>> for (Array1<Complex<T>>, Array1<Complex<T>>, Array1<Complex<T>>, Array2<Complex<T>>)
+where
+    T: Clone + Num,
+{
+    fn from(dplr: DPLR<T>) -> Self {
+        (dplr.lambda, dplr.p, dplr.b, dplr.v)
+    }
+}

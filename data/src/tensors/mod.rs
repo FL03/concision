@@ -5,17 +5,33 @@
 //! # Tensors
 //!
 //! A tensor is a generalization of vectors and matrices to potentially higher dimensions.
-pub use self::tensor::*;
+pub use self::{mode::*, tensor::*};
 
+pub(crate) mod mode;
 pub(crate) mod tensor;
 
 // use ndarray::prelude::{Array, Dimension, Ix2};
 use crate::core::ops::Operation;
+use num::traits::{Num, NumOps};
 
 pub trait GradStore<T = f64> {
     type Tensor: NdTensor<T>;
 
     fn get(&self, id: &str) -> Option<&Self::Tensor>;
+}
+
+pub trait ComplexN: Num + NumOps<Self::Real> {
+    type Real: NumOps<Self, Self>;
+
+    fn im(&self) -> Self::Real;
+
+    fn re(&self) -> Self::Real;
+}
+
+pub trait TensorScalar {
+    type Complex: ComplexN<Real = Self::Real>;
+    type Real: Num + NumOps + NumOps<Self::Complex, Self::Complex>;
+
 }
 
 pub trait NdTensor<T = f64> {
@@ -25,11 +41,19 @@ pub trait NdTensor<T = f64> {
     where
         F: Fn(T) -> T;
 
-    fn apply_op(&self, op: impl Operation<T>) -> Self;
+    fn apply_op<Op>(&self, op: Op) -> <Op as Operation<Self>>::Output where Op: Operation<Self>, Self: Sized {
+        op.eval(self)
+    }
 
     fn backward(&self) -> Self;
 
     fn id(&self) -> &str;
+
+    fn is_variable(&self) -> bool {
+        self.mode().is_variable()
+    }
+
+    fn mode(&self) -> TensorKind;
 
     fn tensor(&self) -> &Self;
 }

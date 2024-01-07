@@ -1,5 +1,5 @@
 /*
-   Appellation: math <mod>
+   Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::linalg::Dot;
@@ -154,11 +154,11 @@ where
     type Output = Self;
 
     fn pow(&self, rhs: usize) -> Self::Output {
-        if rhs == 0 {
-            return Array::eye(self.shape()[0]);
+        if !self.is_square() {
+            panic!("Matrix must be square to be raised to a power");
         }
-        let mut res = self.clone();
-        for _ in 1..rhs {
+        let mut res = Array::eye(self.shape()[0]);
+        for _ in 0..rhs {
             res = res.dot(&self);
         }
         res

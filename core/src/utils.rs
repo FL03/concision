@@ -4,12 +4,16 @@
 */
 
 use ndarray::prelude::*;
-use ndarray::{concatenate, IntoDimension, RemoveAxis, ShapeError};
-// use ndarray_rand::RandomExt;
-// use ndarray_rand::rand_distr::Distribution;
+use ndarray::{concatenate, IntoDimension, RemoveAxis, ScalarOperand, ShapeError};
+use ndarray::linalg::Dot;
+use ndarray_rand::RandomExt;
+use ndarray_rand::rand::SeedableRng;
+use ndarray_rand::rand::rngs::StdRng;
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
+use rand::distributions::uniform::{SampleUniform, Uniform};
 use num::cast::AsPrimitive;
 // use num::complex::{Complex, ComplexDistribution};
-use num::{Float, Num, NumCast, Zero};
+use num::{Complex, Float, FromPrimitive, Num, NumCast, Signed, Zero};
 
 pub fn arange<T>(a: T, b: T, h: T) -> Array1<T>
 where
@@ -24,58 +28,12 @@ where
     res
 }
 
-pub fn cauchy_dot<T, D>(a: &Array<T, D>, lambda: &Array<T, D>, omega: &Array<T, D>) -> T
-where
-    D: Dimension,
-    T: NdFloat,
-{
-    (a / (omega - lambda)).sum()
+pub fn assert_atol<T, D>(a: &Array<T, D>, b: &Array<T, D>, tol: T) where D: Dimension, T: FromPrimitive + PartialOrd + ScalarOperand + Signed + std::fmt::Debug {
+    let err = (b - a).mapv(|i| i.abs()).mean().unwrap();
+    assert!(err <= tol, "Error: {:?}", err);
 }
 
-pub fn compute_inverse<T: NdFloat>(matrix: &Array2<T>) -> Option<Array2<T>> {
-    let (rows, cols) = matrix.dim();
-
-    if !matrix.is_square() {
-        return None; // Matrix must be square for inversion
-    }
-
-    let identity = Array2::eye(rows);
-
-    // Concatenate the original matrix with an identity matrix
-    let mut augmented_matrix = Array2::zeros((rows, 2 * cols));
-    augmented_matrix.slice_mut(s![.., ..cols]).assign(matrix);
-    augmented_matrix.slice_mut(s![.., cols..]).assign(&identity);
-
-    // Perform Gaussian elimination to reduce the left half to the identity matrix
-    for i in 0..rows {
-        let pivot = augmented_matrix[[i, i]];
-
-        if pivot == T::zero() {
-            return None; // Matrix is singular
-        }
-
-        augmented_matrix
-            .slice_mut(s![i, ..])
-            .mapv_inplace(|x| x / pivot);
-
-        for j in 0..rows {
-            if i != j {
-                let am = augmented_matrix.clone();
-                let factor = augmented_matrix[[j, i]];
-                let rhs = am.slice(s![i, ..]);
-                augmented_matrix
-                    .slice_mut(s![j, ..])
-                    .zip_mut_with(&rhs, |x, &y| *x -= y * factor);
-            }
-        }
-    }
-
-    // Extract the inverted matrix from the augmented matrix
-    let inverted = augmented_matrix.slice(s![.., cols..]);
-
-    Some(inverted.to_owned())
-}
-
+/// Creates an n-dimensional array from an iterator of n dimensional arrays.
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where
     D: RemoveAxis,
@@ -106,14 +64,43 @@ where
 pub fn linspace<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
 where
     D: Dimension,
-    T: Float,
+    T: NumCast,
 {
     let dim = dim.into_dimension();
     let n = dim.as_array_view().product();
-    Array::linspace(T::zero(), T::from(n - 1).unwrap(), n).into_shape(dim)
+    Array::from_iter((0..n).map(|x| T::from(x).unwrap())).into_shape(dim)
 }
-
-
+/// Raise a matrix to a power
+pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
+where
+    T: Clone + Num + 'static,
+    Array2<T>: Dot<Array2<T>, Output = Array2<T>>,
+{
+    if !a.is_square() {
+        panic!("Matrix must be square");
+    }
+    let mut res = Array2::<T>::eye(a.nrows());
+    for _ in 0..n {
+        res = res.dot(a);
+    }
+    res
+}
+///
+pub fn randcomplex<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
+where
+    D: Dimension,
+    T: Copy + Num,
+    StandardNormal: Distribution<T>,
+{
+    let dim = shape.into_dimension();
+    let re = Array::random(dim.clone(), StandardNormal);
+    let im = Array::random(dim.clone(), StandardNormal);
+    let mut res = Array::zeros(dim);
+    ndarray::azip!((re in &re, im in &im, res in &mut res) {
+        *res = Complex::new(*re, *im);
+    });
+    res
+}
 /// creates a matrix from the given shape filled with numerical elements [0, n) spaced evenly by 1
 pub fn rangespace<T, D>(dim: impl IntoDimension<Dim = D>) -> Array<T, D>
 where
@@ -129,6 +116,7 @@ pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
     let factor = T::from(10).expect("").powi(decimals as i32);
     (val * factor).round() / factor
 }
+
 /// Creates a larger array from an iterator of smaller arrays.
 pub fn stack_iter<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
 where
@@ -144,7 +132,46 @@ where
     }
     res
 }
-
+/// Creates a random array from a uniform distribution using a given key
+pub fn seeded_uniform<T, D>(key: u64, start: T, stop: T, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    T: SampleUniform,
+{
+    Array::random_using(shape, Uniform::new(start, stop), &mut StdRng::seed_from_u64(key))
+}
+///
+pub fn seeded_stdnorm<T, D>(key: u64, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    StandardNormal: Distribution<T>,
+{
+    Array::random_using(shape, StandardNormal, &mut StdRng::seed_from_u64(key))
+}
+///
+pub fn randc_normal<T, D>(key: u64, shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
+where
+    D: Dimension,
+    T: Copy + Num,
+    StandardNormal: Distribution<T>,
+{
+    let dim = shape.into_dimension();
+    let re = seeded_stdnorm(key, dim.clone());
+    let im = seeded_stdnorm(key, dim.clone());
+    let mut res = Array::zeros(dim);
+    ndarray::azip!((re in &re, im in &im, res in &mut res) {
+        *res = Complex::new(*re, *im);
+    });
+    res
+}
+/// Given a shape, generate a random array using the StandardNormal distribution
+pub fn stdnorm<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    StandardNormal: Distribution<T>,
+{
+    Array::random(shape, StandardNormal)
+}
 /// Returns the upper triangular portion of a matrix.
 pub fn triu<T>(a: &Array2<T>) -> Array2<T>
 where

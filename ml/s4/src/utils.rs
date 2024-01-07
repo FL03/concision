@@ -4,11 +4,10 @@
 */
 use ndarray::prelude::*;
 use ndarray::{IntoDimension, ScalarOperand};
-use ndarray::linalg::Dot;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
-use ndarray_rand::rand_distr::{Distribution, StandardNormal, Uniform};
+use ndarray_rand::rand_distr::{Distribution, Uniform};
 use ndarray_rand::RandomExt;
-use num::complex::{Complex, ComplexDistribution, ComplexFloat};
+use num::complex::{Complex, ComplexDistribution,};
 use num::traits::Num;
 use std::ops::Neg;
 
@@ -31,24 +30,6 @@ where
 }
 
 
-pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
-where
-    T: Clone + Num + 'static,
-    Array2<T>: Dot<Array2<T>, Output = Array2<T>>,
-{
-    if !a.is_square() {
-        panic!("Matrix must be square");
-    }
-    if n == 0 {
-        return Array2::<T>::eye(a.nrows());
-    }
-    let mut res = a.clone();
-    for _ in 1..n {
-        res = res.dot(a);
-    }
-    res
-}
-
 /// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
 pub fn randc<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
 where
@@ -58,30 +39,6 @@ where
 {
     let distr = ComplexDistribution::<T, T>::new(T::one(), T::one());
     Array::random(shape, distr)
-}
-
-pub fn randcomplex<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
-where
-    D: Dimension,
-    T: Copy + Num,
-    StandardNormal: Distribution<T>,
-{
-    let dim = shape.into_dimension();
-    let re = Array::random(dim.clone(), StandardNormal);
-    let im = Array::random(dim.clone(), StandardNormal);
-    let mut res = Array::zeros(dim);
-    ndarray::azip!((re in &re, im in &im, res in &mut res) {
-        *res = Complex::new(*re, *im);
-    });
-    res
-}
-
-pub fn stdnorm<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
-where
-    D: Dimension,
-    StandardNormal: Distribution<T>,
-{
-    Array::random(shape, StandardNormal)
 }
 
 pub fn scanner<T>(

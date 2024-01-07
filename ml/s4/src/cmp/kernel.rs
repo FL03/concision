@@ -5,12 +5,12 @@
 use crate::core::ops::fft::*;
 use crate::core::prelude::Conjugate;
 use crate::prelude::cauchy;
-use ndarray::prelude::{Array, Array1, Array2,};
+use ndarray::prelude::{Array, Array1,};
 use ndarray::ScalarOperand;
 use ndarray_linalg::Scalar;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::{Float, FloatConst,  NumOps,};
-use rustfft::{FftNum, FftPlanner};
+use rustfft::FftPlanner;
 use std::ops::Neg;
 
 pub struct DPLRParams<T = f64> {
@@ -73,7 +73,7 @@ impl DPLRParams<Complex<f64>> {
 pub fn omega_l<T>(l: usize) -> Array1<<T as Scalar>::Complex>
 where
     T: Scalar<Real = T, Complex = Complex<T>>,
-    <T as Scalar>::Real: Float + FloatConst + NumOps<<T as Scalar>::Real, <T as Scalar>::Real>,
+    <T as Scalar>::Real: Float + FloatConst,
     <T as Scalar>::Complex: ScalarOperand,
 {
     let lt = <T as Scalar>::Real::from(l).unwrap();
@@ -95,10 +95,10 @@ pub fn kernel_dplr<T>(
     l: usize,
 ) -> Array1<<T as Scalar>::Real>
 where
-    T: Conjugate + FftNum + Float + Scalar<Real = T, Complex = Complex<T>>,
+    T: Conjugate + Float + Scalar<Real = T, Complex = Complex<T>>,
     <T as Scalar>::Real:
         FloatConst + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex> + ScalarOperand,
-    <T as Scalar>::Complex: ScalarOperand,
+    <T as Scalar>::Complex: Conjugate + ScalarOperand,
 {
     let one = <T as Scalar>::Real::one();
     let two = <T as Scalar>::Real::from(2).unwrap();
@@ -122,33 +122,33 @@ where
     let at_roots = &c * (&k00 - k01 * &k11.mapv(|i| one / (i + one)) * &k10);
 
     let buffer = at_roots.into_raw_vec();
-    println!("Roots:\n\n{:?}\n", &buffer);
     let permute = FftPlan::new(l);
-    let res = ifft(buffer.as_slice(), &permute);
+    let res = ifftr(buffer.as_slice(), &permute);
     Array::from_vec(res)
 }
 
 pub struct Kernel<T = f64> {
-    kernal: Array2<T>,
+    kernal: Array1<T>,
 }
 
-impl<T> Kernel<T>
-where
-    T: Float,
-{
-    pub fn new(kernal: Array2<T>) -> Self {
+impl<T> Kernel<T> {
+    pub fn new(kernal: Array1<T>) -> Self {
         Self { kernal }
     }
 
-    pub fn square(features: usize) -> Self
-    where
-        T: Default,
-    {
-        let kernal = Array2::<T>::default((features, features));
-        Self::new(kernal)
-    }
-
-    pub fn kernal(&self) -> &Array2<T> {
+    pub fn kernal(&self) -> &Array1<T> {
         &self.kernal
+    }
+}
+
+impl<T> Kernel<T> 
+where 
+    T: Scalar<Real = T, Complex = Complex<T>>,
+    <T as Scalar>::Real: Conjugate + Float + FloatConst + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex> + ScalarOperand,
+    <T as Scalar>::Complex: Conjugate + ScalarOperand 
+{
+    pub fn dplr(dplr: &DPLRParams<<T as Scalar>::Complex>, step: <T as Scalar>::Real, l: usize,) -> Self {
+        let kernal = kernel_dplr::<T>(dplr, step, l);
+        Self::new(kernal)
     }
 }

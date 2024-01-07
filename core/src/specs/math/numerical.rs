@@ -101,10 +101,18 @@ where
         Signed::abs(self)
     }
 }
-pub trait Scalar {
-    type Complex: NumOps + NumOps<Self::Real>;
-    type Real: NumOps + NumOps<Self::Complex, Self::Complex>;
+
+pub trait Reciprocal {
+    fn recip(self) -> Self;
 }
+
+impl<T> Reciprocal for T where T: Num + NumOps {
+    fn recip(self) -> Self {
+        Self::one() / self
+    }
+}
+
+
 
 pub trait Numerical: Sized {
     type Elem: Algebraic + Number;

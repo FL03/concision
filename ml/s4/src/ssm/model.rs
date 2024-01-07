@@ -6,7 +6,7 @@ use super::SSMConfig;
 use crate::neural::Forward;
 use crate::ops::Discrete;
 use crate::params::{SSMParams::*, SSMStore};
-use crate::prelude::{discretize, k_convolve};
+use crate::prelude::{discretize, k_conv};
 use ndarray::prelude::{Array1, Array2, Axis, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
 use ndarray_linalg::{Lapack, Scalar};
@@ -81,12 +81,7 @@ where
         self.ssm = self.discretize(self.config().step_size()).expect("");
         self
     }
-}
 
-impl<T> SSM<T>
-where
-    T: NdFloat + Lapack + Scalar,
-{
     pub fn scan(
         &self,
         u: &Array2<T>,
@@ -114,7 +109,7 @@ where
     }
 
     pub fn gen_filter(&self) -> Array1<T> {
-        k_convolve(
+        k_conv(
             &self.params[A],
             &self.params[B],
             &self.params[C],

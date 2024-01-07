@@ -10,12 +10,12 @@ use super::{FftDirection, FftPlan};
 // use std::ops::Neg;
 
 
-pub struct Fft {
+pub struct FastFourierTransform {
     direction: FftDirection,
     plan: FftPlan,
 }
 
-impl Fft {
+impl FastFourierTransform {
     pub fn new(direction: FftDirection, plan: FftPlan) -> Self {
         Self { direction, plan }
     }
