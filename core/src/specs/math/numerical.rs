@@ -6,8 +6,7 @@ use num::complex::Complex;
 use num::traits::{Num, NumAssignOps, NumOps, Signed};
 // use num::traits::real::Real;
 
-pub trait Algebraic<S = Self, T = Self>: NumOps<S, T> + Sized {
-}
+pub trait Algebraic<S = Self, T = Self>: NumOps<S, T> + Sized {}
 
 pub trait AlgebraicExt<S, T>
 where
@@ -15,11 +14,7 @@ where
 {
 }
 
-impl<A, B, C> Algebraic<B, C> for A
-where
-    A: NumOps<B, C> + Sized,
-{
-}
+impl<A, B, C> Algebraic<B, C> for A where A: NumOps<B, C> + Sized {}
 
 pub trait ComplexNum: Sized {
     type Real: Algebraic + Algebraic<Self, Self>;
@@ -32,7 +27,7 @@ pub trait ComplexNum: Sized {
 }
 
 pub trait Imaginary<T>: Sized
-where 
+where
     T: Algebraic + Algebraic<Self::Complex, Self::Complex>,
 {
     type Complex: Algebraic + Algebraic<T>;
@@ -106,13 +101,14 @@ pub trait Reciprocal {
     fn recip(self) -> Self;
 }
 
-impl<T> Reciprocal for T where T: Num + NumOps {
+impl<T> Reciprocal for T
+where
+    T: Num + NumOps,
+{
     fn recip(self) -> Self {
         Self::one() / self
     }
 }
-
-
 
 pub trait Numerical: Sized {
     type Elem: Algebraic + Number;

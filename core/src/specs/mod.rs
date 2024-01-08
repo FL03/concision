@@ -2,7 +2,7 @@
    Appellation: specs <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{arrays::*, base::*, init::*, iter::*, math::*,};
+pub use self::{arrays::*, base::*, init::*, iter::*, math::*};
 
 pub(crate) mod arrays;
 pub(crate) mod base;
@@ -14,13 +14,15 @@ pub trait Named {
     fn name(&self) -> &str;
 }
 
-
 pub(crate) mod utils {
     use ndarray::prelude::{s, Array2};
     use ndarray::ScalarOperand;
     use num::traits::{Num, NumAssignOps};
 
-    pub fn inverse<T>(matrix: &Array2<T>) -> Option<Array2<T>> where T: Copy + Num + NumAssignOps + ScalarOperand {
+    pub fn inverse<T>(matrix: &Array2<T>) -> Option<Array2<T>>
+    where
+        T: Copy + Num + NumAssignOps + ScalarOperand,
+    {
         let (rows, cols) = matrix.dim();
 
         if !matrix.is_square() {
@@ -42,17 +44,14 @@ pub(crate) mod utils {
                 return None; // Matrix is singular
             }
 
-            aug
-                .slice_mut(s![i, ..])
-                .mapv_inplace(|x| x / pivot);
+            aug.slice_mut(s![i, ..]).mapv_inplace(|x| x / pivot);
 
             for j in 0..rows {
                 if i != j {
                     let am = aug.clone();
                     let factor = aug[[j, i]];
                     let rhs = am.slice(s![i, ..]);
-                    aug
-                        .slice_mut(s![j, ..])
+                    aug.slice_mut(s![j, ..])
                         .zip_mut_with(&rhs, |x, &y| *x -= y * factor);
                 }
             }

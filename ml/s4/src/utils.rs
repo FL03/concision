@@ -7,7 +7,7 @@ use ndarray::{IntoDimension, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, Uniform};
 use ndarray_rand::RandomExt;
-use num::complex::{Complex, ComplexDistribution,};
+use num::complex::{Complex, ComplexDistribution};
 use num::traits::Num;
 use std::ops::Neg;
 
@@ -28,7 +28,6 @@ where
 {
     Array::random(shape, Uniform::new(a, b)) * (b.ln() - a.ln()) + a.ln()
 }
-
 
 /// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
 pub fn randc<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>

@@ -3,15 +3,15 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
+use ndarray::linalg::Dot;
 use ndarray::prelude::*;
 use ndarray::{concatenate, IntoDimension, RemoveAxis, ScalarOperand, ShapeError};
-use ndarray::linalg::Dot;
-use ndarray_rand::RandomExt;
-use ndarray_rand::rand::SeedableRng;
 use ndarray_rand::rand::rngs::StdRng;
+use ndarray_rand::rand::SeedableRng;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-use rand::distributions::uniform::{SampleUniform, Uniform};
+use ndarray_rand::RandomExt;
 use num::cast::AsPrimitive;
+use rand::distributions::uniform::{SampleUniform, Uniform};
 // use num::complex::{Complex, ComplexDistribution};
 use num::{Complex, Float, FromPrimitive, Num, NumCast, Signed, Zero};
 
@@ -28,7 +28,11 @@ where
     res
 }
 
-pub fn assert_atol<T, D>(a: &Array<T, D>, b: &Array<T, D>, tol: T) where D: Dimension, T: FromPrimitive + PartialOrd + ScalarOperand + Signed + std::fmt::Debug {
+pub fn assert_atol<T, D>(a: &Array<T, D>, b: &Array<T, D>, tol: T)
+where
+    D: Dimension,
+    T: FromPrimitive + PartialOrd + ScalarOperand + Signed + std::fmt::Debug,
+{
     let err = (b - a).mapv(|i| i.abs()).mean().unwrap();
     assert!(err <= tol, "Error: {:?}", err);
 }
@@ -133,12 +137,21 @@ where
     res
 }
 /// Creates a random array from a uniform distribution using a given key
-pub fn seeded_uniform<T, D>(key: u64, start: T, stop: T, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+pub fn seeded_uniform<T, D>(
+    key: u64,
+    start: T,
+    stop: T,
+    shape: impl IntoDimension<Dim = D>,
+) -> Array<T, D>
 where
     D: Dimension,
     T: SampleUniform,
 {
-    Array::random_using(shape, Uniform::new(start, stop), &mut StdRng::seed_from_u64(key))
+    Array::random_using(
+        shape,
+        Uniform::new(start, stop),
+        &mut StdRng::seed_from_u64(key),
+    )
 }
 ///
 pub fn seeded_stdnorm<T, D>(key: u64, shape: impl IntoDimension<Dim = D>) -> Array<T, D>

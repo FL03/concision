@@ -9,14 +9,12 @@ use ndarray::prelude::*;
 use ndarray_linalg::flatten;
 use num::complex::ComplexFloat;
 
-use core::prelude::{AsComplex, Conjugate, Power,};
+use core::prelude::{AsComplex, Conjugate, Power};
 use s4::cmp::kernel::{kernel_dplr, DPLRParams};
 use s4::hippo::dplr::DPLR;
 use s4::ops::{discrete, k_conv};
 
 const RNGKEY: u64 = 1;
-
-
 
 #[test]
 // #[ignore = "TODO: fix this test"]
@@ -31,7 +29,6 @@ fn test_gen_dplr() {
     let (lambda, p, b, _v) = dplr.into();
 
     println!("{:?}", &p);
-
 
     let b2 = b.clone().insert_axis(Axis(1));
 
@@ -63,13 +60,7 @@ fn test_gen_dplr() {
     //
     let cc = (&eye - ab.pow(samples)).conj().t().dot(&flatten(cb));
     //
-    let params = DPLRParams::new(
-        lambda,
-        p.clone(),
-        p.clone(),
-        b.clone(),
-        cc,
-    );
+    let params = DPLRParams::new(lambda, p.clone(), p.clone(), b.clone(), cc);
     //
     let kernal = kernel_dplr::<f64>(&params, step, samples);
     println!("Kernal: {:?}", kernal.shape());
@@ -83,4 +74,3 @@ fn test_gen_dplr() {
         1e-4
     );
 }
-

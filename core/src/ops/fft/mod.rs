@@ -20,7 +20,7 @@ pub(crate) mod utils {
     use super::FftPlan;
     use crate::prelude::AsComplex;
     use num::complex::{Complex, ComplexFloat};
-    use num::traits::{Float, FloatConst, NumAssignOps, NumOps,};
+    use num::traits::{Float, FloatConst, NumAssignOps, NumOps};
 
     pub(crate) fn fast_fourier_transform_input_permutation(length: usize) -> Vec<usize> {
         let mut result = Vec::new();
@@ -161,7 +161,10 @@ mod tests {
         let samples = 16;
 
         let plan = FftPlan::new(samples);
-        assert_eq!(plan.plan(), fast_fourier_transform_input_permutation(16).as_slice());
+        assert_eq!(
+            plan.plan(),
+            fast_fourier_transform_input_permutation(16).as_slice()
+        );
     }
 
     #[test]

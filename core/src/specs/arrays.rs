@@ -2,15 +2,15 @@
    Appellation: base <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Axis, Dimension, Ix1, Ix2,};
+use ndarray::prelude::{Array, Axis, Dimension, Ix1, Ix2};
 use ndarray::{IntoDimension, ScalarOperand, ShapeError};
-use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal,};
-use ndarray_rand::rand_distr::uniform::{Uniform, SampleUniform};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::{Rng, SeedableRng};
+use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
+use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
-use num::traits::{Float, Num, NumAssignOps, ToPrimitive};
 use num::traits::real::Real;
+use num::traits::{Float, Num, NumAssignOps, ToPrimitive};
 use std::ops;
 
 pub trait Affine<T = f64>: Sized {
@@ -38,7 +38,10 @@ pub enum ArangeArgs<T> {
     Until { stop: T },
 }
 
-impl<T> ArangeArgs<T> where T: Copy + Num {
+impl<T> ArangeArgs<T>
+where
+    T: Copy + Num,
+{
     /// Returns the start value of the range.
     pub fn start(&self) -> T {
         match self {
@@ -64,7 +67,10 @@ impl<T> ArangeArgs<T> where T: Copy + Num {
         }
     }
     /// Returns the number of steps between the given boundaries
-    pub fn steps(&self) -> usize where T: Real {
+    pub fn steps(&self) -> usize
+    where
+        T: Real,
+    {
         match self {
             ArangeArgs::Arange { start, stop, step } => {
                 let n = ((*stop - *start) / *step).ceil().to_usize().unwrap();
@@ -90,8 +96,6 @@ impl<T> From<ops::Range<T>> for ArangeArgs<T> {
         }
     }
 }
-
-
 
 impl<T> From<ops::RangeFrom<T>> for ArangeArgs<T> {
     fn from(args: ops::RangeFrom<T>) -> Self {
@@ -137,8 +141,13 @@ where
 {
     fn arange(args: impl Into<ArangeArgs<T>>) -> Self {
         let args = args.into();
-        let n: usize = args.stop().to_usize().expect("Failed to convert 'stop' to a usize");
-        (0..n).map(|i| args.start() + args.step() * T::from(i).unwrap()).collect()
+        let n: usize = args
+            .stop()
+            .to_usize()
+            .expect("Failed to convert 'stop' to a usize");
+        (0..n)
+            .map(|i| args.start() + args.step() * T::from(i).unwrap())
+            .collect()
     }
 }
 
@@ -149,7 +158,10 @@ where
 {
     fn arange(args: impl Into<ArangeArgs<S>>) -> Self {
         let args = args.into();
-        let n: usize = args.stop().to_usize().expect("Failed to convert 'stop' to a usize");
+        let n: usize = args
+            .stop()
+            .to_usize()
+            .expect("Failed to convert 'stop' to a usize");
         let start = T::from(args.start()).unwrap();
         let step = T::from(args.step()).unwrap();
 
@@ -166,10 +178,11 @@ where
         let args = args.into();
         let start = T::from(args.start()).unwrap();
         let step = T::from(args.step()).unwrap();
-        let n: usize = args.stop().to_usize().expect("Failed to convert 'stop' to a usize");
-        let f = | (i, _j) | {
-            start + step * T::from(i).unwrap()
-        };
+        let n: usize = args
+            .stop()
+            .to_usize()
+            .expect("Failed to convert 'stop' to a usize");
+        let f = |(i, _j)| start + step * T::from(i).unwrap();
         Array::from_shape_fn((n, 1), f)
     }
 }
@@ -183,7 +196,11 @@ where
     where
         IdS: Distribution<T>;
 
-    fn rand_using<IdS, R: ?Sized>(dim: impl IntoDimension<Dim = D>, distr: IdS, rng: &mut R) -> Self
+    fn rand_using<IdS, R: ?Sized>(
+        dim: impl IntoDimension<Dim = D>,
+        distr: IdS,
+        rng: &mut R,
+    ) -> Self
     where
         IdS: Distribution<T>,
         R: Rng;
@@ -203,12 +220,16 @@ where
         Self::rand(dim, StandardNormal)
     }
 
-    fn normal_from_key<R: ?Sized>(key: u64, dim: impl IntoDimension<Dim = D>,) -> Self
+    fn normal_from_key<R: ?Sized>(key: u64, dim: impl IntoDimension<Dim = D>) -> Self
     where
         StandardNormal: Distribution<T>,
         R: Rng,
     {
-        Self::rand_using(dim.into_dimension(), StandardNormal, &mut StdRng::seed_from_u64(key))
+        Self::rand_using(
+            dim.into_dimension(),
+            StandardNormal,
+            &mut StdRng::seed_from_u64(key),
+        )
     }
 
     fn uniform(axis: usize, dim: impl IntoDimension<Dim = D>) -> Self

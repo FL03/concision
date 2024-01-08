@@ -22,11 +22,9 @@ mod tests {
     const RNGKEY: u64 = 1;
     const SAMPLES: usize = 16;
 
-
     #[test]
     #[ignore = "TODO: fix this test"]
     fn test_conversion() {
-
         let step = (SAMPLES as f64).recip();
 
         let dplr = DPLR::<f64>::new(FEATURES);
@@ -36,7 +34,8 @@ mod tests {
         let c = randc_normal(RNGKEY, FEATURES);
 
         let kernel = {
-            let params = DPLRParams::new(lambda.clone(), p.clone(), p.clone(), b.clone(), c.clone());
+            let params =
+                DPLRParams::new(lambda.clone(), p.clone(), p.clone(), b.clone(), c.clone());
             kernel_dplr::<f64>(&params, step, SAMPLES)
         };
 

@@ -8,7 +8,6 @@ pub(crate) mod numerical;
 pub(crate) mod ops;
 pub(crate) mod scalar;
 
-
 use num::complex::Complex;
 use num::traits::{Float, Num};
 
@@ -52,7 +51,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_as_complex() {
         let x = 1.0;

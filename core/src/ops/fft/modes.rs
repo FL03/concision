@@ -5,7 +5,25 @@
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deserialize,
+    Display,
+    EnumCount,
+    EnumIs,
+    EnumIter,
+    EnumString,
+    EnumVariantNames,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+)]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]

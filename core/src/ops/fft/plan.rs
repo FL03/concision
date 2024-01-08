@@ -11,7 +11,6 @@ pub struct FftPlan {
 
 impl FftPlan {
     pub fn new(n: usize) -> Self {
-
         let mut permute = Vec::new();
         permute.reserve_exact(n);
         permute.extend(0..n);

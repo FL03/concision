@@ -5,10 +5,10 @@ use concision_core as core;
 use concision_s4 as s4;
 
 use core::prelude::{Arange, AsComplex};
-use s4::prelude::cauchy;
-use s4::ssm::{SSM, SSMConfig};
 use ndarray::prelude::*;
 use rustfft::FftPlanner;
+use s4::prelude::cauchy;
+use s4::ssm::{SSMConfig, SSM};
 
 fn main() -> anyhow::Result<()> {
     let (features, samples) = (4, 16);

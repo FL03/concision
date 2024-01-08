@@ -37,7 +37,7 @@ pub fn discrete<S, T>(
     step: S,
 ) -> anyhow::Result<Discrete<T>>
 where
-    S: Scalar<Real = S> + ScalarOperand + NumOps<T, T>,
+    S: Scalar<Real = S, Complex = T> + ScalarOperand + NumOps<T, T>,
     T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
 {
     let (n, ..) = a.dim();
@@ -47,35 +47,10 @@ where
     let bl = (&eye - a * ss).inv()?;
 
     let ab = bl.dot(&(&eye + a * ss));
-    let bb = (bl * ss).dot(b);
+    let bb = (bl * step).dot(b);
 
     Ok((ab, bb, c.clone()).into())
 }
-
-pub fn disc<S, T, C>(
-    a: &Array2<T>,
-    b: &Array2<T>,
-    c: &Array2<C>,
-    step: S,
-) -> anyhow::Result<(Array2<T>, Array2<T>, Array2<C>)>
-where
-    C: ComplexFloat<Real = S> + Lapack + NumOps<S>,
-    S: Scalar<Real = S> + ScalarOperand + NumOps<T, T>,
-    T: ComplexFloat<Real = S> + Lapack + NumOps<S> + NumOps<C>,
-{
-    let (n, ..) = a.dim();
-    let ss = step / S::from(2).unwrap(); // half step
-    let eye = Array2::<T>::eye(n);
-
-    let bl = (&eye - a * ss).inv()?;
-
-    let ab = bl.dot(&(&eye + a * ss));
-    let bb = (bl * ss).dot(b);
-
-    Ok((ab, bb, c.clone()))
-}
-
-
 
 pub fn discretize_dplr<S, T>(
     lambda: &Array1<S>,
@@ -87,14 +62,14 @@ pub fn discretize_dplr<S, T>(
     l: usize,
 ) -> anyhow::Result<Discrete<S>>
 where
-    T: Float + Conjugate + Lapack + NumOps<S, S> + Scalar + ScalarOperand,
+    T: Float + Conjugate + Lapack + NumOps<S, S> + Scalar<Real = T, Complex = S> + ScalarOperand,
     S: ComplexFloat<Real = T> + Conjugate + Lapack + NumOps<T>,
 {
     let n = lambda.dim();
     // create an identity matrix; (n, n)
     let eye = Array2::<S>::eye(n);
     // compute the step size
-    let ss = T::from(2).unwrap() * step.recip();
+    let ss = T::from(2).unwrap() / step;
     // turn the parameters into two-dimensional matricies
     let b2 = b.clone().insert_axis(Axis(1));
 

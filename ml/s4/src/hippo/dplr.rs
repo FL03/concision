@@ -129,17 +129,35 @@ where
 //     }
 // }
 
-impl<T> From<(Array1<Complex<T>>, Array1<Complex<T>>, Array1<Complex<T>>, Array2<Complex<T>>)> for DPLR<T>
+impl<T>
+    From<(
+        Array1<Complex<T>>,
+        Array1<Complex<T>>,
+        Array1<Complex<T>>,
+        Array2<Complex<T>>,
+    )> for DPLR<T>
 where
     T: Clone + Num,
 {
-    fn from((lambda, p, b, v): (Array1<Complex<T>>, Array1<Complex<T>>, Array1<Complex<T>>, Array2<Complex<T>>)) -> Self {
-
+    fn from(
+        (lambda, p, b, v): (
+            Array1<Complex<T>>,
+            Array1<Complex<T>>,
+            Array1<Complex<T>>,
+            Array2<Complex<T>>,
+        ),
+    ) -> Self {
         DPLR { lambda, p, b, v }
     }
 }
 
-impl<T> From<DPLR<T>> for (Array1<Complex<T>>, Array1<Complex<T>>, Array1<Complex<T>>, Array2<Complex<T>>)
+impl<T> From<DPLR<T>>
+    for (
+        Array1<Complex<T>>,
+        Array1<Complex<T>>,
+        Array1<Complex<T>>,
+        Array2<Complex<T>>,
+    )
 where
     T: Clone + Num,
 {

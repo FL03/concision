@@ -31,7 +31,6 @@ pub trait ComplexN: Num + NumOps<Self::Real> {
 pub trait TensorScalar {
     type Complex: ComplexN<Real = Self::Real>;
     type Real: Num + NumOps + NumOps<Self::Complex, Self::Complex>;
-
 }
 
 pub trait NdTensor<T = f64> {
@@ -41,7 +40,11 @@ pub trait NdTensor<T = f64> {
     where
         F: Fn(T) -> T;
 
-    fn apply_op<Op>(&self, op: Op) -> <Op as Operation<Self>>::Output where Op: Operation<Self>, Self: Sized {
+    fn apply_op<Op>(&self, op: Op) -> <Op as Operation<Self>>::Output
+    where
+        Op: Operation<Self>,
+        Self: Sized,
+    {
         op.eval(self)
     }
 

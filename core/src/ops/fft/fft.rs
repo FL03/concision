@@ -9,7 +9,6 @@ use super::{FftDirection, FftPlan};
 // use num::traits::real::Real;
 // use std::ops::Neg;
 
-
 pub struct FastFourierTransform {
     direction: FftDirection,
     plan: FftPlan,
