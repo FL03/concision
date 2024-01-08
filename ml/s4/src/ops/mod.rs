@@ -23,7 +23,6 @@ mod tests {
     const SAMPLES: usize = 16;
 
     #[test]
-    #[ignore = "TODO: fix this test"]
     fn test_conversion() {
         let step = (SAMPLES as f64).recip();
 
