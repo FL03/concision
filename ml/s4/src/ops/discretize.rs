@@ -7,30 +7,9 @@ use crate::core::prelude::{Conjugate, Power};
 use ndarray::{Array, Array1, Array2, Axis, ScalarOperand};
 use ndarray_linalg::{Inverse, Lapack, Scalar};
 use num::complex::ComplexFloat;
-use num::traits::{Float, NumOps};
+use num::traits::{Float, Num, NumOps};
 
-pub fn discretize<T>(
-    a: &Array2<T>,
-    b: &Array2<T>,
-    c: &Array2<T>,
-    step: T,
-) -> anyhow::Result<Discrete<T>>
-where
-    T: Lapack + Scalar + ScalarOperand,
-{
-    let (n, ..) = a.dim();
-    let ss = step / T::from(2).unwrap(); // half step
-    let eye = Array2::<T>::eye(n);
-
-    let be = (&eye - a * ss).inv().expect("Could not invert matrix");
-
-    let ab = be.dot(&(&eye + a * ss));
-    let bb = (be * ss).dot(b);
-
-    Ok((ab, bb, c.clone()).into())
-}
-
-pub fn discrete<S, T>(
+pub fn discretize<S, T>(
     a: &Array2<T>,
     b: &Array2<T>,
     c: &Array2<T>,
@@ -41,12 +20,12 @@ where
     T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
 {
     let (n, ..) = a.dim();
-    let ss = step / S::from(2).unwrap(); // half step
+    let hs = step / S::from(2).unwrap(); // half step
     let eye = Array2::<T>::eye(n);
 
-    let bl = (&eye - a * ss).inv()?;
+    let bl = (&eye - a * hs).inv()?;
 
-    let ab = bl.dot(&(&eye + a * ss));
+    let ab = bl.dot(&(&eye + a * hs));
     let bb = (bl * step).dot(b);
 
     Ok((ab, bb, c.clone()).into())
@@ -69,7 +48,7 @@ where
     // create an identity matrix; (n, n)
     let eye = Array2::<S>::eye(n);
     // compute the step size
-    let ss = T::from(2).unwrap() / step;
+    let hs = T::from(2).unwrap() / step;
     // turn the parameters into two-dimensional matricies
     let b2 = b.clone().insert_axis(Axis(1));
 
@@ -79,12 +58,12 @@ where
     // compute the conjugate transpose of q
     let qct = q.clone().conj().t().to_owned().insert_axis(Axis(0));
     // create a diagonal matrix D from the scaled eigenvalues: Dim(n, n) :: 1 / (step_size - value)
-    let d = Array::from_diag(&lambda.mapv(|i| (ss - i).recip()));
+    let d = Array::from_diag(&lambda.mapv(|i| (hs - i).recip()));
 
     // create a diagonal matrix from the eigenvalues
     let a = Array::from_diag(&lambda) - &p2.dot(&q.clone().insert_axis(Axis(1)).conj().t());
     // compute A0
-    let a0 = &eye * ss + &a;
+    let a0 = &eye * hs + &a;
     // compute A1
     let a1 = {
         let tmp = qct.dot(&d.dot(&p2)).mapv(|i| (T::one() + i).recip());
@@ -95,7 +74,7 @@ where
     // compute b-bar
     let bb = a1.dot(&b2) * T::from(2).unwrap();
     // compute c-bar
-    let cb = c2.dot(&(&eye - ab.clone().pow(l)).inv()?.conj());
+    let cb = c2.dot(&(&eye - &ab.pow(l)).inv()?.conj());
     // return the discretized system
     Ok((ab, bb, cb.conj()).into())
 }
@@ -123,20 +102,21 @@ impl<T> Discrete<T> {
 
     pub fn from_features(features: usize) -> Self
     where
-        T: Float,
+        T: Default,
     {
-        let a = Array2::<T>::zeros((features, features));
-        let b = Array2::<T>::zeros((features, 1));
-        let c = Array2::<T>::zeros((1, features));
+        let a = Array2::<T>::default((features, features));
+        let b = Array2::<T>::default((features, 1));
+        let c = Array2::<T>::default((1, features));
         Self::new(a, b, c)
     }
 }
 
-impl<T> Discrete<T>
-where
-    T: Lapack + Scalar + ScalarOperand,
-{
-    pub fn discretize(&self, step: T) -> anyhow::Result<Self> {
+impl<T> Discrete<T> {
+    pub fn discretize<S>(&self, step: S) -> anyhow::Result<Self>
+    where
+        S: Scalar<Real = S, Complex = T> + ScalarOperand + NumOps<T, T>,
+        T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
+    {
         discretize(&self.a, &self.b, &self.c, step)
     }
 }

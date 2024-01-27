@@ -7,6 +7,11 @@ pub use self::{mask::*, utils::*};
 
 pub(crate) mod mask;
 
+pub trait Masked<T> {
+    fn mask(&self) -> &Mask<T>;
+    fn mask_mut(&mut self) -> &mut Mask<T>;
+}
+
 pub(crate) mod utils {
     use super::Mask;
     use ndarray::prelude::Array2;

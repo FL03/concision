@@ -37,6 +37,21 @@ where
     assert!(err <= tol, "Error: {:?}", err);
 }
 
+pub fn assert_ok<T, E>(res: Result<T, E>) -> T
+where
+    E: std::fmt::Debug,
+{
+    assert!(res.is_ok(), "Error: {:?}", res.err());
+    res.unwrap()
+}
+
+pub fn almost_equal<T>(a: T, b: T, epsilon: T) -> bool
+where
+    T: PartialOrd + Signed,
+{
+    (b - a).abs() < epsilon
+}
+
 /// Creates an n-dimensional array from an iterator of n dimensional arrays.
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where

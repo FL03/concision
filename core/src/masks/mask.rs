@@ -2,24 +2,27 @@
     Appellation: mask <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Array2};
-use ndarray::Dimension;
-use ndarray_rand::rand_distr::{uniform::SampleUniform, Uniform};
+use ndarray::prelude::{Array, Array2, Dimension};
+use ndarray::ScalarOperand;
+use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::RandomExt;
-use num::Float;
+use num::traits::{Float, NumOps};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use std::ops;
 use strum::EnumIs;
 
 #[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]
-pub enum Mask<T: Float = f64> {
+pub enum Mask<T = f64> {
     Masked(Array2<T>),
     #[default]
     Unmasked,
 }
 
-impl<T: Float> Mask<T> {
+impl<T> Mask<T>
+where
+    T: NumOps + ScalarOperand,
+{
     pub fn forward(&self, data: &Array2<T>) -> Array2<T> {
         match self {
             Self::Masked(bias) => data + bias,
@@ -28,11 +31,11 @@ impl<T: Float> Mask<T> {
     }
 }
 
-impl<T: Float> Mask<T>
+impl<T> Mask<T>
 where
     T: Float + SampleUniform,
 {
-    pub fn masked(size: usize) -> Self {
+    pub fn uniform(size: usize) -> Self {
         let ds = (T::from(size).unwrap()).sqrt();
         let dist = Uniform::new(-ds, ds);
         let mask = Array2::<T>::random((size, size), dist);
@@ -40,7 +43,7 @@ where
     }
 }
 
-impl<T: Float> From<usize> for Mask<T>
+impl<T> From<usize> for Mask<T>
 where
     T: Float + SampleUniform,
 {
@@ -52,19 +55,13 @@ where
     }
 }
 
-impl<T> From<Array2<T>> for Mask<T>
-where
-    T: Float,
-{
+impl<T> From<Array2<T>> for Mask<T> {
     fn from(bias: Array2<T>) -> Self {
         Self::Masked(bias)
     }
 }
 
-impl<T> From<Option<Array2<T>>> for Mask<T>
-where
-    T: Float,
-{
+impl<T> From<Option<Array2<T>>> for Mask<T> {
     fn from(bias: Option<Array2<T>>) -> Self {
         match bias {
             Some(bias) => Self::Masked(bias),
@@ -73,10 +70,7 @@ where
     }
 }
 
-impl<T> From<Mask<T>> for Option<Array2<T>>
-where
-    T: Float,
-{
+impl<T> From<Mask<T>> for Option<Array2<T>> {
     fn from(bias: Mask<T>) -> Self {
         match bias {
             Mask::Masked(bias) => Some(bias),
@@ -85,8 +79,10 @@ where
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<Array<T, D>> for Mask<T>
+impl<T, D> ops::Add<Array<T, D>> for Mask<T>
 where
+    D: Dimension,
+    T: NumOps + ScalarOperand,
     Array<T, D>: ops::Add<Array2<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -100,8 +96,10 @@ where
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<&Array<T, D>> for Mask<T>
+impl<T, D> ops::Add<&Array<T, D>> for Mask<T>
 where
+    D: Dimension,
+    T: NumOps + ScalarOperand,
     Array<T, D>: ops::Add<Array2<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -115,8 +113,10 @@ where
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<Mask<T>> for Array<T, D>
+impl<T, D> ops::Add<Mask<T>> for Array<T, D>
 where
+    D: Dimension,
+    T: NumOps + ScalarOperand,
     Array<T, D>: ops::Add<Array2<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;
@@ -130,8 +130,10 @@ where
     }
 }
 
-impl<D: Dimension, T: Float> ops::Add<&Mask<T>> for Array<T, D>
+impl<T, D> ops::Add<&Mask<T>> for Array<T, D>
 where
+    D: Dimension,
+    T: NumOps + ScalarOperand,
     Array<T, D>: ops::Add<Array2<T>, Output = Array<T, D>>,
 {
     type Output = Array<T, D>;

@@ -1,9 +1,10 @@
 /*
-    Appellation: store <mod>
+    Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{kinds::*, store::*};
+pub use self::{dplr::*, kinds::*, store::*};
 
+pub(crate) mod dplr;
 pub(crate) mod kinds;
 pub(crate) mod store;
 

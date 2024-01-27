@@ -89,7 +89,7 @@ mod tests {
         let (heads, seq, model) = (8, 10, 512);
         let data = Array2::<f64>::zeros((seq, model));
 
-        let mask = Mask::<f64>::masked(seq).into();
+        let mask = Mask::<f64>::uniform(seq).into();
         let attention = MultiHeadAttention::new(heads, model);
         let score = attention
             .attention(&data, &mask)

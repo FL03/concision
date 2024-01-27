@@ -86,7 +86,7 @@ impl From<usize> for SSMParams {
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum DPLRParams {
+pub enum DPLRParam {
     #[default]
     Lambda = 0,
     P = 1,

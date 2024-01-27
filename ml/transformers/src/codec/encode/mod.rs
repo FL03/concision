@@ -23,7 +23,7 @@ mod tests {
     fn test_encoder() {
         let (heads, seq, model) = (8, 10, 512);
         let _data = Array2::<f64>::zeros((seq, model));
-        let _mask = Mask::<f64>::masked(seq);
+        let _mask = Mask::<f64>::uniform(seq);
         let params = EncoderParams::new(heads, model);
         let encoder = Encoder::new(params);
 

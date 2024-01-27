@@ -15,8 +15,9 @@ mod tests {
     use crate::core::prelude::{assert_atol, randc_normal};
     use num::complex::ComplexFloat;
 
-    use crate::cmp::kernel::{kernel_dplr, DPLRParams};
+    use crate::cmp::kernel::kernel_dplr;
     use crate::hippo::dplr::DPLR;
+    use crate::params::DPLRParams;
 
     const FEATURES: usize = 8;
     const RNGKEY: u64 = 1;
