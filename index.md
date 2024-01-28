@@ -1,8 +1,6 @@
 ## Welcome to Concision
 
-### Abstract
-Concision was motivated by my desire to see some of the fundamental data-science packages from Python in Rust such as Pandas, Numpy, SciPy, TensorFlow and more.
-
+Concision aims to be a complete toolkit for building powerful AI and machine-learning models in Rust. 
 
 ### Getting Started
 
