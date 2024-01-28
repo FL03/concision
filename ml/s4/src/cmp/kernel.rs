@@ -2,15 +2,16 @@
     Appellation: kernel <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::ops::fft::*;
+use crate::core::ops::fft::{ifft, FftPlan};
 use crate::core::prelude::Conjugate;
 use crate::params::DPLRParams;
-use crate::prelude::cauchy;
+use crate::prelude::{cauchy, };
 use ndarray::prelude::{Array, Array1};
 use ndarray::ScalarOperand;
 use ndarray_linalg::Scalar;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::{Float, FloatConst, NumOps};
+use rustfft::FftNum;
 
 pub fn omega_l<T>(l: usize) -> Array1<<T as Scalar>::Complex>
 where
@@ -73,35 +74,34 @@ pub fn kernel_dplr<T>(
     l: usize,
 ) -> Array1<<T as Scalar>::Real>
 where
-    T: Conjugate + Float + Scalar<Real = T, Complex = Complex<T>>,
+    T: Conjugate + FftNum + Float + Scalar<Real = T, Complex = Complex<T>>,
     <T as Scalar>::Real:
         FloatConst + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex> + ScalarOperand,
     <T as Scalar>::Complex: Conjugate + ScalarOperand,
 {
-    let one = T::one();
+    // initialize some constants
     let two = T::from(2).unwrap();
     // get the lambda matrix
     let lambda = dplr.lambda.clone();
-    // generate omega
-    let omega_l: Array1<<T as Scalar>::Complex> = omega_l::<T>(l);
     // collect the relevant terms for A
     let aterm = (dplr.c.conj(), dplr.q.conj());
     // collect the relevant terms for B
     let bterm = (dplr.b.clone(), dplr.p.clone());
 
-    let g = omega_l.mapv(|i| (one - i) * (one + i).recip()) * (two * step.recip());
-    let c = omega_l.mapv(|i| two * (one + i).recip());
-    // compute the cauchy matrix
-    let k00: Array1<<T as Scalar>::Complex> = cauchy(&(&aterm.0 * &bterm.0), &g, &lambda);
-    let k01: Array1<<T as Scalar>::Complex> = cauchy(&(&aterm.0 * &bterm.1), &g, &lambda);
-    let k10: Array1<<T as Scalar>::Complex> = cauchy(&(&aterm.1 * &bterm.0), &g, &lambda);
-    let k11: Array1<<T as Scalar>::Complex> = cauchy(&(&aterm.1 * &bterm.1), &g, &lambda);
-    // compute the roots of unity
-    let at_roots = &c * (&k00 - k01 * &k11.mapv(|i| (i + one).recip()) * &k10);
+    // generate omega
+    let omega_l = omega_l::<T>(l);
 
-    let buffer = at_roots.into_raw_vec();
-    let permute = FftPlan::new(l);
-    let res = irfft(buffer.as_slice(), &permute);
+    let g = omega_l.mapv(|i| (T::one() - i) * (T::one() + i).recip()) * (two * step.recip());
+    let c = omega_l.mapv(|i| two * (T::one() + i).recip());
+    // compute the cauchy matrix
+    let k00 = cauchy(&(&aterm.0 * &bterm.0), &g, &lambda);
+    let k01 = cauchy(&(&aterm.0 * &bterm.1), &g, &lambda);
+    let k10 = cauchy(&(&aterm.1 * &bterm.0), &g, &lambda);
+    let k11 = cauchy(&(&aterm.1 * &bterm.1), &g, &lambda);
+    // compute the roots of unity
+    let at_roots = &c * (&k00 - k01 * &k11.mapv(|i| (i + T::one()).recip()) * &k10);
+    let plan = FftPlan::new(l);
+    let res = ifft(at_roots.into_raw_vec().as_slice(), &plan);
     Array::from_vec(res).mapv(|i| i.re())
 }
 
@@ -123,6 +123,7 @@ impl<T> Kernel<T>
 where
     T: Scalar<Real = T, Complex = Complex<T>>,
     <T as Scalar>::Real: Conjugate
+        + FftNum
         + Float
         + FloatConst
         + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex>

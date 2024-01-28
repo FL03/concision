@@ -11,179 +11,184 @@ pub(crate) mod fft;
 pub(crate) mod modes;
 pub(crate) mod plan;
 
-pub trait Fft {
-    fn fft(&self) -> Vec<f64>;
-    fn ifft(&self) -> Vec<f64>;
+pub mod algorithms;
+
+pub trait Fft<T> {
+    fn fft(&self) -> Vec<T>;
+    fn ifft(&self) -> Vec<T>;
 }
+
 
 pub(crate) mod utils {
     use super::FftPlan;
     use crate::prelude::AsComplex;
     use num::complex::{Complex, ComplexFloat};
-    use num::traits::{Float, FloatConst, NumOps};
+    use num::traits::{Float, FloatConst, Num, NumAssignOps, NumCast, NumOps };
+
+    // pub(crate) fn rsize(n: usize) -> usize {
+    //     (n / 2).floor() + 1
+    // }
 
     pub(crate) fn fft_angle<T>(n: usize) -> T
     where
-        T: Float + FloatConst,
+        T: FloatConst + NumCast + NumOps,
     {
         T::TAU() / T::from(n).unwrap()
     }
 
-    /// Computes the Fast Fourier Transform of a general signal.
-    pub fn fft<T>(input: impl AsRef<[T]>, input_permutation: impl AsRef<[usize]>) -> Vec<Complex<T>>
+    pub(crate) fn floor<T>(lhs: T, rhs: T) -> T where T: Copy + Num {
+        (lhs - lhs % rhs) / rhs
+    }
+
+    pub(crate) fn unfloor<T>(lhs: T, rhs: T) -> T where T: Copy + Num {
+        (lhs * rhs) - lhs % rhs
+    }
+
+    /// Computes the Fast Fourier Transform of a one-dimensional, complex-valued signal.
+    pub fn fft<S, T>(input: impl AsRef<[S]>, permute: &FftPlan) -> Vec<Complex<T>>
     where
+        S: ComplexFloat<Real = T>,
         T: Float + FloatConst,
-        Complex<T>: ComplexFloat<Real = T>,
+        Complex<T>: ComplexFloat<Real = T> + NumOps<S> + NumOps<T>,
     {
+        //
         let input = input.as_ref();
-
+        //
         let n = input.len();
-
-        let mut result = Vec::new();
-        result.reserve_exact(n);
-        for position in input_permutation.as_ref() {
-            result.push(input[*position].as_re());
+        // initialize the result vector
+        let mut result = Vec::with_capacity(n);
+        // store the input values in the result vector according to the permutation
+        for position in permute.clone().into_iter() {
+            let arg = input[position];
+            result.push(Complex::new(arg.re(), arg.im()));
         }
-        let mut segment_length = 1_usize;
-        while segment_length < n {
-            segment_length <<= 1;
-            let angle = fft_angle::<T>(segment_length);
-            let w_len = Complex::new(angle.cos(), angle.sin());
-            for segment_start in (0..n).step_by(segment_length) {
+        let mut segment: usize = 1;
+        while segment < n {
+            segment <<= 1;
+            // compute the angle of the complex number
+            let angle = fft_angle::<T>(segment);
+            // compute the radius of the complex number (length)
+            let radius = Complex::new(angle.cos(), angle.sin());
+            // iterate over the signal in segments of length `segment`
+            for start in (0..n).step_by(segment) {
                 let mut w = Complex::new(T::one(), T::zero());
-                for position in segment_start..(segment_start + segment_length / 2) {
+                for position in start..(start + segment / 2) {
                     let a = result[position];
-                    let b = result[position + segment_length / 2] * w;
+                    let b = result[position + segment / 2] * w;
                     result[position] = a + b;
-                    result[position + segment_length / 2] = a - b;
-                    w = w * w_len;
+                    result[position + segment / 2] = a - b;
+                    w = w * radius;
                 }
             }
         }
         result
     }
 
-    /// Computes the Fast Fourier Transform of a real-valued signal.
-    /// TODO: Fix the function; real-valued fft only computes the positive frequency terms
+    /// Computes the Fast Fourier Transform of an one-dimensional, real-valued signal.
+    /// TODO: Optimize the function to avoid unnecessary computation.
     pub fn rfft<T>(input: impl AsRef<[T]>, input_permutation: impl AsRef<[usize]>) -> Vec<Complex<T>>
     where
         T: Float + FloatConst,
-        Complex<T>: ComplexFloat<Real = T>,
+        Complex<T>: ComplexFloat<Real = T> + NumAssignOps,
     {
+        // create a reference to the input
         let input = input.as_ref();
-
+        // fetch the length of the input
         let n = input.len();
-
-        let mut result = Vec::new();
-        result.reserve_exact(n);
+        // compute the size of the result vector
+        let size = (n - (n % 2)) / 2 + 1;
+        // initialize the output vector
+        let mut store = Vec::with_capacity(size);
+        // store the input values in the result vector according to the permutation
         for position in input_permutation.as_ref() {
-            result.push(input[*position].as_re());
+            store.push(input[*position].as_re());
         }
-        let mut segment_length = 1_usize;
-        while segment_length < n {
-            segment_length <<= 1;
-            let angle = fft_angle::<T>(segment_length);
-            let w_len = Complex::new(angle.cos(), angle.sin());
-            for segment_start in (0..n).step_by(segment_length) {
+        let mut segment: usize = 1;
+        while segment < n {
+            segment <<= 1;
+            // compute the angle of the complex number
+            let angle = fft_angle::<T>(segment);
+            // compute the radius of the complex number (length)
+            let radius = Complex::new(angle.cos(), angle.sin());
+            for start in (0..n).step_by(segment) {
                 let mut w = Complex::new(T::one(), T::zero());
-                for position in segment_start..(segment_start + segment_length / 2) {
-                    let a = result[position];
-                    let b = result[position + segment_length / 2] * w;
-                    result[position] = a + b;
-                    result[position + segment_length / 2] = a - b;
-                    w = w * w_len;
+                for position in start..(start + segment / 2) {
+                    let a = store[position];
+                    let b = store[position + segment / 2] * w;
+                    store[position] = a + b;
+                    store[position + segment / 2] = a - b;
+                    w *= radius;
                 }
             }
         }
-        result
+        store.iter().cloned().filter(|x| x.im() >= T::zero()).collect()
     }
-    /// Computes the Inverse Fast Fourier Transform of a signal.
-    pub fn ifft<T>(input: &[Complex<T>], input_permutation: &FftPlan) -> Vec<Complex<T>>
+    /// Computes the Inverse Fast Fourier Transform of an one-dimensional, complex-valued signal.
+    pub fn ifft<S, T>(input: &[S], input_permutation: &FftPlan) -> Vec<Complex<T>>
     where
+        S: ComplexFloat<Real = T>,
         T: Float + FloatConst,
-        Complex<T>: ComplexFloat<Real = T>,
+        Complex<T>: ComplexFloat<Real = T> + NumOps<S> + NumOps<T>,
     {
         let n = input.len();
-        let mut result = Vec::new();
-        result.reserve_exact(n);
+        let mut result = Vec::with_capacity(n);
         for position in input_permutation.clone().into_iter() {
-            result.push(input[position]);
+            let arg = input[position];
+            result.push(Complex::new(arg.re(), arg.im()));
         }
-        let mut segment_length = 1_usize;
-        while segment_length < n {
-            segment_length <<= 1;
-            let angle = fft_angle::<T>(segment_length);
-            let w_len = Complex::new(T::cos(angle), T::sin(angle));
-            for segment_start in (0..n).step_by(segment_length) {
+        let mut length: usize = 1;
+        while length < n {
+            length <<= 1;
+            let angle = fft_angle::<T>(length).neg();
+            let radius = Complex::new(T::cos(angle), T::sin(angle)); // w_len
+            for start in (0..n).step_by(length) {
                 let mut w = Complex::new(T::one(), T::zero());
-                for position in segment_start..(segment_start + segment_length / 2) {
+                for position in start..(start + length / 2) {
                     let a = result[position];
-                    let b = result[position + segment_length / 2] * w;
+                    let b = result[position + length / 2] * w;
                     result[position] = a + b;
-                    result[position + segment_length / 2] = a - b;
-                    w = w * w_len;
+                    result[position + length / 2] = a - b;
+                    w = w * radius;
                 }
             }
         }
         let scale = T::from(n).unwrap().recip();
-        result.iter().map(|x| x * scale).collect()
+        result.iter().map(|x| *x * scale).collect()
     }
+    /// Computes the Inverse Fast Fourier Transform of an one-dimensional, real-valued signal.
+    /// TODO: Fix the function; currently fails to compute the correct result
+    pub fn irfft<T>(input: &[Complex<T>], plan: &FftPlan) -> Vec<T>
+    where
+        T: Float + FloatConst,
+        Complex<T>: ComplexFloat<Real = T> + NumAssignOps,
+    {
+        let n = input.len();
+        let mut result = vec![Complex::new(T::zero(), T::zero()); n];
 
-    pub fn irfft<T>(input: &[Complex<T>], input_permutation: &FftPlan) -> Vec<T>
-    where
-        T: Float + FloatConst + NumOps<Complex<T>, Complex<T>>,
-        Complex<T>: ComplexFloat<Real = T>,
-    {
-        let n = input.len();
-        let mut result = Vec::new();
-        result.reserve_exact(n);
-        for position in input_permutation.clone().into_iter() {
+        for position in plan.clone().into_iter() {
             result.push(input[position]);
         }
-        let mut segment_length = 1_usize;
-        while segment_length < n {
-            segment_length <<= 1;
-            let angle = fft_angle::<T>(segment_length);
-            let w_len = Complex::new(T::cos(angle), T::sin(angle));
-            for segment_start in (0..n).step_by(segment_length) {
+        // for res in result.clone() {
+        //     if res.im() > T::zero() {
+        //         result.push(res.conj());
+        //     }
+        // }
+        // segment length
+        let mut segment: usize = 1;
+        while segment < n {
+            segment <<= 1;
+            // compute the angle of the complex number
+            let angle = fft_angle::<T>(segment).neg();
+            // compute the radius of the complex number (length)
+            let radius = Complex::new(T::cos(angle), T::sin(angle));
+            for start in (0..n).step_by(segment) {
                 let mut w = Complex::new(T::one(), T::zero());
-                for position in segment_start..(segment_start + segment_length / 2) {
+                for position in start..(start + segment / 2) {
                     let a = result[position];
-                    let b = result[position + segment_length / 2] * w;
+                    let b = result[position + segment / 2] * w;
                     result[position] = a + b;
-                    result[position + segment_length / 2] = a - b;
-                    w = w * w_len;
-                }
-            }
-        }
-        let scale = T::from(n).unwrap().recip();
-        result.iter().map(|x| x.re() * scale).collect()
-    }
-    /// Computes the Inverse Fast Fourier Transform of a real-valued signal.
-    pub fn ifftr<S, T>(input: &[S], input_permutation: &FftPlan) -> Vec<T>
-    where
-        T: Float + FloatConst,
-        S: ComplexFloat<Real = T> + NumOps<Complex<T>>,
-    {
-        let n = input.len();
-        let mut result = Vec::new();
-        result.reserve_exact(n);
-        for position in input_permutation.clone().into_iter() {
-            result.push(input[position]);
-        }
-        let mut segment_length = 1_usize;
-        while segment_length < n {
-            segment_length <<= 1;
-            let angle = fft_angle::<T>(segment_length);
-            let w_len = Complex::new(T::cos(angle), T::sin(angle));
-            for segment_start in (0..n).step_by(segment_length) {
-                let mut w = S::one();
-                for position in segment_start..(segment_start + segment_length / 2) {
-                    let a = result[position];
-                    let b = result[position + segment_length / 2] * w;
-                    result[position] = a + b;
-                    result[position + segment_length / 2] = a - b;
-                    w = w * w_len;
+                    result[position + segment / 2] = a - b;
+                    w *= radius;
                 }
             }
         }
@@ -196,9 +201,11 @@ pub(crate) mod utils {
 mod tests {
     use super::*;
     use crate::prelude::almost_equal;
-    use num::complex::ComplexFloat;
+    use lazy_static::lazy_static;
+    use num::complex::{Complex, ComplexFloat};
 
-    pub(crate) fn fast_fourier_transform_input_permutation(length: usize) -> Vec<usize> {
+
+    pub(crate) fn fft_permutation(length: usize) -> Vec<usize> {
         let mut result = Vec::new();
         result.reserve_exact(length);
         for i in 0..length {
@@ -225,6 +232,16 @@ mod tests {
 
     const EPSILON: f64 = 1e-6;
 
+    lazy_static! {
+        static ref EXPECTED_RFFT: Vec<Complex<f64>> = vec![
+            Complex { re: 28.0, im: 0.0 }, 
+            Complex { re: -4.0, im: 0.0 }, 
+            Complex { re: -4.0, im: 1.6568542494923806 }, 
+            Complex { re: -4.0, im: 4.000000000000001 }, 
+            Complex { re: -3.999999999999999, im: 9.656854249492381 }
+        ];
+    }
+
     #[test]
     fn test_plan() {
         let samples = 16;
@@ -232,8 +249,36 @@ mod tests {
         let plan = FftPlan::new(samples);
         assert_eq!(
             plan.plan(),
-            fast_fourier_transform_input_permutation(16).as_slice()
+            fft_permutation(16).as_slice()
         );
+    }
+
+    #[test]
+    fn test_rfft() {
+        let polynomial = (0..8).map(|i| i as f64).collect::<Vec<_>>();
+        let plan = FftPlan::new(polynomial.len());
+        println!("Function Values: {:?}", &polynomial);
+        println!("Plan: {:?}", &plan);
+        let fft = rfft(&polynomial, &plan);
+        let mut tmp = fft.iter().cloned().filter(|i| i.im() > 0.0).map(|i| i.conj()).collect::<Vec<_>>();
+        tmp.sort_by(|a, b| a.im().partial_cmp(&b.im()).unwrap());
+        println!("FFT: {:?}", &tmp);
+        let mut res = fft.clone();
+        res.sort_by(|a, b| a.re().partial_cmp(&b.re()).unwrap());
+        res.sort_by(|a, b| a.im().partial_cmp(&b.im()).unwrap());
+        println!("R: {:?}", &res);
+        res.extend(tmp);
+        assert!(fft.len() == EXPECTED_RFFT.len());
+        for (x, y) in fft.iter().zip(EXPECTED_RFFT.iter()) {
+            assert!(almost_equal(x.re(), y.re(), EPSILON));
+            assert!(almost_equal(x.im(), y.im(), EPSILON));
+        }
+        // let plan = FftPlan::new(fft.len());
+        let ifft = irfft(&res, &plan);
+        println!("Inverse: {:?}", &ifft);
+        for (x, y) in ifft.iter().zip(polynomial.iter()) {
+            assert!(almost_equal(*x, *y, EPSILON));
+        }
     }
 
     #[test]
@@ -241,7 +286,7 @@ mod tests {
         let polynomial = vec![1.0f64, 1.0, 0.0, 2.5];
         let permutation = FftPlan::new(polynomial.len());
         let fft = fft(&polynomial, &permutation);
-        let ifft = irfft(&fft, &permutation)
+        let ifft = ifft(&fft, &permutation)
             .into_iter()
             .map(|i| i.re())
             .collect::<Vec<_>>();
@@ -257,7 +302,7 @@ mod tests {
         let permutation = FftPlan::new(polynomial.len());
         let mut fft = fft(&polynomial, &permutation);
         fft.iter_mut().for_each(|num| *num *= *num);
-        let ifft = irfft(&fft, &permutation)
+        let ifft = ifft(&fft, &permutation)
             .into_iter()
             .map(|i| i.re())
             .collect::<Vec<_>>();

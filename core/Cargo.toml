@@ -39,6 +39,7 @@ smart-default.workspace = true
 strum.workspace = true
 
 [dev-dependencies]
+lazy_static.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

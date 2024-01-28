@@ -2,6 +2,7 @@
    Appellation: plan <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::FftDirection;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -11,27 +12,26 @@ pub struct FftPlan {
 
 impl FftPlan {
     pub fn new(n: usize) -> Self {
-        let mut permute = Vec::new();
-        permute.reserve_exact(n);
-        permute.extend(0..n);
+        let mut plan = Vec::with_capacity(n);
+        plan.extend(0..n);
 
-        let mut reverse = 0;
-        let mut position = 1;
-        while position < n {
+        let mut rev = 0; // reverse
+        let mut pos = 1; // position
+        while pos < n {
             let mut bit = n >> 1;
-            while bit & reverse != 0 {
-                reverse ^= bit;
+            while bit & rev != 0 {
+                rev ^= bit;
                 bit >>= 1;
             }
-            reverse ^= bit;
+            rev ^= bit;
             // This is equivalent to adding 1 to a reversed number
-            if position < reverse {
+            if pos < rev {
                 // Only swap each element once
-                permute.swap(position, reverse);
+                plan.swap(pos, rev);
             }
-            position += 1;
+            pos += 1;
         }
-        Self { plan: permute }
+        Self { plan }
     }
 
     pub fn plan(&self) -> &[usize] {

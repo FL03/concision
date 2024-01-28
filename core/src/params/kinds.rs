@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{EnumIs, EnumIter, EnumString, EnumVariantNames};
+use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 pub trait ParamType: ToString {
     fn kind(&self) -> String;
@@ -23,16 +23,17 @@ where
     Debug,
     Default,
     Deserialize,
+    EnumCount,
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames
 )]
 #[non_exhaustive]
 #[repr(usize)]

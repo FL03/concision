@@ -2,6 +2,8 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+pub use self::fft::*;
+
 use ndarray::prelude::*;
 use ndarray::{IntoDimension, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -62,4 +64,40 @@ where
         res.slice_mut(s![i, ..]).assign(s);
     }
     res
+}
+
+pub(crate) mod fft {
+    use num::{Complex, NumCast};
+    use realfft::RealFftPlanner;
+    use rustfft::FftNum;
+
+    pub fn rfft<T>(args: impl IntoIterator<Item = T>) -> Vec<Complex<T>> where T: FftNum {
+        let mut buffer = Vec::from_iter(args);
+        // make a planner
+        let mut real_planner = RealFftPlanner::<T>::new();
+        // create a FFT
+        let r2c = real_planner.plan_fft_forward(buffer.len());
+        // make a vector for storing the spectrum
+        let mut spectrum = r2c.make_output_vec();
+        // forward transform the signal
+        r2c.process(&mut buffer, &mut spectrum).unwrap();
+        spectrum
+        
+    }
+
+    pub fn irfft<T>(args: impl IntoIterator<Item = Complex<T>>, len: usize) -> Vec<T> where T: FftNum + NumCast {
+        let mut buffer = Vec::from_iter(args);
+        // make a planner
+        let mut real_planner = RealFftPlanner::<T>::new();
+        // create a FFT
+        let r2c = real_planner.plan_fft_inverse(len);
+        // make a vector for storing the spectrum
+        let mut spectrum = r2c.make_output_vec();
+        // forward transform the signal
+        r2c.process(&mut buffer, &mut spectrum).unwrap();
+        let scale = T::one() / T::from(len).unwrap();
+        spectrum.iter().cloned().map(|i| i * scale).collect()
+        
+    }
+
 }

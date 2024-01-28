@@ -52,25 +52,23 @@ where
     }
 }
 
-pub trait Arithmetic<S>
+pub trait Arithmetic<S = Self, T = Self>
 where
-    Self: ops::Add<S> + ops::Div<S> + ops::Mul<S> + ops::Sub<S>,
+    Self: ops::Add<S, Output = T> + ops::Div<S, Output = T> + ops::Mul<S, Output = T> + ops::Sub<S, Output = T>,
 {
-    type Output;
 }
 
-impl<A, S, T> Arithmetic<S> for A
+impl<A, S, T> Arithmetic<S, T> for A
 where
     A: ops::Add<S, Output = T>
         + ops::Div<S, Output = T>
         + ops::Mul<S, Output = T>
         + ops::Sub<S, Output = T>,
 {
-    type Output = T;
 }
 
 pub trait MatrixOps<T = f64, A = Ix2, B = Ix2>:
-    Arithmetic<Array<T, A>, Output = Array<T, B>> + Sized
+    Arithmetic<Array<T, A>, Array<T, B>> + Sized
 where
     A: Dimension,
     B: Dimension,
@@ -83,7 +81,7 @@ where
     B: Dimension,
     D: Dimension,
     T: Arithmetic<T>,
-    Self: Arithmetic<Array<T, A>, Output = Array<T, B>>,
+    Self: Arithmetic<Array<T, A>, Array<T, B>>,
 {
 }
 
@@ -93,7 +91,7 @@ where
     B: Dimension,
     D: Dimension,
     T: Arithmetic<T>,
-    Self: Arithmetic<Array<T, A>, Output = Array<T, B>>,
+    Self: Arithmetic<Array<T, A>, Array<T, B>>,
 {
 }
 

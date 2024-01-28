@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
+use strum::{Display, EnumIs, EnumIter, EnumString, VariantNames};
 
 pub trait LayerFeatures {
     fn inputs(&self) -> usize;
@@ -33,13 +33,13 @@ impl LayerFeatures for ParameterShapes {
     Deserialize,
     EnumIs,
     EnumIter,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 pub enum ParameterShapes {
     Layer { inputs: usize, outputs: usize },
@@ -56,13 +56,13 @@ pub enum ParameterShapes {
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]

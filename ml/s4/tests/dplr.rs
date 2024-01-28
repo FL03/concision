@@ -29,7 +29,6 @@ lazy_static! {
 #[test]
 // #[ignore = "TODO: fix this test"]
 fn test_gen_dplr() {
-    let (features, samples) = (4, 16);
 
     let eye = Array2::<f64>::eye(FEATURES);
 

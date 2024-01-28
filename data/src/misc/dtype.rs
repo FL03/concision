@@ -4,7 +4,7 @@
 */
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
+use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 pub trait DataType {
     fn dtype(&self) -> DType;
@@ -29,7 +29,6 @@ where
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
@@ -37,6 +36,7 @@ where
     PartialOrd,
     Serialize,
     SmartDefault,
+    VariantNames,
 )]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
@@ -151,13 +151,13 @@ impl From<usize> for DType {
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
@@ -188,27 +188,30 @@ impl From<FloatingPoint> for DType {
 pub struct Int {
     size: IntSize,
 }
+
 #[derive(
     Clone,
     Copy,
     Debug,
+    Default,
     Deserialize,
     Display,
     EnumCount,
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum IntSize {
+    #[default]
     S8 = 8,
     S16 = 16,
     S32 = 32,
@@ -228,13 +231,13 @@ pub enum IntSize {
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
@@ -289,6 +292,7 @@ impl From<Integer> for DType {
         DType::Integer(dtype)
     }
 }
+
 #[derive(
     Clone,
     Copy,
@@ -300,13 +304,13 @@ impl From<Integer> for DType {
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]

@@ -9,7 +9,7 @@ pub(crate) mod ops;
 pub(crate) mod scalar;
 
 use num::complex::Complex;
-use num::traits::{Float, Num};
+use num::traits::{Float, Num,};
 
 pub trait AsComplex: Sized {
     fn as_complex(self, real: bool) -> Complex<Self>;
@@ -32,6 +32,23 @@ where
             true => Complex::new(self, Self::zero()),
             false => Complex::new(Self::zero(), self),
         }
+    }
+}
+
+pub trait FloorDiv<Rhs = Self> {
+    type Output;
+
+    fn floor_div(self, rhs: Rhs) -> Self::Output;
+}
+
+impl<T> FloorDiv for T
+where
+    T: Copy + Num,
+{
+    type Output = T;
+
+    fn floor_div(self, rhs: Self) -> Self::Output {
+        crate::floor_div(self, rhs)
     }
 }
 

@@ -3,8 +3,9 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use num::complex::Complex;
-use num::traits::{Num, NumAssignOps, NumOps, Signed};
+use num::traits::{Num, NumAssignOps, NumOps, One, Signed};
 // use num::traits::real::Real;
+use std::ops::Div;
 
 pub trait Algebraic<S = Self, T = Self>: NumOps<S, T> + Sized {}
 
@@ -103,7 +104,7 @@ pub trait Reciprocal {
 
 impl<T> Reciprocal for T
 where
-    T: Num + NumOps,
+    T: Div<Output = T> + One,
 {
     fn recip(self) -> Self {
         Self::one() / self
