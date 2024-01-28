@@ -54,16 +54,18 @@ where
 
 pub trait Arithmetic<S = Self, T = Self>
 where
-    Self: ops::Add<S, Output = T> + ops::Div<S, Output = T> + ops::Mul<S, Output = T> + ops::Sub<S, Output = T>,
-{
-}
-
-impl<A, S, T> Arithmetic<S, T> for A
-where
-    A: ops::Add<S, Output = T>
+    Self: ops::Add<S, Output = T>
         + ops::Div<S, Output = T>
         + ops::Mul<S, Output = T>
         + ops::Sub<S, Output = T>,
+{
+}
+
+impl<A, S, T> Arithmetic<S, T> for A where
+    A: ops::Add<S, Output = T>
+        + ops::Div<S, Output = T>
+        + ops::Mul<S, Output = T>
+        + ops::Sub<S, Output = T>
 {
 }
 

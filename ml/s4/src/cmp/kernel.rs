@@ -5,7 +5,7 @@
 use crate::core::ops::fft::{ifft, FftPlan};
 use crate::core::prelude::Conjugate;
 use crate::params::DPLRParams;
-use crate::prelude::{cauchy, };
+use crate::prelude::cauchy;
 use ndarray::prelude::{Array, Array1};
 use ndarray::ScalarOperand;
 use ndarray_linalg::Scalar;

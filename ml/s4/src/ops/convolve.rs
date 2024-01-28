@@ -3,13 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 // use crate::core::ops::fft::{rfft, irfft, FftPlan};
+use crate::core::prelude::{floor_div, pad, Power};
 use crate::prelude::{irfft, rfft};
-use crate::core::prelude::{pad, Power};
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array1, Array2};
+use ndarray::prelude::{array, s, Array, Array1, Array2, Axis};
 use ndarray::ScalarOperand;
 use num::complex::{Complex, ComplexFloat};
-use num::traits::{Float, FloatConst, Num, NumAssignOps,};
+use num::traits::{Float, FloatConst, Num, NumAssignOps};
 use rustfft::FftNum;
 
 /// Generates a large convolution kernal
@@ -53,6 +53,9 @@ where
 {
     assert!(u.shape()[0] == k.shape()[0]);
     let l = u.shape()[0];
+    println!("{:?}", l);
+    let l2 = l * 2;
+    let inv_size = floor_div(l, 2) + 1;
     let ud = {
         let padded = pad(u.clone(), k.len(), Some(T::zero()));
         Array::from_vec(rfft::<T>(padded))
@@ -63,8 +66,11 @@ where
         Array::from_vec(rfft::<T>(padded))
     };
 
-    let tmp = &ud * kd;
-    let res = irfft(tmp, l);
+    let mut tmp = &ud * kd;
+    // let a = array![Complex::new(T::zero(), T::zero())];
+    // tmp.append(Axis(0), a.view()).expect("");
+    let res = irfft(tmp, l2);
+    // let res = irfft(tmp.slice(s![0..l]).to_vec(), l2);
     Array::from_vec(res[0..l].to_vec())
 }
 
@@ -73,8 +79,8 @@ pub struct Filter {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::prelude::arange;
     use crate::core::ops::fft::*;
+    use crate::core::prelude::{arange, assert_approx};
 
     use lazy_static::lazy_static;
     use ndarray::prelude::*;
@@ -85,6 +91,8 @@ mod tests {
     lazy_static! {
         static ref EXP: Array1<f64> =
             array![-7.10542736e-15, 0.0, 1.0, 4.0, 1.0e1, 2.0e1, 3.5e1, 5.6e1];
+        static ref EXP2: Array1<f64> =
+            array![0.0, -7.10542736e-15, 1.0, 4.0, 1.0e1, 2.0e1, 3.5e1, 5.6e1];
     }
 
     // #[ignore]
@@ -92,11 +100,12 @@ mod tests {
     fn test_casual_convolution() {
         let u = arange(0.0, SAMPLES as f64, 1.0);
         let k = arange(0.0, SAMPLES as f64, 1.0);
-        
-        let plan = FftPlan::new(SAMPLES);
-        // println!("{:?}", rfft(u.clone().into_raw_vec(), plan));
+
+        let _plan = FftPlan::new(SAMPLES);
         let res = casual_convolution(&u, &k);
         println!("{:?}", res);
-        assert_eq!(res, *EXP);
+        for (i, j) in res.into_iter().zip(EXP2.clone().into_iter()) {
+            assert_approx(i, j, 1e-8);
+        }
     }
 }

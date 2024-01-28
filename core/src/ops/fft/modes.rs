@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames,};
+use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames};
 
 #[derive(
     Clone,
@@ -23,7 +23,7 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, Vari
     PartialOrd,
     Serialize,
     VariantArray,
-    VariantNames
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]
@@ -76,7 +76,7 @@ impl From<FftDirection> for usize {
     PartialOrd,
     Serialize,
     VariantArray,
-    VariantNames
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]

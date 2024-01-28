@@ -9,7 +9,7 @@ pub(crate) mod ops;
 pub(crate) mod scalar;
 
 use num::complex::Complex;
-use num::traits::{Float, Num,};
+use num::traits::{Float, Num};
 
 pub trait AsComplex: Sized {
     fn as_complex(self, real: bool) -> Complex<Self>;

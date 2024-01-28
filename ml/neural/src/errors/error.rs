@@ -21,7 +21,7 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
     PartialOrd,
     Serialize,
     SmartDefault,
-    VariantNames
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
@@ -76,7 +76,7 @@ impl From<NetworkError> for MlError {
     PartialOrd,
     Serialize,
     SmartDefault,
-    VariantNames
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
@@ -101,7 +101,7 @@ pub enum PredictError {
     PartialOrd,
     Serialize,
     SmartDefault,
-    VariantNames
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
@@ -128,7 +128,7 @@ pub enum ComputeError {
     PartialOrd,
     Serialize,
     SmartDefault,
-    VariantNames
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]

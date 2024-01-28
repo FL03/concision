@@ -33,7 +33,7 @@ where
     PartialEq,
     PartialOrd,
     Serialize,
-    VariantNames
+    VariantNames,
 )]
 #[non_exhaustive]
 #[repr(usize)]

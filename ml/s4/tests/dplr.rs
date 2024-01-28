@@ -29,7 +29,6 @@ lazy_static! {
 #[test]
 // #[ignore = "TODO: fix this test"]
 fn test_gen_dplr() {
-
     let eye = Array2::<f64>::eye(FEATURES);
 
     let step = (SAMPLES as f64).recip();

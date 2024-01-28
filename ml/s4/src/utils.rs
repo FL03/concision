@@ -71,7 +71,10 @@ pub(crate) mod fft {
     use realfft::RealFftPlanner;
     use rustfft::FftNum;
 
-    pub fn rfft<T>(args: impl IntoIterator<Item = T>) -> Vec<Complex<T>> where T: FftNum {
+    pub fn rfft<T>(args: impl IntoIterator<Item = T>) -> Vec<Complex<T>>
+    where
+        T: FftNum,
+    {
         let mut buffer = Vec::from_iter(args);
         // make a planner
         let mut real_planner = RealFftPlanner::<T>::new();
@@ -82,10 +85,12 @@ pub(crate) mod fft {
         // forward transform the signal
         r2c.process(&mut buffer, &mut spectrum).unwrap();
         spectrum
-        
     }
 
-    pub fn irfft<T>(args: impl IntoIterator<Item = Complex<T>>, len: usize) -> Vec<T> where T: FftNum + NumCast {
+    pub fn irfft<T>(args: impl IntoIterator<Item = Complex<T>>, len: usize) -> Vec<T>
+    where
+        T: FftNum + NumCast,
+    {
         let mut buffer = Vec::from_iter(args);
         // make a planner
         let mut real_planner = RealFftPlanner::<T>::new();
@@ -97,7 +102,5 @@ pub(crate) mod fft {
         r2c.process(&mut buffer, &mut spectrum).unwrap();
         let scale = T::one() / T::from(len).unwrap();
         spectrum.iter().cloned().map(|i| i * scale).collect()
-        
     }
-
 }

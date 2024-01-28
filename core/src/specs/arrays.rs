@@ -19,7 +19,6 @@ pub trait Pad<T> {
     fn pad_with(&self, pad: usize, value: T) -> Self;
 }
 
-
 // impl<T, D> Pad<T> for Array<T, D>
 // where
 //     T: Clone + Num,

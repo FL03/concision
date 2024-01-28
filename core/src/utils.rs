@@ -11,9 +11,9 @@ use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::SeedableRng;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
-use rand::distributions::uniform::{SampleUniform, Uniform};
 use num::complex::Complex;
-use num::traits::{AsPrimitive, Float, Num, NumCast,};
+use num::traits::{AsPrimitive, Float, Num, NumCast};
+use rand::distributions::uniform::{SampleUniform, Uniform};
 
 pub fn pad<T>(a: impl IntoIterator<Item = T>, pad: usize, value: Option<T>) -> Vec<T>
 where
@@ -25,7 +25,10 @@ where
     res
 }
 ///
-pub fn floor_div<T>(numerator: T, denom: T) -> T where T: Copy + Num  {
+pub fn floor_div<T>(numerator: T, denom: T) -> T
+where
+    T: Copy + Num,
+{
     (numerator - (numerator % denom)) / denom
 }
 
@@ -41,9 +44,6 @@ where
     }
     res
 }
-
-
-
 
 pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
     Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
@@ -165,9 +165,6 @@ where
     Array::random(shape, StandardNormal)
 }
 
-
-
-
 pub(crate) mod assertions {
     use ndarray::prelude::{Array, Dimension};
     use ndarray::ScalarOperand;
@@ -209,10 +206,13 @@ pub(crate) mod assertions {
 
 pub(crate) mod arrays {
     use ndarray::prelude::{s, Array, Array1, Array2, Axis};
-    use ndarray::{RemoveAxis, concatenate};
+    use ndarray::{concatenate, RemoveAxis};
     use num::traits::{Num, Zero};
     /// Creates an n-dimensional array from an iterator of n dimensional arrays.
-    pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
+    pub fn concat_iter<D, T>(
+        axis: usize,
+        iter: impl IntoIterator<Item = Array<T, D>>,
+    ) -> Array<T, D>
     where
         D: RemoveAxis,
         T: Clone,

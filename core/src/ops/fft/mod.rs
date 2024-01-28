@@ -18,12 +18,11 @@ pub trait Fft<T> {
     fn ifft(&self) -> Vec<T>;
 }
 
-
 pub(crate) mod utils {
     use super::FftPlan;
     use crate::prelude::AsComplex;
     use num::complex::{Complex, ComplexFloat};
-    use num::traits::{Float, FloatConst, Num, NumAssignOps, NumCast, NumOps };
+    use num::traits::{Float, FloatConst, Num, NumAssignOps, NumCast, NumOps};
 
     // pub(crate) fn rsize(n: usize) -> usize {
     //     (n / 2).floor() + 1
@@ -36,11 +35,17 @@ pub(crate) mod utils {
         T::TAU() / T::from(n).unwrap()
     }
 
-    pub(crate) fn floor<T>(lhs: T, rhs: T) -> T where T: Copy + Num {
+    pub(crate) fn floor<T>(lhs: T, rhs: T) -> T
+    where
+        T: Copy + Num,
+    {
         (lhs - lhs % rhs) / rhs
     }
 
-    pub(crate) fn unfloor<T>(lhs: T, rhs: T) -> T where T: Copy + Num {
+    pub(crate) fn unfloor<T>(lhs: T, rhs: T) -> T
+    where
+        T: Copy + Num,
+    {
         (lhs * rhs) - lhs % rhs
     }
 
@@ -86,7 +91,10 @@ pub(crate) mod utils {
 
     /// Computes the Fast Fourier Transform of an one-dimensional, real-valued signal.
     /// TODO: Optimize the function to avoid unnecessary computation.
-    pub fn rfft<T>(input: impl AsRef<[T]>, input_permutation: impl AsRef<[usize]>) -> Vec<Complex<T>>
+    pub fn rfft<T>(
+        input: impl AsRef<[T]>,
+        input_permutation: impl AsRef<[usize]>,
+    ) -> Vec<Complex<T>>
     where
         T: Float + FloatConst,
         Complex<T>: ComplexFloat<Real = T> + NumAssignOps,
@@ -121,7 +129,11 @@ pub(crate) mod utils {
                 }
             }
         }
-        store.iter().cloned().filter(|x| x.im() >= T::zero()).collect()
+        store
+            .iter()
+            .cloned()
+            .filter(|x| x.im() >= T::zero())
+            .collect()
     }
     /// Computes the Inverse Fast Fourier Transform of an one-dimensional, complex-valued signal.
     pub fn ifft<S, T>(input: &[S], input_permutation: &FftPlan) -> Vec<Complex<T>>
@@ -204,7 +216,6 @@ mod tests {
     use lazy_static::lazy_static;
     use num::complex::{Complex, ComplexFloat};
 
-
     pub(crate) fn fft_permutation(length: usize) -> Vec<usize> {
         let mut result = Vec::new();
         result.reserve_exact(length);
@@ -234,11 +245,20 @@ mod tests {
 
     lazy_static! {
         static ref EXPECTED_RFFT: Vec<Complex<f64>> = vec![
-            Complex { re: 28.0, im: 0.0 }, 
-            Complex { re: -4.0, im: 0.0 }, 
-            Complex { re: -4.0, im: 1.6568542494923806 }, 
-            Complex { re: -4.0, im: 4.000000000000001 }, 
-            Complex { re: -3.999999999999999, im: 9.656854249492381 }
+            Complex { re: 28.0, im: 0.0 },
+            Complex { re: -4.0, im: 0.0 },
+            Complex {
+                re: -4.0,
+                im: 1.6568542494923806
+            },
+            Complex {
+                re: -4.0,
+                im: 4.000000000000001
+            },
+            Complex {
+                re: -3.999999999999999,
+                im: 9.656854249492381
+            }
         ];
     }
 
@@ -247,10 +267,7 @@ mod tests {
         let samples = 16;
 
         let plan = FftPlan::new(samples);
-        assert_eq!(
-            plan.plan(),
-            fft_permutation(16).as_slice()
-        );
+        assert_eq!(plan.plan(), fft_permutation(16).as_slice());
     }
 
     #[test]
@@ -260,7 +277,12 @@ mod tests {
         println!("Function Values: {:?}", &polynomial);
         println!("Plan: {:?}", &plan);
         let fft = rfft(&polynomial, &plan);
-        let mut tmp = fft.iter().cloned().filter(|i| i.im() > 0.0).map(|i| i.conj()).collect::<Vec<_>>();
+        let mut tmp = fft
+            .iter()
+            .cloned()
+            .filter(|i| i.im() > 0.0)
+            .map(|i| i.conj())
+            .collect::<Vec<_>>();
         tmp.sort_by(|a, b| a.im().partial_cmp(&b.im()).unwrap());
         println!("FFT: {:?}", &tmp);
         let mut res = fft.clone();
