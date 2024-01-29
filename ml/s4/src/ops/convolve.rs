@@ -98,12 +98,10 @@ mod tests {
     // #[ignore]
     #[test]
     fn test_casual_convolution() {
-        let u = arange(0.0, SAMPLES as f64, 1.0);
-        let k = arange(0.0, SAMPLES as f64, 1.0);
+        let u = Array::range(0.0, SAMPLES as f64, 1.0);
+        let k = Array::range(0.0, SAMPLES as f64, 1.0);
 
-        let _plan = FftPlan::new(SAMPLES);
         let res = casual_convolution(&u, &k);
-        println!("{:?}", res);
         for (i, j) in res.into_iter().zip(EXP2.clone().into_iter()) {
             assert_approx(i, j, 1e-8);
         }

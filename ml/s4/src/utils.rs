@@ -9,7 +9,7 @@ use ndarray::{IntoDimension, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, Uniform};
 use ndarray_rand::RandomExt;
-use num::complex::{Complex, ComplexDistribution};
+use num::complex::{Complex, ComplexDistribution, ComplexFloat};
 use num::traits::Num;
 use std::ops::Neg;
 
@@ -50,16 +50,16 @@ pub fn scanner<T>(
     x0: &Array1<T>,
 ) -> Array2<T>
 where
-    T: NdFloat,
+    T: ComplexFloat + NdFloat,
 {
     let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-        let x1 = a.dot(xs) + b.t().dot(&us);
+        let x1 = a.dot(xs) + b.dot(&us);
         let y1 = c.dot(&x1.t());
         Some(y1)
     };
     let scan = u.outer_iter().scan(x0.clone(), step).collect::<Vec<_>>();
     let shape = [scan.len(), scan[0].len()];
-    let mut res = Array2::<T>::zeros(shape.into_dimension());
+    let mut res = Array2::zeros(shape.into_dimension());
     for (i, s) in scan.iter().enumerate() {
         res.slice_mut(s![i, ..]).assign(s);
     }
