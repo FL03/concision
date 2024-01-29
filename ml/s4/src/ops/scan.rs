@@ -3,10 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::SSMStore;
-use ndarray::prelude::{Array1, Array2, ArrayView1, NdFloat};
+use ndarray::prelude::{Array1, Array2, ArrayView1,};
 use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::{vstack, Scalar};
-use num::complex::ComplexFloat;
 use num::Float;
 
 pub fn scan_ssm<T>(
@@ -17,7 +16,7 @@ pub fn scan_ssm<T>(
     x0: &Array1<T>,
 ) -> Result<Array2<T>, LinalgError>
 where
-    T: ComplexFloat + NdFloat + Scalar,
+    T: Scalar,
 {
     let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
         let x1 = a.dot(xs) + b.dot(&us);
@@ -30,21 +29,6 @@ where
         .scan(x0.clone(), step)
         .collect();
     vstack(scan.as_slice())
-}
-
-pub fn scan<F, S, T>(f: &mut F, init: S, xs: Vec<T>) -> (S, Vec<S>)
-where
-    F: FnMut(&mut S, T) -> S,
-    S: Clone,
-    T: Clone,
-{
-    let mut state = init;
-    let mut out = Vec::with_capacity(xs.len());
-    for x in xs {
-        state = f(&mut state, x);
-        out.push(state.clone());
-    }
-    (state, out)
 }
 
 pub struct Scanner<'a, T = f64>
@@ -69,4 +53,34 @@ where
     pub fn model_mut(&mut self) -> &mut SSMStore<T> {
         self.model
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    use ndarray::prelude::*;
+
+    const FEATURES: usize = 3;
+
+
+    #[test]
+    fn test_scan() {
+        let exp = array![[0.0], [5.0], [70.0]];
+
+        let u = Array::range(0.0, FEATURES as f64, 1.0).insert_axis(Axis(1));
+        let x0 = Array1::zeros(FEATURES); // Array1::<Complex<f64>>::zeros(FEATURES)
+
+        let a = Array::range(0.0, (FEATURES * FEATURES) as f64, 1.0)
+            .into_shape((FEATURES, FEATURES))
+            .unwrap();
+        let b = Array::range(0.0, FEATURES as f64, 1.0).insert_axis(Axis(1));
+        let c = Array::range(0.0, FEATURES as f64, 1.0).insert_axis(Axis(0));
+
+
+        let scan = scan_ssm(&a, &b, &c, &u, &x0).expect("");
+
+        assert_eq!(&scan, &exp);
+    }
+
 }

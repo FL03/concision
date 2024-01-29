@@ -99,8 +99,9 @@ where
 {
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
         let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-            let x1 = self.a().dot(xs) + self.b().t().dot(&us);
-            let y1 = self.c().dot(&x1.t());
+            let x1 = self.a().dot(xs) + self.b().dot(&us);
+            let y1 = self.c().dot(&x1);
+            *xs = x1;
             Some(y1)
         };
         vstack(

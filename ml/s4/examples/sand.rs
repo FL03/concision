@@ -5,7 +5,6 @@ use concision_core as core;
 use concision_s4 as s4;
 
 use ndarray::prelude::*;
-use s4::prelude::scan;
 
 fn main() -> anyhow::Result<()> {
     let (features, samples) = (4, 16);
