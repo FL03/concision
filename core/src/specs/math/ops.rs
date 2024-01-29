@@ -1,15 +1,12 @@
 /*
-   Appellation: math <mod>
+   Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Dimension, Ix2, NdFloat};
-use ndarray_rand::rand_distr::uniform::SampleUniform;
-use num::{Complex, Float, FromPrimitive, Num, One, Signed, Zero};
+use ndarray::linalg::Dot;
+use ndarray::prelude::{Array, Dimension, Ix2};
+use num::complex::Complex;
+use num::{Float, Num, Signed};
 use std::ops;
-
-pub trait Binary: One + Zero {}
-
-impl<T> Binary for T where T: One + Zero {}
 
 pub trait Conjugate {
     fn conj(&self) -> Self;
@@ -29,12 +26,21 @@ impl Conjugate for f64 {
 
 impl<T> Conjugate for Complex<T>
 where
-    T: Copy + Num + Signed,
+    T: Clone + Signed,
 {
     fn conj(&self) -> Self {
-        Complex::<T>::new(self.re, -self.im)
+        Complex::<T>::conj(self)
     }
 }
+
+// impl<T> Conjugate for T
+// where
+//     T: ComplexFloat,
+// {
+//     fn conj(&self) -> Self {
+//         ComplexFloat::conj(self)
+//     }
+// }
 
 impl<T, D> Conjugate for Array<T, D>
 where
@@ -46,15 +52,12 @@ where
     }
 }
 
-pub trait FloatExt: FromPrimitive + NdFloat + Signed + SampleUniform {}
-
-impl<T> FloatExt for T where T: FromPrimitive + NdFloat + Signed + SampleUniform {}
-
-pub trait Arithmetic<S, T>:
-    ops::Add<S, Output = T>
-    + ops::Div<S, Output = T>
-    + ops::Mul<S, Output = T>
-    + ops::Sub<S, Output = T>
+pub trait Arithmetic<S = Self, T = Self>
+where
+    Self: ops::Add<S, Output = T>
+        + ops::Div<S, Output = T>
+        + ops::Mul<S, Output = T>
+        + ops::Sub<S, Output = T>,
 {
 }
 
@@ -79,7 +82,7 @@ where
     A: Dimension,
     B: Dimension,
     D: Dimension,
-    T: Float,
+    T: Arithmetic<T>,
     Self: Arithmetic<Array<T, A>, Array<T, B>>,
 {
 }
@@ -89,7 +92,7 @@ where
     A: Dimension,
     B: Dimension,
     D: Dimension,
-    T: Float,
+    T: Arithmetic<T>,
     Self: Arithmetic<Array<T, A>, Array<T, B>>,
 {
 }
@@ -116,5 +119,48 @@ where
 {
     fn sqrt(self) -> Self {
         Complex::<T>::sqrt(self)
+    }
+}
+
+impl<T, D> SquareRoot for Array<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    fn sqrt(self) -> Self {
+        self.mapv(|x| x.sqrt())
+    }
+}
+
+pub trait Power<Rhs> {
+    type Output;
+
+    fn pow(&self, rhs: Rhs) -> Self::Output;
+}
+
+// impl<S, T> Power<T> for S where S: Pow<T> {
+//     type Output = <S as Pow<T>>::Output;
+
+//     fn pow(self, rhs: T) -> Self::Output {
+//         <Self as Pow<T>>::pow(self, rhs)
+//     }
+// }
+
+impl<T> Power<usize> for Array<T, Ix2>
+where
+    T: Clone + Num,
+    Array<T, Ix2>: Dot<Self, Output = Self>,
+{
+    type Output = Self;
+
+    fn pow(&self, rhs: usize) -> Self::Output {
+        if !self.is_square() {
+            panic!("Matrix must be square to be raised to a power");
+        }
+        let mut res = Array::eye(self.shape()[0]);
+        for _ in 0..rhs {
+            res = res.dot(&self);
+        }
+        res
     }
 }

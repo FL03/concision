@@ -4,12 +4,10 @@
 */
 //! # Feed Forward Neural Network
 //!
-pub use self::{mlp::*, model::*, utils::*};
+pub use self::{mlp::*, model::*};
 
 pub(crate) mod mlp;
 pub(crate) mod model;
-
-pub(crate) mod utils {}
 
 #[cfg(tets)]
 mod tests {

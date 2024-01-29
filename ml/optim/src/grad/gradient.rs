@@ -4,7 +4,7 @@
 */
 use crate::neural::func::activate::Sigmoid;
 use crate::neural::models::ModelParams;
-use crate::neural::prelude::{Forward, Gradient, Weighted};
+use crate::neural::prelude::{Forward, Gradient};
 use ndarray::prelude::{Array2, Axis, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};

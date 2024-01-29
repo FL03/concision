@@ -27,21 +27,6 @@ impl<T> SSMStore<T>
 where
     T: Clone + Num,
 {
-    pub fn new(a: Array2<T>, b: Array2<T>, c: Array2<T>, d: Array2<T>) -> Self {
-        Self { a, b, c, d }
-    }
-
-    pub fn from_features(features: usize) -> Self
-    where
-        T: Default,
-    {
-        let a = Array2::<T>::default((features, features));
-        let b = Array2::<T>::default((features, 1));
-        let c = Array2::<T>::default((1, features));
-        let d = Array2::<T>::default((1, 1));
-        Self::new(a, b, c, d)
-    }
-
     pub fn ones(features: usize) -> Self {
         let a = Array2::<T>::ones((features, features));
         let b = Array2::<T>::ones((features, 1));
@@ -55,6 +40,23 @@ where
         let b = Array2::<T>::zeros((features, 1));
         let c = Array2::<T>::zeros((1, features));
         let d = Array2::<T>::zeros((1, 1));
+        Self::new(a, b, c, d)
+    }
+}
+
+impl<T> SSMStore<T> {
+    pub fn new(a: Array2<T>, b: Array2<T>, c: Array2<T>, d: Array2<T>) -> Self {
+        Self { a, b, c, d }
+    }
+
+    pub fn from_features(features: usize) -> Self
+    where
+        T: Default,
+    {
+        let a = Array2::<T>::default((features, features));
+        let b = Array2::<T>::default((features, 1));
+        let c = Array2::<T>::default((1, features));
+        let d = Array2::<T>::default((1, 1));
         Self::new(a, b, c, d)
     }
 
@@ -97,8 +99,9 @@ where
 {
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
         let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-            let x1 = self.a().dot(xs) + self.b().t().dot(&us);
-            let y1 = self.c().dot(&x1.t());
+            let x1 = self.a().dot(xs) + self.b().dot(&us);
+            let y1 = self.c().dot(&x1);
+            *xs = x1;
             Some(y1)
         };
         vstack(
@@ -132,10 +135,7 @@ where
     }
 }
 
-impl<T> ops::Index<SSMParams> for SSMStore<T>
-where
-    T: Float,
-{
+impl<T> ops::Index<SSMParams> for SSMStore<T> {
     type Output = Array2<T>;
 
     fn index(&self, index: SSMParams) -> &Self::Output {
@@ -149,10 +149,7 @@ where
     }
 }
 
-impl<T> ops::IndexMut<SSMParams> for SSMStore<T>
-where
-    T: Float,
-{
+impl<T> ops::IndexMut<SSMParams> for SSMStore<T> {
     fn index_mut(&mut self, index: SSMParams) -> &mut Self::Output {
         use SSMParams::*;
         match index {
@@ -164,51 +161,33 @@ where
     }
 }
 
-impl<T> From<SSMStore<T>> for (Array2<T>, Array2<T>, Array2<T>, Array2<T>)
-where
-    T: Float,
-{
+impl<T> From<SSMStore<T>> for (Array2<T>, Array2<T>, Array2<T>, Array2<T>) {
     fn from(store: SSMStore<T>) -> Self {
         (store.a, store.b, store.c, store.d)
     }
 }
 
-impl<'a, T> From<&'a SSMStore<T>> for (&'a Array2<T>, &'a Array2<T>, &'a Array2<T>, &'a Array2<T>)
-where
-    T: Float,
-{
+impl<'a, T> From<&'a SSMStore<T>> for (&'a Array2<T>, &'a Array2<T>, &'a Array2<T>, &'a Array2<T>) {
     fn from(store: &'a SSMStore<T>) -> Self {
         (&store.a, &store.b, &store.c, &store.d)
     }
 }
 
-impl<T> From<(Array2<T>, Array2<T>, Array2<T>, Array2<T>)> for SSMStore<T>
-where
-    T: Float,
-{
+impl<T> From<(Array2<T>, Array2<T>, Array2<T>, Array2<T>)> for SSMStore<T> {
     fn from((a, b, c, d): (Array2<T>, Array2<T>, Array2<T>, Array2<T>)) -> Self {
         Self::new(a, b, c, d)
     }
 }
 
-impl<T> From<SSMStore<T>> for HashMap<SSMParams, Array2<T>>
-where
-    T: Float,
-{
+impl<T> From<SSMStore<T>> for HashMap<SSMParams, Array2<T>> {
     fn from(store: SSMStore<T>) -> Self {
-        let mut map = HashMap::new();
-
-        map.insert(SSMParams::A, store.a);
-        map.insert(SSMParams::B, store.b);
-        map.insert(SSMParams::C, store.c);
-        map.insert(SSMParams::D, store.d);
-        map
+        HashMap::from_iter(store.into_iter())
     }
 }
 
 impl<T> FromIterator<(SSMParams, Array2<T>)> for SSMStore<T>
 where
-    T: Default + Float,
+    T: Clone + Default,
 {
     fn from_iter<I: IntoIterator<Item = (SSMParams, Array2<T>)>>(iter: I) -> Self {
         let tmp = HashMap::<SSMParams, Array2<T>>::from_iter(iter);
@@ -236,10 +215,7 @@ where
     }
 }
 
-impl<T> IntoIterator for SSMStore<T>
-where
-    T: Float,
-{
+impl<T> IntoIterator for SSMStore<T> {
     type Item = (SSMParams, Array2<T>);
     type IntoIter = std::collections::hash_map::IntoIter<SSMParams, Array2<T>>;
 

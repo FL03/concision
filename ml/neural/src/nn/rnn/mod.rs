@@ -5,7 +5,7 @@
 //! # Reccurrant Neural Network (RNN)
 //!
 //!  
-pub use self::{model::*, utils::*};
+pub use self::model::*;
 
 pub(crate) mod model;
 

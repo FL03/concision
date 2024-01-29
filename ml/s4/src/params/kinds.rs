@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
+use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 #[derive(
     Clone,
@@ -16,13 +16,13 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, EnumVariantNames};
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]
@@ -75,18 +75,18 @@ impl From<usize> for SSMParams {
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum DPLRParams {
+pub enum DPLRParam {
     #[default]
     Lambda = 0,
     P = 1,

@@ -3,8 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Node;
-use crate::func::activate::{Activate, Linear};
-use crate::prelude::{Forward, Parameterized, ParameterizedExt, Weighted};
+use crate::prelude::{Activate, Forward, LinearActivation};
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
@@ -12,7 +11,7 @@ use num::Float;
 
 /// Artificial Neuron
 #[derive(Clone, Debug, PartialEq)]
-pub struct Perceptron<T = f64, A = Linear>
+pub struct Perceptron<T = f64, A = LinearActivation>
 where
     A: Activate<T, Ix1>,
     T: Float,
@@ -26,6 +25,16 @@ where
     A: Activate<T, Ix1>,
     T: Float,
 {
+    pub fn new(features: usize) -> Self
+    where
+        A: Default,
+    {
+        Self {
+            activation: A::default(),
+            node: Node::create(false, features),
+        }
+    }
+
     pub fn node(&self) -> &Node<T> {
         &self.node
     }
@@ -34,11 +43,23 @@ where
         &mut self.node
     }
 
+    pub fn features(&self) -> usize {
+        self.node.features()
+    }
+
+    pub fn params(&self) -> &Node<T> {
+        &self.node
+    }
+
+    pub fn params_mut(&mut self) -> &mut Node<T> {
+        &mut self.node
+    }
+
     pub fn rho(&self) -> &A {
         &self.activation
     }
 
-    pub fn with_bias(mut self, bias: Array0<T>) -> Self {
+    pub fn with_bias(mut self, bias: Option<Array0<T>>) -> Self {
         self.node = self.node.with_bias(bias);
         self
     }
@@ -59,18 +80,17 @@ where
         self.node = self.node.with_weights(weights);
         self
     }
-}
 
-impl<T, A> Perceptron<T, A>
-where
-    T: NdFloat,
-    A: Activate<T, Ix1> + Default,
-{
-    pub fn new(features: usize) -> Self {
-        Self {
-            activation: A::default(),
-            node: Node::new(features),
-        }
+    pub fn weights(&self) -> &Array1<T> {
+        self.node.weights()
+    }
+
+    pub fn weights_mut(&mut self) -> &mut Array1<T> {
+        self.node.weights_mut()
+    }
+
+    pub fn set_weights(&mut self, weights: Array1<T>) {
+        self.node.set_weights(weights);
     }
 }
 
@@ -116,77 +136,6 @@ where
     }
 }
 
-// impl<T, A> Biased<T, Ix1> for Neuron<T, A>
-// where
-//     T: Float,
-//     A: Activate<T, Ix1>,
-// {
-//     fn bias(&self) -> &Array0<T> {
-//         self.node.bias()
-//     }
-
-//     fn bias_mut(&mut self) -> &mut Array0<T> {
-//         self.node.bias_mut()
-//     }
-
-//     fn set_bias(&mut self, bias: Array0<T>) {
-//         self.node.set_bias(bias);
-//     }
-// }
-
-impl<T, A> Weighted<T, Ix1> for Perceptron<T, A>
-where
-    T: Float,
-    A: Activate<T, Ix1>,
-{
-    fn weights(&self) -> &Array1<T> {
-        self.node.weights()
-    }
-
-    fn weights_mut(&mut self) -> &mut Array1<T> {
-        self.node.weights_mut()
-    }
-
-    fn set_weights(&mut self, weights: Array1<T>) {
-        self.node.set_weights(weights);
-    }
-}
-
-impl<T, A> Parameterized<T, Ix1> for Perceptron<T, A>
-where
-    A: Activate<T, Ix1>,
-    T: Float,
-{
-    type Features = usize;
-
-    type Params = Node<T>;
-
-    fn features(&self) -> &Self::Features {
-        self.node.features()
-    }
-
-    fn features_mut(&mut self) -> &mut Self::Features {
-        self.node.features_mut()
-    }
-
-    fn params(&self) -> &Self::Params {
-        &self.node
-    }
-
-    fn params_mut(&mut self) -> &mut Self::Params {
-        &mut self.node
-    }
-}
-
-// impl Forward<Array1<f64>> for Neuron {
-//     type Output = f64;
-
-//     fn forward(&self, args: &Array1<f64>) -> Self::Output {
-//         self.rho().activate(args.dot(&self.weights().t().to_owned()) + self.bias)
-//     }
-
-// }
-
 impl<T, A> Forward<Array2<T>> for Perceptron<T, A>
 where
     T: NdFloat,
@@ -195,7 +144,7 @@ where
     type Output = Array1<T>;
 
     fn forward(&self, args: &Array2<T>) -> Self::Output {
-        let linstep = args.dot(&self.node().weights().t()) + self.bias();
+        let linstep = self.params().forward(args);
         self.rho().activate(&linstep)
     }
 }
@@ -252,7 +201,7 @@ where
     }
 }
 
-impl<T, A> From<Perceptron<T, A>> for (Array1<T>, Array0<T>)
+impl<T, A> From<Perceptron<T, A>> for (Array1<T>, Option<Array0<T>>)
 where
     T: Float,
     A: Activate<T, Ix1>,

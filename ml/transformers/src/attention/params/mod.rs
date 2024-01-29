@@ -15,7 +15,7 @@
 //!    - samples: The number of samples to draw from the attention distribution.
 //!
 //!
-pub use self::{dim::*, hyperparams::*, qkv::*, utils::*};
+pub use self::{dim::*, hyperparams::*, qkv::*};
 
 pub(crate) mod dim;
 pub(crate) mod hyperparams;

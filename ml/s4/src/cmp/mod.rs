@@ -5,7 +5,7 @@
 //! # Components
 //!
 //!
-pub use self::{cache::*, kernel::*};
+pub use self::cache::*;
 
 pub(crate) mod cache;
-pub(crate) mod kernel;
+pub mod kernel;

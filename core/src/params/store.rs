@@ -91,8 +91,8 @@ mod tests {
     fn test_model_store() {
         let (inputs, outputs) = (5, 3);
 
-        let shapes = [(inputs, outputs), (outputs, outputs), (outputs, 1)];
+        let _shapes = [(inputs, outputs), (outputs, outputs), (outputs, 1)];
 
-        let params = ParamStore::<f64>::new();
+        let _params = ParamStore::<f64>::new();
     }
 }

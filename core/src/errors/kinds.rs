@@ -4,7 +4,7 @@
 */
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use strum::{Display, EnumCount, EnumIs, EnumIter, EnumVariantNames};
+use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
 
 #[derive(
     Clone,
@@ -14,7 +14,6 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, EnumVariantNames};
     EnumCount,
     EnumIs,
     EnumIter,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
@@ -22,6 +21,7 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, EnumVariantNames};
     PartialOrd,
     Serialize,
     SmartDefault,
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
@@ -39,7 +39,7 @@ pub enum Errors {
     IO,
     Null,
     Parse,
-    Process,
+    Process(ProcessError),
     Runtime,
     Syntax,
     Unknown,
@@ -53,7 +53,6 @@ pub enum Errors {
     EnumCount,
     EnumIs,
     EnumIter,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
@@ -61,6 +60,7 @@ pub enum Errors {
     PartialOrd,
     Serialize,
     SmartDefault,
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]

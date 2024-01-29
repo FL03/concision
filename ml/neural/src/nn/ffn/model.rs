@@ -4,7 +4,7 @@
 */
 
 use crate::func::activate::Activator;
-use crate::prelude::{Features, Forward, Layer, Parameterized};
+use crate::prelude::{Features, Forward, Layer};
 
 use ndarray::prelude::{Array2, NdFloat};
 use num::Float;

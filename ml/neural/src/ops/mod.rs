@@ -2,18 +2,16 @@
    Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{dropout::*, norm::*, utils::*};
+pub use self::{dropout::*, norm::*};
 
 pub(crate) mod dropout;
 pub(crate) mod norm;
 
-pub(crate) mod utils {}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::prelude::RoundTo;
     use crate::prelude::Forward;
-    use concision_core::prelude::RoundTo;
     use ndarray::prelude::{array, Array, Ix2};
 
     #[test]

@@ -11,6 +11,7 @@ pub(crate) mod params;
 pub(crate) mod stack;
 
 pub mod exp;
+pub mod seq;
 
 use crate::prelude::{Activate, ActivateDyn, Forward, Node};
 use ndarray::prelude::{Array2, Ix2};
@@ -74,8 +75,7 @@ pub(crate) mod utils {
 mod tests {
     use super::*;
     use crate::core::prelude::linarr;
-    use crate::func::activate::Softmax;
-    use crate::prelude::{Biased, Forward, Node, Parameterized};
+    use crate::prelude::{Forward, Node, Softmax};
     use ndarray::prelude::Ix2;
 
     #[test]
@@ -106,8 +106,9 @@ mod tests {
         let layer = Layer::<f64, Softmax>::from(features).init(true);
 
         for node in layer.into_iter() {
-            assert_eq!(node.features(), &inputs);
-            assert_eq!(node.bias().dim(), ());
+            assert!(node.is_biased());
+            assert_eq!(node.features(), inputs);
+            assert_eq!(node.bias().as_ref().unwrap().dim(), ());
         }
     }
 }

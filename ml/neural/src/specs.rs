@@ -4,7 +4,7 @@
 */
 use crate::core::BoxResult;
 use crate::func::loss::Loss;
-use ndarray::prelude::{Array, Array1, Axis, Dimension, Ix2};
+use ndarray::prelude::{Array, Axis, Ix2};
 use num::Float;
 
 pub trait Backward<T>: Forward<T> {
@@ -36,40 +36,32 @@ where
 // {
 // }
 
-pub trait Compile<T = f64, D = Ix2>
-where
-    D: Dimension,
-    T: Float,
-{
-    type Opt;
-
-    fn compile(&mut self, loss: impl Loss<Array<T, D>>, optimizer: Self::Opt) -> BoxResult<()>;
-}
-
-pub trait Predict<T = f64, D = Ix2>
-where
-    D: Dimension,
-    T: Float,
-{
+pub trait Batched {
     type Output;
 
-    fn predict(&self, input: &Array<T, D>) -> BoxResult<Self::Output>;
-
-    fn predict_batch(&self, input: &[Array<T, D>]) -> BoxResult<Array1<Self::Output>> {
-        let res = input.iter().map(|x| self.predict(x).expect("")).collect();
-        Ok(res)
-    }
+    fn batch(&self, batch_size: usize) -> Self::Output;
 }
 
-impl<T, D, O> Predict<T, D> for Box<dyn Predict<T, D, Output = O>>
+pub trait Compile<T> {
+    type Opt;
+
+    fn compile(&mut self, loss: impl Loss<T>, optimizer: Self::Opt) -> BoxResult<()>;
+}
+
+pub trait Predict<T> {
+    type Output;
+
+    fn predict(&self, input: &T) -> BoxResult<Self::Output>;
+}
+
+impl<S, T, O> Predict<T> for S
 where
-    D: Dimension,
-    T: Float,
+    S: Forward<T, Output = O>,
 {
     type Output = O;
 
-    fn predict(&self, input: &Array<T, D>) -> BoxResult<O> {
-        self.as_ref().predict(input)
+    fn predict(&self, input: &T) -> BoxResult<O> {
+        Ok(self.forward(input))
     }
 }
 
@@ -97,10 +89,6 @@ where
     }
 }
 
-pub trait Module<T = f64, D = Ix2>: Forward<Array<T, D>, Output = Array<T, D>>
-where
-    D: Dimension,
-    T: Float,
-{
+pub trait Module<T>: Compile<T> + Predict<T> {
     type Config;
 }

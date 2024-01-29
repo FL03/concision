@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{ModelConfig, ModelParams};
-use crate::prelude::{Forward, Gradient, LayerParams, Weighted};
+use crate::prelude::{Forward, Gradient, LayerParams};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array1, Array2, Dimension, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;

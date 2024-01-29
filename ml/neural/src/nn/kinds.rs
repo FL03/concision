@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
+use strum::{Display, EnumIs, EnumIter, EnumString, VariantNames};
 
 #[derive(
     Clone,
@@ -15,13 +15,13 @@ use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "snake_case")]
@@ -66,13 +66,13 @@ impl NetworkKind {
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]
@@ -108,13 +108,13 @@ impl Learning {
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "snake_case")]
@@ -139,13 +139,13 @@ pub enum NetworkType {
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "snake_case")]

@@ -32,6 +32,7 @@ test = true
 concision-core = { path = "../../core", version = "0.1.12" }
 
 anyhow.workspace = true
+itertools.workspace = true
 ndarray = { features = ["serde-1"], version = "0.15" }
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true

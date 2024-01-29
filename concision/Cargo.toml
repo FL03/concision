@@ -111,6 +111,8 @@ openblas-static = [
     "concision-s4/openblas-static",
 ]
 
+serde = []
+
 [lib]
 bench = true
 crate-type = ["rlib"]

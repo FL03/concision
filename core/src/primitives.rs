@@ -2,7 +2,7 @@
     Appellation: primitives <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{constants::*, statics::*, types::*};
+pub use self::{constants::*, types::*};
 
 pub use ndarray::ShapeError;
 pub use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -18,7 +18,7 @@ mod statics {}
 /// Collection of types used throughout the system
 mod types {
     ///
-    pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
+    pub type BoxError = Box<dyn std::error::Error + Send + Sync + 'static>;
     ///
     pub type BoxResult<T = ()> = std::result::Result<T, BoxError>;
 

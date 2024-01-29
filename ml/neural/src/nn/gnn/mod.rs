@@ -4,7 +4,7 @@
 */
 //! # Graph Neural Network
 //!
-pub use self::{model::*, tasks::*, utils::*};
+pub use self::{model::*, tasks::*};
 
 pub(crate) mod model;
 pub(crate) mod tasks;

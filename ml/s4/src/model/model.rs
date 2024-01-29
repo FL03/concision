@@ -8,11 +8,18 @@ use crate::prelude::SSMStore;
 use ndarray::prelude::{Array1, Array2, NdFloat};
 use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
 use ndarray_linalg::Scalar;
+use num::complex::ComplexFloat;
 use num::Float;
-// use num::complex::{Complex, ComplexFloat};
 use rustfft::FftNum;
-
+// use std::collections::HashMap;
 use crate::prelude::SSMParams::*;
+
+pub struct S4State<T = f64>
+where
+    T: ComplexFloat,
+{
+    cache: Array1<T>,
+}
 
 pub struct S4<T = f64>
 where
@@ -61,7 +68,7 @@ impl<T> S4<T>
 where
     T: Float,
 {
-    pub fn setup(mut self) -> Self {
+    pub fn setup(self) -> Self {
         self
     }
 }

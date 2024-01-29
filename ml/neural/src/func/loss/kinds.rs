@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
+use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 #[derive(
     Clone,
@@ -12,16 +12,17 @@ use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
     Default,
     Deserialize,
     Display,
+    EnumCount,
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]

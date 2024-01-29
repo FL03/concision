@@ -6,19 +6,23 @@
 //!
 //! ## Overview
 //!
-pub use self::{group::*, iter::*, kinds::*, param::*, store::*};
+pub use self::{iter::*, kinds::*, param::*, store::*, variable::*};
 
-pub(crate) mod group;
 pub(crate) mod iter;
 pub(crate) mod kinds;
 pub(crate) mod param;
 pub(crate) mod store;
+pub(crate) mod variable;
+
+pub mod group;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
 use std::collections::HashMap;
 
 pub trait Param {
+    type Dim: Dimension;
+
     fn kind(&self) -> &ParamKind;
 
     fn name(&self) -> &str;

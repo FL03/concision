@@ -140,7 +140,7 @@ mod tests {
         let exp = array![0.0, 1.0, 2.0];
         let args = array![0.0, 1.0, 2.0];
 
-        assert_eq!(Linear::new().activate(&args), exp);
-        assert_eq!(Linear(&args), exp);
+        assert_eq!(LinearActivation::new().activate(&args), exp);
+        assert_eq!(LinearActivation(&args), exp);
     }
 }

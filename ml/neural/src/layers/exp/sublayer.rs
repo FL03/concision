@@ -3,14 +3,14 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::layers::Layer;
-use crate::prelude::{Activate, Forward, LayerNorm, Linear};
+use crate::prelude::{Activate, Forward, LayerNorm, LinearActivation};
 
 use ndarray::prelude::{Array2, NdFloat};
 use num::{Float, FromPrimitive};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Sublayer<T = f64, A = Linear>
+pub struct Sublayer<T = f64, A = LinearActivation>
 where
     A: Activate<T>,
     T: Float,

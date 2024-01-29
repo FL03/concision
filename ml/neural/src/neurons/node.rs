@@ -4,50 +4,88 @@
 */
 use crate::core::prelude::GenerateRandom;
 
-use crate::prelude::{Biased, Forward, Weighted};
+use crate::prelude::Forward;
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, Ix1, NdFloat};
-use ndarray::RemoveAxis;
+use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, NdFloat};
+use ndarray::{RemoveAxis, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-use num::{Float, FromPrimitive};
+use num::{Float, Num};
 use std::ops;
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct Node<T = f64>
-where
-    T: Float,
-{
-    bias: Array0<T>,
+pub struct Node<T = f64> {
+    bias: Option<Array0<T>>,
     features: usize,
     weights: Array1<T>,
 }
 
 impl<T> Node<T>
 where
-    T: Float,
+    T: Clone + Num,
 {
-    pub fn new(features: usize) -> Self {
+    pub fn create(biased: bool, features: usize) -> Self {
+        let bias = if biased {
+            Some(Array0::zeros(()))
+        } else {
+            None
+        };
         Self {
-            bias: Array0::zeros(()),
+            bias,
             features,
             weights: Array1::zeros(features),
         }
     }
 
-    pub fn features(&self) -> &usize {
-        &self.features
+    pub fn biased(features: usize) -> Self {
+        Self::create(true, features)
     }
 
-    pub fn features_mut(&mut self) -> &mut usize {
-        &mut self.features
+    pub fn new(features: usize) -> Self {
+        Self::create(false, features)
+    }
+}
+impl<T> Node<T>
+where
+    T: Num,
+{
+    pub fn bias(&self) -> Option<&Array0<T>> {
+        self.bias.as_ref()
+    }
+
+    pub fn bias_mut(&mut self) -> Option<&mut Array0<T>> {
+        self.bias.as_mut()
+    }
+
+    pub fn features(&self) -> usize {
+        self.features
+    }
+
+    pub fn is_biased(&self) -> bool {
+        self.bias.is_some()
+    }
+
+    pub fn set_bias(&mut self, bias: Option<Array0<T>>) {
+        self.bias = bias;
     }
 
     pub fn set_features(&mut self, features: usize) {
         self.features = features;
     }
 
-    pub fn with_bias(mut self, bias: Array0<T>) -> Self {
+    pub fn set_weights(&mut self, weights: Array1<T>) {
+        self.weights = weights;
+    }
+
+    pub fn weights(&self) -> &Array1<T> {
+        &self.weights
+    }
+
+    pub fn weights_mut(&mut self) -> &mut Array1<T> {
+        &mut self.weights
+    }
+
+    pub fn with_bias(mut self, bias: Option<Array0<T>>) -> Self {
         self.bias = bias;
         self
     }
@@ -65,6 +103,20 @@ where
 
 impl<T> Node<T>
 where
+    T: Num + ScalarOperand + 'static,
+    Array2<T>: Dot<Array1<T>, Output = Array1<T>>,
+{
+    pub fn linear(&self, data: &Array2<T>) -> Array1<T> {
+        let w = self.weights().t().to_owned();
+        if let Some(bias) = self.bias() {
+            data.dot(&w) + bias
+        } else {
+            data.dot(&w)
+        }
+    }
+}
+impl<T> Node<T>
+where
     T: Float + SampleUniform,
     StandardNormal: Distribution<T>,
 {
@@ -77,7 +129,7 @@ where
 
     pub fn init_bias(mut self) -> Self {
         let dk = (T::one() / T::from(self.features).unwrap()).sqrt();
-        self.bias = Array0::uniform_between(dk, ());
+        self.bias = Some(Array0::uniform_between(dk, ()));
         self
     }
 
@@ -91,8 +143,7 @@ where
 
 impl<T> Node<T>
 where
-    T: FromPrimitive + NdFloat,
-    Self: Weighted<T, Ix1>,
+    T: NdFloat,
 {
     pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
     where
@@ -106,89 +157,25 @@ where
     where
         A: Fn(&Array1<T>) -> Array1<T>,
     {
-        activator(&self.linear(data))
-    }
-}
-impl<T> Node<T>
-where
-    T: FromPrimitive + NdFloat,
-    Self: Biased<T, Ix1> + Weighted<T, Ix1>,
-{
-    pub fn linear(&self, data: &Array2<T>) -> Array1<T> {
-        data.dot(&self.weights().t()) + self.bias()
+        activator(&self.forward(data))
     }
 }
 
 impl<T, D> Forward<Array<T, D>> for Node<T>
 where
-    Self: Biased<T, Ix1> + Weighted<T, Ix1>,
     D: Dimension + RemoveAxis,
-    T: FromPrimitive + NdFloat,
+    T: NdFloat,
     Array<T, D>: Dot<Array1<T>, Output = Array<T, D::Smaller>>,
     Array<T, D::Smaller>: ops::Add<Array0<T>, Output = Array<T, D::Smaller>>,
 {
     type Output = Array<T, D::Smaller>;
 
     fn forward(&self, data: &Array<T, D>) -> Self::Output {
-        data.dot(&self.weights().t().to_owned()) + self.bias().clone()
-    }
-}
-
-// impl<T> Forward<Array1<T>> for Node<T>
-// where
-//     Self: Biased<T, Ix1> + Weighted<T, Ix1>,
-//     T: FromPrimitive + NdFloat,
-// {
-//     type Output = T;
-
-//     fn forward(&self, data: &Array1<T>) -> Self::Output {
-//         data.dot(&self.weights().t()) + self.bias().first().unwrap().clone()
-//     }
-// }
-
-// impl<T> Forward<Array2<T>> for Node<T>
-// where
-//     Self: Biased<T, Ix1> + Weighted<T, Ix1>,
-//     T: FromPrimitive + NdFloat,
-// {
-//     type Output = Array1<T>;
-
-//     fn forward(&self, data: &Array2<T>) -> Self::Output {
-//         data.dot(&self.weights().t()) + self.bias().clone()
-//     }
-// }
-
-impl<T> Biased<T, Ix1> for Node<T>
-where
-    T: Float,
-{
-    fn bias(&self) -> &Array0<T> {
-        &self.bias
-    }
-
-    fn bias_mut(&mut self) -> &mut Array0<T> {
-        &mut self.bias
-    }
-
-    fn set_bias(&mut self, bias: Array0<T>) {
-        self.bias = bias;
-    }
-}
-
-impl<T> Weighted<T, Ix1> for Node<T>
-where
-    T: Float,
-{
-    fn set_weights(&mut self, weights: Array1<T>) {
-        self.weights = weights;
-    }
-
-    fn weights(&self) -> &Array1<T> {
-        &self.weights
-    }
-
-    fn weights_mut(&mut self) -> &mut Array1<T> {
-        &mut self.weights
+        let w = self.weights().t().to_owned();
+        if let Some(bias) = self.bias() {
+            return data.dot(&w) + bias.clone();
+        }
+        data.dot(&w)
     }
 }
 
@@ -202,7 +189,7 @@ where
     {
         let weights = Array1::<T>::from_iter(iter);
         Self {
-            bias: Array0::zeros(()),
+            bias: None,
             features: weights.len(),
             weights,
         }
@@ -215,7 +202,7 @@ where
 {
     fn from((weights, bias): (Array1<T>, Array0<T>)) -> Self {
         Self {
-            bias,
+            bias: Some(bias),
             features: weights.len(),
             weights,
         }
@@ -228,14 +215,45 @@ where
 {
     fn from((weights, bias): (Array1<T>, T)) -> Self {
         Self {
-            bias: Array0::ones(()) * bias,
+            bias: Some(Array0::ones(()) * bias),
             features: weights.len(),
             weights,
         }
     }
 }
 
-impl<T> From<Node<T>> for (Array1<T>, Array0<T>)
+impl<T> From<(Array1<T>, Option<T>)> for Node<T>
+where
+    T: Float + ScalarOperand,
+{
+    fn from((weights, bias): (Array1<T>, Option<T>)) -> Self {
+        let bias = if let Some(b) = bias {
+            Some(Array0::ones(()) * b)
+        } else {
+            None
+        };
+        Self {
+            bias,
+            features: weights.len(),
+            weights,
+        }
+    }
+}
+
+impl<T> From<(Array1<T>, Option<Array0<T>>)> for Node<T>
+where
+    T: Float,
+{
+    fn from((weights, bias): (Array1<T>, Option<Array0<T>>)) -> Self {
+        Self {
+            bias,
+            features: weights.len(),
+            weights,
+        }
+    }
+}
+
+impl<T> From<Node<T>> for (Array1<T>, Option<Array0<T>>)
 where
     T: Float,
 {

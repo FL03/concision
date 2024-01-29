@@ -3,9 +3,10 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Dataset
-pub use self::{dataset::*, group::*, utils::*};
+pub use self::{dataset::*, group::*};
 
 pub(crate) mod dataset;
 pub(crate) mod group;
 
-pub(crate) mod utils {}
+#[cfg(test)]
+mod tests {}

@@ -4,7 +4,7 @@
 */
 //! # cost
 //!
-pub use self::{kinds::*, utils::*};
+pub use self::kinds::*;
 
 pub(crate) mod kinds;
 

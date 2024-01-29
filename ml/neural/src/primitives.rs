@@ -2,7 +2,7 @@
     Appellation: primitives <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{constants::*, statics::*, types::*};
+pub use self::{constants::*, types::*};
 
 pub(crate) mod constants {
     pub const DEFAULT_BUFFER: usize = 1024;

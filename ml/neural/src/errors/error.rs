@@ -4,16 +4,16 @@
 */
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
+use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
 
 #[derive(
     Clone,
     Debug,
     Deserialize,
     Display,
+    EnumCount,
     EnumIs,
     EnumIter,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
@@ -21,17 +21,18 @@ use strum::{Display, EnumIs, EnumIter, EnumVariantNames};
     PartialOrd,
     Serialize,
     SmartDefault,
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum MlError {
+    Compute(ComputeError),
     Data(String),
     Dimension(String),
     #[default]
     Error(String),
     Network(NetworkError),
-    Process(ProcessError),
 }
 
 impl std::error::Error for MlError {}
@@ -65,9 +66,9 @@ impl From<NetworkError> for MlError {
     Debug,
     Deserialize,
     Display,
+    EnumCount,
     EnumIs,
     EnumIter,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
@@ -75,6 +76,7 @@ impl From<NetworkError> for MlError {
     PartialOrd,
     Serialize,
     SmartDefault,
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
@@ -89,9 +91,9 @@ pub enum PredictError {
     Debug,
     Deserialize,
     Display,
+    EnumCount,
     EnumIs,
     EnumIter,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
@@ -99,11 +101,12 @@ pub enum PredictError {
     PartialOrd,
     Serialize,
     SmartDefault,
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum ProcessError {
+pub enum ComputeError {
     Arithmetic(String),
     #[default]
     Process(String),
@@ -115,9 +118,9 @@ pub enum ProcessError {
     Debug,
     Deserialize,
     Display,
+    EnumCount,
     EnumIs,
     EnumIter,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
@@ -125,6 +128,7 @@ pub enum ProcessError {
     PartialOrd,
     Serialize,
     SmartDefault,
+    VariantNames,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]

@@ -40,7 +40,7 @@ where
     T: Clone,
 {
     pub fn linear() -> Self {
-        Self::new(Box::new(super::Linear::new()))
+        Self::new(Box::new(super::LinearActivation::new()))
     }
 }
 

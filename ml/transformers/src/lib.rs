@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Concision Transformers
-pub use self::{primitives::*, specs::*, utils::*};
+pub use self::primitives::*;
 
 pub(crate) mod primitives;
 pub(crate) mod specs;
@@ -26,6 +26,4 @@ pub mod prelude {
     pub use crate::transform::*;
 
     pub use crate::primitives::*;
-    pub use crate::specs::*;
-    pub use crate::utils::*;
 }

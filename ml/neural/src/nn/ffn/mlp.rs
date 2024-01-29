@@ -5,15 +5,16 @@
 //! # Multi-Layer Perceptron
 //!
 
-use crate::func::activate::{Activate, Linear, ReLU, Softmax};
+use crate::func::activate::{Activate, LinearActivation, ReLU, Softmax};
 use crate::layers::{Layer, LayerShape, Stack};
-use crate::prelude::{Features, Forward, Parameterized};
+
+use crate::prelude::{Features, Forward};
 
 use ndarray::prelude::{Array2, Ix2, NdFloat};
 use ndarray::IntoDimension;
 use num::Float;
 
-pub struct MLP<T = f64, I = Linear, H = ReLU, O = Softmax>
+pub struct MLP<T = f64, I = LinearActivation, H = ReLU, O = Softmax>
 where
     T: Float,
     I: Activate<T>,
