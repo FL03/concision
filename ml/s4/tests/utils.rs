@@ -20,6 +20,8 @@ lazy_static! {
         .unwrap();
     static ref B: Array2<f64> = Array::range(0.0, FEATURES as f64, 1.0).insert_axis(Axis(1));
     static ref C: Array2<f64> = Array::range(0.0, FEATURES as f64, 1.0).insert_axis(Axis(0));
+
+    static ref EXP: Array2<f64> = array![[0.0], [5.0], [70.0]];
 }
 
 #[test]
@@ -29,11 +31,11 @@ fn test_scan() {
 
     let ssm = SSMStore::<f64>::from_features(FEATURES);
     let (a, b, c, _d) = ssm.clone().into();
-    let scan1 = scanner(&A, &B, &C, &u, &x0);
-    let scan2 = scan_ssm(&A, &B, &C, &u, &x0).expect("");
-    println!("{:?}", &scan2);
-    // let scan2 = ssm.scan(&u, &x0).unwrap();
+    // let scan1 = scanner(&A, &B, &C, &u, &x0);
+    let scan = scan_ssm(&A, &B, &C, &u, &x0).expect("");
+    println!("{:?}", &scan);
 
-    assert_eq!(&scan1, &scan2);
-    assert!(false)
+
+    assert_eq!(&scan, *EXP);
+    // assert!(false)
 }

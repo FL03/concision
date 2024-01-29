@@ -22,25 +22,26 @@ where
     let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
         let x1 = a.dot(xs) + b.dot(&us);
         let y1 = c.dot(&x1);
+        *xs = x1;
         Some(y1)
     };
-    let scan = u
+    let scan: Vec<Array1<T>> = u
         .outer_iter()
         .scan(x0.clone(), step)
-        .collect::<Vec<Array1<T>>>();
+        .collect();
     vstack(scan.as_slice())
 }
 
 pub fn scan<F, S, T>(f: &mut F, init: S, xs: Vec<T>) -> (S, Vec<S>)
 where
-    F: FnMut(&mut S, &T) -> S,
+    F: FnMut(&mut S, T) -> S,
     S: Clone,
     T: Clone,
 {
     let mut state = init;
     let mut out = Vec::with_capacity(xs.len());
     for x in xs {
-        state = f(&mut state, &x);
+        state = f(&mut state, x);
         out.push(state.clone());
     }
     (state, out)
