@@ -4,22 +4,13 @@
 */
 use super::S4Config;
 use crate::neural::prelude::Forward;
-use crate::prelude::SSMStore;
+use crate::prelude::SSMParams::*;
+use crate::prelude::{casual_conv2d, SSMStore};
 use ndarray::prelude::{Array1, Array2, NdFloat};
-use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
 use ndarray_linalg::Scalar;
-use num::complex::ComplexFloat;
+use num::complex::{Complex, ComplexFloat};
 use num::Float;
 use rustfft::FftNum;
-// use std::collections::HashMap;
-use crate::prelude::SSMParams::*;
-
-pub struct S4State<T = f64>
-where
-    T: ComplexFloat,
-{
-    cache: Array1<T>,
-}
 
 pub struct S4<T = f64>
 where
@@ -76,18 +67,17 @@ where
 impl<T> Forward<Array2<T>> for S4<T>
 where
     T: FftNum + NdFloat + Scalar,
+    Complex<T>: ComplexFloat<Real = T>,
 {
-    type Output = Array2<T>;
+    type Output = Result<Array2<T>, anyhow::Error>;
 
     fn forward(&self, args: &Array2<T>) -> Self::Output {
-        let res = if !self.config().decode() {
-            let mode = PaddingMode::<2, T>::Const(T::zero());
-            let size = PaddingSize::Full;
-            args.conv_2d_fft(&self.kernal.clone().unwrap(), size, mode)
-                .expect("convolution failed")
+        let mut pred = if !self.config().decode() {
+            casual_conv2d(args, self.kernal.as_ref().unwrap())?
         } else {
-            self.store.scan(args, &self.cache).expect("scan failed")
+            self.store.scan(args, &self.cache)?
         };
-        res + args * &self.store[D]
+        pred = &pred + args * &self.store[D];
+        Ok(pred)
     }
 }

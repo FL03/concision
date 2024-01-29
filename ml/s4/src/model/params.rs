@@ -6,30 +6,17 @@ use ndarray::prelude::{Array1, Array2, ArrayView1};
 use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::{vstack, Scalar};
 use num::complex::ComplexFloat;
+use num::traits::Num;
 
-pub struct S4Store<T = f64>
-where
-    T: ComplexFloat,
-{
+pub struct S4Store<T = f64> {
     pub a: Array2<T>, // Lambda
     pub b: Array2<T>,
     pub c: Array2<T>,
     pub d: Array2<T>,
 }
 
-impl<T> S4Store<T>
-where
-    T: ComplexFloat,
-{
+impl<T> S4Store<T> {
     pub fn new(a: Array2<T>, b: Array2<T>, c: Array2<T>, d: Array2<T>) -> Self {
-        Self { a, b, c, d }
-    }
-
-    pub fn zeros(features: usize) -> Self {
-        let a = Array2::<T>::zeros((features, features));
-        let b = Array2::<T>::zeros((features, features));
-        let c = Array2::<T>::zeros((features, features));
-        let d = Array2::<T>::zeros((features, features));
         Self { a, b, c, d }
     }
 
@@ -68,12 +55,34 @@ where
 
 impl<T> S4Store<T>
 where
+    T: Clone + Num,
+{
+    pub fn ones(features: usize) -> Self {
+        Self {
+            a: Array2::ones((features, features)),
+            b: Array2::ones((features, features)),
+            c: Array2::ones((features, features)),
+            d: Array2::ones((features, features)),
+        }
+    }
+
+    pub fn zeros(features: usize) -> Self {
+        Self {
+            a: Array2::zeros((features, features)),
+            b: Array2::zeros((features, features)),
+            c: Array2::zeros((features, features)),
+            d: Array2::zeros((features, features)),
+        }
+    }
+}
+impl<T> S4Store<T>
+where
     T: ComplexFloat + Scalar + 'static,
 {
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
         let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-            let x1 = self.a.dot(xs) + self.b.t().dot(&us);
-            let y1 = self.c.dot(&x1.t());
+            *xs = self.a.dot(xs) + self.b.dot(&us);
+            let y1 = self.c.dot(&xs.clone());
             Some(y1)
         };
         vstack(

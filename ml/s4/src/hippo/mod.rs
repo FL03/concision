@@ -19,20 +19,18 @@ pub struct LowRank {
 }
 
 pub(crate) mod utils {
-    use crate::core::prelude::{genspace, SquareRoot};
-    use ndarray::prelude::{Array2, Axis};
-    use ndarray::ScalarOperand;
-    use ndarray_linalg::{IntoTriangular, UPLO};
-    use num::traits::{Num, NumCast, Signed};
+    use ndarray::{Array, Array2, Axis, ScalarOperand};
+    use ndarray_linalg::{IntoTriangular, Scalar, UPLO};
 
     pub(crate) fn hippo<T>(features: usize) -> Array2<T>
     where
-        T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
+        T: Scalar + ScalarOperand,
     {
-        let base = genspace::<T>(features).insert_axis(Axis(1));
-        let p = (&base * T::from(2).unwrap() + T::one()).mapv(T::sqrt);
+        let base = Array::from_iter((0..features).map(|i| T::from(i).unwrap()));
+        let b2 = base.clone().insert_axis(Axis(1));
+        let p = (&b2 * T::from(2).unwrap() + T::one()).mapv(T::sqrt);
         let mut a = &p * &p.t();
-        a = &a.into_triangular(UPLO::Lower) - &Array2::from_diag(&genspace::<T>(features));
+        a = &a.into_triangular(UPLO::Lower) - &Array2::from_diag(&base);
         -a
     }
 }
@@ -107,13 +105,4 @@ mod tests {
             1e-4
         );
     }
-
-    // #[test]
-    // fn test_nplr() {
-    //     let features = 10;
-
-    //     let a = HiPPO::<f64>::new(features).nplr();
-    //     let b = NPLR::<f64>::new(features);
-    //     assert_eq!(&a, &b);
-    // }
 }

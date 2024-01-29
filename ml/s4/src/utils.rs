@@ -9,7 +9,7 @@ use ndarray::{IntoDimension, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, Uniform};
 use ndarray_rand::RandomExt;
-use num::complex::{Complex, ComplexDistribution,};
+use num::complex::{Complex, ComplexDistribution};
 use num::traits::Num;
 use std::ops::Neg;
 

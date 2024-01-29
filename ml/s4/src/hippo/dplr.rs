@@ -6,51 +6,20 @@
 //!
 //!
 use super::nplr::NPLR;
-use crate::core::prelude::{AsComplex, Conjugate, SquareRoot};
+use crate::core::prelude::Conjugate;
 use ndarray::prelude::{Array, Array1, Array2, Axis};
 use ndarray::ScalarOperand;
 use ndarray_linalg::{Eigh, Lapack, Scalar, UPLO};
 use num::traits::NumOps;
-use num::{Complex, Num, Signed};
+use num::{Complex, Num};
 use serde::{Deserialize, Serialize};
-use std::ops::{Mul, Neg};
-
-pub(crate) trait DPLRScalar:
-    AsComplex
-    + Conjugate
-    + Scalar<Real = Self>
-    + ScalarOperand
-    + Signed
-    + SquareRoot
-    + NumOps
-    + NumOps<Complex<Self>, Complex<Self>>
-where
-    Complex<Self>: Lapack,
-    <Self as Scalar>::Real: Mul<Complex<Self>, Output = Complex<Self>>,
-{
-}
-
-impl<T> DPLRScalar for T
-where
-    T: AsComplex
-        + Conjugate
-        + NumOps
-        + NumOps<Complex<T>, Complex<T>>
-        + Scalar<Real = T>
-        + ScalarOperand
-        + Signed
-        + SquareRoot,
-    Complex<T>: Lapack,
-    <T as Scalar>::Real: Mul<Complex<T>, Output = Complex<T>>,
-{
-}
+use std::ops::Neg;
 
 pub(crate) fn dplr<T>(features: usize) -> DPLR<T>
 where
-    T: DPLRScalar,
-
-    Complex<T>: Lapack,
-    <T as Scalar>::Real: Mul<Complex<T>, Output = Complex<T>>,
+    T: Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
+    <T as Scalar>::Complex: Conjugate + Lapack,
+    <T as Scalar>::Real: NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex>,
 {
     let (a, p, b) = NPLR::<T>::new(features).into();
 
@@ -79,8 +48,8 @@ where
             .map(|(i, j)| Complex::new(i, T::zero()) + T::from(j).unwrap() * Complex::i());
         Array::from_iter(iter)
     };
-    let p = p.mapv(AsComplex::as_re);
-    let b = b.mapv(AsComplex::as_re);
+    let p = p.mapv(|i| Complex::new(i, T::zero()));
+    let b = b.mapv(|i| Complex::new(i, T::zero()));
     DPLR {
         lambda,
         p: v.conj().t().dot(&p),
@@ -102,15 +71,8 @@ where
 
 impl<T> DPLR<T>
 where
-    T: AsComplex
-        + Conjugate
-        + NumOps
-        + NumOps<Complex<T>, Complex<T>>
-        + Scalar<Real = T>
-        + ScalarOperand
-        + Signed
-        + SquareRoot,
-    Complex<T>: Lapack,
+    T: Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
+    <T as Scalar>::Complex: Conjugate + Lapack,
     <T as Scalar>::Real: NumOps<Complex<T>, Complex<T>>,
 {
     pub fn new(features: usize) -> Self {

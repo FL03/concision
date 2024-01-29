@@ -17,13 +17,14 @@ use rand::distributions::uniform::{SampleUniform, Uniform};
 
 pub fn pad<T>(a: impl IntoIterator<Item = T>, pad: usize, value: Option<T>) -> Vec<T>
 where
-    T: Clone + Default,
+    T: Clone + Num,
 {
-    let pad = vec![value.unwrap_or_default(); pad];
+    let pad = vec![value.unwrap_or_else(T::zero); pad];
     let mut res = Vec::from_iter(a);
     res.extend(pad);
     res
 }
+
 ///
 pub fn floor_div<T>(numerator: T, denom: T) -> T
 where

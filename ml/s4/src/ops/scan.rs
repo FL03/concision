@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::SSMStore;
-use ndarray::prelude::{Array1, Array2, ArrayView1,};
+use ndarray::prelude::{Array1, Array2, ArrayView1};
 use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::{vstack, Scalar};
 use num::Float;
@@ -24,10 +24,7 @@ where
         *xs = x1;
         Some(y1)
     };
-    let scan: Vec<Array1<T>> = u
-        .outer_iter()
-        .scan(x0.clone(), step)
-        .collect();
+    let scan: Vec<Array1<T>> = u.outer_iter().scan(x0.clone(), step).collect();
     vstack(scan.as_slice())
 }
 
@@ -58,11 +55,10 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+    use crate::params::SSMStore;
     use ndarray::prelude::*;
 
     const FEATURES: usize = 3;
-
 
     #[test]
     fn test_scan() {
@@ -77,10 +73,11 @@ mod tests {
         let b = Array::range(0.0, FEATURES as f64, 1.0).insert_axis(Axis(1));
         let c = Array::range(0.0, FEATURES as f64, 1.0).insert_axis(Axis(0));
 
-
         let scan = scan_ssm(&a, &b, &c, &u, &x0).expect("");
 
         assert_eq!(&scan, &exp);
-    }
 
+        let ssm = SSMStore::new(a, b, c, Array2::zeros((1, 1)));
+        assert_eq!(&scan, &ssm.scan(&u, &x0).unwrap())
+    }
 }

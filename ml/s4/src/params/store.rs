@@ -4,7 +4,7 @@
 */
 use super::SSMParams;
 use crate::core::prelude::GenerateRandom;
-use ndarray::prelude::{Array1, Array2, ArrayView1};
+use ndarray::prelude::{Array, Array1, Array2, ArrayView1, Axis};
 use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::{vstack, Scalar};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
@@ -28,18 +28,31 @@ where
     T: Clone + Num,
 {
     pub fn ones(features: usize) -> Self {
-        let a = Array2::<T>::ones((features, features));
-        let b = Array2::<T>::ones((features, 1));
-        let c = Array2::<T>::ones((1, features));
-        let d = Array2::<T>::ones((1, 1));
+        let a = Array2::ones((features, features));
+        let b = Array2::ones((features, 1));
+        let c = Array2::ones((1, features));
+        let d = Array2::ones((1, 1));
+        Self::new(a, b, c, d)
+    }
+
+    pub fn range(features: usize) -> Self
+    where
+        T: Float,
+    {
+        let a = Array::range(T::zero(), T::from(features * features).unwrap(), T::one())
+            .into_shape((features, features))
+            .unwrap();
+        let b = Array::range(T::zero(), T::from(features).unwrap(), T::one()).insert_axis(Axis(1));
+        let c = Array::range(T::zero(), T::from(features).unwrap(), T::one()).insert_axis(Axis(0));
+        let d = Array2::zeros((1, 1));
         Self::new(a, b, c, d)
     }
 
     pub fn zeros(features: usize) -> Self {
-        let a = Array2::<T>::zeros((features, features));
-        let b = Array2::<T>::zeros((features, 1));
-        let c = Array2::<T>::zeros((1, features));
-        let d = Array2::<T>::zeros((1, 1));
+        let a = Array2::zeros((features, features));
+        let b = Array2::zeros((features, 1));
+        let c = Array2::zeros((1, features));
+        let d = Array2::zeros((1, 1));
         Self::new(a, b, c, d)
     }
 }
@@ -99,9 +112,8 @@ where
 {
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
         let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-            let x1 = self.a().dot(xs) + self.b().dot(&us);
-            let y1 = self.c().dot(&x1);
-            *xs = x1;
+            *xs = self.a().dot(xs) + self.b().dot(&us);
+            let y1 = self.c().dot(&xs.clone());
             Some(y1)
         };
         vstack(

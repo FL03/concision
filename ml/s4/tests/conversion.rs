@@ -5,11 +5,10 @@ use concision_core as core;
 use concision_s4 as s4;
 use s4::ops::scan_ssm;
 
-
 use core::prelude::{assert_atol, randc_normal};
-use s4::prelude::{casual_convolution, discretize_dplr, k_conv, DPLRParams};
 use s4::cmp::kernel::kernel_dplr;
 use s4::hippo::dplr::DPLR;
+use s4::prelude::{casual_conv1d, discretize_dplr, k_conv, DPLRParams};
 
 use ndarray::prelude::*;
 use ndarray_linalg::flatten;
@@ -31,8 +30,7 @@ fn test_conversion() {
     let c = randc_normal(RNGKEY, FEATURES);
     // CNN Form
     let kernel = {
-        let params =
-            DPLRParams::new(lambda.clone(), p.clone(), p.clone(), b.clone(), c.clone());
+        let params = DPLRParams::new(lambda.clone(), p.clone(), p.clone(), b.clone(), c.clone());
         kernel_dplr::<f64>(&params, step, SAMPLES)
     };
     // RNN Form
@@ -47,13 +45,12 @@ fn test_conversion() {
     let u = Array::range(0.0, SAMPLES as f64, 1.0);
     let u2 = u.mapv(|i| Complex::new(i, 0.0)).insert_axis(Axis(1));
     // Apply the CNN
-    let y1 = casual_convolution(&u, &kernel);
+    let y1 = casual_conv1d(&u, &kernel).unwrap();
 
     // Apply the RNN
     let x0 = Array::zeros(FEATURES);
-    let y2 = scan_ssm(&ab, &bb, &cb, &u2, &x0).expect("Failed to scan the SSM");
+    let y2 = scan_ssm(&ab, &bb, &cb, &u2, &x0).unwrap();
     let y2r = flatten(y2.mapv(|i| i.re()));
 
     assert_atol(&y1, &y2r, EPSILON)
-
 }

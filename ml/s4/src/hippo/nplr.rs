@@ -7,15 +7,15 @@
 //!
 use super::HiPPO;
 
-use crate::core::prelude::{genspace, SquareRoot};
+use crate::core::prelude::genspace;
 use ndarray::prelude::{Array1, Array2};
 use ndarray::ScalarOperand;
-use num::traits::{Num, NumCast, Signed};
+use ndarray_linalg::Scalar;
 use serde::{Deserialize, Serialize};
 
 fn nplr<T>(features: usize) -> (Array2<T>, Array1<T>, Array1<T>)
 where
-    T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
+    T: Scalar + ScalarOperand,
 {
     let hippo = HiPPO::<T>::new(features);
 
@@ -34,7 +34,7 @@ pub struct NPLR<T = f64> {
 
 impl<T> NPLR<T>
 where
-    T: NumCast + ScalarOperand + Signed + SquareRoot,
+    T: Scalar + ScalarOperand,
 {
     pub fn new(features: usize) -> Self {
         nplr(features).into()

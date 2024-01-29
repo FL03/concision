@@ -6,14 +6,12 @@ use super::SSMConfig;
 use crate::neural::Forward;
 use crate::ops::Discrete;
 use crate::params::{SSMParams::*, SSMStore};
-use crate::prelude::{discretize, k_conv};
-use ndarray::prelude::{Array1, Array2, Axis, NdFloat};
+use crate::prelude::discretize;
+use ndarray::prelude::Array1;
 use ndarray::ScalarOperand;
-use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
 use ndarray_linalg::{Lapack, Scalar};
 use num::complex::ComplexFloat;
-use num::traits::{Float, FloatConst, Num, NumOps};
-use rustfft::FftNum;
+use num::traits::NumOps;
 
 pub struct SSM<T = f64> {
     cache: Array1<T>,
