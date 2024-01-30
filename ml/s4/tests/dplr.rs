@@ -49,11 +49,7 @@ fn test_gen_dplr() {
     //     println!("C:\n\n{:#?}\n", &tmp);
     //     tmp.mapv(AsComplex::as_re)
     // };
-    let c = {
-        let tmp = array![[0.02185547, 0.20907068, 0.23742378, 0.3723395]];
-        println!("C:\n\n{:#?}\n", &tmp);
-        tmp.mapv(AsComplex::as_re)
-    };
+    let c = SAMPLE_IM.clone();
 
     // TODO: figure out why several of the signs are wrong
     let discrete = {
