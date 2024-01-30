@@ -101,7 +101,6 @@ where
 
     let shape = [u.shape()[0], u.shape()[1] + k.shape()[0]];
 
-
     let ud = {
         let padded = pad(&u, &[[0, k.shape()[0]]], pad_mode);
         let fft = rfft::<T>(padded);
@@ -119,7 +118,7 @@ where
     let tmp = &ud * kd;
     let res = irfft(tmp, elems * 2);
     let out = Array::from_shape_vec(shape, res[0..elems].to_vec())?;
-        println!("{:?}", out);
+    println!("{:?}", out);
     Ok(out)
 }
 
@@ -142,7 +141,6 @@ mod tests {
             array![-7.10542736e-15, 0.0, 1.0, 4.0, 1.0e1, 2.0e1, 3.5e1, 5.6e1];
         static ref EXP2: Array1<f64> =
             array![0.0, -7.10542736e-15, 1.0, 4.0, 1.0e1, 2.0e1, 3.5e1, 5.6e1];
-
         static ref EXP2D: Array2<f64> = array![
             [0.0, 0.0, 0.0, 0.0],
             [1.0, 0.0, 0.0, 0.0],

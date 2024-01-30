@@ -6,7 +6,7 @@ use super::S4Config;
 use crate::neural::prelude::Forward;
 use crate::prelude::SSMParams::*;
 use crate::prelude::{casual_conv2d, SSMStore};
-use ndarray::prelude::{Array1, Array2,};
+use ndarray::prelude::{Array1, Array2};
 use ndarray_linalg::Scalar;
 use num::complex::{Complex, ComplexFloat};
 use num::Float;

@@ -27,7 +27,7 @@ fn test_conversion() {
     // Initialize a new DPLR Matrix
     let dplr = DPLR::<f64>::new(FEATURES);
     let (lambda, p, b, _) = dplr.clone().into();
-    
+
     // CNN Form
     let kernel = {
         let params = DPLRParams::new(lambda.clone(), p.clone(), p.clone(), b.clone(), c.clone());

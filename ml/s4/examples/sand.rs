@@ -11,6 +11,5 @@ fn main() -> anyhow::Result<()> {
 
     let _u = Array::range(0.0, _samples as f64, 1.0);
 
-
     Ok(())
 }

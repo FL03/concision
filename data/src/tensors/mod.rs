@@ -61,8 +61,6 @@ pub trait NdTensor<T = f64> {
     fn mode(&self) -> TensorKind;
 
     fn tensor(&self) -> &Self;
-
-    
 }
 
 pub trait Genspace {

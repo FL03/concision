@@ -5,20 +5,20 @@
 use crate::shape::Shape;
 
 pub struct Storage<T> {
-   data: Vec<T>,
-   shape: Shape
+    data: Vec<T>,
+    shape: Shape,
 }
 
 impl<T> Storage<T> {
-   pub fn new(data: Vec<T>, shape: Shape) -> Self {
-      Self { data, shape }
-   }
+    pub fn new(data: Vec<T>, shape: Shape) -> Self {
+        Self { data, shape }
+    }
 
-   pub fn data(&self) -> &Vec<T> {
-      &self.data
-   }
-   
-   pub fn shape(&self) -> &Shape {
-      &self.shape
-   }
+    pub fn data(&self) -> &Vec<T> {
+        &self.data
+    }
+
+    pub fn shape(&self) -> &Shape {
+        &self.shape
+    }
 }
