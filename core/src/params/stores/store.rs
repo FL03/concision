@@ -2,7 +2,7 @@
     Appellation: store <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{ParamKind, Parameter};
+use crate::params::{ParamKind, Parameter};
 use ndarray::prelude::{Dimension, Ix2};
 use num::Float;
 use serde::{Deserialize, Serialize};

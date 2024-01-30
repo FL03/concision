@@ -6,16 +6,15 @@
 //!
 //! ## Overview
 //!
-pub use self::{iter::*, kinds::*, param::*, store::*, variable::*};
+pub use self::{iter::*, kinds::*, param::*, variable::*};
 
 pub(crate) mod iter;
 pub(crate) mod kinds;
 pub(crate) mod param;
-pub(crate) mod store;
 pub(crate) mod variable;
 
-pub mod group;
 pub mod masks;
+pub mod stores;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;

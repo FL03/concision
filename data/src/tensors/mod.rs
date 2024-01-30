@@ -11,26 +11,14 @@ pub(crate) mod mode;
 pub(crate) mod tensor;
 
 // use ndarray::prelude::{Array, Dimension, Ix2};
-use crate::{core::ops::Operation, DType};
+use crate::cmp::DType;
+use crate::core::ops::Operation;
 use num::traits::{Num, NumOps};
 
 pub trait GradStore<T = f64> {
     type Tensor: NdTensor<T>;
 
     fn get(&self, id: &str) -> Option<&Self::Tensor>;
-}
-
-pub trait ComplexN: Num + NumOps<Self::Real> {
-    type Real: NumOps<Self, Self>;
-
-    fn im(&self) -> Self::Real;
-
-    fn re(&self) -> Self::Real;
-}
-
-pub trait TensorScalar {
-    type Complex: ComplexN<Real = Self::Real>;
-    type Real: Num + NumOps + NumOps<Self::Complex, Self::Complex>;
 }
 
 pub trait NdTensor<T = f64> {
@@ -60,6 +48,8 @@ pub trait NdTensor<T = f64> {
 
     fn mode(&self) -> TensorKind;
 
+    fn shape(&self) -> &[usize];
+
     fn tensor(&self) -> &Self;
 }
 
@@ -67,6 +57,18 @@ pub trait Genspace {
     type Tensor: NdTensor;
 
     fn arange(start: f64, stop: f64, step: f64) -> Self::Tensor;
+}
+
+pub trait TensorOps<T = f64>: NdTensor<T> {
+    type Tensor: NdTensor<T>;
+
+    fn add(&self, other: &Self::Tensor) -> Self::Tensor;
+
+    fn div(&self, other: &Self::Tensor) -> Self::Tensor;
+
+    fn mul(&self, other: &Self::Tensor) -> Self::Tensor;
+
+    fn sub(&self, other: &Self::Tensor) -> Self::Tensor;
 }
 
 #[cfg(test)]

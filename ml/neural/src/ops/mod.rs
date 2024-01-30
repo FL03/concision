@@ -2,10 +2,13 @@
    Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{dropout::*, norm::*};
+pub use self::{compile::*, dropout::*, norm::*, predict::*, train::*};
 
+pub(crate) mod compile;
 pub(crate) mod dropout;
 pub(crate) mod norm;
+pub(crate) mod predict;
+pub(crate) mod train;
 
 #[cfg(test)]
 mod tests {

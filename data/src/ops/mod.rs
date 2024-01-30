@@ -1,15 +1,13 @@
 /*
-   Appellation: mat <mod>
+   Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Matrix
+//! # Operations
 //!
 //! A matrix is a two-dimensional array of elements.
-pub use self::matrix::*;
+pub use self::arithmetic::*;
 
-pub(crate) mod matrix;
-
-pub trait Mat<T = f64> {}
+pub(crate) mod arithmetic;
 
 #[cfg(test)]
 mod tests {}

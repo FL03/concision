@@ -2,7 +2,7 @@
     Appellation: group <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Biased, Weighted};
+use crate::params::{Biased, Weighted};
 use crate::prelude::GenerateRandom;
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Axis, Dimension, Ix2, NdFloat};
@@ -15,7 +15,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParamGroup<T = f64, D = Ix2>
 where
-    T: Float,
     D: Dimension,
 {
     bias: Array<T, D::Smaller>,

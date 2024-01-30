@@ -65,7 +65,15 @@ impl<T> SSM<T> {
             ssm: Discrete::from_features(features),
         }
     }
+}
 
+impl<T> SSM<T> {
+    pub fn init(mut self) -> Self {
+        self
+    }
+}
+
+impl<T> SSM<T> {
     pub fn discretize<S>(&self, step: S) -> anyhow::Result<Discrete<T>>
     where
         S: Scalar<Real = S, Complex = T> + ScalarOperand + NumOps<T, T>,
@@ -75,8 +83,12 @@ impl<T> SSM<T> {
     }
 }
 
-impl<T> SSM<T> {
-    pub fn init(mut self) -> Self {
-        self
-    }
-}
+// impl<T> SSM<T> {
+//     pub fn discretize(&self, step: <T as Scalar>::Real) -> anyhow::Result<Discrete<T>>
+//     where
+//         T: Lapack + Scalar<Real = T, Complex = Complex<T>> + ScalarOperand,
+//         Complex<T>: ComplexFloat<Real = T>,
+//     {
+//         discretizer(&self.params[A], &self.params[B], &self.params[C], step)
+//     }
+// }

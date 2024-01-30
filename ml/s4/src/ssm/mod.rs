@@ -19,13 +19,14 @@ pub trait StateSpace {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use num::complex::Complex;
 
     #[test]
     fn test_ssm() {
         let step = 0.001;
 
         let config = SSMConfig::new(true, 9, 2);
-        // let model = SSM::<f64>::create(config).setup();
-        // assert!(model.discretize(step).is_ok());
+        let model = SSM::<Complex<f64>>::create(config).init();
+        assert!(model.discretize(step).is_ok());
     }
 }

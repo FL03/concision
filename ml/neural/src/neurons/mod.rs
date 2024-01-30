@@ -10,27 +10,16 @@ pub(crate) mod perceptron;
 pub(crate) mod synapse;
 
 use crate::func::activate::Activate;
-use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
+use crate::ops::Predict;
+use ndarray::prelude::Ix1;
+use std::collections::HashMap;
 
-pub trait ArtificialNeuron<T>
-where
-    T: NdFloat,
-{
+pub trait Neuron<T>: Predict<T> {
     type Rho: Activate<T, Ix1>;
 
-    fn bias(&self) -> Array0<T>;
-
-    fn linear(&self, args: &Array2<T>) -> Array1<T> {
-        args.dot(self.weights()) + self.bias()
-    }
-
-    fn forward(&self, args: &Array2<T>) -> Array1<T> {
-        self.rho().activate(&self.linear(args))
-    }
+    fn params(&self) -> HashMap<String, T>;
 
     fn rho(&self) -> &Self::Rho;
-
-    fn weights(&self) -> &Array1<T>;
 }
 
 #[cfg(test)]

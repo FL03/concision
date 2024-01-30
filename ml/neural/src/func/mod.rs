@@ -17,7 +17,6 @@ pub use self::{block::*, rms::*, utils::*};
 
 pub mod activate;
 pub mod loss;
-pub mod prop;
 
 pub(crate) mod block;
 pub(crate) mod rms;

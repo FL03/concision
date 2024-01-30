@@ -6,7 +6,7 @@ use crate::core::prelude::{Conjugate, Power};
 
 use ndarray::{Array, Array1, Array2, Axis, ScalarOperand};
 use ndarray_linalg::{Inverse, Lapack, Scalar};
-use num::complex::ComplexFloat;
+use num::complex::{Complex, ComplexFloat};
 use num::traits::{Float, NumOps};
 
 pub fn discretize<S, T>(
@@ -31,6 +31,28 @@ where
     Ok((ab, bb, c.clone()).into())
 }
 
+pub fn discretizer<T>(
+    a: &Array2<T>,
+    b: &Array2<T>,
+    c: &Array2<T>,
+    step: f64,
+) -> anyhow::Result<Discrete<T>>
+where
+    T: Lapack + Scalar + ScalarOperand,
+{
+    let step = T::from(step).unwrap();
+    let (n, ..) = a.dim();
+    let hs = step / T::from(2).unwrap(); // half step
+    let eye = Array2::<T>::eye(n);
+
+    let bl = (&eye - a * hs).inv()?;
+
+    let ab = bl.dot(&(&eye + a * hs));
+    let bb = (bl * step).dot(b);
+
+    Ok((ab, bb, c.clone()).into())
+}
+
 pub fn discretize_dplr<S, T>(
     lambda: &Array1<S>,
     p: &Array1<S>,
@@ -41,8 +63,8 @@ pub fn discretize_dplr<S, T>(
     l: usize,
 ) -> anyhow::Result<Discrete<S>>
 where
-    T: Float + Conjugate + Lapack + NumOps<S, S> + Scalar<Real = T, Complex = S> + ScalarOperand,
     S: ComplexFloat<Real = T> + Conjugate + Lapack + NumOps<T>,
+    T: NumOps<S, S> + Scalar<Real = T, Complex = S> + ScalarOperand,
 {
     let n = lambda.dim();
     // create an identity matrix; (n, n)
@@ -79,13 +101,10 @@ where
     Ok((ab, bb, cb.conj()).into())
 }
 
-pub trait Discretize<T = f64>
-where
-    T: Float,
-{
+pub trait Discretize<T = f64> {
     type Output;
 
-    fn discretize(&self, step: T) -> Self::Output;
+    fn discretize<S>(&self, step: S) -> Self::Output;
 }
 
 #[derive(Clone, Debug)]
@@ -114,7 +133,7 @@ impl<T> Discrete<T> {
 impl<T> Discrete<T> {
     pub fn discretize<S>(&self, step: S) -> anyhow::Result<Self>
     where
-        S: Scalar<Real = S, Complex = T> + ScalarOperand + NumOps<T, T>,
+        S: Scalar<Real = S, Complex = T> + ScalarOperand,
         T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
     {
         discretize(&self.a, &self.b, &self.c, step)

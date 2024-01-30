@@ -6,31 +6,31 @@
 //!
 #![feature(associated_type_defaults)]
 
-pub use self::misc::*;
+pub use self::specs::*;
 
-pub(crate) mod misc;
 pub(crate) mod primitives;
+pub(crate) mod specs;
 pub(crate) mod utils;
 
+pub mod cmp;
 pub mod datasets;
 pub mod flows;
-pub mod mat;
+pub mod ops;
 pub mod shape;
-pub mod specs;
 pub mod store;
 pub mod tensors;
 
 pub(crate) use concision_core as core;
 
 pub mod prelude {
-    pub use crate::misc::*;
+    pub use crate::specs::*;
     // pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
 
+    pub use crate::cmp::*;
     pub use crate::datasets::*;
     pub use crate::flows::*;
-
+    pub use crate::ops::*;
     pub use crate::shape::*;
-    pub use crate::specs::*;
     pub use crate::store::*;
     pub use crate::tensors::*;
 }

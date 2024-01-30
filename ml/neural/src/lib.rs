@@ -30,7 +30,7 @@ pub mod prelude {
     pub use crate::utils::*;
 
     pub use crate::errors::*;
-    pub use crate::func::{activate::*, loss::*, prop::*, rms::*};
+    pub use crate::func::{activate::*, loss::*, rms::*};
     pub use crate::layers::*;
     pub use crate::neurons::*;
     pub use crate::nn::*;

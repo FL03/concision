@@ -47,6 +47,7 @@ pub(crate) mod fft {
     use realfft::RealFftPlanner;
     use rustfft::FftNum;
 
+    /// A utilitarian function for computing the Fast Fourier Transform of a real-valued signal
     pub fn rfft<T>(args: impl IntoIterator<Item = T>) -> Vec<Complex<T>>
     where
         T: FftNum,
@@ -62,7 +63,7 @@ pub(crate) mod fft {
         r2c.process(&mut buffer, &mut spectrum).unwrap();
         spectrum
     }
-
+    /// A utilitarian function for computing the Inverse Fast Fourier Transform of a real-valued signal
     pub fn irfft<T>(args: impl IntoIterator<Item = Complex<T>>, len: usize) -> Vec<T>
     where
         T: FftNum + NumCast,
