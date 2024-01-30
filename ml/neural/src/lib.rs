@@ -21,7 +21,7 @@ pub mod models;
 pub mod neurons;
 pub mod nn;
 pub mod ops;
-pub mod params;
+// pub mod params;
 
 pub(crate) use concision_core as core;
 
@@ -36,5 +36,5 @@ pub mod prelude {
     pub use crate::neurons::*;
     pub use crate::nn::*;
     pub use crate::ops::*;
-    pub use crate::params::*;
+    // pub use crate::params::*;
 }
