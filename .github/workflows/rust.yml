@@ -40,7 +40,7 @@ jobs:
       - name: Build (release)
         run: cargo build -r -v --workspace
       - name: Cache build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           path: |
