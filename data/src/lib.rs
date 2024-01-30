@@ -13,7 +13,6 @@ pub(crate) mod primitives;
 pub(crate) mod utils;
 
 pub mod datasets;
-pub mod df;
 pub mod flows;
 pub mod mat;
 pub mod shape;
@@ -28,7 +27,6 @@ pub mod prelude {
     // pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
 
     pub use crate::datasets::*;
-    pub use crate::df::*;
     pub use crate::flows::*;
 
     pub use crate::shape::*;

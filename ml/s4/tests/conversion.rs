@@ -22,19 +22,19 @@ const SAMPLES: usize = 16;
 #[test]
 fn test_conversion() {
     let step = (SAMPLES as f64).recip();
+    // generate a random C matrix
+    let c = randc_normal(RNGKEY, FEATURES);
     // Initialize a new DPLR Matrix
     let dplr = DPLR::<f64>::new(FEATURES);
     let (lambda, p, b, _) = dplr.clone().into();
-
-    // let c = randcomplex(features);
-    let c = randc_normal(RNGKEY, FEATURES);
+    
     // CNN Form
     let kernel = {
         let params = DPLRParams::new(lambda.clone(), p.clone(), p.clone(), b.clone(), c.clone());
         kernel_dplr::<f64>(&params, step, SAMPLES)
     };
     // RNN Form
-    let discrete = discretize_dplr(&lambda, &p, &p, &b, &c, step, SAMPLES).expect("");
+    let discrete = discretize_dplr(&lambda, &p, &p, &b, &c, step, SAMPLES).unwrap();
     let (ab, bb, cb) = discrete.into();
 
     let k2 = k_conv(&ab, &bb, &cb, SAMPLES);

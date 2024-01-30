@@ -11,7 +11,7 @@ pub(crate) mod mode;
 pub(crate) mod tensor;
 
 // use ndarray::prelude::{Array, Dimension, Ix2};
-use crate::core::ops::Operation;
+use crate::{core::ops::Operation, DType};
 use num::traits::{Num, NumOps};
 
 pub trait GradStore<T = f64> {
@@ -50,6 +50,8 @@ pub trait NdTensor<T = f64> {
 
     fn backward(&self) -> Self;
 
+    fn dtype(&self) -> DType;
+
     fn id(&self) -> &str;
 
     fn is_variable(&self) -> bool {
@@ -59,6 +61,14 @@ pub trait NdTensor<T = f64> {
     fn mode(&self) -> TensorKind;
 
     fn tensor(&self) -> &Self;
+
+    
+}
+
+pub trait Genspace {
+    type Tensor: NdTensor;
+
+    fn arange(start: f64, stop: f64, step: f64) -> Self::Tensor;
 }
 
 #[cfg(test)]

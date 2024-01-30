@@ -16,7 +16,7 @@ pub fn discretize<S, T>(
     step: S,
 ) -> anyhow::Result<Discrete<T>>
 where
-    S: Scalar<Real = S, Complex = T> + ScalarOperand + NumOps<T, T>,
+    S: Scalar<Real = S, Complex = T> + ScalarOperand,
     T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
 {
     let (n, ..) = a.dim();

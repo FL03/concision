@@ -8,6 +8,8 @@ use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::{vstack, Scalar};
 use num::Float;
 
+///
+// TODO: Allow the scan's state to be returned for caching in the S4 model
 pub fn scan_ssm<T>(
     a: &Array2<T>,
     b: &Array2<T>,
@@ -19,9 +21,8 @@ where
     T: Scalar,
 {
     let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-        let x1 = a.dot(xs) + b.dot(&us);
-        let y1 = c.dot(&x1);
-        *xs = x1;
+        *xs = a.dot(xs) + b.dot(&us);
+        let y1 = c.dot(&xs.clone());
         Some(y1)
     };
     let scan: Vec<Array1<T>> = u.outer_iter().scan(x0.clone(), step).collect();

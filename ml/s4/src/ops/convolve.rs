@@ -32,27 +32,30 @@ where
     T: FftNum + NumCast,
     Complex<T>: ComplexFloat<Real = T> + NumAssignOps,
 {
-    if u.shape()[0] != k.shape()[0] {
+    if u.shape()[0] != k.shape()[0] || u.shape()[1] != k.shape()[0] {
         return Err(ShapeError::from_kind(ErrorKind::IncompatibleShape));
     }
 
-    let l = u.shape()[0];
-    let l2 = l * 2;
+    let (m, n) = u.dim();
+
+    let elems = m * (n + k.shape()[0]);
+    let shape = [m, n + k.shape()[0]];
+
     let ud = {
         let padded = pad(&u, &[[0, k.shape()[0]]], PadMode::Constant(T::zero()));
-        Array::from_vec(rfft::<T>(padded))
+        let fft = rfft::<T>(padded);
+        Array::from_shape_vec(shape, fft[0..elems].to_vec())?
     };
 
     let kd = {
-        let padded = pad(&k, &[[0, u.shape()[0]]], PadMode::Constant(T::zero()));
+        let padded = pad(&k, &[[0, m]], PadMode::Constant(T::zero()));
         Array::from_vec(rfft::<T>(padded))
     };
-    println!("D");
+    println!("{:?}", ud.shape());
     let tmp = &ud * kd;
     println!("E");
-    let res = irfft(tmp, l2);
-    println!("{:?}", res[0..l].to_vec());
-    let out = Array::from_vec(res[0..l].to_vec()).insert_axis(Axis(1));
+    let res = irfft(tmp, elems)[0..m].to_vec();
+    let out = Array::from_shape_vec(shape, res)?;
     Ok(out)
 }
 
@@ -65,8 +68,8 @@ where
     if u.shape()[0] != k.shape()[0] {
         return Err(ShapeError::from_kind(ErrorKind::IncompatibleShape));
     }
-    let l = u.shape()[0];
-    let l2 = l * 2;
+    let m = u.shape()[0];
+    let l2 = m * 2;
     let ud = {
         let padded = pad(&u, &[[0, k.shape()[0]]], PadMode::Constant(T::zero()));
         Array::from_vec(rfft::<T>(padded))
@@ -79,7 +82,7 @@ where
 
     let tmp = &ud * kd;
     let res = irfft(tmp, l2);
-    let out = Array::from_vec(res[0..l].to_vec());
+    let out = Array::from_vec(res[0..m].to_vec());
     Ok(out)
 }
 
@@ -89,24 +92,34 @@ where
     T: FftNum + NumCast,
     Complex<T>: ComplexFloat<Real = T> + NumAssignOps,
 {
-    if u.shape()[0] != k.shape()[0] {
+    if u.shape()[0] != k.shape()[0] || u.shape()[1] != k.shape()[1] {
         return Err(ShapeError::from_kind(ErrorKind::IncompatibleShape));
     }
-    let l = u.shape()[0];
-    let l2 = l * 2;
+    let pad_mode = PadMode::Constant(T::zero());
+    let (m, n) = u.dim();
+    let elems = m * (n + k.shape()[0]);
+
+    let shape = [u.shape()[0], u.shape()[1] + k.shape()[0]];
+
+
     let ud = {
-        let padded = pad(&u, &[[0, k.shape()[0]]], PadMode::Constant(T::zero()));
-        Array::from_vec(rfft::<T>(padded))
+        let padded = pad(&u, &[[0, k.shape()[0]]], pad_mode);
+        let fft = rfft::<T>(padded);
+        Array::from_vec(fft)
+        // Array::from_shape_vec(shape, fft[0..elems].to_vec())?
     };
 
     let kd = {
-        let padded = pad(&k, &[[0, u.shape()[0]]], PadMode::Constant(T::zero()));
-        Array::from_vec(rfft::<T>(padded))
+        let padded = pad(&k, &[[0, u.shape()[0]]], pad_mode);
+        let fft = rfft::<T>(padded);
+        Array::from_vec(fft)
+        // Array::from_shape_vec(shape, fft[0..elems].to_vec())?
     };
 
     let tmp = &ud * kd;
-    let res = irfft(tmp, l2);
-    let out = Array::from_vec(res[0..l].to_vec()).insert_axis(Axis(1));
+    let res = irfft(tmp, elems * 2);
+    let out = Array::from_shape_vec(shape, res[0..elems].to_vec())?;
+        println!("{:?}", out);
     Ok(out)
 }
 
@@ -129,6 +142,12 @@ mod tests {
             array![-7.10542736e-15, 0.0, 1.0, 4.0, 1.0e1, 2.0e1, 3.5e1, 5.6e1];
         static ref EXP2: Array1<f64> =
             array![0.0, -7.10542736e-15, 1.0, 4.0, 1.0e1, 2.0e1, 3.5e1, 5.6e1];
+
+        static ref EXP2D: Array2<f64> = array![
+            [0.0, 0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [4.0, 0.0, 0.0, 0.0],
+        ];
     }
 
     #[test]
@@ -141,6 +160,19 @@ mod tests {
             assert_approx(i, j, EPSILON);
         }
     }
+    #[ignore = "Casual Convolution on 2D arrays is not yet supported"]
+    #[test]
+    fn test_casual_conv2d() {
+        let samples = 3;
+        let u = Array::range(0.0, samples as f64, 1.0).insert_axis(Axis(1));
+        let k = Array::range(0.0, samples as f64, 1.0).insert_axis(Axis(1));
+
+        let res = casual_conv2d(&u, &k).unwrap();
+        for (i, j) in res.into_iter().zip(EXP2D.clone().into_iter()) {
+            assert_approx(i, j, EPSILON);
+        }
+    }
+
     #[ignore = "Currently, the function is only able to work with 1d arrays"]
     #[test]
     fn test_casual_convolution() {
