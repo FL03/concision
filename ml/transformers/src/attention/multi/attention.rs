@@ -4,7 +4,7 @@
 */
 use super::{multihead, MultiHeadParams};
 use crate::attention::Weight;
-use crate::core::prelude::Mask;
+use crate::core::params::masks::Mask;
 use crate::neural::prelude::{Forward, Layer};
 use crate::ops::Split;
 use ndarray::prelude::{Array2, NdFloat};

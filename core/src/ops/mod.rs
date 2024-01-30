@@ -3,9 +3,10 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Operations
-pub use self::kinds::*;
+pub use self::{kinds::*, pad::*};
 
 pub(crate) mod kinds;
+pub(crate) mod pad;
 
 pub mod fft;
 

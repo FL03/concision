@@ -13,29 +13,6 @@ use num::traits::real::Real;
 use num::traits::{Float, Num, NumAssignOps, ToPrimitive};
 use std::ops;
 
-pub trait Pad<T> {
-    fn pad(&self, pad: usize) -> Self;
-
-    fn pad_with(&self, pad: usize, value: T) -> Self;
-}
-
-// impl<T, D> Pad<T> for Array<T, D>
-// where
-//     T: Clone + Num,
-//     D: Dimension,
-// {
-//     fn pad(&self, pad: usize) -> Self {
-//         self.pad_with(pad, T::zero())
-//     }
-
-//     fn pad_with(&self, pad: usize, value: T) -> Self {
-//         let mut pad = vec![value; pad];
-//         pad.extend_from_slice(self);
-//         pad.extend_from_slice(&vec![value; pad.len()]);
-//         Array::from_vec(pad)
-//     }
-// }
-
 pub trait Affine<T = f64>: Sized {
     type Error;
 

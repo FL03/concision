@@ -12,7 +12,7 @@ use s4::prelude::{casual_conv1d, discretize_dplr, k_conv, DPLRParams};
 
 use ndarray::prelude::*;
 use ndarray_linalg::flatten;
-use num::complex::{Complex, ComplexFloat};
+use num::complex::Complex;
 
 const EPSILON: f64 = 1e-4;
 const FEATURES: usize = 8;
@@ -38,7 +38,7 @@ fn test_conversion() {
     let (ab, bb, cb) = discrete.into();
 
     let k2 = k_conv(&ab, &bb, &cb, SAMPLES);
-    let k2r = k2.mapv(|i| i.re());
+    let k2r = k2.view().split_complex().re.to_owned();
 
     assert_atol(&kernel, &k2r, EPSILON);
 
@@ -50,7 +50,10 @@ fn test_conversion() {
     // Apply the RNN
     let x0 = Array::zeros(FEATURES);
     let y2 = scan_ssm(&ab, &bb, &cb, &u2, &x0).unwrap();
-    let y2r = flatten(y2.mapv(|i| i.re()));
+    let y2r = {
+        let tmp = y2.view().split_complex();
+        flatten(tmp.re.to_owned())
+    };
 
     assert_atol(&y1, &y2r, EPSILON)
 }

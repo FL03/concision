@@ -4,11 +4,10 @@
 */
 // use super::dplr::DPLR;
 use super::nplr::NPLR;
-use crate::core::prelude::{genspace, SquareRoot};
+use crate::core::prelude::genspace;
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
 use ndarray_linalg::Scalar;
-use num::traits::{Num, NumCast, Signed};
 use serde::{Deserialize, Serialize};
 
 pub enum HiPPOs<T = f64> {

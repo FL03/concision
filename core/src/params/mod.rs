@@ -15,6 +15,7 @@ pub(crate) mod store;
 pub(crate) mod variable;
 
 pub mod group;
+pub mod masks;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;

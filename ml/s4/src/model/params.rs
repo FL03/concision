@@ -2,9 +2,10 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array1, Array2, ArrayView1};
+use crate::prelude::scan_ssm;
+use ndarray::prelude::{Array1, Array2};
 use ndarray_linalg::error::LinalgError;
-use ndarray_linalg::{vstack, Scalar};
+use ndarray_linalg::Scalar;
 use num::complex::ComplexFloat;
 use num::traits::Num;
 
@@ -80,17 +81,7 @@ where
     T: ComplexFloat + Scalar + 'static,
 {
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
-        let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-            *xs = self.a.dot(xs) + self.b.dot(&us);
-            let y1 = self.c.dot(&xs.clone());
-            Some(y1)
-        };
-        vstack(
-            u.outer_iter()
-                .scan(x0.clone(), step)
-                .collect::<Vec<_>>()
-                .as_slice(),
-        )
+        scan_ssm(&self.a, &self.b, &self.c, u, x0)
     }
 }
 

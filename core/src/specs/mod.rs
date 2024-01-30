@@ -2,16 +2,36 @@
    Appellation: specs <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{arrays::*, base::*, init::*, iter::*, math::*};
+pub use self::{arrays::*, init::*, math::*};
 
 pub(crate) mod arrays;
-pub(crate) mod base;
 pub(crate) mod init;
-pub(crate) mod iter;
 pub(crate) mod math;
 
-pub trait Named {
-    fn name(&self) -> &str;
+use ndarray::prelude::{Array, Dimension};
+
+pub trait Apply<T> {
+    fn apply<F>(&self, f: F) -> Self
+    where
+        F: Fn(&T) -> T;
+}
+
+impl<T, D> Apply<T> for Array<T, D>
+where
+    D: Dimension,
+{
+    fn apply<F>(&self, f: F) -> Self
+    where
+        F: Fn(&T) -> T,
+    {
+        self.map(f)
+    }
+}
+
+pub trait Transform<T> {
+    type Output;
+
+    fn transform(&self, args: &T) -> Self::Output;
 }
 
 pub(crate) mod utils {

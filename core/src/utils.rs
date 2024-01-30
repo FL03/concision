@@ -6,23 +6,30 @@ pub use self::{arrays::*, assertions::*};
 
 use ndarray::linalg::Dot;
 use ndarray::prelude::*;
-use ndarray::{IntoDimension, ShapeError};
+use ndarray::{Data, IntoDimension, ShapeError};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::SeedableRng;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
 use num::complex::Complex;
-use num::traits::{AsPrimitive, Float, Num, NumCast};
+use num::traits::{Float, Num, NumCast};
 use rand::distributions::uniform::{SampleUniform, Uniform};
 
-pub fn pad<T>(a: impl IntoIterator<Item = T>, pad: usize, value: Option<T>) -> Vec<T>
+/// Utilitary function that returns a new *n*-dimensional array of dimension `shape` with the same
+/// datatype and memory order as the input `arr`.
+pub fn array_like<S, A, D, Sh>(arr: &ArrayBase<S, D>, shape: Sh, elem: A) -> Array<A, D>
 where
-    T: Clone + Num,
+    S: Data<Elem = A>,
+    A: Clone,
+    D: Dimension,
+    Sh: ShapeBuilder<Dim = D>,
 {
-    let pad = vec![value.unwrap_or_else(T::zero); pad];
-    let mut res = Vec::from_iter(a);
-    res.extend(pad);
-    res
+    // TODO `is_standard_layout` only works on owned arrays. Change it if using `ArrayBase`.
+    if arr.is_standard_layout() {
+        Array::from_elem(shape, elem)
+    } else {
+        Array::from_elem(shape.f(), elem)
+    }
 }
 
 ///
@@ -31,19 +38,6 @@ where
     T: Copy + Num,
 {
     (numerator - (numerator % denom)) / denom
-}
-
-pub fn arange<T>(a: T, b: T, h: T) -> Array1<T>
-where
-    T: AsPrimitive<usize> + Float,
-{
-    let n: usize = ((b - a) / h).as_();
-    let mut res = Array1::<T>::zeros(n);
-    res[0] = a;
-    for i in 1..n {
-        res[i] = res[i - 1] + h;
-    }
-    res
 }
 
 pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {

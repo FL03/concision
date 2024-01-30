@@ -74,10 +74,9 @@ pub fn kernel_dplr<T>(
     l: usize,
 ) -> Array1<<T as Scalar>::Real>
 where
-    T: Conjugate + FftNum + Float + Scalar<Real = T, Complex = Complex<T>>,
-    <T as Scalar>::Real:
-        FloatConst + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex> + ScalarOperand,
-    <T as Scalar>::Complex: Conjugate + ScalarOperand,
+    T: Conjugate + FftNum + Float + Scalar<Real = T, Complex = Complex<T>> + ScalarOperand,
+    <T as Scalar>::Real: FloatConst + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex>,
+    <T as Scalar>::Complex: ScalarOperand,
 {
     // initialize some constants
     let two = T::from(2).unwrap();
@@ -87,7 +86,6 @@ where
     let aterm = (dplr.c.conj(), dplr.q.conj());
     // collect the relevant terms for B
     let bterm = (dplr.b.clone(), dplr.p.clone());
-
     // generate omega
     let omega_l = omega_l::<T>(l);
 
@@ -100,9 +98,15 @@ where
     let k11 = cauchy(&(&aterm.1 * &bterm.1), &g, &lambda);
     // compute the roots of unity
     let at_roots = &c * (&k00 - k01 * &k11.mapv(|i| (i + T::one()).recip()) * &k10);
+    // compute the ifft
     let plan = FftPlan::new(l);
-    let res = ifft(at_roots.into_raw_vec().as_slice(), &plan);
-    Array::from_vec(res).mapv(|i| i.re())
+    let out = ifft(at_roots.into_raw_vec().as_slice(), &plan);
+    // compose the kernel
+    let kernel = {
+        let tmp = Array::from_vec(out);
+        tmp.view().split_complex().re.to_owned()
+    };
+    kernel
 }
 
 pub struct Kernel<T = f64> {
