@@ -1,0 +1,73 @@
+[package]
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "concision-data"
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[features]
+default = []
+
+blas = [
+    "ndarray/blas",
+]
+
+# intel-mkl-system = [
+#     "linfa/intel-mkl-system",
+# ]
+
+# intel-mkl-static = [
+#     "linfa/intel-mkl-static",
+# ]
+
+# netlib-system = [
+#     "linfa/netlib-system",
+# ]
+
+# netlib-static = [
+#     "linfa/netlib-static",
+# ]
+
+# openblas-system = [
+#     "linfa/openblas-system",
+# ]
+
+# openblas-static = [
+#     "linfa/openblas-static",
+# ]
+
+
+
+[lib]
+bench = true
+crate-type = ["rlib"]
+doctest = false
+test = true
+
+[build-dependencies]
+
+[dependencies]
+concision-core = { path = "../core", version = "0.1.12" }
+anyhow.workspace = true
+ndarray = { features = ["serde-1"], version = "0.15" }
+num.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+smart-default.workspace = true
+strum.workspace = true
+
+[dev-dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
+[target.wasm32-unknown-unknown]
+
+[target.wasm32-wasi]

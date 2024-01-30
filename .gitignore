@@ -58,3 +58,5 @@
 !**/*.env.example
 !**/*.config.js
 !**/*.config.cjs
+
+!**/config.rs

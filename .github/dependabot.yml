@@ -13,10 +13,42 @@ updates:
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /concision-derive
+    directory: /core
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /concision-macros
+    directory: /data
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /derive
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /macros
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /ml/ml
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /ml/neural
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /ml/nlp
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /ml/optim
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /ml/s4
+    schedule:
+      interval: daily
+  - package-ecosystem: cargo
+    directory: /ml/transformers
     schedule:
       interval: daily

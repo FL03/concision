@@ -1,0 +1,50 @@
+[package]
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "concision-core"
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[features]
+default = []
+
+blas = [
+    "ndarray/blas",
+]
+
+[lib]
+bench = false
+crate-type = ["rlib"]
+doctest = false
+test = true
+
+[build-dependencies]
+
+[dependencies]
+anyhow.workspace = true
+chrono = "0.4"
+ndarray = { features = ["serde-1"], version = "0.15" }
+ndarray-rand.workspace = true
+num.workspace = true
+rand = { features = [], version = "0.8" }
+serde.workspace = true
+serde_json.workspace = true
+smart-default.workspace = true
+strum.workspace = true
+
+[dev-dependencies]
+lazy_static.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
+[target.wasm32-unknown-unknown]
+
+[target.wasm32-wasi]
