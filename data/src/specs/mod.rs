@@ -8,6 +8,10 @@ pub(crate) mod elements;
 pub(crate) mod export;
 pub(crate) mod import;
 
+pub mod compose;
+pub mod linalg;
+pub mod ops;
+
 use ndarray::prelude::{Array1, Array2};
 
 pub trait Records<T> {

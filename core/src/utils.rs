@@ -4,7 +4,6 @@
 */
 pub use self::{arrays::*, assertions::*};
 
-use ndarray::linalg::Dot;
 use ndarray::prelude::*;
 use ndarray::{Data, IntoDimension, ShapeError};
 use ndarray_rand::rand::rngs::StdRng;
@@ -63,21 +62,7 @@ where
     let n = dim.as_array_view().product();
     Array::from_iter((0..n).map(|x| T::from(x).unwrap())).into_shape(dim)
 }
-/// Raise a matrix to a power
-pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
-where
-    T: Clone + Num + 'static,
-    Array2<T>: Dot<Array2<T>, Output = Array2<T>>,
-{
-    if !a.is_square() {
-        panic!("Matrix must be square");
-    }
-    let mut res = Array2::<T>::eye(a.nrows());
-    for _ in 0..n {
-        res = res.dot(a);
-    }
-    res
-}
+
 ///
 pub fn randcomplex<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
 where

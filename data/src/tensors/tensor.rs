@@ -20,32 +20,32 @@ where
     id: AtomicId,
     data: Array<T, D>,
     dtype: DType,
-    mode: TensorKind,
+    kind: TensorKind,
 }
 
 impl<T, D> Tensor<T, D>
 where
     D: Dimension,
 {
-    pub fn new(data: Array<T, D>) -> Self {
+    pub fn new(data: Array<T, D>, kind: TensorKind) -> Self {
         Self {
             id: AtomicId::new(),
             data,
             dtype: DType::default(),
-            mode: TensorKind::default(),
+            kind,
         }
     }
 
     pub fn mode(&self) -> TensorKind {
-        self.mode
+        self.kind
     }
 
     pub fn set_mode(&mut self, mode: TensorKind) {
-        self.mode = mode;
+        self.kind = mode;
     }
 
     pub fn as_variable(mut self) -> Self {
-        self.mode = TensorKind::Variable;
+        self.kind = TensorKind::Variable;
         self
     }
 }
@@ -60,7 +60,7 @@ where
             id: AtomicId::new(),
             data: Array::ones(shape),
             dtype: T::default().into(),
-            mode: TensorKind::default(),
+            kind: TensorKind::default(),
         }
     }
 
@@ -69,7 +69,7 @@ where
             id: AtomicId::new(),
             data: Array::zeros(shape),
             dtype: T::default().into(),
-            mode: TensorKind::default(),
+            kind: TensorKind::default(),
         }
     }
 }

@@ -44,6 +44,25 @@ impl TensorKind {
     }
 }
 
+impl From<bool> for TensorKind {
+    fn from(var: bool) -> Self {
+        if var {
+            Self::Variable
+        } else {
+            Self::Standard
+        }
+    }
+}
+
+impl From<TensorKind> for bool {
+    fn from(var: TensorKind) -> Self {
+        match var {
+            TensorKind::Standard => false,
+            TensorKind::Variable => true,
+        }
+    }
+}
+
 impl From<TensorKind> for usize {
     fn from(var: TensorKind) -> Self {
         var as usize

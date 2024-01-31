@@ -116,8 +116,6 @@ where
     }
 }
 
-impl<T> ModelParams<T> where T: NdFloat {}
-
 impl<T> Forward<Array2<T>> for ModelParams<T>
 where
     T: NdFloat,

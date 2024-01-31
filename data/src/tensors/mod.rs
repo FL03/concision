@@ -13,7 +13,6 @@ pub(crate) mod tensor;
 // use ndarray::prelude::{Array, Dimension, Ix2};
 use crate::cmp::DType;
 use crate::core::ops::Operation;
-use num::traits::{Num, NumOps};
 
 pub trait GradStore<T = f64> {
     type Tensor: NdTensor<T>;
@@ -49,8 +48,6 @@ pub trait NdTensor<T = f64> {
     fn mode(&self) -> TensorKind;
 
     fn shape(&self) -> &[usize];
-
-    fn tensor(&self) -> &Self;
 }
 
 pub trait Genspace {
@@ -59,16 +56,24 @@ pub trait Genspace {
     fn arange(start: f64, stop: f64, step: f64) -> Self::Tensor;
 }
 
-pub trait TensorOps<T = f64>: NdTensor<T> {
+pub trait TensorOps<T = f64> {
     type Tensor: NdTensor<T>;
 
     fn add(&self, other: &Self::Tensor) -> Self::Tensor;
 
+    fn add_scalar(&self, other: T) -> Self::Tensor;
+
     fn div(&self, other: &Self::Tensor) -> Self::Tensor;
+
+    fn div_scalar(&self, other: T) -> Self::Tensor;
 
     fn mul(&self, other: &Self::Tensor) -> Self::Tensor;
 
+    fn mul_scalar(&self, other: T) -> Self::Tensor;
+
     fn sub(&self, other: &Self::Tensor) -> Self::Tensor;
+
+    fn sub_scalar(&self, other: T) -> Self::Tensor;
 }
 
 #[cfg(test)]

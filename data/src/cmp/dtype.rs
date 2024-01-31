@@ -19,6 +19,8 @@ where
     }
 }
 
+pub trait FloatType {}
+
 #[derive(
     Clone,
     Copy,
@@ -185,8 +187,9 @@ impl From<FloatingPoint> for DType {
     }
 }
 
-pub struct Int {
-    size: IntSize,
+pub enum Int<T> {
+    Signed(T),
+    Unsigned(T)
 }
 
 #[derive(

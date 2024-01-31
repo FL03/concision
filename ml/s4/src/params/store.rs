@@ -66,11 +66,12 @@ impl<T> SSMStore<T> {
     where
         T: Default,
     {
-        let a = Array2::<T>::default((features, features));
-        let b = Array2::<T>::default((features, 1));
-        let c = Array2::<T>::default((1, features));
-        let d = Array2::<T>::default((1, 1));
-        Self::new(a, b, c, d)
+        Self {
+            a: Array2::<T>::default((features, features)),
+            b: Array2::<T>::default((features, 1)),
+            c: Array2::<T>::default((1, features)),
+            d: Array2::<T>::default((1, 1)),
+        }
     }
 
     pub fn a(&self) -> &Array2<T> {
@@ -139,11 +140,13 @@ where
 
     pub fn uniform(features: usize) -> Self {
         let dk = T::one() / T::from(features).unwrap().sqrt();
-        let a = Array2::<T>::uniform_between(dk, (features, features));
-        let b = Array2::<T>::uniform_between(dk, (features, 1));
-        let c = Array2::<T>::uniform_between(dk, (1, features));
-        let d = Array2::<T>::ones((1, 1));
-        Self::new(a, b, c, d)
+
+        Self {
+            a: Array2::uniform_between(dk, (features, features)),
+            b: Array2::uniform_between(dk, (features, 1)),
+            c: Array2::uniform_between(dk, (1, features)),
+            d: Array2::ones((1, 1)),
+        }
     }
 }
 

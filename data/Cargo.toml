@@ -55,6 +55,7 @@ test = true
 [dependencies]
 concision-core = { path = "../core", version = "0.1.12" }
 anyhow.workspace = true
+itertools.workspace = true
 ndarray = { features = ["serde-1"], version = "0.15" }
 num.workspace = true
 serde.workspace = true

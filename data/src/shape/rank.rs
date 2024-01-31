@@ -6,12 +6,7 @@
 //!
 //! The rank of a n-dimensional array describes the number of dimensions
 use serde::{Deserialize, Serialize};
-
-pub enum Ranks<T> {
-    Zero(T),
-    One(Vec<T>),
-    N(Vec<Self>),
-}
+use std::ops::{Deref, DerefMut};
 
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
@@ -29,6 +24,12 @@ impl Rank {
     }
 }
 
+impl std::fmt::Display for Rank {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 impl AsRef<usize> for Rank {
     fn as_ref(&self) -> &usize {
         &self.0
@@ -37,6 +38,20 @@ impl AsRef<usize> for Rank {
 
 impl AsMut<usize> for Rank {
     fn as_mut(&mut self) -> &mut usize {
+        &mut self.0
+    }
+}
+
+impl Deref for Rank {
+    type Target = usize;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Rank {
+    fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }
@@ -52,6 +67,10 @@ impl From<Rank> for usize {
         rank.0
     }
 }
+
+unsafe impl Send for Rank {}
+
+unsafe impl Sync for Rank {}
 
 // impl<T> TryFrom<T> for Rank
 // where
