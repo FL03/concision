@@ -3,9 +3,9 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 // use super::Algebraic;
-use num::traits::NumOps;
+use num::traits::{NumAssignOps, NumOps};
 
 pub trait Scalar {
-    type Complex: NumOps + NumOps<Self::Real>;
-    type Real: NumOps + NumOps<Self::Complex, Self::Complex>;
+    type Complex: NumAssignOps + NumOps + NumOps<Self::Real>;
+    type Real: NumAssignOps + NumOps + NumOps<Self::Complex, Self::Complex>;
 }

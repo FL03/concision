@@ -6,8 +6,8 @@ use crate::core::prelude::{Conjugate, Power};
 
 use ndarray::{Array, Array1, Array2, Axis, ScalarOperand};
 use ndarray_linalg::{Inverse, Lapack, Scalar};
-use num::complex::{Complex, ComplexFloat};
-use num::traits::{Float, NumOps};
+use num::complex::ComplexFloat;
+use num::traits::NumOps;
 
 pub fn discretize<S, T>(
     a: &Array2<T>,

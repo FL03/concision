@@ -7,11 +7,12 @@ use crate::core::prelude::GenerateRandom;
 use crate::prelude::{Features, Forward, Node};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, NdFloat};
+use ndarray::{LinalgScalar, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-use num::Float;
+use num::traits::{Float, NumAssignOps};
 use serde::{Deserialize, Serialize};
-use std::ops;
+use std::ops::{self, Neg};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LayerParams<T = f64> {
@@ -20,31 +21,7 @@ pub struct LayerParams<T = f64> {
     weights: Array2<T>,
 }
 
-impl<T> LayerParams<T>
-where
-    T: Float,
-{
-    pub fn new(features: LayerShape) -> Self {
-        Self::create(false, features)
-    }
-
-    pub fn biased(features: LayerShape) -> Self {
-        Self::create(true, features)
-    }
-
-    pub fn create(biased: bool, features: LayerShape) -> Self {
-        let bias = if biased {
-            Some(Array1::zeros(features.outputs()))
-        } else {
-            None
-        };
-        Self {
-            bias,
-            features,
-            weights: Array2::zeros(features.out_by_in()),
-        }
-    }
-
+impl<T> LayerParams<T> {
     pub fn bias(&self) -> &Option<Array1<T>> {
         &self.bias
     }
@@ -67,25 +44,6 @@ where
 
     pub fn set_bias(&mut self, bias: Option<Array1<T>>) {
         self.bias = bias;
-    }
-
-    pub fn set_node(&mut self, idx: usize, node: Node<T>) {
-        if let Some(bias) = node.bias() {
-            if !self.is_biased() {
-                let mut tmp = Array1::zeros(self.features().outputs());
-                tmp.index_axis_mut(Axis(0), idx).assign(bias);
-                self.bias = Some(tmp);
-            }
-            self.bias
-                .as_mut()
-                .unwrap()
-                .index_axis_mut(Axis(0), idx)
-                .assign(bias);
-        }
-
-        self.weights_mut()
-            .index_axis_mut(Axis(0), idx)
-            .assign(&node.weights());
     }
 
     pub fn set_weights(&mut self, weights: Array2<T>) {
@@ -113,22 +71,68 @@ where
 
 impl<T> LayerParams<T>
 where
-    T: Float + 'static,
+    T: Default,
 {
-    pub fn update_with_gradient(&mut self, gamma: T, gradient: &Array2<T>) {
-        self.weights_mut().scaled_add(-gamma, gradient);
+    pub fn new(features: LayerShape) -> Self {
+        Self::create(false, features)
+    }
+
+    pub fn create(biased: bool, features: LayerShape) -> Self {
+        let bias = if biased {
+            Some(Array1::default(features.outputs()))
+        } else {
+            None
+        };
+        Self {
+            bias,
+            features,
+            weights: Array2::default(features.out_by_in()),
+        }
+    }
+
+    pub fn biased(features: LayerShape) -> Self {
+        Self::create(true, features)
+    }
+
+    pub fn reset(&mut self)
+    where
+        T: NumAssignOps + ScalarOperand,
+    {
+        if let Some(bias) = self.bias() {
+            self.bias = Some(Array1::default(bias.dim()));
+        }
+        self.weights *= T::default();
+    }
+
+    pub fn set_node(&mut self, idx: usize, node: Node<T>)
+    where
+        T: Clone,
+    {
+        if let Some(bias) = node.bias() {
+            if !self.is_biased() {
+                let mut tmp = Array1::default(self.features().outputs());
+                tmp.index_axis_mut(Axis(0), idx).assign(bias);
+                self.bias = Some(tmp);
+            }
+            self.bias
+                .as_mut()
+                .unwrap()
+                .index_axis_mut(Axis(0), idx)
+                .assign(bias);
+        }
+
+        self.weights_mut()
+            .index_axis_mut(Axis(0), idx)
+            .assign(&node.weights());
     }
 }
 
 impl<T> LayerParams<T>
 where
-    T: NdFloat,
+    T: LinalgScalar + Neg<Output = T> + 'static,
 {
-    pub fn reset(&mut self) {
-        if let Some(bias) = self.bias() {
-            self.bias = Some(Array1::zeros(bias.dim()));
-        }
-        self.weights *= T::zero();
+    pub fn update_with_gradient(&mut self, gamma: T, gradient: &Array2<T>) {
+        self.weights_mut().scaled_add(-gamma, gradient);
     }
 }
 
@@ -189,7 +193,7 @@ where
 
 impl<T> IntoIterator for LayerParams<T>
 where
-    T: Float,
+    T: Clone,
 {
     type Item = Node<T>;
     type IntoIter = std::vec::IntoIter<Self::Item>;
@@ -214,7 +218,7 @@ where
 
 impl<T> FromIterator<Node<T>> for LayerParams<T>
 where
-    T: Float,
+    T: Clone + Default,
 {
     fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
         let nodes = nodes.into_iter().collect::<Vec<_>>();

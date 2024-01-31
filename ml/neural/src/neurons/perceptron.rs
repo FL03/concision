@@ -14,7 +14,6 @@ use num::Float;
 pub struct Perceptron<T = f64, A = LinearActivation>
 where
     A: Activate<T, Ix1>,
-    T: Float,
 {
     activation: A,
     node: Node<T>,
@@ -23,11 +22,11 @@ where
 impl<T, A> Perceptron<T, A>
 where
     A: Activate<T, Ix1>,
-    T: Float,
 {
     pub fn new(features: usize) -> Self
     where
         A: Default,
+        T: Default,
     {
         Self {
             activation: A::default(),

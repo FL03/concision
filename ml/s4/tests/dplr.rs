@@ -8,9 +8,9 @@ use concision_s4 as s4;
 use lazy_static::lazy_static;
 use ndarray::prelude::*;
 use ndarray_linalg::flatten;
-use num::complex::{Complex, ComplexFloat};
+use num::complex::Complex;
 
-use core::prelude::{seeded_uniform, AsComplex, Conjugate, Power};
+use core::prelude::{assert_ok, seeded_uniform, AsComplex, Conjugate, Power};
 use s4::cmp::kernel::kernel_dplr;
 use s4::hippo::dplr::DPLR;
 use s4::ops::{discretize, k_conv};
@@ -27,7 +27,6 @@ lazy_static! {
 }
 
 #[test]
-// #[ignore = "TODO: fix this test"]
 fn test_gen_dplr() {
     let eye = Array2::<f64>::eye(FEATURES);
 
@@ -51,12 +50,7 @@ fn test_gen_dplr() {
     // };
     let c = SAMPLE_IM.clone();
 
-    // TODO: figure out why several of the signs are wrong
-    let discrete = {
-        let tmp = discretize(&a, &b2, &c, step);
-        assert!(tmp.is_ok(), "discretize failed: {:?}", tmp.err().unwrap());
-        tmp.unwrap()
-    };
+    let discrete = assert_ok(discretize(&a, &b2, &c, step));
 
     let (ab, bb, cb) = discrete.into();
     //
@@ -64,12 +58,11 @@ fn test_gen_dplr() {
     //
     let cc = (&eye - ab.pow(SAMPLES)).conj().t().dot(&flatten(cb));
     //
-    let params = DPLRParams::new(lambda, p.clone(), p.clone(), b.clone(), cc);
+    let params = DPLRParams::new(lambda, p.clone(), p.clone(), b, cc);
     //
     let kernal = kernel_dplr::<f64>(&params, step, SAMPLES);
-    println!("Kernal: {:?}", kernal.shape());
 
-    let a_real = ak.mapv(|i| i.re());
+    let a_real = ak.view().split_complex().re.to_owned();
     let err = (&a_real - &kernal).mapv(|i| i.abs());
     assert!(
         err.mean().unwrap() <= 1e-4,

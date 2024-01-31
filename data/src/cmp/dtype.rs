@@ -12,10 +12,10 @@ pub trait DataType {
 
 impl<T> DataType for T
 where
-    T: Clone + Into<DType>,
+    T: Copy + Into<DType>,
 {
     fn dtype(&self) -> DType {
-        self.clone().into()
+        (*self).into()
     }
 }
 
@@ -42,7 +42,7 @@ where
 #[strum(serialize_all = "lowercase")]
 pub enum DType {
     #[default]
-    FloatingPoint(FloatingPoint),
+    Float(FloatingPoint),
     Integer(Integer),
     Unsigned(Unsigned),
 }
@@ -50,7 +50,7 @@ pub enum DType {
 impl DType {
     pub fn detect<T>(var: T) -> Self
     where
-        T: Clone + Default + Into<DType>,
+        T: Copy + Into<DType>,
     {
         var.dtype()
     }
@@ -58,13 +58,13 @@ impl DType {
 
 impl From<f32> for DType {
     fn from(_: f32) -> Self {
-        DType::FloatingPoint(FloatingPoint::F32)
+        DType::Float(FloatingPoint::F32)
     }
 }
 
 impl From<f64> for DType {
     fn from(_: f64) -> Self {
-        DType::FloatingPoint(FloatingPoint::F64)
+        DType::Float(FloatingPoint::F64)
     }
 }
 
@@ -181,7 +181,7 @@ impl From<f64> for FloatingPoint {
 
 impl From<FloatingPoint> for DType {
     fn from(dtype: FloatingPoint) -> Self {
-        DType::FloatingPoint(dtype)
+        DType::Float(dtype)
     }
 }
 

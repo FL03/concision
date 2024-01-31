@@ -3,12 +3,12 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Layers
-pub use self::{cmp::*, layer::*, params::*, stack::*, utils::*};
+pub use self::{cmp::*, layer::*, params::*, utils::*};
 
 pub(crate) mod cmp;
 pub(crate) mod layer;
 pub(crate) mod params;
-pub(crate) mod stack;
+// pub(crate) mod stack;
 
 pub mod exp;
 pub mod seq;

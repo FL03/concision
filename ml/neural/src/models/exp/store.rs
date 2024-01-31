@@ -13,16 +13,13 @@ use num::Float;
 use std::collections::HashMap;
 // use std::ops;
 
-pub struct ModelStore<T = f64>
-where
-    T: Float,
-{
+pub struct ModelStore<T = f64> {
     store: HashMap<LayerPosition, LayerParams<T>>,
 }
 
 impl<T> ModelStore<T>
 where
-    T: Float,
+    T: Clone + Default,
 {
     pub fn new() -> Self {
         Self {

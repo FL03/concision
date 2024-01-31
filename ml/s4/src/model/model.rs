@@ -9,7 +9,6 @@ use crate::prelude::{casual_conv2d, SSMStore};
 use ndarray::prelude::{Array1, Array2};
 use ndarray_linalg::Scalar;
 use num::complex::{Complex, ComplexFloat};
-use num::Float;
 use rustfft::FftNum;
 
 pub struct S4<T = f64> {

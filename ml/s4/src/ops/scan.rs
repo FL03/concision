@@ -22,8 +22,7 @@ where
 {
     let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
         *xs = a.dot(xs) + b.dot(&us);
-        let y1 = c.dot(&xs.clone());
-        Some(y1)
+        Some(c.dot(xs))
     };
     let scan: Vec<Array1<T>> = u.outer_iter().scan(x0.clone(), step).collect();
     vstack(scan.as_slice())

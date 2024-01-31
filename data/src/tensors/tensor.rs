@@ -9,6 +9,7 @@ use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
 use num::Num;
 use serde::{Deserialize, Serialize};
+use std::ops;
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -52,13 +53,22 @@ where
 impl<T, D> Tensor<T, D>
 where
     D: Dimension,
-    T: Clone + Num,
+    T: Clone + Default + Num + Into<DType>,
 {
+    pub fn ones(shape: impl IntoDimension<Dim = D>) -> Self {
+        Self {
+            id: AtomicId::new(),
+            data: Array::ones(shape),
+            dtype: T::default().into(),
+            mode: TensorKind::default(),
+        }
+    }
+
     pub fn zeros(shape: impl IntoDimension<Dim = D>) -> Self {
         Self {
             id: AtomicId::new(),
             data: Array::zeros(shape),
-            dtype: DType::default(),
+            dtype: T::default().into(),
             mode: TensorKind::default(),
         }
     }
@@ -71,5 +81,25 @@ where
 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{:?}", self.data)
+    }
+}
+
+impl<T, D> ops::Deref for Tensor<T, D>
+where
+    D: Dimension,
+{
+    type Target = Array<T, D>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl<T, D> ops::DerefMut for Tensor<T, D>
+where
+    D: Dimension,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.data
     }
 }

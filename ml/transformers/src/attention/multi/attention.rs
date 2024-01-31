@@ -40,7 +40,7 @@ where
 
 impl<T> MultiHeadAttention<T>
 where
-    T: Float + SampleUniform,
+    T: Default + Float + SampleUniform,
     StandardNormal: Distribution<T>,
 {
     pub fn new(heads: usize, model: usize) -> Self {

@@ -6,10 +6,10 @@ use crate::core::ops::{pad, PadMode};
 use crate::core::prelude::Power;
 use crate::prelude::{irfft, rfft};
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array1, Array2, Axis};
+use ndarray::prelude::{Array, Array1, Array2};
 use ndarray::{ErrorKind, ScalarOperand, ShapeError};
 use num::complex::{Complex, ComplexFloat};
-use num::traits::{Float, Num, NumAssignOps, NumCast};
+use num::traits::{Num, NumAssignOps, NumCast};
 use rustfft::FftNum;
 
 /// Generates a large convolution kernal
