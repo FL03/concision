@@ -17,7 +17,6 @@ pub mod masks;
 pub mod stores;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
-use num::Float;
 use std::collections::HashMap;
 
 pub trait Param {
