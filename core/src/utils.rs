@@ -5,12 +5,13 @@
 pub use self::{arrays::*, assertions::*};
 
 use ndarray::prelude::*;
-use ndarray::{Data, IntoDimension, ShapeError};
+use ndarray::{Data, IntoDimension, ScalarOperand, ShapeError};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::SeedableRng;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
-use num::complex::Complex;
+use num::complex::{Complex, ComplexDistribution};
+use num::traits::real::Real;
 use num::traits::{Float, Num, NumCast};
 use rand::distributions::uniform::{SampleUniform, Uniform};
 
@@ -29,6 +30,41 @@ where
     } else {
         Array::from_elem(shape.f(), elem)
     }
+}
+
+pub fn lecun_normal<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    T: Real + ScalarOperand,
+    StandardNormal: Distribution<T>,
+{
+    let dim = shape.into_dimension();
+    let n = dim.size();
+    let scale = T::from(n).unwrap().recip().sqrt();
+    Array::random(dim, StandardNormal) * scale
+}
+
+pub fn lecun_normal_seeded<T, D>(shape: impl IntoDimension<Dim = D>, seed: u64) -> Array<T, D>
+where
+    D: Dimension,
+    T: Real + ScalarOperand,
+    StandardNormal: Distribution<T>,
+{
+    let dim = shape.into_dimension();
+    let n = dim.size();
+    let scale = T::from(n).unwrap().recip().sqrt();
+    Array::random_using(dim, StandardNormal, &mut StdRng::seed_from_u64(seed)) * scale
+}
+
+/// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
+pub fn randc<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
+where
+    D: Dimension,
+    T: Distribution<T> + Num,
+    ComplexDistribution<T, T>: Distribution<Complex<T>>,
+{
+    let distr = ComplexDistribution::<T, T>::new(T::one(), T::one());
+    Array::random(shape, distr)
 }
 
 ///

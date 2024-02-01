@@ -9,7 +9,8 @@ use ndarray_rand::rand::{Rng, SeedableRng};
 use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
-use num::traits::{Float, Num, NumAssignOps,};
+use num::traits::real::Real;
+use num::traits::{Float, Num, NumAssignOps, Signed};
 use std::ops;
 
 pub trait Affine<T = f64>: Sized {
@@ -31,11 +32,9 @@ where
     }
 }
 
-
 pub trait GenerateRandom<T = f64, D = Ix2>: Sized
 where
     D: Dimension,
-    T: Float,
 {
     fn rand<IdS>(dim: impl IntoDimension<Dim = D>, distr: IdS) -> Self
     where
@@ -79,7 +78,7 @@ where
 
     fn uniform(axis: usize, dim: impl IntoDimension<Dim = D>) -> Self
     where
-        T: SampleUniform,
+        T: Real + SampleUniform,
     {
         let dim = dim.into_dimension();
         let dk = T::from(dim[axis]).unwrap().recip().sqrt();
@@ -88,7 +87,7 @@ where
 
     fn uniform_between(dk: T, dim: impl IntoDimension<Dim = D>) -> Self
     where
-        T: SampleUniform,
+        T: SampleUniform + Signed,
     {
         Self::rand(dim, Uniform::new(-dk, dk))
     }
@@ -143,20 +142,6 @@ where
 }
 
 // pub trait Stack
-
-pub trait Genspace<T = f64> {
-    fn arange(start: T, stop: T, step: T) -> Self;
-
-    fn linspace(start: T, stop: T, n: usize) -> Self;
-
-    fn logspace(start: T, stop: T, n: usize) -> Self;
-
-    fn geomspace(start: T, stop: T, n: usize) -> Self;
-
-    fn ones(n: usize) -> Self;
-
-    fn zeros(n: usize) -> Self;
-}
 
 pub trait ArrayLike {
     fn ones_like(&self) -> Self;

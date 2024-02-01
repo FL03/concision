@@ -24,7 +24,7 @@ where
     fn d(&self) -> &Array2<T>;
 }
 
-impl<T> SSMParamGroup<T> for SSMStore<T>
+impl<T> SSMParamGroup<T> for SSM<T>
 where
     T: Num,
 {

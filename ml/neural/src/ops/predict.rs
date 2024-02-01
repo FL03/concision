@@ -2,13 +2,12 @@
    Appellation: predict <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::prelude::BoxResult;
-use crate::prelude::Forward;
+use crate::prelude::{Forward, PredictError};
 
 pub trait Predict<T> {
     type Output;
 
-    fn predict(&self, input: &T) -> BoxResult<Self::Output>;
+    fn predict(&self, input: &T) -> Result<Self::Output, PredictError>;
 }
 
 impl<S, T, O> Predict<T> for S
@@ -17,7 +16,7 @@ where
 {
     type Output = O;
 
-    fn predict(&self, input: &T) -> BoxResult<O> {
+    fn predict(&self, input: &T) -> Result<Self::Output, PredictError> {
         Ok(self.forward(input))
     }
 }

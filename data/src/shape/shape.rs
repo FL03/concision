@@ -102,8 +102,6 @@ impl Deref for Shape {
     }
 }
 
-
-
 impl Extend<usize> for Shape {
     fn extend<I: IntoIterator<Item = usize>>(&mut self, iter: I) {
         self.0.extend(iter)

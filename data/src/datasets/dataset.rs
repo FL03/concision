@@ -14,7 +14,11 @@ pub struct Dataset<D, T, W> {
 
 impl<D, T, W> Dataset<D, T, W> {
     pub fn new(data: D, targets: T, weights: W) -> Self {
-        Self { data, targets, weights }
+        Self {
+            data,
+            targets,
+            weights,
+        }
     }
 
     pub fn data(&self) -> &D {

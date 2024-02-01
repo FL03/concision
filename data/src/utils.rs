@@ -2,8 +2,8 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::Array2;
 use ndarray::linalg::Dot;
+use ndarray::prelude::Array2;
 use num::traits::Num;
 
 /// Raise a matrix to a power

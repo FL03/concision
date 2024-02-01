@@ -5,7 +5,7 @@
 use super::S4Config;
 use crate::neural::prelude::Forward;
 use crate::prelude::SSMParams::*;
-use crate::prelude::{casual_conv2d, SSMStore};
+use crate::prelude::{casual_conv2d, SSM};
 use ndarray::prelude::{Array1, Array2};
 use ndarray_linalg::Scalar;
 use num::complex::{Complex, ComplexFloat};
@@ -15,7 +15,7 @@ pub struct S4<T = f64> {
     cache: Array1<T>, // make complex
     config: S4Config,
     kernal: Option<Array2<T>>,
-    store: SSMStore<T>,
+    store: SSM<T>,
 }
 
 impl<T> S4<T> {
@@ -26,7 +26,7 @@ impl<T> S4<T> {
         let n = config.features();
         let cache = Array1::<T>::default((n,));
         let kernal = None;
-        let store = SSMStore::from_features(n);
+        let store = SSM::from_features(n);
         Self {
             cache,
             config,

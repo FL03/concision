@@ -9,8 +9,5 @@ pub use self::matmul::*;
 
 pub(crate) mod matmul;
 
-
 #[cfg(test)]
-mod tests {
-
-}
+mod tests {}

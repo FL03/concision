@@ -6,10 +6,9 @@ pub use self::fft::*;
 
 use ndarray::prelude::*;
 use ndarray::{IntoDimension, ScalarOperand};
-use ndarray_rand::rand_distr::uniform::SampleUniform;
-use ndarray_rand::rand_distr::{Distribution, Uniform};
+use ndarray_rand::rand_distr::{uniform, Uniform};
 use ndarray_rand::RandomExt;
-use num::complex::{Complex, ComplexDistribution};
+use num::traits::real::Real;
 use num::traits::Num;
 use std::ops::Neg;
 
@@ -27,19 +26,9 @@ where
 pub fn logstep<T, D>(a: T, b: T, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
 where
     D: Dimension,
-    T: NdFloat + SampleUniform,
+    T: Real + ScalarOperand + uniform::SampleUniform,
 {
     Array::random(shape, Uniform::new(a, b)) * (b.ln() - a.ln()) + a.ln()
-}
-/// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
-pub fn randc<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
-where
-    D: Dimension,
-    T: Distribution<T> + Num,
-    ComplexDistribution<T, T>: Distribution<Complex<T>>,
-{
-    let distr = ComplexDistribution::<T, T>::new(T::one(), T::one());
-    Array::random(shape, distr)
 }
 
 pub(crate) mod fft {

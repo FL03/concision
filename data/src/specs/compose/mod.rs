@@ -11,6 +11,4 @@ pub(crate) mod arange;
 pub(crate) mod generate;
 
 #[cfg(test)]
-mod tests {
-
-}
+mod tests {}

@@ -27,8 +27,8 @@ pub mod prelude {
     pub use crate::datasets::*;
     pub use crate::flows::*;
     pub use crate::shape::*;
-    pub use crate::specs::*;
     pub use crate::specs::ops::*;
+    pub use crate::specs::*;
     pub use crate::store::*;
     pub use crate::tensors::*;
 }

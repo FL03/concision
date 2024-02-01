@@ -82,8 +82,50 @@ impl From<NetworkError> for MlError {
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum PredictError {
+    Activation(String),
+    Arithmetic(String),
+    Layer(String),
+    Format(String),
     #[default]
     Other(String),
+}
+
+impl std::error::Error for PredictError {}
+
+impl From<Box<dyn std::error::Error>> for PredictError {
+    fn from(err: Box<dyn std::error::Error>) -> Self {
+        Self::Other(err.to_string())
+    }
+}
+
+impl From<String> for PredictError {
+    fn from(err: String) -> Self {
+        Self::Other(err)
+    }
+}
+
+impl From<&str> for PredictError {
+    fn from(err: &str) -> Self {
+        Self::Other(err.to_string())
+    }
+}
+
+impl From<anyhow::Error> for PredictError {
+    fn from(err: anyhow::Error) -> Self {
+        Self::Other(err.to_string())
+    }
+}
+
+impl From<ndarray::ShapeError> for PredictError {
+    fn from(err: ndarray::ShapeError) -> Self {
+        Self::Format(err.to_string())
+    }
+}
+
+impl From<ndarray_linalg::error::LinalgError> for PredictError {
+    fn from(err: ndarray_linalg::error::LinalgError) -> Self {
+        Self::Arithmetic(err.to_string())
+    }
 }
 
 #[derive(

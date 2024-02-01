@@ -9,29 +9,29 @@ use ndarray_linalg::{Inverse, Lapack, Scalar};
 use num::complex::ComplexFloat;
 use num::traits::NumOps;
 
-pub fn discretize<S, T>(
-    a: &Array2<T>,
-    b: &Array2<T>,
-    c: &Array2<T>,
-    step: S,
-) -> anyhow::Result<Discrete<T>>
-where
-    S: Scalar<Real = S, Complex = T> + ScalarOperand,
-    T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
-{
-    let (n, ..) = a.dim();
-    let hs = step / S::from(2).unwrap(); // half step
-    let eye = Array2::<T>::eye(n);
+// pub fn discretize<S, T>(
+//     a: &Array2<T>,
+//     b: &Array2<T>,
+//     c: &Array2<T>,
+//     step: S,
+// ) -> anyhow::Result<Discrete<T>>
+// where
+//     S: Scalar<Real = S, Complex = T> + ScalarOperand,
+//     T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
+// {
+//     let (n, ..) = a.dim();
+//     let hs = step / S::from(2).unwrap(); // half step
+//     let eye = Array2::<T>::eye(n);
 
-    let bl = (&eye - a * hs).inv()?;
+//     let bl = (&eye - a * hs).inv()?;
 
-    let ab = bl.dot(&(&eye + a * hs));
-    let bb = (bl * step).dot(b);
+//     let ab = bl.dot(&(&eye + a * hs));
+//     let bb = (bl * step).dot(b);
 
-    Ok((ab, bb, c.clone()).into())
-}
+//     Ok((ab, bb, c.clone()).into())
+// }
 
-pub fn discretizer<T>(
+pub fn discretize<T>(
     a: &Array2<T>,
     b: &Array2<T>,
     c: &Array2<T>,
@@ -130,15 +130,29 @@ impl<T> Discrete<T> {
     }
 }
 
-impl<T> Discrete<T> {
-    pub fn discretize<S>(&self, step: S) -> anyhow::Result<Self>
-    where
-        S: Scalar<Real = S, Complex = T> + ScalarOperand,
-        T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
-    {
-        discretize(&self.a, &self.b, &self.c, step)
+impl<T> Discrete<T>
+where
+    T: Lapack + Scalar + ScalarOperand,
+{
+    pub fn discretize(
+        a: &Array2<T>,
+        b: &Array2<T>,
+        c: &Array2<T>,
+        step: f64,
+    ) -> anyhow::Result<Self> {
+        discretize(a, b, c, step)
     }
 }
+
+// impl<T> Discrete<T> {
+//     pub fn discretize<S>(&self, step: S) -> anyhow::Result<Self>
+//     where
+//         S: Scalar<Real = S, Complex = T> + ScalarOperand,
+//         T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
+//     {
+//         discretize(&self.a, &self.b, &self.c, step)
+//     }
+// }
 
 impl<T> From<(Array2<T>, Array2<T>, Array2<T>)> for Discrete<T> {
     fn from((a, b, c): (Array2<T>, Array2<T>, Array2<T>)) -> Self {
@@ -153,6 +167,11 @@ impl<T> From<Discrete<T>> for (Array2<T>, Array2<T>, Array2<T>) {
 }
 
 pub enum DiscretizeArgs<T> {
+    Standard {
+        a: Array2<T>,
+        b: Array2<T>,
+        c: Array2<T>,
+    },
     DPLR {
         lambda: Array1<T>,
         p: Array1<T>,

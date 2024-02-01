@@ -3,11 +3,11 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::{Array, Ix1, Ix2};
-use num::traits::{Num, NumCast, ToPrimitive};
 use num::traits::real::Real;
+use num::traits::{Num, NumCast, ToPrimitive};
 use std::ops;
 
-/// [Arange] is a utilitarian trait that facilitates the creation of 
+/// [Arange] is a utilitarian trait that facilitates the creation of
 /// some structure using a range of equally spaced values.
 pub trait Arange<T> {
     fn arange(args: impl Into<ArangeArgs<T>>) -> Self;
@@ -147,7 +147,10 @@ impl<T> From<(T, T, T)> for ArangeArgs<T> {
     }
 }
 
-impl<T> From<[T; 3]> for ArangeArgs<T> where T: Copy {
+impl<T> From<[T; 3]> for ArangeArgs<T>
+where
+    T: Copy,
+{
     fn from(args: [T; 3]) -> Self {
         ArangeArgs::Arange {
             start: args[0],
@@ -165,8 +168,6 @@ impl<T> From<(T, T)> for ArangeArgs<T> {
         }
     }
 }
-
-
 
 impl<T> From<T> for ArangeArgs<T>
 where

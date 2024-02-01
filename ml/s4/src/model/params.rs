@@ -6,7 +6,6 @@ use crate::prelude::scan_ssm;
 use ndarray::prelude::{Array1, Array2};
 use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::Scalar;
-use num::complex::ComplexFloat;
 use num::traits::Num;
 
 pub struct S4Store<T = f64> {
@@ -78,7 +77,7 @@ where
 }
 impl<T> S4Store<T>
 where
-    T: ComplexFloat + Scalar + 'static,
+    T: Scalar + 'static,
 {
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
         scan_ssm(&self.a, &self.b, &self.c, u, x0)

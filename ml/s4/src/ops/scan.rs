@@ -2,7 +2,7 @@
     Appellation: scan <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::SSMStore;
+use crate::params::SSM;
 use ndarray::prelude::{Array1, Array2, ArrayView1};
 use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::{vstack, Scalar};
@@ -32,22 +32,22 @@ pub struct Scanner<'a, T = f64>
 where
     T: Float,
 {
-    model: &'a mut SSMStore<T>,
+    model: &'a mut SSM<T>,
 }
 
 impl<'a, T> Scanner<'a, T>
 where
     T: Float,
 {
-    pub fn new(model: &'a mut SSMStore<T>) -> Self {
+    pub fn new(model: &'a mut SSM<T>) -> Self {
         Self { model }
     }
 
-    pub fn model(&self) -> &SSMStore<T> {
+    pub fn model(&self) -> &SSM<T> {
         self.model
     }
 
-    pub fn model_mut(&mut self) -> &mut SSMStore<T> {
+    pub fn model_mut(&mut self) -> &mut SSM<T> {
         self.model
     }
 }
@@ -55,7 +55,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::params::SSMStore;
+    use crate::params::SSM;
     use ndarray::prelude::*;
 
     const FEATURES: usize = 3;
@@ -77,7 +77,7 @@ mod tests {
 
         assert_eq!(&scan, &exp);
 
-        let ssm = SSMStore::new(a, b, c, Array2::zeros((1, 1)));
+        let ssm = SSM::new(a, b, c, Array2::zeros((1, 1)));
         assert_eq!(&scan, &ssm.scan(&u, &x0).unwrap())
     }
 }

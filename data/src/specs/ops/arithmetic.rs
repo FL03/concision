@@ -4,13 +4,15 @@
 */
 use std::ops::{Add, Div, Mul, Sub};
 
-
-pub trait Arithmetic<S, T = S> where Self: Add<S, Output = T> + Div<S, Output = T> + Mul<S, Output = T> + Sub<S, Output = T>  {
-
+pub trait Arithmetic<S, T = S>
+where
+    Self: Add<S, Output = T> + Div<S, Output = T> + Mul<S, Output = T> + Sub<S, Output = T>,
+{
 }
 
-impl<A, S, T> Arithmetic<S, T> for A where A: Add<S, Output = T> + Div<S, Output = T> + Mul<S, Output = T> + Sub<S, Output = T>  {
-
+impl<A, S, T> Arithmetic<S, T> for A where
+    A: Add<S, Output = T> + Div<S, Output = T> + Mul<S, Output = T> + Sub<S, Output = T>
+{
 }
 
 pub trait Trig {

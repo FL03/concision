@@ -189,7 +189,7 @@ impl From<FloatingPoint> for DType {
 
 pub enum Int<T> {
     Signed(T),
-    Unsigned(T)
+    Unsigned(T),
 }
 
 #[derive(
