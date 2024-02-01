@@ -6,7 +6,7 @@ use crate::core::ops::{pad, PadMode};
 use crate::core::prelude::Power;
 use crate::prelude::{irfft, irfft_2d, rfft, rfft_2d};
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array1, Array2};
+use ndarray::prelude::{s, Array, Array1, Array2};
 use ndarray::{ErrorKind, ScalarOperand, ShapeError};
 use num::complex::{Complex, ComplexFloat};
 use num::traits::{FloatConst, Num, NumAssignOps, NumCast};
@@ -112,7 +112,7 @@ where
     };
 
     let tmp = &ud * kd;
-    let res = irfft_2d(&tmp, len);
+    let res = irfft_2d(&tmp, len).slice(s![..shape[0], ..]).to_owned();
     Ok(res)
 }
 
@@ -141,6 +141,16 @@ mod tests {
             [1.0, 0.0, 0.0, 0.0],
             [4.0, 0.0, 0.0, 0.0],
         ];
+        static ref EXP2D_B: Array2<f64> = array![
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [9.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [16.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [25.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [36.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [49.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        ];
     }
 
     #[test]
@@ -152,8 +162,6 @@ mod tests {
         for (i, j) in res.into_iter().zip(EXP2.clone().into_iter()) {
             assert_approx(i, j, EPSILON);
         }
-
-
     }
     // #[ignore = "Casual Convolution on 2D arrays is not yet supported"]
     #[test]
@@ -173,9 +181,9 @@ mod tests {
 
         let res = casual_conv2d(&u, &k).unwrap();
         println!("{:?}", &res);
-        // for (i, j) in flatten(res).into_iter().zip(EXP2.clone().into_iter()) {
-        //     assert_approx(i, j, EPSILON);
-        // }
+        for (i, j) in flatten(res).into_iter().zip(EXP2D_B.clone().into_iter()) {
+            assert_approx(i, j, EPSILON);
+        }
     }
 
     #[ignore = "Currently, the function is only able to work with 1d arrays"]

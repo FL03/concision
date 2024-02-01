@@ -34,10 +34,22 @@ impl<T> SSM<T> {
         T: Default,
     {
         Self {
-            a: Array2::<T>::default((features, features)),
-            b: Array2::<T>::default((features, 1)),
-            c: Array2::<T>::default((1, features)),
-            d: Array2::<T>::default((1, 1)),
+            a: Array2::default((features, features)),
+            b: Array2::default((features, 1)),
+            c: Array2::default((1, features)),
+            d: Array2::default((1, 1)),
+        }
+    }
+
+    pub fn from_discrete(discrete: Discrete<T>) -> Self
+    where
+        T: Clone + Num,
+    {
+        Self {
+            a: discrete.a,
+            b: discrete.b,
+            c: discrete.c,
+            d: Array2::ones((1, 1)),
         }
     }
 
@@ -112,15 +124,23 @@ impl<T> SSM<T>
 where
     T: Scalar + ScalarOperand,
 {
+    pub(crate) fn apply_discrete(&mut self, discrete: Discrete<T>) {
+        use SSMParams::*;
+        self[A] = discrete.a;
+        self[B] = discrete.b;
+        self[C] = discrete.c;
+    }
+
     pub fn discretize(&mut self, step: f64) -> anyhow::Result<()>
     where
         T: Lapack,
     {
         use SSMParams::*;
         let discrete = Discrete::discretize(&self[A], &self[B], &self[C], step)?;
-        self[A] = discrete.a;
-        self[B] = discrete.b;
-        self[C] = discrete.c;
+        self.apply_discrete(discrete);
+        // self[A] = discrete.a;
+        // self[B] = discrete.b;
+        // self[C] = discrete.c;
         Ok(())
     }
 
@@ -170,6 +190,15 @@ impl<T> ops::IndexMut<SSMParams> for SSM<T> {
             C => self.c_mut(),
             D => self.d_mut(),
         }
+    }
+}
+
+impl<T> From<Discrete<T>> for SSM<T>
+where
+    T: Clone + Num,
+{
+    fn from(discrete: Discrete<T>) -> Self {
+        Self::from_discrete(discrete)
     }
 }
 

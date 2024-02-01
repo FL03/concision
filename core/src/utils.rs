@@ -60,7 +60,7 @@ where
 pub fn randc<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
 where
     D: Dimension,
-    T: Distribution<T> + Num,
+    T: Clone + Num,
     ComplexDistribution<T, T>: Distribution<Complex<T>>,
 {
     let distr = ComplexDistribution::<T, T>::new(T::one(), T::one());

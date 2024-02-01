@@ -33,12 +33,15 @@ impl SSMConfig {
         self.samples
     }
 
-    pub fn step_size<T>(&self) -> T where T: num::Float {
+    pub fn step_size<T>(&self) -> T
+    where
+        T: num::Float,
+    {
         T::from(self.samples).unwrap().recip()
     }
 
     pub fn logstep(&self) -> f64 {
-        logstep(1e-3, 1e-1)
+        logstep::<f64>(1e-3, 1e-1).exp()
     }
 
     pub fn set_decode(&mut self, decode: bool) {

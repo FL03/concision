@@ -42,7 +42,7 @@ mod tests {
     use nplr::NPLR;
 
     use crate::core::prelude::Conjugate;
-    use ndarray::prelude::{Array, Axis};
+    use ndarray::prelude::*;
     use num::complex::ComplexFloat;
 
     #[test]

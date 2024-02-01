@@ -6,7 +6,7 @@ use crate::params::SSM;
 use ndarray::prelude::{Array1, Array2, ArrayView1};
 use ndarray_linalg::error::LinalgError;
 use ndarray_linalg::{vstack, Scalar};
-use num::Float;
+use num::{Complex, Float};
 
 ///
 // TODO: Allow the scan's state to be returned for caching in the S4 model
@@ -25,6 +25,25 @@ where
         Some(c.dot(xs))
     };
     let scan: Vec<Array1<T>> = u.outer_iter().scan(x0.clone(), step).collect();
+    vstack(scan.as_slice())
+}
+
+pub fn scan_ssm_complex<T>(
+    a: &Array2<Complex<T>>,
+    b: &Array2<Complex<T>>,
+    c: &Array2<Complex<T>>,
+    u: &Array2<Complex<T>>,
+    x0: &Array1<Complex<T>>,
+) -> Result<Array2<Complex<T>>, LinalgError>
+where
+    T: Scalar<Complex = Complex<T>, Real = T>,
+    Complex<T>: Scalar,
+{
+    let step = |xs: &mut Array1<Complex<T>>, us: ArrayView1<Complex<T>>| {
+        *xs = a.dot(xs) + b.dot(&us);
+        Some(c.dot(xs))
+    };
+    let scan: Vec<Array1<Complex<T>>> = u.outer_iter().scan(x0.clone(), step).collect();
     vstack(scan.as_slice())
 }
 

@@ -24,14 +24,17 @@ where
     b.mapv(cdot)
 }
 ///
-pub fn logstep<T>(a: T, b: T,) -> T
+pub fn logstep<T>(a: T, b: T) -> T
 where
     T: Real + ScalarOperand + SampleUniform,
 {
     Uniform::new(a, b).sample(&mut rand::thread_rng()) * (b.ln() - a.ln()) + a.ln()
 }
 
-pub(crate) fn logstep_initializer<T, D>(between: Option<(T, T)>, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+pub(crate) fn logstep_initializer<T, D>(
+    between: Option<(T, T)>,
+    shape: impl IntoDimension<Dim = D>,
+) -> Array<T, D>
 where
     D: Dimension,
     T: Real + ScalarOperand + SampleUniform,
@@ -41,14 +44,17 @@ where
 }
 
 pub(crate) mod fft {
-    use ndarray::prelude::{Array2, Array,};
-    use ndrustfft::{R2cFftHandler, ndifft_r2c, ndfft_r2c};
+    use ndarray::prelude::{Array, Array2};
+    use ndrustfft::{ndfft_r2c, ndifft_r2c, R2cFftHandler};
     use num::complex::Complex;
     use num::traits::{FloatConst, NumCast};
     use realfft::RealFftPlanner;
     use rustfft::FftNum;
 
-    pub fn rfft_2d<T>(input: &Array2<T>,) -> Array2<Complex<T>> where T: FftNum + FloatConst {
+    pub fn rfft_2d<T>(input: &Array2<T>) -> Array2<Complex<T>>
+    where
+        T: FftNum + FloatConst,
+    {
         let axis = 1;
         let (m, _n) = input.dim();
         let d_out = input.shape()[axis] / 2 + 1;
@@ -59,7 +65,10 @@ pub(crate) mod fft {
         out
     }
 
-    pub fn irfft_2d<T>(input: &Array2<Complex<T>>, len: usize) -> Array2<T> where T: FftNum + FloatConst {
+    pub fn irfft_2d<T>(input: &Array2<Complex<T>>, len: usize) -> Array2<T>
+    where
+        T: FftNum + FloatConst,
+    {
         let axis = 1;
         let (m, _n) = input.dim();
         let d_out = (input.shape()[axis] - 1) * 2;
