@@ -10,8 +10,8 @@ use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
 use num::traits::real::Real;
-use num::traits::{Float, Num, NumAssign, NumCast, NumOps};
-use std::ops::{self, Neg};
+use num::traits::{Float, Num, NumAssign, NumOps};
+use std::ops::Neg;
 
 pub trait Affine<T = f64>: Sized {
     type Error;

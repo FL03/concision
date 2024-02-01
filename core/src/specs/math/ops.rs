@@ -6,7 +6,6 @@ use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use num::complex::Complex;
 use num::{Float, Num, Signed};
-use std::ops;
 
 pub trait Conjugate {
     fn conj(&self) -> Self;
@@ -50,51 +49,6 @@ where
     fn conj(&self) -> Self {
         self.mapv(|x| x.conj())
     }
-}
-
-pub trait Arithmetic<S = Self, T = Self>
-where
-    Self: ops::Add<S, Output = T>
-        + ops::Div<S, Output = T>
-        + ops::Mul<S, Output = T>
-        + ops::Sub<S, Output = T>,
-{
-}
-
-impl<A, S, T> Arithmetic<S, T> for A where
-    A: ops::Add<S, Output = T>
-        + ops::Div<S, Output = T>
-        + ops::Mul<S, Output = T>
-        + ops::Sub<S, Output = T>
-{
-}
-
-pub trait MatrixOps<T = f64, A = Ix2, B = Ix2>:
-    Arithmetic<Array<T, A>, Array<T, B>> + Sized
-where
-    A: Dimension,
-    B: Dimension,
-{
-}
-
-impl<T, D, A, B> MatrixOps<T, A, B> for Array<T, D>
-where
-    A: Dimension,
-    B: Dimension,
-    D: Dimension,
-    T: Arithmetic<T>,
-    Self: Arithmetic<Array<T, A>, Array<T, B>>,
-{
-}
-
-impl<T, D, A, B> MatrixOps<T, A, B> for &Array<T, D>
-where
-    A: Dimension,
-    B: Dimension,
-    D: Dimension,
-    T: Arithmetic<T>,
-    Self: Arithmetic<Array<T, A>, Array<T, B>>,
-{
 }
 
 pub trait SquareRoot {
