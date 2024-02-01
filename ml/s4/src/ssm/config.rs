@@ -2,7 +2,7 @@
     Appellation: config <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use num::Float;
+use crate::prelude::logstep;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -33,8 +33,12 @@ impl SSMConfig {
         self.samples
     }
 
-    pub fn step_size<T: Float>(&self) -> T {
-        T::one() / T::from(self.samples).unwrap()
+    pub fn step_size<T>(&self) -> T where T: num::Float {
+        T::from(self.samples).unwrap().recip()
+    }
+
+    pub fn logstep(&self) -> f64 {
+        logstep(1e-3, 1e-1)
     }
 
     pub fn set_decode(&mut self, decode: bool) {

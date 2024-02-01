@@ -11,10 +11,10 @@ const FEATURES: usize = 4;
 const SAMPLES: usize = 100;
 
 fn main() -> anyhow::Result<()> {
-    let u = Array::range(0.0, (SAMPLES * SAMPLES) as f64, 1.0);
+    let u = Array::linspace(0.0, 1.0, SAMPLES);
 
     let config = SSMConfig::new(true, FEATURES, SAMPLES);
-    let model = SSMLayer::<f64>::create(config)?;
+    let model = SSMLayer::<f64>::new(config).init()?;
 
     let res = model.predict(&u)?;
     println!("{:?}", res);

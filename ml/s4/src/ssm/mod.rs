@@ -33,9 +33,7 @@ mod tests {
     fn test_ssm() {
         let u = Array::range(0.0, 1.0, 1.0 / SAMPLES as f64);
         let config = SSMConfig::new(true, FEATURES, SAMPLES);
-        let model = SSMLayer::<f64>::create(config).unwrap();
-        let pred = assert_ok(model.predict(&u));
-
-        println!("{:?}", pred);
+        let model = SSMLayer::<f64>::new(config).init().unwrap();
+        let _pred = assert_ok(model.predict(&u));
     }
 }

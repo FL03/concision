@@ -3,19 +3,20 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::S4Config;
-use crate::neural::prelude::Forward;
-use crate::prelude::SSMParams::*;
-use crate::prelude::{casual_conv2d, SSM};
-use ndarray::prelude::{Array1, Array2};
-use ndarray_linalg::Scalar;
+use crate::neural::prelude::{Predict, PredictError};
+// use crate::prelude::SSMParams::*;
+use crate::prelude::{casual_conv1d, SSM};
+use ndarray::prelude::{Array1, Axis};
+use ndarray::ScalarOperand;
+use ndarray_linalg::{flatten, Scalar};
 use num::complex::{Complex, ComplexFloat};
 use rustfft::FftNum;
 
 pub struct S4<T = f64> {
     cache: Array1<T>, // make complex
     config: S4Config,
-    kernal: Option<Array2<T>>,
-    store: SSM<T>,
+    kernel: Array1<T>,
+    ssm: SSM<T>,
 }
 
 impl<T> S4<T> {
@@ -25,13 +26,13 @@ impl<T> S4<T> {
     {
         let n = config.features();
         let cache = Array1::<T>::default((n,));
-        let kernal = None;
+        let kernel = Array1::<T>::default((n,));
         let store = SSM::from_features(n);
         Self {
             cache,
             config,
-            kernal,
-            store,
+            kernel,
+            ssm: store,
         }
     }
 
@@ -57,21 +58,22 @@ where
     }
 }
 
-impl<T> Forward<Array2<T>> for S4<T>
+impl<T> Predict<Array1<T>> for S4<T>
 where
-    T: FftNum + Scalar<Complex = Complex<T>, Real = T>,
+    T: FftNum + Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
     Complex<T>: ComplexFloat<Real = T>,
 {
-    type Output = Result<Array2<T>, anyhow::Error>;
+    type Output = Array1<T>;
 
-    fn forward(&self, args: &Array2<T>) -> Self::Output {
-        // let u = args.insert_axis(Axis(1));
+    fn predict(&self, args: &Array1<T>) -> Result<Self::Output, PredictError> {
+        let u = args.clone().insert_axis(Axis(1));
         let mut pred = if !self.config().decode() {
-            casual_conv2d(args, self.kernal.as_ref().unwrap())?
+            casual_conv1d(args, &self.kernel)?
         } else {
-            self.store.scan(args, &self.cache)?
+            let ys = self.ssm.scan(&u, &self.cache)?;
+            flatten(ys)
         };
-        pred = &pred + args * &self.store[D];
+        pred = &pred + args * flatten(self.ssm.d().clone());
         Ok(pred)
     }
 }

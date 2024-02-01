@@ -3,15 +3,15 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::{Array, Axis, Dimension, Ix2};
-use ndarray::{IntoDimension, ScalarOperand, ShapeError};
+use ndarray::{IntoDimension, LinalgScalar, ScalarOperand, ShapeError};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::{Rng, SeedableRng};
 use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
 use num::traits::real::Real;
-use num::traits::{Float, Num, NumAssignOps, Signed};
-use std::ops;
+use num::traits::{Float, Num, NumAssign, NumCast, NumOps};
+use std::ops::{self, Neg};
 
 pub trait Affine<T = f64>: Sized {
     type Error;
@@ -19,15 +19,15 @@ pub trait Affine<T = f64>: Sized {
     fn affine(&self, mul: T, add: T) -> Result<Self, Self::Error>;
 }
 
-impl<S, T, D> Affine<S> for Array<T, D>
+impl<T, D> Affine<T> for Array<T, D>
 where
-    T: Num + ScalarOperand,
+    T: LinalgScalar + Num + NumOps + ScalarOperand,
     D: Dimension,
-    Array<T, D>: ops::Mul<S, Output = Array<T, D>> + ops::Add<S, Output = Array<T, D>>,
+    // Array<T, D>: ops::Mul<S, Output = Array<T, D>> + ops::Add<S, Output = Array<T, D>>,
 {
     type Error = ShapeError;
 
-    fn affine(&self, mul: S, add: S) -> Result<Self, Self::Error> {
+    fn affine(&self, mul: T, add: T) -> Result<Self, Self::Error> {
         Ok(self.clone() * mul + add)
     }
 }
@@ -87,7 +87,7 @@ where
 
     fn uniform_between(dk: T, dim: impl IntoDimension<Dim = D>) -> Self
     where
-        T: SampleUniform + Signed,
+        T: Copy + Neg<Output = T> + SampleUniform,
     {
         Self::rand(dim, Uniform::new(-dk, dk))
     }
@@ -134,7 +134,7 @@ pub trait Inverse<T = f64>: Sized {
 
 impl<T> Inverse<T> for Array<T, Ix2>
 where
-    T: Copy + Num + NumAssignOps + ScalarOperand,
+    T: Copy + NumAssign + ScalarOperand,
 {
     fn inverse(&self) -> Option<Self> {
         super::utils::inverse(self)

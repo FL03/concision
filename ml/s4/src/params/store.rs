@@ -3,16 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::SSMParams;
-use crate::core::prelude::{lecun_normal, GenerateRandom};
-use crate::ops::Discrete;
-
-use ndarray::prelude::{Array, Array1, Array2, ArrayView1, Axis};
+use crate::core::prelude::lecun_normal;
+use crate::ops::{k_conv, scan_ssm, Discrete};
+use ndarray::prelude::{Array, Array1, Array2, Axis};
 use ndarray::ScalarOperand;
 use ndarray_linalg::error::LinalgError;
-use ndarray_linalg::{vstack, Lapack, Scalar};
-use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_linalg::{Lapack, Scalar};
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-// use ndarray_rand::RandomExt;
 use num::traits::real::Real;
 use num::{Float, Num};
 use serde::{Deserialize, Serialize};
@@ -113,51 +110,40 @@ where
 
 impl<T> SSM<T>
 where
-    T: Scalar,
+    T: Scalar + ScalarOperand,
 {
-    pub fn discretize(&self, step: f64) -> anyhow::Result<Discrete<T>>
+    pub fn discretize(&mut self, step: f64) -> anyhow::Result<()>
     where
-        T: Lapack + ScalarOperand,
+        T: Lapack,
     {
         use SSMParams::*;
-        Discrete::discretize(&self[A], &self[B], &self[C], step)
+        let discrete = Discrete::discretize(&self[A], &self[B], &self[C], step)?;
+        self[A] = discrete.a;
+        self[B] = discrete.b;
+        self[C] = discrete.c;
+        Ok(())
     }
+
+    pub fn k_conv(&self, l: usize) -> Array1<T> {
+        k_conv(&self.a, &self.b, &self.c, l)
+    }
+
     pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
-        let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-            *xs = self.a().dot(xs) + self.b().dot(&us);
-            let y1 = self.c().dot(&xs.clone());
-            Some(y1)
-        };
-        vstack(
-            u.outer_iter()
-                .scan(x0.clone(), step)
-                .collect::<Vec<_>>()
-                .as_slice(),
-        )
+        scan_ssm(&self.a, &self.b, &self.c, u, x0)
     }
 }
 
 impl<T> SSM<T>
 where
-    T: Real + SampleUniform + ScalarOperand,
+    T: Real + ScalarOperand,
     StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, features: usize) -> Self {
-        // let (lambda, p, b, _v) = dplr_hippo(features);
+        self.a = lecun_normal((features, features));
+        self.b = lecun_normal((features, 1));
         self.c = lecun_normal((1, features));
         self.d = Array2::<T>::ones((1, 1));
         self
-    }
-
-    pub fn uniform(features: usize) -> Self {
-        let dk = T::one() / T::from(features).unwrap().sqrt();
-
-        Self {
-            a: Array2::uniform_between(dk, (features, features)),
-            b: Array2::uniform_between(dk, (features, 1)),
-            c: Array2::uniform_between(dk, (1, features)),
-            d: Array2::ones((1, 1)),
-        }
     }
 }
 

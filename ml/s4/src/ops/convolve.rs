@@ -4,12 +4,12 @@
 */
 use crate::core::ops::{pad, PadMode};
 use crate::core::prelude::Power;
-use crate::prelude::{irfft, rfft};
+use crate::prelude::{irfft, irfft_2d, rfft, rfft_2d};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array1, Array2};
 use ndarray::{ErrorKind, ScalarOperand, ShapeError};
 use num::complex::{Complex, ComplexFloat};
-use num::traits::{Num, NumAssignOps, NumCast};
+use num::traits::{FloatConst, Num, NumAssignOps, NumCast};
 use rustfft::FftNum;
 
 /// Generates a large convolution kernal
@@ -29,7 +29,7 @@ where
 
 pub fn casual_convolution<T>(u: &Array2<T>, k: &Array1<T>) -> Result<Array2<T>, ShapeError>
 where
-    T: FftNum + NumCast,
+    T: FftNum + FloatConst + NumCast,
     Complex<T>: ComplexFloat<Real = T> + NumAssignOps,
 {
     if u.shape()[0] != k.shape()[0] || u.shape()[1] != k.shape()[0] {
@@ -43,8 +43,7 @@ where
 
     let ud = {
         let padded = pad(&u, &[[0, k.shape()[0]]], PadMode::Constant(T::zero()));
-        let fft = rfft::<T>(padded);
-        Array::from_shape_vec(shape, fft[0..elems].to_vec())?
+        rfft_2d(&padded)
     };
 
     let kd = {
@@ -86,40 +85,35 @@ where
     Ok(out)
 }
 
-// TODO: Modify the function to work on a one-dimensional kernel
+///
 pub fn casual_conv2d<T>(u: &Array2<T>, k: &Array2<T>) -> Result<Array2<T>, ShapeError>
 where
-    T: FftNum + NumCast,
+    T: FftNum + FloatConst + NumCast,
     Complex<T>: ComplexFloat<Real = T> + NumAssignOps,
 {
     if u.shape()[0] != k.shape()[0] || u.shape()[1] != k.shape()[1] {
         return Err(ShapeError::from_kind(ErrorKind::IncompatibleShape));
     }
     let pad_mode = PadMode::Constant(T::zero());
-    let (m, n) = u.dim();
-    let elems = m * (n + k.shape()[0]);
+    let (_m, _n) = u.dim();
 
     let shape = [u.shape()[0], u.shape()[1] + k.shape()[0]];
-
+    println!("{:?}", &shape);
+    let len = shape[1] - shape[1] % 2;
+    println!("len: {:?}", &len);
     let ud = {
         let padded = pad(&u, &[[0, k.shape()[0]]], pad_mode);
-        let fft = rfft::<T>(padded);
-        Array::from_vec(fft)
-        // Array::from_shape_vec(shape, fft[0..elems].to_vec())?
+        rfft_2d(&padded)
     };
 
     let kd = {
         let padded = pad(&k, &[[0, u.shape()[0]]], pad_mode);
-        let fft = rfft::<T>(padded);
-        Array::from_vec(fft)
-        // Array::from_shape_vec(shape, fft[0..elems].to_vec())?
+        rfft_2d(&padded)
     };
 
     let tmp = &ud * kd;
-    let res = irfft(tmp, elems * 2);
-    let out = Array::from_shape_vec(shape, res[0..elems].to_vec())?;
-    println!("{:?}", out);
-    Ok(out)
+    let res = irfft_2d(&tmp, len);
+    Ok(res)
 }
 
 pub struct Filter {}
@@ -131,6 +125,7 @@ mod tests {
 
     use lazy_static::lazy_static;
     use ndarray::prelude::*;
+    use ndarray_linalg::flatten;
 
     const EPSILON: f64 = 1e-8;
     const _FEATURES: usize = 4;
@@ -157,9 +152,12 @@ mod tests {
         for (i, j) in res.into_iter().zip(EXP2.clone().into_iter()) {
             assert_approx(i, j, EPSILON);
         }
+
+
     }
-    #[ignore = "Casual Convolution on 2D arrays is not yet supported"]
+    // #[ignore = "Casual Convolution on 2D arrays is not yet supported"]
     #[test]
+    // todo: fix casual_conv2d
     fn test_casual_conv2d() {
         let samples = 3;
         let u = Array::range(0.0, samples as f64, 1.0).insert_axis(Axis(1));
@@ -169,6 +167,15 @@ mod tests {
         for (i, j) in res.into_iter().zip(EXP2D.clone().into_iter()) {
             assert_approx(i, j, EPSILON);
         }
+
+        let u = Array::range(0.0, SAMPLES as f64, 1.0).insert_axis(Axis(1));
+        let k = Array::range(0.0, SAMPLES as f64, 1.0).insert_axis(Axis(1));
+
+        let res = casual_conv2d(&u, &k).unwrap();
+        println!("{:?}", &res);
+        // for (i, j) in flatten(res).into_iter().zip(EXP2.clone().into_iter()) {
+        //     assert_approx(i, j, EPSILON);
+        // }
     }
 
     #[ignore = "Currently, the function is only able to work with 1d arrays"]

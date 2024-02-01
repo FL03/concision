@@ -4,23 +4,36 @@
 */
 use super::SSMConfig;
 use crate::neural::prelude::{Predict, PredictError};
-use crate::params::{SSMParams::*, SSM};
-use crate::prelude::{casual_conv1d, k_conv, Discrete};
+use crate::prelude::{casual_conv1d, SSM};
 use ndarray::prelude::{Array1, Axis};
 use ndarray::ScalarOperand;
 use ndarray_linalg::{flatten, Lapack, Scalar};
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::complex::{Complex, ComplexFloat};
+use num::traits::real::Real;
 use rustfft::FftNum;
+use serde::{Deserialize, Serialize};
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SSMLayer<T = f64> {
     cache: Array1<T>,
     config: SSMConfig,
     kernel: Array1<T>,
-    params: SSM<T>,
-    ssm: Discrete<T>,
+    ssm: SSM<T>,
 }
 
 impl<T> SSMLayer<T> {
+    pub fn new(config: SSMConfig) -> Self
+    where
+        T: Default,
+    {
+        Self {
+            cache: Array1::<T>::default(config.features()),
+            config,
+            kernel: Array1::default(config.samples()),
+            ssm: SSM::from_features(config.features()),
+        }
+    }
     pub fn config(&self) -> &SSMConfig {
         &self.config
     }
@@ -37,38 +50,50 @@ impl<T> SSMLayer<T> {
         &mut self.kernel
     }
 
-    pub fn params(&self) -> &SSM<T> {
-        &self.params
+    pub fn ssm(&self) -> &SSM<T> {
+        &self.ssm
     }
 
-    pub fn params_mut(&mut self) -> &mut SSM<T> {
-        &mut self.params
+    pub fn ssm_mut(&mut self) -> &mut SSM<T> {
+        &mut self.ssm
     }
 }
 
 impl<T> SSMLayer<T>
 where
-    T: Lapack + Scalar + ScalarOperand,
+    T: Lapack + Real + Scalar + ScalarOperand,
+    StandardNormal: Distribution<T>,
 {
     pub fn create(config: SSMConfig) -> anyhow::Result<Self>
     where
         T: Default,
     {
         // initialize the state space model parameters
-        let params = SSM::from_features(config.features());
+        let mut ssm = SSM::from_features(config.features()).init(config.features());
         // discretize the state space model
-        let ssm = params.discretize(config.step_size())?;
+        ssm.discretize(config.logstep())?;
         // initialize the kernal with the convolution of the state space model
-        let kernel = k_conv(&ssm.a, &ssm.b, &ssm.c, config.samples());
+        let kernel = ssm.k_conv(config.samples());
 
         let layer = Self {
             cache: Array1::<T>::zeros(config.features()),
             config,
             kernel,
-            params,
             ssm,
         };
         Ok(layer)
+    }
+    pub fn init(mut self) -> anyhow::Result<Self>
+    where
+        T: Default,
+    {
+        // initialize the state space model parameters
+        self.ssm = self.ssm.init(self.config.features());
+        self.ssm.discretize(self.config.logstep())?;
+        // initialize the kernal with the convolution of the state space model
+        self.kernel = self.ssm.k_conv(self.config.samples());
+
+        Ok(self)
     }
 }
 
@@ -76,14 +101,14 @@ impl<T> SSMLayer<T>
 where
     T: Lapack + Scalar + ScalarOperand,
 {
-    pub fn discretize(&self, step: f64) -> anyhow::Result<Discrete<T>> {
-        Discrete::discretize(&self.params[A], &self.params[B], &self.params[C], step)
+    pub fn discretize(&mut self, step: f64) -> anyhow::Result<()> {
+        self.ssm.discretize(step)
     }
 }
 
 impl<T> Predict<Array1<T>> for SSMLayer<T>
 where
-    T: FftNum + Scalar<Complex = Complex<T>, Real = T>,
+    T: FftNum + Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
     Complex<T>: ComplexFloat<Real = T>,
 {
     type Output = Array1<T>;
@@ -93,10 +118,10 @@ where
         let mut pred = if !self.config().decode() {
             casual_conv1d(args, &self.kernel)?
         } else {
-            let ys = self.params.scan(&u, &self.cache)?;
+            let ys = self.ssm.scan(&u, &self.cache)?;
             flatten(ys)
         };
-        pred = &pred + args * flatten(self.params.d().clone());
+        pred = &pred + args * flatten(self.ssm.d().clone());
         Ok(pred)
     }
 }
