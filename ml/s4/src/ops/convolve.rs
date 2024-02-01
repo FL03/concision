@@ -32,7 +32,7 @@ where
     T: FftNum + FloatConst + NumCast,
     Complex<T>: ComplexFloat<Real = T> + NumAssignOps,
 {
-    if u.shape()[0] != k.shape()[0] || u.shape()[1] != k.shape()[0] {
+    if u.shape()[0] != k.shape()[0] && !u.is_square() {
         return Err(ShapeError::from_kind(ErrorKind::IncompatibleShape));
     }
 
