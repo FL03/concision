@@ -196,7 +196,11 @@ mod tests {
 
         let res = casual_convolution(&u, &k).unwrap();
         println!("{:?}", &res);
-        for (i, j) in flatten(res).slice(s![..EXP2.len()]).into_iter().zip(EXP2.clone().into_iter()) {
+        for (i, j) in flatten(res)
+            .slice(s![..EXP2.len()])
+            .into_iter()
+            .zip(EXP2.clone().into_iter())
+        {
             assert_approx(*i, j, EPSILON);
         }
     }

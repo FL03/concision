@@ -9,7 +9,6 @@ pub struct Id {
     timestamp: i32,
 }
 
-
 impl Id {
     pub fn new(id: String, name: String, timestamp: i32) -> Self {
         Self {

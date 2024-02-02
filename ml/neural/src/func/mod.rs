@@ -13,12 +13,11 @@
 //! ## Loss
 //!
 //! The loss functions are implemented as structs that implement the `Fn` trait.
-pub use self::{block::*, rms::*, utils::*};
+pub use self::{rms::*, utils::*};
 
 pub mod activate;
 pub mod loss;
 
-pub(crate) mod block;
 pub(crate) mod rms;
 
 use ndarray::prelude::{Array, Dimension, Ix2};

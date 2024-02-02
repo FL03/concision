@@ -38,9 +38,7 @@ impl<T> DPLRParams<T> {
     }
 }
 
-impl<T> DPLRParams<T> {
-
-}
+impl<T> DPLRParams<T> {}
 
 // impl<T> DPLRParams<T>
 // where

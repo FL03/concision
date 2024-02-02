@@ -53,7 +53,9 @@ pub trait NdTensor<T = f64> {
 pub trait Genspace {
     type Tensor: NdTensor;
 
-    fn arange(start: f64, stop: f64, step: f64) -> Self::Tensor;
+    fn arange(start: f64, stop: f64) -> Self::Tensor;
+
+    fn range(start: f64, stop: f64, step: f64) -> Self::Tensor;
 }
 
 pub trait TensorOps<T = f64> {

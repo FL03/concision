@@ -3,18 +3,17 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::{Array, Axis, Dimension, Ix2};
-use ndarray::{IntoDimension, LinalgScalar, ScalarOperand,};
+use ndarray::{IntoDimension, LinalgScalar, ScalarOperand};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::{Rng, SeedableRng};
 use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
 use num::traits::real::Real;
-use num::traits::{Float, Num, NumAssign,};
+use num::traits::{Float, Num, NumAssign};
 use std::ops::Neg;
 
 pub trait Affine<T = f64>: Sized {
-
     fn affine(&self, mul: T, add: T) -> Self;
 }
 
@@ -23,7 +22,6 @@ where
     T: LinalgScalar + ScalarOperand,
     D: Dimension,
 {
-
     fn affine(&self, mul: T, add: T) -> Self {
         self.clone() * mul + add
     }
@@ -48,7 +46,6 @@ where
         Array::zeros(self.dim())
     }
 }
-
 
 pub trait GenerateRandom<T = f64, D = Ix2>: Sized
 where
