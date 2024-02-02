@@ -138,9 +138,6 @@ where
         use SSMParams::*;
         let discrete = Discrete::discretize(&self[A], &self[B], &self[C], step)?;
         self.apply_discrete(discrete);
-        // self[A] = discrete.a;
-        // self[B] = discrete.b;
-        // self[C] = discrete.c;
         Ok(())
     }
 

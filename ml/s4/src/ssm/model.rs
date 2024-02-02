@@ -83,6 +83,7 @@ where
         };
         Ok(layer)
     }
+    /// Initialize the layer
     pub fn init(mut self) -> anyhow::Result<Self>
     where
         T: Default,

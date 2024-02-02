@@ -10,25 +10,22 @@ use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
 use num::traits::real::Real;
-use num::traits::{Float, Num, NumAssign, NumOps};
+use num::traits::{Float, Num, NumAssign,};
 use std::ops::Neg;
 
 pub trait Affine<T = f64>: Sized {
-    type Error;
 
-    fn affine(&self, mul: T, add: T) -> Result<Self, Self::Error>;
+    fn affine(&self, mul: T, add: T) -> Self;
 }
 
 impl<T, D> Affine<T> for Array<T, D>
 where
-    T: LinalgScalar + Num + NumOps + ScalarOperand,
+    T: LinalgScalar + ScalarOperand,
     D: Dimension,
-    // Array<T, D>: ops::Mul<S, Output = Array<T, D>> + ops::Add<S, Output = Array<T, D>>,
 {
-    type Error = ShapeError;
 
-    fn affine(&self, mul: T, add: T) -> Result<Self, Self::Error> {
-        Ok(self.clone() * mul + add)
+    fn affine(&self, mul: T, add: T) -> Self {
+        self.clone() * mul + add
     }
 }
 

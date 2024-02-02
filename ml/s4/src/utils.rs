@@ -31,7 +31,7 @@ where
     Uniform::new(a, b).sample(&mut rand::thread_rng()) * (b.ln() - a.ln()) + a.ln()
 }
 
-pub(crate) fn logstep_initializer<T, D>(
+pub fn logstep_initializer<T, D>(
     between: Option<(T, T)>,
     shape: impl IntoDimension<Dim = D>,
 ) -> Array<T, D>

@@ -95,7 +95,7 @@ mod tests {
     fn test_affine() {
         let x = array![[0.0, 1.0], [2.0, 3.0]];
 
-        let y = x.affine(4.0, -2.0).unwrap();
+        let y = x.affine(4.0, -2.0);
         assert_eq!(y, array![[-2.0, 2.0], [6.0, 10.0]]);
     }
 
