@@ -143,16 +143,16 @@ where
 }
 
 pub struct Kernel<T = f64> {
-    kernal: Array1<T>,
+    kernel: Array1<T>,
 }
 
 impl<T> Kernel<T> {
-    pub fn new(kernal: Array1<T>) -> Self {
-        Self { kernal }
+    pub fn new(kernel: Array1<T>) -> Self {
+        Self { kernel }
     }
 
     pub fn kernal(&self) -> &Array1<T> {
-        &self.kernal
+        &self.kernel
     }
 }
 
@@ -172,7 +172,7 @@ where
         step: <T as Scalar>::Real,
         l: usize,
     ) -> Self {
-        let kernal = kernel_dplr::<T>(dplr, step, l);
-        Self::new(kernal)
+        let kernel = kernel_dplr::<T>(dplr, step, l);
+        Self::new(kernel)
     }
 }

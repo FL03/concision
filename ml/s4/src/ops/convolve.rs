@@ -38,8 +38,9 @@ where
 
     let (m, n) = u.dim();
 
-    let elems = m * (n + k.shape()[0]);
+    // let elems = m * (n + k.shape()[0]);
     let shape = [m, n + k.shape()[0]];
+    let len = shape[1] - shape[1] % 2;
 
     let ud = {
         let padded = pad(&u, &[[0, k.shape()[0]]], PadMode::Constant(T::zero()));
@@ -53,9 +54,8 @@ where
     println!("{:?}", ud.shape());
     let tmp = &ud * kd;
     println!("E");
-    let res = irfft(tmp, elems)[0..m].to_vec();
-    let out = Array::from_shape_vec(shape, res)?;
-    Ok(out)
+    let res = irfft_2d(&tmp, len).slice(s![..shape[0], ..]).to_owned();
+    Ok(res)
 }
 
 ///
@@ -186,7 +186,7 @@ mod tests {
         }
     }
 
-    #[ignore = "Currently, the function is only able to work with 1d arrays"]
+    // #[ignore = "Currently, the function is only able to work with 1d arrays"]
     #[test]
     fn test_casual_convolution() {
         let u = Array::range(0.0, (SAMPLES * SAMPLES) as f64, 1.0)
@@ -195,7 +195,8 @@ mod tests {
         let k = Array::range(0.0, SAMPLES as f64, 1.0);
 
         let res = casual_convolution(&u, &k).unwrap();
-        for (i, j) in res.row(0).into_iter().zip(EXP2.clone().into_iter()) {
+        println!("{:?}", &res);
+        for (i, j) in flatten(res).slice(s![..EXP2.len()]).into_iter().zip(EXP2.clone().into_iter()) {
             assert_approx(*i, j, EPSILON);
         }
     }

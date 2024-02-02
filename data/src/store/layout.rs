@@ -6,14 +6,19 @@ use crate::shape::Shape;
 
 pub struct Layout {
     shape: Shape,
+    stride: Vec<usize>,
 }
 
 impl Layout {
-    pub fn new(shape: Shape) -> Self {
-        Self { shape }
+    pub fn new(shape: Shape, stride: Vec<usize>) -> Self {
+        Self { shape, stride }
     }
 
     pub fn shape(&self) -> &Shape {
         &self.shape
+    }
+
+    pub fn stride(&self) -> &[usize] {
+        &self.stride
     }
 }

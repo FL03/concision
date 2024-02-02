@@ -1,6 +1,4 @@
-extern crate concision;
-
-use concision as cnc;
+extern crate concision as cnc;
 
 use cnc::core::ops::pad;
 

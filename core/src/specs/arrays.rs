@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::prelude::{Array, Axis, Dimension, Ix2};
-use ndarray::{IntoDimension, LinalgScalar, ScalarOperand, ShapeError};
+use ndarray::{IntoDimension, LinalgScalar, ScalarOperand,};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::{Rng, SeedableRng};
 use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
@@ -28,6 +28,27 @@ where
         self.clone() * mul + add
     }
 }
+
+pub trait ArrayLike {
+    fn ones_like(&self) -> Self;
+
+    fn zeros_like(&self) -> Self;
+}
+
+impl<T, D> ArrayLike for Array<T, D>
+where
+    T: Clone + Num,
+    D: Dimension,
+{
+    fn ones_like(&self) -> Self {
+        Array::ones(self.dim())
+    }
+
+    fn zeros_like(&self) -> Self {
+        Array::zeros(self.dim())
+    }
+}
+
 
 pub trait GenerateRandom<T = f64, D = Ix2>: Sized
 where
@@ -135,27 +156,5 @@ where
 {
     fn inverse(&self) -> Option<Self> {
         super::utils::inverse(self)
-    }
-}
-
-// pub trait Stack
-
-pub trait ArrayLike {
-    fn ones_like(&self) -> Self;
-
-    fn zeros_like(&self) -> Self;
-}
-
-impl<T, D> ArrayLike for Array<T, D>
-where
-    T: Clone + Num,
-    D: Dimension,
-{
-    fn ones_like(&self) -> Self {
-        Array::ones(self.dim())
-    }
-
-    fn zeros_like(&self) -> Self {
-        Array::zeros(self.dim())
     }
 }
