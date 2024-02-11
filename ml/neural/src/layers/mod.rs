@@ -10,7 +10,6 @@ pub(crate) mod layer;
 pub(crate) mod params;
 // pub(crate) mod stack;
 
-pub mod exp;
 pub mod seq;
 
 use crate::prelude::{Activate, ActivateDyn, Forward, Node};

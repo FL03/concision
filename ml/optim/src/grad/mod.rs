@@ -29,8 +29,8 @@ pub struct DescentParams {
 
 pub(crate) mod utils {
     use crate::core::prelude::BoxResult;
+    use crate::neural::exp::models::Module;
     use crate::neural::func::activate::Gradient;
-    use crate::neural::models::exp::Module;
     use crate::neural::prelude::Forward;
     use ndarray::linalg::Dot;
     use ndarray::prelude::{Array, Array2, Dimension, NdFloat};

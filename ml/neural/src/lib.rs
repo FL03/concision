@@ -22,6 +22,8 @@ pub mod neurons;
 pub mod nn;
 pub mod ops;
 
+pub mod exp;
+
 pub(crate) use concision_core as core;
 
 pub mod prelude {
