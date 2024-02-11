@@ -9,7 +9,8 @@ pub use self::{mlp::*, model::*};
 pub(crate) mod mlp;
 pub(crate) mod model;
 
-#[cfg(tets)]
+#[ignore]
+#[cfg(tests)]
 mod tests {
     use super::*;
     use crate::core::prelude::linarr;

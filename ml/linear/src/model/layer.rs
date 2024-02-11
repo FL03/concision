@@ -4,7 +4,7 @@
 */
 use crate::cmp::neurons::{Node, Perceptron};
 use crate::cmp::params::LayerShape;
-use crate::cmp::params::LinearParams as LayerParams;
+use crate::cmp::params::LinearParams;
 use crate::neural::prelude::{Activate, Features, Forward, Gradient};
 
 use ndarray::prelude::{Array2, Ix1, NdFloat};
@@ -24,7 +24,7 @@ where
     activator: A,
     features: LayerShape,
     name: String,
-    params: LayerParams<T>,
+    params: LinearParams<T>,
 }
 
 impl<T, A> Linear<T, A>
@@ -37,7 +37,7 @@ where
             activator,
             features,
             name: name.to_string(),
-            params: LayerParams::zeros(biased, features),
+            params: LinearParams::zeros(biased, features),
         }
     }
 
@@ -50,7 +50,7 @@ where
             activator: A::default(),
             features,
             name: String::new(),
-            params: LayerParams::zeros(false, features),
+            params: LinearParams::zeros(false, features),
         }
     }
 
@@ -82,11 +82,11 @@ where
         &self.name
     }
 
-    pub fn params(&self) -> &LayerParams<T> {
+    pub fn params(&self) -> &LinearParams<T> {
         &self.params
     }
 
-    pub fn params_mut(&mut self) -> &mut LayerParams<T> {
+    pub fn params_mut(&mut self) -> &mut LinearParams<T> {
         &mut self.params
     }
 
@@ -254,7 +254,7 @@ where
             activator: A::default(),
             features,
             name: String::new(),
-            params: LayerParams::zeros(false, features),
+            params: LinearParams::zeros(false, features),
         }
     }
 }
@@ -278,7 +278,7 @@ where
     T: Float,
 {
     fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
-        let params = LayerParams::from_iter(nodes);
+        let params = LinearParams::from_iter(nodes);
         Self {
             activator: A::default(),
             features: *params.features(),
