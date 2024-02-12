@@ -13,13 +13,11 @@ pub(crate) mod utils;
 pub(crate) use concision_core as core;
 pub(crate) use concision_neural as neural;
 
-pub mod cost;
 pub mod grad;
 pub mod norm;
 pub mod params;
 
 pub mod prelude {
-    pub use crate::cost::*;
     pub use crate::grad::*;
     pub use crate::norm::*;
     pub use crate::params::*;

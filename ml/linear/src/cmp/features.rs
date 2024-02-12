@@ -31,7 +31,7 @@ impl LayerShape {
     }
 
     pub fn uniform_scale<T: num::Float>(&self) -> T {
-        (T::one() / T::from(self.inputs()).unwrap()).sqrt()
+        T::from(self.inputs()).unwrap().recip().sqrt()
     }
 }
 

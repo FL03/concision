@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::cmp::neurons::{Node, Perceptron};
-use crate::cmp::params::LayerShape;
 use crate::cmp::params::LinearParams;
+use crate::cmp::LayerShape;
 use crate::neural::prelude::{Activate, Features, Forward, Gradient};
 
 use ndarray::prelude::{Array2, Ix1, NdFloat};
@@ -178,7 +178,7 @@ where
     StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
-        self.params = self.params.init(biased);
+        self.params = self.params.uniform(biased);
         self
     }
 }

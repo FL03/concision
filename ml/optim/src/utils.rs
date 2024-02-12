@@ -4,15 +4,17 @@
 */
 use crate::prelude::FTOL;
 use ndarray::prelude::{Array, Array1, Dimension};
-use num::Float;
 
-pub fn minimize_inner<F>(
-    w: &mut Array1<f64>,
+use num::traits::Float;
+
+pub fn minimize_inner<T, F>(
+    w: &mut Array1<T>,
     fg: F,
-    epsilon: f64,
-) -> anyhow::Result<(&mut Array1<f64>, f64, Array1<f64>)>
+    epsilon: T,
+) -> anyhow::Result<(&mut Array1<T>, T, Array1<T>)>
 where
-    F: Fn(&Array1<f64>) -> (f64, Array1<f64>),
+    F: Fn(&Array1<T>) -> (T, Array1<T>),
+    T: Float + 'static,
 {
     let (mut fp, mut gp) = fg(&w); // (cost, gradient)
 
@@ -22,9 +24,9 @@ where
 
         let exp = epsilon * norm_l2(&g);
         let delta = fp - f; // actual descrease; last - current
-        if delta < exp * 0.5 {
+        if delta < exp * T::from(2).unwrap().recip() {
             return Err(anyhow::anyhow!("Not enough decrease"));
-        } else if delta < FTOL {
+        } else if delta < T::from(FTOL).unwrap() {
             return Ok((w, f, g));
         }
         fp = f;
@@ -32,14 +34,15 @@ where
     }
 }
 
-pub fn minimize<F>(
-    w: &mut Array1<f64>,
+pub fn minimize<T, F>(
+    w: &mut Array1<T>,
     fg: F,
-    epsilon: f64,
+    epsilon: T,
     max_iter: usize,
-) -> anyhow::Result<(&mut Array1<f64>, f64, Array1<f64>)>
+) -> anyhow::Result<(&mut Array1<T>, T, Array1<T>)>
 where
-    F: Fn(&Array1<f64>) -> (f64, Array1<f64>),
+    F: Fn(&Array1<T>) -> (T, Array1<T>),
+    T: Float + 'static,
 {
     let (mut fp, mut gp) = fg(&w); // (cost, gradient)
 
@@ -49,9 +52,9 @@ where
 
         let exp = epsilon * norm_l2(&g);
         let delta = fp - f; // actual descrease; last - current
-        if delta < exp * 0.5 {
+        if delta < exp * T::from(2).unwrap().recip() {
             return Err(anyhow::anyhow!("Not enough decrease"));
-        } else if delta < FTOL {
+        } else if delta < T::from(FTOL).unwrap() {
             return Ok((w, f, g));
         }
         fp = f;

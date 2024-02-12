@@ -7,22 +7,22 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub struct Dataset<D, T, W> {
-    pub data: D,
+    pub records: D,
     pub targets: T,
     pub weights: W,
 }
 
 impl<D, T, W> Dataset<D, T, W> {
-    pub fn new(data: D, targets: T, weights: W) -> Self {
+    pub fn new(records: D, targets: T, weights: W) -> Self {
         Self {
-            data,
+            records,
             targets,
             weights,
         }
     }
 
-    pub fn data(&self) -> &D {
-        &self.data
+    pub fn records(&self) -> &D {
+        &self.records
     }
 
     pub fn targets(&self) -> &T {

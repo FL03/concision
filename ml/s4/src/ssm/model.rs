@@ -61,13 +61,10 @@ impl<T> SSMLayer<T> {
 
 impl<T> SSMLayer<T>
 where
-    T: Lapack + Real + Scalar + ScalarOperand,
+    T: Default + Lapack + Real + Scalar + ScalarOperand,
     StandardNormal: Distribution<T>,
 {
-    pub fn create(config: SSMConfig) -> anyhow::Result<Self>
-    where
-        T: Default,
-    {
+    pub fn create(config: SSMConfig) -> anyhow::Result<Self> {
         // initialize the state space model parameters
         let mut ssm = SSM::from_features(config.features()).init(config.features());
         // discretize the state space model
@@ -84,12 +81,10 @@ where
         Ok(layer)
     }
     /// Initialize the layer
-    pub fn init(mut self) -> anyhow::Result<Self>
-    where
-        T: Default,
-    {
+    pub fn init(mut self) -> anyhow::Result<Self> {
         // initialize the state space model parameters
         self.ssm = self.ssm.init(self.config.features());
+        // discretize the state space model
         self.ssm.discretize(self.config.logstep())?;
         // initialize the kernal with the convolution of the state space model
         self.kernel = self.ssm.k_conv(self.config.samples());
@@ -116,13 +111,13 @@ where
 
     fn predict(&self, args: &Array1<T>) -> Result<Self::Output, PredictError> {
         let u = args.clone().insert_axis(Axis(1));
-        let mut pred = if !self.config().decode() {
+        let pred = if !self.config().decode() {
             casual_conv1d(args, &self.kernel)?
         } else {
             let ys = self.ssm.scan(&u, &self.cache)?;
             flatten(ys)
         };
-        pred = &pred + args * flatten(self.ssm.d().clone());
-        Ok(pred)
+        let out = &pred + args * flatten(self.ssm.d().clone());
+        Ok(out)
     }
 }

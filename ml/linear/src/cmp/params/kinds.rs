@@ -3,11 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
-
-pub trait ParamType: ToString {
-    fn kind(&self) -> String;
-}
+use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames,};
 
 #[derive(
     Clone,

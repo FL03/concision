@@ -18,7 +18,7 @@ use num::traits::{Float, FloatConst, Num, NumOps};
 use rustfft::FftNum;
 
 pub struct S4Layer<T = f64> {
-    cache: Array1<Complex<T>>, // make complex
+    cache: Array1<Complex<T>>,
     config: S4Config,
     kernel: Array1<T>,
     ssm: SSM<Complex<T>>,
@@ -93,7 +93,7 @@ where
     type Output = Array1<T>;
 
     fn predict(&self, args: &Array1<T>) -> Result<Self::Output, PredictError> {
-        let argsc = args.mapv(|i| Complex::new(i.re(), i.im()));
+        let argsc = args.mapv(|i| i.as_c());
         let u = argsc.clone().insert_axis(Axis(1));
         let mut pred = if !self.config().decode() {
             casual_conv1d(args, &self.kernel)?
@@ -101,13 +101,9 @@ where
             let ys = self.ssm.scan(&u, &self.cache)?;
             flatten(ys).view().split_complex().re.to_owned()
         };
-        pred = &pred
-            + args
-                * flatten(self.ssm.d().clone())
-                    .view()
-                    .split_complex()
-                    .re
-                    .to_owned();
+        let d = flatten(self.ssm.d().clone());
+
+        pred = &pred + args * d.view().split_complex().re.to_owned();
         Ok(pred)
     }
 }
