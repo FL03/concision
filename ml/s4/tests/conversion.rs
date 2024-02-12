@@ -6,7 +6,7 @@ use concision_s4 as s4;
 use s4::ops::scan_ssm;
 
 use core::prelude::{assert_atol, randc_normal};
-use s4::cmp::kernel::kernel_dplr;
+use s4::cmp::kernel::kernel;
 use s4::hippo::dplr::DPLR;
 use s4::prelude::{casual_conv1d, discretize_dplr, k_conv, DPLRParams};
 
@@ -31,7 +31,7 @@ fn test_conversion() {
     // CNN Form
     let kernel = {
         let params = DPLRParams::new(lambda.clone(), p.clone(), p.clone(), b.clone(), c.clone());
-        kernel_dplr::<f64>(&params, step, SAMPLES)
+        kernel::<f64>(&params, step, SAMPLES)
     };
     // RNN Form
     let discrete = discretize_dplr(&lambda, &p, &p, &b, &c, step, SAMPLES).unwrap();

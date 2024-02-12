@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use serde::{Deserialize, Serialize};
-use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames,};
+use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 #[derive(
     Clone,

@@ -145,6 +145,9 @@ where
     T: LinalgScalar + Signed,
 {
     pub fn update_with_gradient(&mut self, gamma: T, gradient: &Array2<T>) {
+        if let Some(bias) = self.bias_mut() {
+            bias.scaled_add(-gamma, &gradient.sum_axis(Axis(0)));
+        }
         self.weights_mut().scaled_add(-gamma, gradient);
     }
 }

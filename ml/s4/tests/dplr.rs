@@ -11,7 +11,7 @@ use ndarray_linalg::flatten;
 use num::complex::Complex;
 
 use core::prelude::{assert_ok, seeded_uniform, AsComplex, Conjugate, Power};
-use s4::cmp::kernel::kernel_dplr;
+use s4::cmp::kernel::kernel;
 use s4::hippo::dplr::DPLR;
 use s4::ops::{discretize, k_conv};
 use s4::params::DPLRParams;
@@ -60,7 +60,7 @@ fn test_gen_dplr() {
     //
     let params = DPLRParams::new(lambda, p.clone(), p.clone(), b, cc);
     //
-    let kernal = kernel_dplr::<f64>(&params, step, SAMPLES);
+    let kernal = kernel::<f64>(&params, step, SAMPLES);
 
     let a_real = ak.view().split_complex().re.to_owned();
     let err = (&a_real - &kernal).mapv(|i| i.abs());
