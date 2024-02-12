@@ -31,28 +31,11 @@ pub(crate) mod utils {
     use crate::core::prelude::BoxResult;
     use crate::neural::exp::models::Module;
     use crate::neural::func::activate::Gradient;
-    use crate::neural::prelude::Forward;
     use ndarray::linalg::Dot;
     use ndarray::prelude::{Array, Array2, Dimension, NdFloat};
     use ndarray_stats::DeviationExt;
     use num::{FromPrimitive, Signed};
     use std::ops::Sub;
-
-    pub fn gradient_descent<T, D>(
-        _gamma: T,
-        model: &mut Box<dyn Forward<Array2<T>, Output = Array<T, D>>>,
-        _objective: impl Gradient<T, D>,
-        data: &Array2<T>,
-        targets: &Array<T, D>,
-    ) -> BoxResult<f64>
-    where
-        D: Dimension,
-        T: FromPrimitive + NdFloat + Signed,
-        Array2<T>: Dot<Array<T, D>, Output = Array<T, D>>,
-    {
-        let loss = model.forward(data).mean_sq_err(targets)?;
-        Ok(loss)
-    }
 
     pub fn gradient<'a, T, D>(
         gamma: T,
