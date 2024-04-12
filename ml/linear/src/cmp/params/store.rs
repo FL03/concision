@@ -18,8 +18,8 @@ use std::ops;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LinearParams<T = f64> {
-    bias: Option<Array1<T>>,
     pub features: LayerShape,
+    bias: Option<Array1<T>>,
     weights: Array2<T>,
 }
 
@@ -52,6 +52,10 @@ impl<T> LinearParams<T> {
 
     pub fn is_biased(&self) -> bool {
         self.bias.is_some()
+    }
+
+    pub fn len(&self) -> usize {
+        self.features().inputs()
     }
 
     pub fn reshape(&mut self, features: LayerShape) -> Result<(), ShapeError>

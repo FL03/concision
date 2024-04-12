@@ -78,6 +78,10 @@ where
         &mut self.features
     }
 
+    pub fn len(&self) -> usize {
+        self.params.len()
+    }
+
     pub fn name(&self) -> &str {
         &self.name
     }
@@ -153,22 +157,26 @@ where
     T: NdFloat + Signed,
 {
     pub fn grad(&mut self, gamma: T, args: &Array2<T>, targets: &Array2<T>) -> T {
-        let ns = T::from(args.shape()[0]).unwrap();
         let pred = self.forward(args);
-
-        let scale = T::from(2).unwrap() * ns;
-
+        // compute the error
         let errors = &pred - targets;
-        let dz = errors * self.activator.gradient(&pred);
-        let dw = args.t().dot(&dz) / scale;
+        // compute the gradient w.r.t. the predicted valued
+        let dp = self.activator.gradient(&pred);
+        // compute the gradient w.r.t. the error
+        let dz = &errors * self.activator.gradient(&errors);
+        // get the weights for the current layer
+        let wt = self.params.weights().t();
+        // compute the gradient for the current layer
+        let gradient = dz.dot(&wt) * &dp;
 
-        self.params_mut().weights_mut().scaled_add(-gamma, &dw.t());
+        self.params_mut().weights_mut().scaled_add(-gamma, &gradient.t());
 
         let loss = targets
             .mean_sq_err(&pred)
             .expect("Failed to calculate loss");
         T::from(loss).unwrap()
     }
+
 }
 
 impl<T, A> Linear<T, A>
