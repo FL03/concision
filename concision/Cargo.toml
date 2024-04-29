@@ -22,6 +22,12 @@ full = [
     "default",
     "derive",
     "ml",
+    "approx",
+    "serde",
+]
+
+approx = [
+    "concision-core/approx",
 ]
 
 data = [
