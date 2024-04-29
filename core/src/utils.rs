@@ -117,10 +117,9 @@ pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
 }
 
 pub(crate) mod assertions {
-    use ndarray::prelude::{Array, Dimension};
-    use ndarray::ScalarOperand;
+    use core::fmt::Debug;
+    use ndarray::{Array, Dimension, ScalarOperand};
     use num::traits::{FromPrimitive, Signed};
-    use std::fmt::Debug;
     ///
     pub fn assert_atol<T, D>(a: &Array<T, D>, b: &Array<T, D>, tol: T)
     where
