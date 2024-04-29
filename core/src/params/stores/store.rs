@@ -5,10 +5,10 @@
 use crate::params::{ParamKind, Parameter};
 use ndarray::prelude::{Dimension, Ix2};
 use num::Float;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq,)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct ParamStore<T = f64, D = Ix2>
 where
     T: Float,

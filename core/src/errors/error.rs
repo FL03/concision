@@ -3,9 +3,9 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Errors;
-use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[serde(rename_all = "lowercase")]
 pub struct Error {
     pub kind: Errors,
@@ -118,8 +118,13 @@ impl From<ndarray::ShapeError> for Error {
     }
 }
 
+#[cfg(feature = "serde")]
 impl From<serde_json::Error> for Error {
     fn from(err: serde_json::Error) -> Self {
         Self::new(Errors::Syntax, err.to_string())
     }
+}
+
+mod std_impl {
+    
 }

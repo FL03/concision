@@ -2,15 +2,14 @@
    Appellation: modes <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use serde::{Deserialize, Serialize};
-use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames};
+use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames};
 
 #[derive(
+    AsRefStr,
     Clone,
     Copy,
     Debug,
     Default,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -21,12 +20,11 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, Vari
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     VariantArray,
     VariantNames,
 )]
 #[repr(usize)]
-#[serde(rename_all = "lowercase")]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
 #[strum(serialize_all = "lowercase")]
 pub enum FftDirection {
     #[default]
@@ -59,11 +57,11 @@ impl From<FftDirection> for usize {
 }
 
 #[derive(
+    AsRefStr,
     Clone,
     Copy,
     Debug,
     Default,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -74,12 +72,11 @@ impl From<FftDirection> for usize {
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     VariantArray,
     VariantNames,
 )]
 #[repr(usize)]
-#[serde(rename_all = "lowercase")]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
 #[strum(serialize_all = "lowercase")]
 pub enum FftMode {
     #[default]

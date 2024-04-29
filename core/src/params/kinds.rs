@@ -2,8 +2,7 @@
     Appellation: kinds <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use serde::{Deserialize, Serialize};
-use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
+use strum::{AsRefStr, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 pub trait ParamType: ToString {
     fn kind(&self) -> String;
@@ -19,10 +18,10 @@ where
 }
 
 #[derive(
+    AsRefStr,
     Clone,
     Debug,
     Default,
-    Deserialize,
     EnumCount,
     EnumIs,
     EnumIter,
@@ -32,12 +31,11 @@ where
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     VariantNames,
 )]
 #[non_exhaustive]
 #[repr(usize)]
-#[serde(rename_all = "lowercase", tag = "kind")]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", tag = "kind"))]
 #[strum(serialize_all = "lowercase")]
 pub enum ParamKind {
     #[default]

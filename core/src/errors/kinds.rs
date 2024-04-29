@@ -2,14 +2,12 @@
    Appellation: error <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
 
 #[derive(
     Clone,
     Debug,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -19,12 +17,11 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     SmartDefault,
     VariantNames,
 )]
 #[non_exhaustive]
-#[serde(rename_all = "lowercase")]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase"))]
 #[strum(serialize_all = "lowercase")]
 pub enum Errors {
     Async,
@@ -48,7 +45,6 @@ pub enum Errors {
 #[derive(
     Clone,
     Debug,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -58,12 +54,11 @@ pub enum Errors {
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     SmartDefault,
     VariantNames,
 )]
 #[non_exhaustive]
-#[serde(rename_all = "lowercase")]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
 #[strum(serialize_all = "lowercase")]
 pub enum ProcessError {
     #[default]

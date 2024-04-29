@@ -10,7 +10,6 @@ use ndarray::{IntoDimension, RemoveAxis};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParamGroup<T = f64, D = Ix2>
@@ -144,35 +143,41 @@ where
     }
 }
 
-impl<'a, T, D> Deserialize<'a> for ParamGroup<T, D>
-where
-    T: Deserialize<'a> + Float,
-    D: Deserialize<'a> + Dimension,
-    <D as Dimension>::Smaller: Deserialize<'a> + Dimension,
-{
-    fn deserialize<Der>(deserializer: Der) -> Result<Self, Der::Error>
-    where
-        Der: serde::Deserializer<'a>,
-    {
-        let (bias, features, weights) = Deserialize::deserialize(deserializer)?;
-        Ok(Self {
-            bias,
-            features,
-            weights,
-        })
-    }
-}
+#[cfg(feature = "serde")]
 
-impl<T, D> Serialize for ParamGroup<T, D>
-where
-    T: Float + Serialize,
-    D: Dimension + RemoveAxis + Serialize,
-    <D as Dimension>::Smaller: Dimension + Serialize,
-{
-    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+mod impl_serde {
+    use super::*;
+    use serde::{Deserialize, Serialize};
+    impl<'a, T, D> Deserialize<'a> for ParamGroup<T, D>
     where
-        Ser: serde::Serializer,
+        T: Deserialize<'a> + Float,
+        D: Deserialize<'a> + Dimension,
+        <D as Dimension>::Smaller: Deserialize<'a> + Dimension,
     {
-        (self.bias(), self.features(), self.weights()).serialize(serializer)
+        fn deserialize<Der>(deserializer: Der) -> Result<Self, Der::Error>
+        where
+            Der: serde::Deserializer<'a>,
+        {
+            let (bias, features, weights) = Deserialize::deserialize(deserializer)?;
+            Ok(Self {
+                bias,
+                features,
+                weights,
+            })
+        }
+    }
+
+    impl<T, D> Serialize for ParamGroup<T, D>
+    where
+        T: Float + Serialize,
+        D: Dimension + RemoveAxis + Serialize,
+        <D as Dimension>::Smaller: Dimension + Serialize,
+    {
+        fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+        where
+            Ser: serde::Serializer,
+        {
+            (self.bias(), self.features(), self.weights()).serialize(serializer)
+        }
     }
 }

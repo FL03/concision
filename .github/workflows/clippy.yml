@@ -2,15 +2,12 @@ name: Clippy
 
 on:
   pull_request:
-    branches-ignore: [ "beta*", "dev*", "next*" ]
-  push:
-    branches-ignore: [ "beta*", "dev*", "next*" ]
-    tags: [ "nightly*",  "v*.*.*" ]
+    branches: [ main ]
   release:
   repository_dispatch:
-    types: [ analysis ]
+    types: [ clippy ]
   schedule:
-    - cron: "30 21 * * *" # 9:30pm UTC
+    - cron: "30 21 * * 0" # 9:30pm UTC
   workflow_dispatch:
 
 permissions:

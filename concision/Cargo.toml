@@ -13,20 +13,15 @@ version.workspace = true
 
 [features]
 default = [
-    "core",
     "data",
     "ml",
+    "std",
 ]
 
 full = [
-    "core", 
-    "data",
+    "default",
     "derive",
     "ml",
-]
-
-core = [
-    "concision-core/default"
 ]
 
 data = [
@@ -121,7 +116,13 @@ openblas-static = [
     "concision-s4/openblas-static",
 ]
 
-serde = []
+serde = [
+    "concision-core/serde",
+]
+
+std = [
+    "concision-core/std"
+]
 
 [lib]
 bench = true
@@ -132,17 +133,17 @@ test = true
 [build-dependencies]
 
 [dependencies]
-concision-core = { features = [], optional = true, path = "../core", version = "0.1.12" }
-concision-data = { features = [], optional = true, path = "../data", version = "0.1.12" }
-concision-derive = { features = [], optional = true, path = "../derive", version = "0.1.12" }
-concision-macros = { features = [], optional = true, path = "../macros", version = "0.1.12" }
+concision-core = { path = "../core", version = "0.1.12" }
+concision-data = { optional = true, path = "../data", version = "0.1.12" }
+concision-derive = { optional = true, path = "../derive", version = "0.1.12" }
+concision-macros = { optional = true, path = "../macros", version = "0.1.12" }
 
-concision-linear = { features = [], optional = true, path = "../ml/linear", version = "0.1.12" }
-concision-neural = { features = [], optional = true, path = "../ml/neural", version = "0.1.12" }
-concision-nlp = { features = [], optional = true, path = "../ml/nlp", version = "0.1.12" }
-concision-optim = { features = [], optional = true, path = "../ml/optim", version = "0.1.12" }
-concision-s4 = { features = [], optional = true, path = "../ml/s4", version = "0.1.12" }
-concision-transformers = { features = [], optional = true, path = "../ml/transformers", version = "0.1.12" }
+concision-linear = { optional = true, path = "../ml/linear", version = "0.1.12" }
+concision-neural = { optional = true, path = "../ml/neural", version = "0.1.12" }
+concision-nlp = { optional = true, path = "../ml/nlp", version = "0.1.12" }
+concision-optim = { optional = true, path = "../ml/optim", version = "0.1.12" }
+concision-s4 = { optional = true, path = "../ml/s4", version = "0.1.12" }
+concision-transformers = { optional = true, path = "../ml/transformers", version = "0.1.12" }
 
 [dev-dependencies]
 anyhow = "1"

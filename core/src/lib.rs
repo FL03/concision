@@ -2,7 +2,8 @@
    Appellation: core <library>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Concision Core
+#![crate_name = "concision_core"]
+
 pub use self::{primitives::*, specs::*, utils::*};
 
 pub(crate) mod primitives;
@@ -10,7 +11,6 @@ pub(crate) mod primitives;
 pub(crate) mod utils;
 
 pub mod errors;
-pub mod id;
 pub mod ops;
 pub mod params;
 pub mod specs;
@@ -23,6 +23,5 @@ pub mod prelude {
     pub use crate::utils::*;
 
     pub use crate::errors::*;
-    pub use crate::id::*;
     pub use crate::time::*;
 }

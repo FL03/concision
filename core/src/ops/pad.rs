@@ -3,12 +3,11 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::prelude::array_like;
+use core::borrow::Cow;
 use ndarray::prelude::{Array, ArrayBase, Dimension};
 use ndarray::{AxisDescription, Data, Slice};
 use num::{FromPrimitive, Num, Zero};
-use serde::{Deserialize, Serialize};
-use std::borrow::Cow;
-use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
+use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, VariantNames};
 
 fn read_pad(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
     if pad.len() == 1 && pad.len() < nb_dim {
@@ -86,11 +85,11 @@ pub trait Pad<T> {
 // }
 
 #[derive(
+    AsRefStr,
     Clone,
     Copy,
     Debug,
     Default,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -100,11 +99,10 @@ pub trait Pad<T> {
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     VariantNames,
 )]
 #[repr(u8)]
-#[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "snake_case", untagged))]
 #[strum(serialize_all = "snake_case")]
 pub enum PadAction {
     Clipping,
@@ -119,7 +117,6 @@ pub enum PadAction {
     Clone,
     Copy,
     Debug,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -128,8 +125,8 @@ pub enum PadAction {
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
 )]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
 pub enum PadMode<T> {
     Constant(T),
     Edge,

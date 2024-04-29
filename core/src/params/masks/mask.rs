@@ -7,12 +7,12 @@ use ndarray::ScalarOperand;
 use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::RandomExt;
 use num::traits::{Float, NumOps};
-use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use std::ops;
 use strum::EnumIs;
 
-#[derive(Clone, Debug, Deserialize, EnumIs, PartialEq, Serialize, SmartDefault)]
+#[derive(Clone, Debug, EnumIs, PartialEq, SmartDefault)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum Mask<T = f64> {
     Masked(Array2<T>),
     #[default]
