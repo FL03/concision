@@ -25,20 +25,20 @@ full = [
 ]
 
 data = [
-    "concision-data/default"
+    "dep:concision-data"
 ]
 
 derive = [
-    "concision-derive",
+    "dep:concision-derive",
     "macros",
 ]
 
 macros = [
-    "concision-macros"
+    "dep:concision-macros"
 ]
 
 linear = [
-    "concision-linear"
+    "dep:concision-linear"
 ]
 
 ml = [
@@ -50,23 +50,23 @@ ml = [
 ]
 
 neural = [
-    "concision-neural"
+    "dep:concision-neural"
 ]
 
 nlp = [
-    "concision-nlp"
+    "dep:concision-nlp"
 ]
 
 optim = [
-    "concision-optim",
+    "dep:concision-optim",
 ]
 
 s4 = [
-    "concision-s4",
+    "dep:concision-s4",
 ]
 
 transformers = [
-    "concision-transformers"
+    "dep:concision-transformers"
 ]
 
 blas = [

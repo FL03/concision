@@ -9,15 +9,15 @@ env:
 
 on:
   pull_request:
-    branches: [ "main", "v*.*.*" ]
+    branches: [ main ]
   push:
-    branches: [ "main" ]
-    tags: [ "nightly*",  "v*.*.*" ]
+    branches: [ main ]
+    tags: [ v*.*.* ]
   release:
   repository_dispatch:
     types: [ rust ]
   schedule:
-    - cron: "30 21 * * *" # 9:30pm UTC
+    - cron: "30 21 * * 0" # Every Sunday at 9:30pm UTC
   workflow_dispatch:
 
 permissions: write-all
@@ -28,7 +28,6 @@ jobs:
     strategy:
       matrix:
         platform: [ ubuntu-latest ]
-        target: [ wasm32-unknown-unknown, wasm32-wasi ]
         toolchain: [ stable, nightly ]
     runs-on: ${{ matrix.platform }}
     steps:
@@ -40,7 +39,7 @@ jobs:
       - name: Build (release)
         run: cargo build -r -v --workspace
       - name: Cache build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           path: |
@@ -49,7 +48,7 @@ jobs:
             target/release
 
   bench:
-    name: Bench
+    name: Benchmark
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,10 +62,8 @@ jobs:
     name: Test
     strategy:
       matrix:
-        platform: [ ubuntu-latest ]
-        target: [ wasm32-unknown-unknown, wasm32-wasi ]
         toolchain: [ stable, nightly ]
-    runs-on: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: setup (langspace)
@@ -79,10 +76,8 @@ jobs:
     name: Test (blas)
     strategy:
       matrix:
-        platform: [ ubuntu-latest ]
-        target: [ wasm32-unknown-unknown, wasm32-wasi ]
         toolchain: [ stable, nightly ]
-    runs-on: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: setup (langspace)

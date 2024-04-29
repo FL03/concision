@@ -21,7 +21,7 @@ mod tests {
 
     #[test]
     fn test_timestamp() {
-        let period = std::time::Duration::from_secs(1);
+        let period = core::time::Duration::from_secs(1);
         let ts = now();
         assert!(ts > 0);
         std::thread::sleep(period);
