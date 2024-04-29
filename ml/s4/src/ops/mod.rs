@@ -17,7 +17,7 @@ mod tests {
 
     const FEATURES: usize = 8;
     const RNGKEY: u64 = 1;
-    const SAMPLES: usize = 16;
+    const SAMPLES: i32 = 16;
 
     #[test]
     fn test_discretize() {

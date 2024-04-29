@@ -1,24 +1,22 @@
 /*
-    Appellation: params <mod>
+    Appellation: store <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::cmp::neurons::Node;
-use crate::cmp::LayerShape;
-use crate::core::prelude::GenerateRandom;
-use crate::neural::prelude::{Features, Forward};
+use crate::cmp::{LinearShape, Node};
+use concision::prelude::{Forward, GenerateRandom};
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, NdFloat};
-use ndarray::{LinalgScalar, ShapeError};
+use ndarray::*;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
+use neural::prelude::Features;
 use num::{Float, Num, Signed};
 use serde::{Deserialize, Serialize};
 use std::ops;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LinearParams<T = f64> {
-    pub features: LayerShape,
+    pub features: LinearShape,
     bias: Option<Array1<T>>,
     weights: Array2<T>,
 }
@@ -42,11 +40,11 @@ impl<T> LinearParams<T> {
         self.bias.as_mut()
     }
 
-    pub fn features(&self) -> &LayerShape {
+    pub fn features(&self) -> &LinearShape {
         &self.features
     }
 
-    pub fn features_mut(&mut self) -> &mut LayerShape {
+    pub fn features_mut(&mut self) -> &mut LinearShape {
         &mut self.features
     }
 
@@ -58,7 +56,7 @@ impl<T> LinearParams<T> {
         self.features().inputs()
     }
 
-    pub fn reshape(&mut self, features: LayerShape) -> Result<(), ShapeError>
+    pub fn reshape(&mut self, features: LinearShape) -> Result<(), ShapeError>
     where
         T: Clone,
     {
@@ -92,7 +90,7 @@ where
     T: Clone + Num,
 {
     pub fn new(bias: Option<Array1<T>>, weights: Array2<T>) -> Self {
-        let features = LayerShape::new(weights.ncols(), weights.nrows());
+        let features = LinearShape::new(weights.ncols(), weights.nrows());
         Self {
             bias,
             features,
@@ -100,7 +98,7 @@ where
         }
     }
 
-    pub fn zeros(biased: bool, features: LayerShape) -> Self {
+    pub fn zeros(biased: bool, features: LinearShape) -> Self {
         let bias = if biased {
             Some(Array1::zeros(features.outputs()))
         } else {
@@ -113,7 +111,7 @@ where
         }
     }
 
-    pub fn biased(features: LayerShape) -> Self {
+    pub fn biased(features: LinearShape) -> Self {
         Self::zeros(true, features)
     }
 
@@ -240,7 +238,7 @@ where
         let nodes = nodes.into_iter().collect::<Vec<_>>();
         let mut iter = nodes.iter();
         let node = iter.next().unwrap();
-        let shape = LayerShape::new(node.features(), nodes.len());
+        let shape = LinearShape::new(node.features(), nodes.len());
         let mut params = Self::zeros(true, shape);
         params.set_node(0, node.clone());
         for (i, node) in iter.into_iter().enumerate() {

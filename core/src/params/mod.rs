@@ -14,7 +14,7 @@ pub(crate) mod param;
 pub(crate) mod variable;
 
 pub mod masks;
-pub mod stores;
+pub mod store;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
 use std::collections::HashMap;

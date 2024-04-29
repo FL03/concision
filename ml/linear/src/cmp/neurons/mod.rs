@@ -35,9 +35,10 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::neural::prelude::{softmax, Activate, Forward, Softmax};
-    use ndarray::prelude::{array, Array1, Ix2, NdFloat};
+    use super::Perceptron;
+    use concision::traits::Forward;
+    use ndarray::*;
+    use neural::prelude::{softmax, Activate, Softmax};
 
     fn _artificial<T>(
         args: &Array2<T>,

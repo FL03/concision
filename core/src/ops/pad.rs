@@ -105,7 +105,11 @@ pub trait Pad<T> {
     VariantNames,
 )]
 #[repr(u8)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "snake_case", untagged))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "snake_case", untagged)
+)]
 #[strum(serialize_all = "snake_case")]
 pub enum PadAction {
     Clipping,
@@ -116,20 +120,12 @@ pub enum PadAction {
     Wrapping,
 }
 
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Display,
-    EnumCount,
-    EnumIs,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
+#[derive(Clone, Copy, Debug, Display, EnumCount, EnumIs, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase", untagged)
 )]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
 pub enum PadMode<T> {
     Constant(T),
     Edge,

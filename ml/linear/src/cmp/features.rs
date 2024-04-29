@@ -10,12 +10,12 @@ use serde::{Deserialize, Serialize};
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
 )]
-pub struct LayerShape {
+pub struct LinearShape {
     pub inputs: usize,
     pub outputs: usize,
 }
 
-impl LayerShape {
+impl LinearShape {
     pub fn new(inputs: usize, outputs: usize) -> Self {
         Self { inputs, outputs }
     }
@@ -35,13 +35,13 @@ impl LayerShape {
     }
 }
 
-impl std::fmt::Display for LayerShape {
+impl std::fmt::Display for LinearShape {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "({}, {})", self.inputs, self.outputs)
     }
 }
 
-impl Features for LayerShape {
+impl Features for LinearShape {
     fn inputs(&self) -> usize {
         self.inputs
     }
@@ -51,7 +51,7 @@ impl Features for LayerShape {
     }
 }
 
-impl IntoDimension for LayerShape {
+impl IntoDimension for LinearShape {
     type Dim = Ix2;
 
     fn into_dimension(self) -> Self::Dim {
@@ -59,25 +59,25 @@ impl IntoDimension for LayerShape {
     }
 }
 
-impl From<LayerShape> for Ix2 {
-    fn from(features: LayerShape) -> Self {
+impl From<LinearShape> for Ix2 {
+    fn from(features: LinearShape) -> Self {
         features.into_dimension()
     }
 }
 
-impl From<LayerShape> for ndarray::IxDyn {
-    fn from(features: LayerShape) -> Self {
+impl From<LinearShape> for ndarray::IxDyn {
+    fn from(features: LinearShape) -> Self {
         ndarray::IxDyn(&[features.outputs, features.inputs])
     }
 }
 
-impl From<LayerShape> for [usize; 2] {
-    fn from(features: LayerShape) -> Self {
+impl From<LinearShape> for [usize; 2] {
+    fn from(features: LinearShape) -> Self {
         [features.outputs, features.inputs]
     }
 }
 
-impl From<[usize; 2]> for LayerShape {
+impl From<[usize; 2]> for LinearShape {
     fn from(features: [usize; 2]) -> Self {
         Self {
             inputs: features[1],
@@ -86,19 +86,19 @@ impl From<[usize; 2]> for LayerShape {
     }
 }
 
-impl From<LayerShape> for (usize, usize) {
-    fn from(features: LayerShape) -> Self {
+impl From<LinearShape> for (usize, usize) {
+    fn from(features: LinearShape) -> Self {
         (features.outputs, features.inputs)
     }
 }
 
-impl From<(usize, usize)> for LayerShape {
+impl From<(usize, usize)> for LinearShape {
     fn from((inputs, outputs): (usize, usize)) -> Self {
         Self { inputs, outputs }
     }
 }
 
-impl From<usize> for LayerShape {
+impl From<usize> for LinearShape {
     fn from(inputs: usize) -> Self {
         Self { inputs, outputs: 1 }
     }

@@ -2,19 +2,39 @@
    Appellation: concision-linear <library>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # concision-linear
+//! # Linear Models
 //!
 //! This library implements the framework for building linear models.
 //!
+extern crate concision_core as concision;
+extern crate concision_neural as neural;
 
-pub mod cmp;
+pub use self::cmp::*;
+
 pub mod conv;
 pub mod dense;
 pub mod model;
 
-pub(crate) use concision_core as core;
-pub(crate) use concision_neural as neural;
+pub(crate) mod cmp {
+    pub(crate) use self::prelude::*;
+
+    pub mod features;
+    pub mod neurons;
+    pub mod params;
+
+    pub(crate) mod prelude {
+        pub use super::features::*;
+        pub use super::neurons::*;
+        pub use super::params::*;
+    }
+}
+
+use ndarray::Array2;
+use std::collections::HashMap;
+
+pub(crate) type ModuleParams<K, V> = HashMap<K, Array2<V>>;
 
 pub mod prelude {
+    pub use crate::cmp::prelude::*;
     pub use crate::model::*;
 }

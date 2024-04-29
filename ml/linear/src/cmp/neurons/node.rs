@@ -2,8 +2,7 @@
     Appellation: node <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::prelude::GenerateRandom;
-use crate::neural::prelude::Forward;
+use concision::prelude::{Forward, GenerateRandom};
 
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, NdFloat};

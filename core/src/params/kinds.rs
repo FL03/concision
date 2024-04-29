@@ -35,7 +35,11 @@ where
 )]
 #[non_exhaustive]
 #[repr(usize)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", tag = "kind"))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase", tag = "kind")
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum ParamKind {
     #[default]

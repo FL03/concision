@@ -4,7 +4,11 @@
 */
 #![crate_name = "concision_core"]
 
-pub use self::{primitives::*, specs::*, utils::*};
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+extern crate ndarray as nd;
+
+pub use self::{primitives::*, traits::prelude::*, utils::*};
 
 pub(crate) mod primitives;
 
@@ -13,15 +17,15 @@ pub(crate) mod utils;
 pub mod errors;
 pub mod ops;
 pub mod params;
-pub mod specs;
 pub mod time;
+pub mod traits;
 
 pub mod prelude {
 
     pub use crate::primitives::*;
-    pub use crate::specs::*;
     pub use crate::utils::*;
 
     pub use crate::errors::*;
     pub use crate::time::*;
+    pub use crate::traits::prelude::*;
 }

@@ -4,7 +4,7 @@ extern crate concision_core;
 use concision_core as cnc;
 
 use cnc::prelude::{linarr, tril};
-use cnc::specs::{Conjugate, Inverse};
+use cnc::traits::{Conjugate, Inverse};
 use ndarray::prelude::{array, Array2};
 use num::Complex;
 

@@ -4,8 +4,10 @@
 */
 use crate::cmp::neurons::{Node, Perceptron};
 use crate::cmp::params::LinearParams;
-use crate::cmp::LayerShape;
-use crate::neural::prelude::{Activate, Features, Forward, Gradient};
+use crate::cmp::LinearShape;
+
+use concision::traits::Forward;
+use neural::prelude::{Activate, Features, Gradient};
 
 use ndarray::prelude::{Array2, Ix1, NdFloat};
 use ndarray::ShapeError;
@@ -22,7 +24,7 @@ where
     T: Float,
 {
     activator: A,
-    features: LayerShape,
+    features: LinearShape,
     name: String,
     params: LinearParams<T>,
 }
@@ -32,7 +34,7 @@ where
     A: Activate<T>,
     T: Float,
 {
-    pub fn new(activator: A, biased: bool, features: LayerShape, name: impl ToString) -> Self {
+    pub fn new(activator: A, biased: bool, features: LinearShape, name: impl ToString) -> Self {
         Self {
             activator,
             features,
@@ -45,7 +47,7 @@ where
     where
         A: Default,
     {
-        let features = LayerShape::new(inputs, outputs);
+        let features = LinearShape::new(inputs, outputs);
         Self {
             activator: A::default(),
             features,
@@ -70,11 +72,11 @@ where
         }
     }
 
-    pub fn features(&self) -> &LayerShape {
+    pub fn features(&self) -> &LinearShape {
         &self.features
     }
 
-    pub fn features_mut(&mut self) -> &mut LayerShape {
+    pub fn features_mut(&mut self) -> &mut LinearShape {
         &mut self.features
     }
 
@@ -106,7 +108,7 @@ where
     }
 
     pub fn reshape(&mut self, inputs: usize, outputs: usize) -> Result<(), ShapeError> {
-        self.features = LayerShape::new(inputs, outputs);
+        self.features = LinearShape::new(inputs, outputs);
         self.params.reshape(self.features)
     }
 
@@ -169,14 +171,15 @@ where
         // compute the gradient for the current layer
         let gradient = dz.dot(&wt) * &dp;
 
-        self.params_mut().weights_mut().scaled_add(-gamma, &gradient.t());
+        self.params_mut()
+            .weights_mut()
+            .scaled_add(-gamma, &gradient.t());
 
         let loss = targets
             .mean_sq_err(&pred)
             .expect("Failed to calculate loss");
         T::from(loss).unwrap()
     }
-
 }
 
 impl<T, A> Linear<T, A>
@@ -252,12 +255,12 @@ where
 //     }
 // }
 
-impl<T, A> From<LayerShape> for Linear<T, A>
+impl<T, A> From<LinearShape> for Linear<T, A>
 where
     A: Activate<T> + Default,
     T: Float,
 {
-    fn from(features: LayerShape) -> Self {
+    fn from(features: LinearShape) -> Self {
         Self {
             activator: A::default(),
             features,

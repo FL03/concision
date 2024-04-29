@@ -34,7 +34,7 @@ fn test_conversion() {
         kernel::<f64>(&params, step, SAMPLES)
     };
     // RNN Form
-    let discrete = discretize_dplr(&lambda, &p, &p, &b, &c, step, SAMPLES).unwrap();
+    let discrete = discretize_dplr(&lambda, &p, &p, &b, &c, step, SAMPLES as i32).unwrap();
     let (ab, bb, cb) = discrete.into();
 
     let k2 = k_conv(&ab, &bb, &cb, SAMPLES);

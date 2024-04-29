@@ -14,15 +14,15 @@ pub(crate) mod module;
 mod tests {
     use super::*;
     use crate::cmp::neurons::Node;
-    use crate::cmp::LayerShape;
-    use crate::core::prelude::linarr;
-    use crate::neural::prelude::{Forward, Softmax};
+    use crate::cmp::LinearShape;
+    use concision::prelude::{linarr, Forward};
     use ndarray::prelude::Ix2;
+    use neural::prelude::Softmax;
 
     #[test]
     fn test_linear() {
         let (samples, inputs, outputs) = (20, 5, 3);
-        let features = LayerShape::new(inputs, outputs);
+        let features = LinearShape::new(inputs, outputs);
 
         let args = linarr::<f64, Ix2>((samples, inputs)).unwrap();
 
@@ -42,7 +42,7 @@ mod tests {
     #[test]
     fn test_linear_iter() {
         let (_samples, inputs, outputs) = (20, 5, 3);
-        let features = LayerShape::new(inputs, outputs);
+        let features = LinearShape::new(inputs, outputs);
 
         let layer = Linear::<f64, Softmax>::from(features).init(true);
 

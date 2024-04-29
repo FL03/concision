@@ -2,19 +2,26 @@
     Appellation: store <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+
+
+pub mod group;
+
 use crate::params::{ParamKind, Parameter};
+#[cfg(not(feature = "std"))]
+use alloc::collections::{btree_map, BTreeMap};
 use ndarray::prelude::{Dimension, Ix2};
 use num::Float;
-use std::collections::HashMap;
+#[cfg(feature = "std")]
+use std::collections::{btree_map, BTreeMap};
 
-#[derive(Clone, Debug, Default, Eq, PartialEq,)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct ParamStore<T = f64, D = Ix2>
 where
     T: Float,
     D: Dimension,
 {
-    store: HashMap<ParamKind, Parameter<T, D>>,
+    store: BTreeMap<ParamKind, Parameter<T, D>>,
 }
 
 impl<T, D> ParamStore<T, D>
@@ -24,7 +31,7 @@ where
 {
     pub fn new() -> Self {
         Self {
-            store: HashMap::new(),
+            store: BTreeMap::new(),
         }
     }
 
@@ -63,7 +70,7 @@ where
     T: Float,
 {
     type Item = (ParamKind, Parameter<T, D>);
-    type IntoIter = std::collections::hash_map::IntoIter<ParamKind, Parameter<T, D>>;
+    type IntoIter = btree_map::IntoIter<ParamKind, Parameter<T, D>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.store.into_iter()
@@ -76,7 +83,7 @@ where
     T: Float,
 {
     type Item = (&'a ParamKind, &'a mut Parameter<T, D>);
-    type IntoIter = std::collections::hash_map::IterMut<'a, ParamKind, Parameter<T, D>>;
+    type IntoIter = btree_map::IterMut<'a, ParamKind, Parameter<T, D>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.store.iter_mut()

@@ -21,7 +21,9 @@ where
         ComplexFloat<Real = <T as Scalar>::Real> + NumOps<<T as Scalar>::Real> + ScalarOperand,
 {
     let f = |i: usize| -> <T as Scalar>::Complex {
-        let im = T::PI().mul_real(T::from(2).unwrap()).mul_complex(Complex::i()); // .neg()
+        let im = T::PI()
+            .mul_real(T::from(2).unwrap())
+            .mul_complex(Complex::i()); // .neg()
         T::from(i)
             .unwrap()
             .div_real(T::from(l).unwrap())

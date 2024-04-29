@@ -2,7 +2,7 @@
     Appellation: discretize <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::prelude::{Conjugate, Power};
+use crate::core::prelude::{Conjugate, Pow};
 
 use ndarray::{Array, Array1, Array2, Axis, ScalarOperand};
 use ndarray_linalg::{Inverse, Lapack, Scalar};
@@ -36,7 +36,7 @@ pub fn discretize_dplr<T>(
     b: &Array1<T>,
     c: &Array1<T>,
     step: f64,
-    l: usize,
+    l: i32,
 ) -> anyhow::Result<Discrete<T>>
 where
     T: Conjugate + Lapack + Scalar + ScalarOperand,

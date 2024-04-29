@@ -10,7 +10,7 @@ use ndarray::prelude::*;
 use ndarray_linalg::flatten;
 use num::complex::Complex;
 
-use core::prelude::{assert_ok, seeded_uniform, AsComplex, Conjugate, Power};
+use core::prelude::{assert_ok, seeded_uniform, AsComplex, Conjugate, Pow};
 use s4::cmp::kernel::kernel;
 use s4::hippo::dplr::DPLR;
 use s4::ops::{discretize, k_conv};
@@ -56,7 +56,7 @@ fn test_gen_dplr() {
     //
     let ak = k_conv(&ab, &bb, &cb.conj(), SAMPLES);
     //
-    let cc = (&eye - ab.pow(SAMPLES)).conj().t().dot(&flatten(cb));
+    let cc = (&eye - ab.pow(SAMPLES as i32)).conj().t().dot(&flatten(cb));
     //
     let params = DPLRParams::new(lambda, p.clone(), p.clone(), b, cc);
     //

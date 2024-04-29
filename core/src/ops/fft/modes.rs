@@ -2,7 +2,9 @@
    Appellation: modes <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames};
+use strum::{
+    AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames,
+};
 
 #[derive(
     AsRefStr,
@@ -24,7 +26,11 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantA
     VariantNames,
 )]
 #[repr(usize)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase", untagged)
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum FftDirection {
     #[default]
@@ -76,7 +82,11 @@ impl From<FftDirection> for usize {
     VariantNames,
 )]
 #[repr(usize)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase", untagged)
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum FftMode {
     #[default]

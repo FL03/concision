@@ -1,9 +1,11 @@
 /*
-    Appellation: neuron <mod>
+    Appellation: perceptron <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Node;
-use crate::neural::prelude::{Activate, Forward, LinearActivation};
+use concision::prelude::Forward;
+use neural::prelude::{Activate, LinearActivation};
+
 use ndarray::prelude::{Array0, Array1, Array2, Ix1, NdFloat};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
@@ -44,7 +46,7 @@ where
     }
 
     pub fn features(&self) -> usize {
-        self.node.features()
+        self.node().features()
     }
 
     pub fn params(&self) -> &Node<T> {

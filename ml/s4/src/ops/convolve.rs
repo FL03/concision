@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::core::ops::{pad, PadMode};
-use crate::core::prelude::Power;
+use crate::core::prelude::Pow;
 use crate::prelude::{irfft, irfft_2d, rfft, rfft_2d};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{s, Array, Array1, Array2};
@@ -18,11 +18,11 @@ where
     T: Num + ScalarOperand,
     Array2<T>: Dot<Array2<T>, Output = Array2<T>>,
 {
-    let f = |i: usize| c.dot(&a.pow(i).dot(b));
+    let f = |i: i32| c.dot(&a.pow(i).dot(b));
 
     let mut store = Vec::new();
     for i in 0..l {
-        store.extend(f(i));
+        store.extend(f(i as i32));
     }
     Array::from_vec(store)
 }

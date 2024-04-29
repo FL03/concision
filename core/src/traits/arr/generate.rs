@@ -2,50 +2,15 @@
    Appellation: base <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Axis, Dimension, Ix2};
-use ndarray::{IntoDimension, LinalgScalar, ScalarOperand};
+use ndarray::{Array, Dimension, IntoDimension, Ix2};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::{Rng, SeedableRng};
 use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
 use num::traits::real::Real;
-use num::traits::{Float, Num, NumAssign};
+use num::traits::Float;
 use std::ops::Neg;
-
-pub trait Affine<T = f64>: Sized {
-    fn affine(&self, mul: T, add: T) -> Self;
-}
-
-impl<T, D> Affine<T> for Array<T, D>
-where
-    T: LinalgScalar + ScalarOperand,
-    D: Dimension,
-{
-    fn affine(&self, mul: T, add: T) -> Self {
-        self.clone() * mul + add
-    }
-}
-
-pub trait ArrayLike {
-    fn ones_like(&self) -> Self;
-
-    fn zeros_like(&self) -> Self;
-}
-
-impl<T, D> ArrayLike for Array<T, D>
-where
-    T: Clone + Num,
-    D: Dimension,
-{
-    fn ones_like(&self) -> Self {
-        Array::ones(self.dim())
-    }
-
-    fn zeros_like(&self) -> Self {
-        Array::zeros(self.dim())
-    }
-}
 
 pub trait GenerateRandom<T = f64, D = Ix2>: Sized
 where
@@ -127,31 +92,5 @@ where
         R: Rng,
     {
         Self::random_using(dim.into_dimension(), distr, rng)
-    }
-}
-
-pub trait IntoAxis {
-    fn into_axis(self) -> Axis;
-}
-
-impl<S> IntoAxis for S
-where
-    S: AsRef<usize>,
-{
-    fn into_axis(self) -> Axis {
-        Axis(*self.as_ref())
-    }
-}
-
-pub trait Inverse<T = f64>: Sized {
-    fn inverse(&self) -> Option<Self>;
-}
-
-impl<T> Inverse<T> for Array<T, Ix2>
-where
-    T: Copy + NumAssign + ScalarOperand,
-{
-    fn inverse(&self) -> Option<Self> {
-        super::utils::inverse(self)
     }
 }

@@ -4,9 +4,8 @@
 */
 use crate::params::{Biased, Weighted};
 use crate::prelude::GenerateRandom;
+use ndarray::{Array, Axis, Dimension, IntoDimension, Ix2, NdFloat, RemoveAxis};
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Axis, Dimension, Ix2, NdFloat};
-use ndarray::{IntoDimension, RemoveAxis};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;

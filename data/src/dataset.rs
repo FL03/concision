@@ -7,7 +7,11 @@ pub mod group;
 
 /// A dataset is a collection of records, targets, and weights.
 #[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase"))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase")
+)]
 pub struct Dataset<D, T, W> {
     pub records: D,
     pub targets: T,
@@ -43,6 +47,10 @@ where
     W: core::fmt::Display,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{{ records: {}, targets: {}, weights: {} }}", self.records, self.targets, self.weights)
+        write!(
+            f,
+            "{{ records: {}, targets: {}, weights: {} }}",
+            self.records, self.targets, self.weights
+        )
     }
 }

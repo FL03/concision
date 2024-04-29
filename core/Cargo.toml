@@ -16,6 +16,11 @@ default = [
     "std",
 ]
 
+approx = [
+    "dep:approx",
+    "ndarray/approx-0_5",
+]
+
 blas = [
     "ndarray/blas",
 ]
@@ -23,6 +28,7 @@ blas = [
 # rand = [
 #     "dep:rand",
 #     "dep:ndarray-rand"
+#     "num/rand",
 # ]
 rand = []
 
@@ -33,12 +39,14 @@ serde = [
 
 serde-ext = [
     "dep:serde_json",
-    "ndarray/serde-1"
+    "ndarray/serde-1",
+    "num/serde"
 ]
 
-std = []
-
-
+std = [
+    "ndarray/std",
+    "num/std",
+]
 
 [lib]
 bench = false
@@ -49,11 +57,11 @@ test = true
 [build-dependencies]
 
 [dependencies]
+approx = { optional = true, version = "0.5" }
 anyhow.workspace = true
-chrono = "0.4"
 ndarray = "0.15"
 ndarray-rand = "0.14" # { optional = true, version = "0.14" }
-num.workspace = true
+num = { features = ["rand"], version = "0.4" }
 rand = "0.8" # { optional = true, version = "0.8" }
 serde = { features = ["derive"], optional = true, version = "1" }
 serde_json = { optional = true, version = "1" }
@@ -61,7 +69,8 @@ smart-default.workspace = true
 strum.workspace = true
 
 [dev-dependencies]
-lazy_static.workspace = true
+approx = "0.5"
+lazy_static = "1"
 
 [package.metadata.docs.rs]
 all-features = true

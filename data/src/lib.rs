@@ -3,8 +3,8 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Data
-//! 
-//! 
+//!
+//!
 //!
 // #![feature(associated_type_defaults)]
 extern crate concision_core as concision;

@@ -73,7 +73,7 @@ where
                 &dplr.b,
                 &c,
                 self.config().logstep(),
-                self.config.samples(),
+                self.config.samples() as i32,
             )?;
             self.ssm = SSM::new(discrete.a, discrete.b, discrete.c, d);
         } else {

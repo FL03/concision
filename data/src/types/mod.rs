@@ -7,7 +7,7 @@ pub use self::prelude::*;
 pub mod direction;
 
 pub(crate) mod prelude {
-   pub use super::direction::Direction;
+    pub use super::direction::Direction;
 }
 
 #[cfg(test)]

@@ -6,7 +6,7 @@ pub use self::{arrays::*, assertions::*};
 // #[cfg(feature = "rand")]
 pub use self::rand_arr::*;
 use ndarray::*;
-use num::traits::{Float, Num, NumCast};
+use num::traits::{Float, Num, NumAssign, NumCast};
 
 /// Utilitary function that returns a new *n*-dimensional array of dimension `shape` with the same
 /// datatype and memory order as the input `arr`.
@@ -34,6 +34,50 @@ where
 
 pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
     Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
+}
+
+pub fn inverse<T>(matrix: &Array2<T>) -> Option<Array2<T>>
+where
+    T: Copy + NumAssign + ScalarOperand,
+{
+    let (rows, cols) = matrix.dim();
+
+    if !matrix.is_square() {
+        return None; // Matrix must be square for inversion
+    }
+
+    let identity = Array2::eye(rows);
+
+    // Construct an augmented matrix by concatenating the original matrix with an identity matrix
+    let mut aug = Array2::zeros((rows, 2 * cols));
+    aug.slice_mut(s![.., ..cols]).assign(matrix);
+    aug.slice_mut(s![.., cols..]).assign(&identity);
+
+    // Perform Gaussian elimination to reduce the left half to the identity matrix
+    for i in 0..rows {
+        let pivot = aug[[i, i]];
+
+        if pivot == T::zero() {
+            return None; // Matrix is singular
+        }
+
+        aug.slice_mut(s![i, ..]).mapv_inplace(|x| x / pivot);
+
+        for j in 0..rows {
+            if i != j {
+                let am = aug.clone();
+                let factor = aug[[j, i]];
+                let rhs = am.slice(s![i, ..]);
+                aug.slice_mut(s![j, ..])
+                    .zip_mut_with(&rhs, |x, &y| *x -= y * factor);
+            }
+        }
+    }
+
+    // Extract the inverted matrix from the augmented matrix
+    let inverted = aug.slice(s![.., cols..]);
+
+    Some(inverted.to_owned())
 }
 
 pub fn linarr<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
@@ -71,8 +115,6 @@ pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
     let factor = T::from(10).expect("").powi(decimals as i32);
     (val * factor).round() / factor
 }
-
-
 
 pub(crate) mod assertions {
     use ndarray::prelude::{Array, Dimension};
@@ -203,15 +245,15 @@ pub(crate) mod arrays {
 // #[cfg(feature = "rand")]
 pub(crate) mod rand_arr {
     use ndarray::*;
-    use ndarray_rand::RandomExt;
     use ndarray_rand::rand::rngs::StdRng;
     use ndarray_rand::rand::SeedableRng;
     use ndarray_rand::rand_distr::{Distribution, StandardNormal};
+    use ndarray_rand::RandomExt;
     use num::complex::{Complex, ComplexDistribution};
-    use num::traits::Num;
     use num::traits::real::Real;
+    use num::traits::Num;
     use rand::distributions::uniform::{SampleUniform, Uniform};
-    
+
     pub fn lecun_normal<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
     where
         D: Dimension,

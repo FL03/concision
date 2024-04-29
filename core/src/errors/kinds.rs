@@ -21,7 +21,11 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
     VariantNames,
 )]
 #[non_exhaustive]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase"))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase")
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum Errors {
     Async,
@@ -58,7 +62,11 @@ pub enum Errors {
     VariantNames,
 )]
 #[non_exhaustive]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase", untagged)
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum ProcessError {
     #[default]

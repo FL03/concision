@@ -124,6 +124,4 @@ impl From<serde_json::Error> for Error {
     }
 }
 
-mod std_impl {
-    
-}
+mod std_impl {}

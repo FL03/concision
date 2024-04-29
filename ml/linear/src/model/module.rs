@@ -1,10 +1,10 @@
 /*
-    Appellation: module <mod>
+    Appellation: module <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::params::{Biased, Weighted};
-use crate::neural::exp::models::ModuleParams;
-use crate::neural::prelude::Forward;
+use crate::ModuleParams;
+use concision::params::{Biased, Weighted};
+use concision::traits::Forward;
 use ndarray::prelude::{Array2, NdFloat};
 use num::Float;
 

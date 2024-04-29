@@ -1,7 +1,11 @@
+/*
+    Appellation: gradients <example>
+    Contrib: FL03 <jo3mccain@icloud.com>
+*/
 use concision::neural::models::{Model, ModelConfig, ModelParams};
-use concision::neural::prelude::{Layer, Sigmoid};
+use concision::neural::prelude::{Features, Forward, Layer, LayerShape, Sigmoid};
 // use concision::optim::grad::*;
-use concision::prelude::{linarr, Features, Forward, LayerShape};
+use concision::prelude::linarr;
 
 use ndarray::prelude::{Array1, Ix2};
 
