@@ -14,7 +14,7 @@ pub(crate) mod module;
 mod tests {
     use super::*;
     use crate::cmp::neurons::Node;
-    use crate::cmp::params::LayerShape;
+    use crate::cmp::LayerShape;
     use crate::core::prelude::linarr;
     use crate::neural::prelude::{Forward, Softmax};
     use ndarray::prelude::Ix2;

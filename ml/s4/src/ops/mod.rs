@@ -19,7 +19,6 @@ mod tests {
     const RNGKEY: u64 = 1;
     const SAMPLES: usize = 16;
 
-
     #[test]
     fn test_discretize() {
         let step = (SAMPLES as f64).recip();

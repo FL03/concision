@@ -19,13 +19,21 @@ pub trait StateSpace {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::prelude::assert_ok;
+    use crate::neural::prelude::Predict;
+
+    use ndarray::prelude::*;
+    // use num::complex::Complex;
+
+    const FEATURES: usize = 4;
+    const SAMPLES: usize = 100;
+    const _STEP: f64 = 1e-4;
 
     #[test]
     fn test_ssm() {
-        let step = 0.001;
-
-        let config = SSMConfig::new(true, 9, 2);
-        // let model = SSM::<f64>::create(config).setup();
-        // assert!(model.discretize(step).is_ok());
+        let u = Array::range(0.0, 1.0, 1.0 / SAMPLES as f64);
+        let config = SSMConfig::new(true, FEATURES, SAMPLES);
+        let model = SSMLayer::<f64>::new(config).init().unwrap();
+        let _pred = assert_ok(model.predict(&u));
     }
 }

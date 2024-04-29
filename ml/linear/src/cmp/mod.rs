@@ -5,7 +5,9 @@
 //! # Components
 //!
 //!
+pub use self::features::*;
 
+pub(crate) mod features;
 pub mod neurons;
 pub mod params;
 

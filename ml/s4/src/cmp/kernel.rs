@@ -13,7 +13,7 @@ use num::complex::{Complex, ComplexFloat};
 use num::traits::{Float, FloatConst, NumOps};
 use rustfft::FftNum;
 
-pub fn omega_l<T>(l: usize) -> Array1<<T as Scalar>::Complex>
+pub(crate) fn omega_l<T>(l: usize) -> Array1<<T as Scalar>::Complex>
 where
     T: Scalar<Real = T, Complex = Complex<T>>,
     <T as Scalar>::Real: FloatConst + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex>,
@@ -21,7 +21,7 @@ where
         ComplexFloat<Real = <T as Scalar>::Real> + NumOps<<T as Scalar>::Real> + ScalarOperand,
 {
     let f = |i: usize| -> <T as Scalar>::Complex {
-        let im = T::PI().mul_complex(Complex::i() * T::from(2).unwrap()); // .neg()
+        let im = T::PI().mul_real(T::from(2).unwrap()).mul_complex(Complex::i()); // .neg()
         T::from(i)
             .unwrap()
             .div_real(T::from(l).unwrap())
@@ -31,55 +31,14 @@ where
     Array::from_iter((0..l).map(f))
 }
 
-pub struct Omega<T>
+pub fn kernel<T>(dplr: &DPLRParams<Complex<T>>, step: f64, l: usize) -> Array1<T>
 where
-    T: Scalar,
-{
-    omega: Array1<<T as Scalar>::Complex>,
-}
-
-impl<T> Omega<T>
-where
-    T: Scalar<Real = T, Complex = Complex<T>>,
+    T: Conjugate + FftNum + Float + Scalar<Real = T, Complex = Complex<T>> + ScalarOperand,
     <T as Scalar>::Real: FloatConst + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex>,
-    <T as Scalar>::Complex:
-        ComplexFloat<Real = <T as Scalar>::Real> + NumOps<<T as Scalar>::Real> + ScalarOperand,
-{
-    pub fn new(l: usize) -> Self {
-        let f = |i: usize| -> <T as Scalar>::Complex {
-            let im = T::PI().mul_complex(Complex::i() * T::from(2).unwrap()); // .neg()
-            T::from(i)
-                .unwrap()
-                .div_real(T::from(l).unwrap())
-                .mul_complex(im)
-                .exp()
-        };
-        let omega = Array::from_iter((0..l).map(f));
-        Self { omega }
-    }
-}
-
-impl<T> Omega<T>
-where
-    T: Scalar,
-{
-    pub fn omega(&self) -> &Array1<<T as Scalar>::Complex> {
-        &self.omega
-    }
-}
-
-pub fn kernel_dplr<T>(
-    dplr: &DPLRParams<<T as Scalar>::Complex>,
-    step: <T as Scalar>::Real,
-    l: usize,
-) -> Array1<<T as Scalar>::Real>
-where
-    T: Conjugate + FftNum + Float + Scalar<Real = T, Complex = Complex<T>>,
-    <T as Scalar>::Real:
-        FloatConst + NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex> + ScalarOperand,
-    <T as Scalar>::Complex: Conjugate + ScalarOperand,
+    <T as Scalar>::Complex: ScalarOperand,
 {
     // initialize some constants
+    let step = T::from(step).unwrap();
     let two = T::from(2).unwrap();
     // get the lambda matrix
     let lambda = dplr.lambda.clone();
@@ -87,7 +46,6 @@ where
     let aterm = (dplr.c.conj(), dplr.q.conj());
     // collect the relevant terms for B
     let bterm = (dplr.b.clone(), dplr.p.clone());
-
     // generate omega
     let omega_l = omega_l::<T>(l);
 
@@ -100,22 +58,28 @@ where
     let k11 = cauchy(&(&aterm.1 * &bterm.1), &g, &lambda);
     // compute the roots of unity
     let at_roots = &c * (&k00 - k01 * &k11.mapv(|i| (i + T::one()).recip()) * &k10);
+    // compute the ifft
     let plan = FftPlan::new(l);
-    let res = ifft(at_roots.into_raw_vec().as_slice(), &plan);
-    Array::from_vec(res).mapv(|i| i.re())
+    let out = ifft(at_roots.into_raw_vec().as_slice(), &plan);
+    // compose the kernel
+    let kernel = {
+        let tmp = Array::from_vec(out);
+        tmp.view().split_complex().re.to_owned()
+    };
+    kernel
 }
 
 pub struct Kernel<T = f64> {
-    kernal: Array1<T>,
+    kernel: Array1<T>,
 }
 
 impl<T> Kernel<T> {
-    pub fn new(kernal: Array1<T>) -> Self {
-        Self { kernal }
+    pub fn new(kernel: Array1<T>) -> Self {
+        Self { kernel }
     }
 
     pub fn kernal(&self) -> &Array1<T> {
-        &self.kernal
+        &self.kernel
     }
 }
 
@@ -130,12 +94,8 @@ where
         + ScalarOperand,
     <T as Scalar>::Complex: Conjugate + ScalarOperand,
 {
-    pub fn dplr(
-        dplr: &DPLRParams<<T as Scalar>::Complex>,
-        step: <T as Scalar>::Real,
-        l: usize,
-    ) -> Self {
-        let kernal = kernel_dplr::<T>(dplr, step, l);
-        Self::new(kernal)
+    pub fn dplr(dplr: &DPLRParams<<T as Scalar>::Complex>, step: f64, l: usize) -> Self {
+        let kernel = kernel::<T>(dplr, step, l);
+        Self::new(kernel)
     }
 }

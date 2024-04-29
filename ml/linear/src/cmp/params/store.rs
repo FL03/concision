@@ -2,8 +2,8 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::LayerShape;
 use crate::cmp::neurons::Node;
+use crate::cmp::LayerShape;
 use crate::core::prelude::GenerateRandom;
 use crate::neural::prelude::{Features, Forward};
 use ndarray::linalg::Dot;
@@ -11,18 +11,29 @@ use ndarray::prelude::{Array, Array1, Array2, Axis, Dimension, NdFloat};
 use ndarray::{LinalgScalar, ShapeError};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
+use ndarray_rand::RandomExt;
 use num::{Float, Num, Signed};
 use serde::{Deserialize, Serialize};
 use std::ops;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LinearParams<T = f64> {
-    bias: Option<Array1<T>>,
     pub features: LayerShape,
+    bias: Option<Array1<T>>,
     weights: Array2<T>,
 }
 
 impl<T> LinearParams<T> {
+    pub fn with_bias(mut self, bias: Option<Array1<T>>) -> Self {
+        self.bias = bias;
+        self
+    }
+
+    pub fn with_weights(mut self, weights: Array2<T>) -> Self {
+        self.weights = weights;
+        self
+    }
+
     pub fn bias(&self) -> Option<&Array1<T>> {
         self.bias.as_ref()
     }
@@ -41,6 +52,10 @@ impl<T> LinearParams<T> {
 
     pub fn is_biased(&self) -> bool {
         self.bias.is_some()
+    }
+
+    pub fn len(&self) -> usize {
+        self.features().inputs()
     }
 
     pub fn reshape(&mut self, features: LayerShape) -> Result<(), ShapeError>
@@ -69,16 +84,6 @@ impl<T> LinearParams<T> {
 
     pub fn weights_mut(&mut self) -> &mut Array2<T> {
         &mut self.weights
-    }
-
-    pub fn with_bias(mut self, bias: Option<Array1<T>>) -> Self {
-        self.bias = bias;
-        self
-    }
-
-    pub fn with_weights(mut self, weights: Array2<T>) -> Self {
-        self.weights = weights;
-        self
     }
 }
 
@@ -144,6 +149,9 @@ where
     T: LinalgScalar + Signed,
 {
     pub fn update_with_gradient(&mut self, gamma: T, gradient: &Array2<T>) {
+        if let Some(bias) = self.bias_mut() {
+            bias.scaled_add(-gamma, &gradient.sum_axis(Axis(0)));
+        }
         self.weights_mut().scaled_add(-gamma, gradient);
     }
 }
@@ -153,21 +161,20 @@ where
     T: Float + SampleUniform,
     StandardNormal: Distribution<T>,
 {
-    pub fn init(mut self, biased: bool) -> Self {
+    pub fn stdnorm(mut self, biased: bool) -> Self {
         if biased {
-            self = self.init_bias();
+            let tmp = Array1::random(self.features().outputs(), StandardNormal);
+            self.bias = Some(tmp);
         }
-        self.init_weight()
-    }
-
-    pub fn init_bias(mut self) -> Self {
-        let dk = (T::one() / T::from(self.features().inputs()).unwrap()).sqrt();
-        self.bias = Some(Array1::uniform_between(dk, self.features().outputs()));
+        self.weights = Array2::random(self.features().out_by_in(), StandardNormal);
         self
     }
 
-    pub fn init_weight(mut self) -> Self {
-        let dk = (T::one() / T::from(self.features().inputs()).unwrap()).sqrt();
+    pub fn uniform(mut self, biased: bool) -> Self {
+        let dk = T::from(self.features().inputs()).unwrap().recip().sqrt();
+        if biased {
+            self.bias = Some(Array1::uniform_between(dk, self.features().outputs()));
+        }
         self.weights = Array2::uniform_between(dk, self.features().out_by_in());
         self
     }
@@ -192,11 +199,11 @@ where
     type Output = Array<T, D>;
 
     fn forward(&self, input: &Array<T, D>) -> Self::Output {
-        let w = self.weights().t().to_owned();
+        let wt = self.weights().t().to_owned();
         if let Some(bias) = self.bias() {
-            return input.dot(&w) + bias.clone();
+            return input.dot(&wt) + bias.clone();
         }
-        input.dot(&w)
+        input.dot(&wt)
     }
 }
 

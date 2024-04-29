@@ -13,29 +13,12 @@
 //! ## Loss
 //!
 //! The loss functions are implemented as structs that implement the `Fn` trait.
-pub use self::{block::*, rms::*, utils::*};
+pub use self::{rms::*, utils::*};
 
 pub mod activate;
 pub mod loss;
-pub mod prop;
 
-pub(crate) mod block;
 pub(crate) mod rms;
-
-use ndarray::prelude::{Array, Dimension, Ix2};
-
-pub trait Lin<T> {
-    type Output;
-
-    fn linear(&self, args: &T) -> Self::Output;
-}
-
-pub trait Objective<T = f64, D = Ix2>
-where
-    D: Dimension,
-{
-    fn objective(&self, args: &Array<T, D>) -> Array<T, D>;
-}
 
 pub(crate) mod utils {
     use ndarray::linalg::Dot;

@@ -2,11 +2,10 @@
    Appellation: math <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{numerical::*, ops::*, scalar::*};
+pub use self::{numerical::*, ops::*};
 
 pub(crate) mod numerical;
 pub(crate) mod ops;
-pub(crate) mod scalar;
 
 use num::complex::Complex;
 use num::traits::{Float, Num};

@@ -6,6 +6,7 @@ use super::{LayerParams, LayerShape};
 use crate::func::activate::{Activate, Gradient, LinearActivation};
 use crate::prelude::{Features, Forward, Node, Perceptron};
 use ndarray::prelude::{Array2, Ix1, NdFloat};
+use ndarray::LinalgScalar;
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_stats::DeviationExt;
@@ -16,7 +17,6 @@ use serde::{Deserialize, Serialize};
 pub struct Layer<T = f64, A = LinearActivation>
 where
     A: Activate<T>,
-    T: Float,
 {
     activator: A,
     features: LayerShape,
@@ -26,9 +26,18 @@ where
 
 impl<T, A> Layer<T, A>
 where
-    A: Default + Activate<T>,
-    T: Float,
+    A: Activate<T> + Default,
+    T: Default,
 {
+    pub fn new(activator: A, features: LayerShape, name: impl ToString) -> Self {
+        Self {
+            activator,
+            features,
+            name: name.to_string(),
+            params: LayerParams::new(features),
+        }
+    }
+
     pub fn from_features(inputs: usize, outputs: usize) -> Self {
         let features = LayerShape::new(inputs, outputs);
         Self {
@@ -43,17 +52,7 @@ where
 impl<T, A> Layer<T, A>
 where
     A: Activate<T>,
-    T: Float,
 {
-    pub fn new(activator: A, features: LayerShape, name: impl ToString) -> Self {
-        Self {
-            activator,
-            features,
-            name: name.to_string(),
-            params: LayerParams::new(features),
-        }
-    }
-
     pub fn activator(&self) -> &A {
         &self.activator
     }
@@ -85,6 +84,7 @@ where
     pub fn set_node(&mut self, idx: usize, neuron: &Perceptron<T, A>)
     where
         A: Activate<T, Ix1>,
+        T: Clone + Default,
     {
         self.params.set_node(idx, neuron.node().clone());
     }
@@ -105,7 +105,7 @@ where
 impl<T, A> Layer<T, A>
 where
     A: Activate<T> + Clone + 'static,
-    T: Float,
+    T: Clone,
 {
     pub fn as_dyn(&self) -> Layer<T, Box<dyn Activate<T>>> {
         Layer {
@@ -120,7 +120,7 @@ where
 impl<T, A> Layer<T, A>
 where
     A: Activate<T>,
-    T: Float + 'static,
+    T: LinalgScalar + Signed,
 {
     pub fn apply_gradient<F>(&mut self, gamma: T, gradient: F)
     where
@@ -245,7 +245,7 @@ where
 impl<T, A> From<LayerShape> for Layer<T, A>
 where
     A: Activate<T> + Default,
-    T: Float,
+    T: Default,
 {
     fn from(features: LayerShape) -> Self {
         Self {
@@ -273,7 +273,7 @@ where
 impl<T, A> FromIterator<Node<T>> for Layer<T, A>
 where
     A: Activate<T> + Default,
-    T: Float,
+    T: Clone + Default,
 {
     fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
         let params = LayerParams::from_iter(nodes);

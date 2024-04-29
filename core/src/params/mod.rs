@@ -6,18 +6,17 @@
 //!
 //! ## Overview
 //!
-pub use self::{iter::*, kinds::*, param::*, store::*, variable::*};
+pub use self::{iter::*, kinds::*, param::*, variable::*};
 
 pub(crate) mod iter;
 pub(crate) mod kinds;
 pub(crate) mod param;
-pub(crate) mod store;
 pub(crate) mod variable;
 
-pub mod group;
+pub mod masks;
+pub mod stores;
 
 use ndarray::prelude::{Array, Dimension, Ix2};
-use num::Float;
 use std::collections::HashMap;
 
 pub trait Param {
@@ -28,10 +27,7 @@ pub trait Param {
     fn name(&self) -> &str;
 }
 
-pub trait Biased<T = f64>
-where
-    T: Float,
-{
+pub trait Biased<T = f64> {
     type Dim: Dimension;
     /// Returns an owned reference to the bias of the layer.
     fn bias(&self) -> &Array<T, Self::Dim>;
@@ -41,10 +37,7 @@ where
     fn set_bias(&mut self, bias: Array<T, Self::Dim>);
 }
 
-pub trait Weighted<T = f64>
-where
-    T: Float,
-{
+pub trait Weighted<T = f64> {
     type Dim: Dimension;
     /// Returns an owned reference to the weights of the layer.
     fn weights(&self) -> &Array<T, Self::Dim>;
@@ -57,7 +50,6 @@ where
 pub trait Params<K = String, T = f64, D = Ix2>
 where
     D: Dimension,
-    T: Float,
     Self: IntoIterator<Item = (K, Array<T, D>)>,
 {
     fn get(&self, param: &K) -> Option<&Array<T, D>>;
@@ -69,7 +61,6 @@ impl<K, T, D> Params<K, T, D> for HashMap<K, Array<T, D>>
 where
     D: Dimension,
     K: std::cmp::Eq + std::hash::Hash,
-    T: Float,
 {
     fn get(&self, param: &K) -> Option<&Array<T, D>> {
         self.get(param)

@@ -4,10 +4,10 @@
 */
 // use super::dplr::DPLR;
 use super::nplr::NPLR;
-use crate::core::prelude::{genspace, SquareRoot};
+use crate::core::prelude::genspace;
 use ndarray::prelude::Array2;
 use ndarray::ScalarOperand;
-use num::traits::{Num, NumCast, Signed};
+use ndarray_linalg::Scalar;
 use serde::{Deserialize, Serialize};
 
 pub enum HiPPOs<T = f64> {
@@ -18,7 +18,7 @@ pub enum HiPPOs<T = f64> {
 
 impl<T> HiPPOs<T>
 where
-    T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
+    T: Scalar + ScalarOperand,
 {
     pub fn new(features: usize) -> Self {
         Self::HiPPO(HiPPO::new(features))
@@ -53,7 +53,7 @@ impl<T> HiPPO<T> {
 
 impl<T> HiPPO<T>
 where
-    T: Num + NumCast + ScalarOperand + Signed + SquareRoot,
+    T: Scalar + ScalarOperand,
 {
     pub fn new(features: usize) -> Self {
         Self {

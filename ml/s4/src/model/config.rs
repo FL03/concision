@@ -2,6 +2,7 @@
     Appellation: config <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::prelude::logstep;
 use num::{Complex, Float};
 use serde::{Deserialize, Serialize};
 
@@ -32,6 +33,10 @@ impl S4Config {
 
     pub fn features(&self) -> usize {
         self.features
+    }
+
+    pub fn logstep(&self) -> f64 {
+        logstep::<f64>(1e-3, 1e-1).exp()
     }
 
     pub fn samples(&self) -> usize {

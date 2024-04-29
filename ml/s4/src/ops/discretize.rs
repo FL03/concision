@@ -6,21 +6,19 @@ use crate::core::prelude::{Conjugate, Power};
 
 use ndarray::{Array, Array1, Array2, Axis, ScalarOperand};
 use ndarray_linalg::{Inverse, Lapack, Scalar};
-use num::complex::ComplexFloat;
-use num::traits::{Float, NumOps};
 
-pub fn discretize<S, T>(
+pub fn discretize<T>(
     a: &Array2<T>,
     b: &Array2<T>,
     c: &Array2<T>,
-    step: S,
+    step: f64,
 ) -> anyhow::Result<Discrete<T>>
 where
-    S: Scalar<Real = S, Complex = T> + ScalarOperand + NumOps<T, T>,
-    T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
+    T: Lapack + Scalar + ScalarOperand,
 {
+    let step = T::from(step).unwrap();
     let (n, ..) = a.dim();
-    let hs = step / S::from(2).unwrap(); // half step
+    let hs = step / T::from(2).unwrap(); // half step
     let eye = Array2::<T>::eye(n);
 
     let bl = (&eye - a * hs).inv()?;
@@ -31,24 +29,23 @@ where
     Ok((ab, bb, c.clone()).into())
 }
 
-pub fn discretize_dplr<S, T>(
-    lambda: &Array1<S>,
-    p: &Array1<S>,
-    q: &Array1<S>,
-    b: &Array1<S>,
-    c: &Array1<S>,
-    step: T,
+pub fn discretize_dplr<T>(
+    lambda: &Array1<T>,
+    p: &Array1<T>,
+    q: &Array1<T>,
+    b: &Array1<T>,
+    c: &Array1<T>,
+    step: f64,
     l: usize,
-) -> anyhow::Result<Discrete<S>>
+) -> anyhow::Result<Discrete<T>>
 where
-    T: Float + Conjugate + Lapack + NumOps<S, S> + Scalar<Real = T, Complex = S> + ScalarOperand,
-    S: ComplexFloat<Real = T> + Conjugate + Lapack + NumOps<T>,
+    T: Conjugate + Lapack + Scalar + ScalarOperand,
 {
     let n = lambda.dim();
     // create an identity matrix; (n, n)
-    let eye = Array2::<S>::eye(n);
+    let eye = Array2::<T>::eye(n);
     // compute the step size
-    let hs = T::from(2).unwrap() / step;
+    let hs = T::from(2.0 / step).unwrap();
     // turn the parameters into two-dimensional matricies
     let b2 = b.clone().insert_axis(Axis(1));
 
@@ -58,7 +55,7 @@ where
     // compute the conjugate transpose of q
     let qct = q.clone().conj().t().to_owned().insert_axis(Axis(0));
     // create a diagonal matrix D from the scaled eigenvalues: Dim(n, n) :: 1 / (step_size - value)
-    let d = Array::from_diag(&lambda.mapv(|i| (hs - i).recip()));
+    let d = Array::from_diag(&lambda.mapv(|i| T::one() / (hs - i)));
 
     // create a diagonal matrix from the eigenvalues
     let a = Array::from_diag(&lambda) - &p2.dot(&q.clone().insert_axis(Axis(1)).conj().t());
@@ -66,7 +63,7 @@ where
     let a0 = &eye * hs + &a;
     // compute A1
     let a1 = {
-        let tmp = qct.dot(&d.dot(&p2)).mapv(|i| (T::one() + i).recip());
+        let tmp = qct.dot(&d.dot(&p2)).mapv(|i| T::one() / (T::one() + i));
         &d - (&d.dot(&p2) * tmp * &qct.dot(&d))
     };
     // compute a-bar
@@ -79,13 +76,10 @@ where
     Ok((ab, bb, cb.conj()).into())
 }
 
-pub trait Discretize<T = f64>
-where
-    T: Float,
-{
+pub trait Discretize<T = f64> {
     type Output;
 
-    fn discretize(&self, step: T) -> Self::Output;
+    fn discretize<S>(&self, step: S) -> Self::Output;
 }
 
 #[derive(Clone, Debug)]
@@ -111,15 +105,29 @@ impl<T> Discrete<T> {
     }
 }
 
-impl<T> Discrete<T> {
-    pub fn discretize<S>(&self, step: S) -> anyhow::Result<Self>
-    where
-        S: Scalar<Real = S, Complex = T> + ScalarOperand + NumOps<T, T>,
-        T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
-    {
-        discretize(&self.a, &self.b, &self.c, step)
+impl<T> Discrete<T>
+where
+    T: Lapack + Scalar + ScalarOperand,
+{
+    pub fn discretize(
+        a: &Array2<T>,
+        b: &Array2<T>,
+        c: &Array2<T>,
+        step: f64,
+    ) -> anyhow::Result<Self> {
+        discretize(a, b, c, step)
     }
 }
+
+// impl<T> Discrete<T> {
+//     pub fn discretize<S>(&self, step: S) -> anyhow::Result<Self>
+//     where
+//         S: Scalar<Real = S, Complex = T> + ScalarOperand,
+//         T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
+//     {
+//         discretize(&self.a, &self.b, &self.c, step)
+//     }
+// }
 
 impl<T> From<(Array2<T>, Array2<T>, Array2<T>)> for Discrete<T> {
     fn from((a, b, c): (Array2<T>, Array2<T>, Array2<T>)) -> Self {
@@ -134,6 +142,11 @@ impl<T> From<Discrete<T>> for (Array2<T>, Array2<T>, Array2<T>) {
 }
 
 pub enum DiscretizeArgs<T> {
+    Standard {
+        a: Array2<T>,
+        b: Array2<T>,
+        c: Array2<T>,
+    },
     DPLR {
         lambda: Array1<T>,
         p: Array1<T>,

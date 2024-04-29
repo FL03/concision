@@ -6,12 +6,12 @@ use crate::core::prelude::GenerateRandom;
 
 use crate::prelude::Forward;
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, NdFloat};
-use ndarray::{RemoveAxis, ScalarOperand};
+use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension};
+use ndarray::{LinalgScalar, RemoveAxis, ScalarOperand};
 use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::{Float, Num};
-use std::ops;
+use std::ops::{self, Neg};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Node<T = f64> {
@@ -22,18 +22,18 @@ pub struct Node<T = f64> {
 
 impl<T> Node<T>
 where
-    T: Clone + Num,
+    T: Default,
 {
     pub fn create(biased: bool, features: usize) -> Self {
         let bias = if biased {
-            Some(Array0::zeros(()))
+            Some(Array0::default(()))
         } else {
             None
         };
         Self {
             bias,
             features,
-            weights: Array1::zeros(features),
+            weights: Array1::default(features),
         }
     }
 
@@ -45,10 +45,7 @@ where
         Self::create(false, features)
     }
 }
-impl<T> Node<T>
-where
-    T: Num,
-{
+impl<T> Node<T> {
     pub fn bias(&self) -> Option<&Array0<T>> {
         self.bias.as_ref()
     }
@@ -143,7 +140,7 @@ where
 
 impl<T> Node<T>
 where
-    T: NdFloat,
+    T: LinalgScalar + Neg<Output = T>,
 {
     pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
     where
@@ -164,7 +161,7 @@ where
 impl<T, D> Forward<Array<T, D>> for Node<T>
 where
     D: Dimension + RemoveAxis,
-    T: NdFloat,
+    T: Clone,
     Array<T, D>: Dot<Array1<T>, Output = Array<T, D::Smaller>>,
     Array<T, D::Smaller>: ops::Add<Array0<T>, Output = Array<T, D::Smaller>>,
 {
@@ -196,10 +193,7 @@ where
     }
 }
 
-impl<T> From<(Array1<T>, Array0<T>)> for Node<T>
-where
-    T: Float,
-{
+impl<T> From<(Array1<T>, Array0<T>)> for Node<T> {
     fn from((weights, bias): (Array1<T>, Array0<T>)) -> Self {
         Self {
             bias: Some(bias),
@@ -211,7 +205,7 @@ where
 
 impl<T> From<(Array1<T>, T)> for Node<T>
 where
-    T: NdFloat,
+    T: Num + ScalarOperand,
 {
     fn from((weights, bias): (Array1<T>, T)) -> Self {
         Self {
@@ -224,7 +218,7 @@ where
 
 impl<T> From<(Array1<T>, Option<T>)> for Node<T>
 where
-    T: Float + ScalarOperand,
+    T: Num + ScalarOperand,
 {
     fn from((weights, bias): (Array1<T>, Option<T>)) -> Self {
         let bias = if let Some(b) = bias {
@@ -240,10 +234,7 @@ where
     }
 }
 
-impl<T> From<(Array1<T>, Option<Array0<T>>)> for Node<T>
-where
-    T: Float,
-{
+impl<T> From<(Array1<T>, Option<Array0<T>>)> for Node<T> {
     fn from((weights, bias): (Array1<T>, Option<Array0<T>>)) -> Self {
         Self {
             bias,
@@ -253,10 +244,7 @@ where
     }
 }
 
-impl<T> From<Node<T>> for (Array1<T>, Option<Array0<T>>)
-where
-    T: Float,
-{
+impl<T> From<Node<T>> for (Array1<T>, Option<Array0<T>>) {
     fn from(node: Node<T>) -> Self {
         (node.weights, node.bias)
     }

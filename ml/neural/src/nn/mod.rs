@@ -8,9 +8,6 @@ pub use self::{kinds::*, position::*};
 pub(crate) mod kinds;
 pub(crate) mod position;
 
-pub mod cnn;
-pub mod ffn;
 pub mod gnn;
-pub mod rnn;
 
 pub trait NeuralNetwork {}

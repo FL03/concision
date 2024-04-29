@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::core::params::{Biased, Weighted};
-use crate::neural::models::exp::ModuleParams;
+use crate::neural::exp::models::ModuleParams;
 use crate::neural::prelude::Forward;
 use ndarray::prelude::{Array2, NdFloat};
 use num::Float;

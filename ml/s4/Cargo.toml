@@ -67,12 +67,14 @@ concision-data = { features = ["blas"], path = "../../data", version = "0.1.12" 
 concision-neural = { features = ["blas"], path = "../neural" }
 
 anyhow.workspace = true
+itertools.workspace = true
 lazy_static.workspace = true
 ndarray = { features = ["approx", "blas", "serde-1"], version = "0.15" }
 ndarray-conv = "0.2"
 ndarray-linalg = { features = [], version = "0.16" }
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
+ndrustfft = { features = [], version = "0.4" }
 num.workspace = true
 rand = "0.8"
 realfft = "3"

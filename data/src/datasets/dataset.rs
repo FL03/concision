@@ -2,43 +2,43 @@
    Appellation: dataset <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Array2, Ix2};
-use ndarray::Dimension;
-use num::Float;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
-pub struct DataSet<T = f64, D = Ix2>
-where
-    D: Dimension,
-{
-    data: Array2<T>,
-    targets: Array<T, D>,
+pub struct Dataset<D, T, W> {
+    pub records: D,
+    pub targets: T,
+    pub weights: W,
 }
 
-impl<T, D> DataSet<T, D>
-where
-    D: Dimension,
-    T: Float,
-{
-    pub fn new(data: Array2<T>, targets: Array<T, D>) -> Self {
-        Self { data, targets }
+impl<D, T, W> Dataset<D, T, W> {
+    pub fn new(records: D, targets: T, weights: W) -> Self {
+        Self {
+            records,
+            targets,
+            weights,
+        }
     }
 
-    pub fn data(&self) -> &Array2<T> {
-        &self.data
+    pub fn records(&self) -> &D {
+        &self.records
     }
 
-    pub fn targets(&self) -> &Array<T, D> {
+    pub fn targets(&self) -> &T {
         &self.targets
     }
+
+    pub fn weights(&self) -> &W {
+        &self.weights
+    }
 }
 
-impl<T, D> std::fmt::Display for DataSet<T, D>
+impl<D, T, W> std::fmt::Display for Dataset<D, T, W>
 where
-    D: Dimension + Serialize,
+    D: Serialize,
     T: Serialize,
+    W: Serialize,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{}", serde_json::to_string(self).unwrap())

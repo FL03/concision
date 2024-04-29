@@ -67,7 +67,6 @@ optim = [
 ]
 
 s4 = [
-    "blas",
     "concision-s4",
 ]
 
@@ -87,27 +86,38 @@ blas = [
 ]
 
 intel-mkl-system = [
+    "blas",
+    "concision-neural/intel-mkl-system",
     "concision-s4/intel-mkl-system",
 ]
 
 intel-mkl-static = [
+    "blas",
+    "concision-neural/intel-mkl-static",
     "concision-s4/intel-mkl-static",
-
 ]
 
 netlib-system = [
+    "blas",
+    "concision-neural/netlib-system",
     "concision-s4/netlib-system",
 ]
 
 netlib-static = [
+    "blas",
+    "concision-neural/netlib-static",
     "concision-s4/netlib-static",
 ]
 
 openblas-system = [
+    "blas",
+    "concision-neural/openblas-system",
     "concision-s4/openblas-system",
 ]
 
 openblas-static = [
+    "blas",
+    "concision-neural/openblas-static",
     "concision-s4/openblas-static",
 ]
 

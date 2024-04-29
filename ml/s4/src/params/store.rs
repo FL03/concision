@@ -3,48 +3,28 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::SSMParams;
-use crate::core::prelude::GenerateRandom;
-use ndarray::prelude::{Array1, Array2, ArrayView1};
+use crate::core::prelude::lecun_normal;
+use crate::ops::{k_conv, scan_ssm, Discrete};
+use ndarray::prelude::{Array, Array1, Array2, Axis};
+use ndarray::ScalarOperand;
 use ndarray_linalg::error::LinalgError;
-use ndarray_linalg::{vstack, Scalar};
-use ndarray_rand::rand_distr::uniform::SampleUniform;
+use ndarray_linalg::{Lapack, Scalar};
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-use ndarray_rand::RandomExt;
+use num::traits::real::Real;
 use num::{Float, Num};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::ops;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct SSMStore<T = f64> {
+pub struct SSM<T = f64> {
     pub(crate) a: Array2<T>,
     pub(crate) b: Array2<T>,
     pub(crate) c: Array2<T>,
     pub(crate) d: Array2<T>,
 }
 
-impl<T> SSMStore<T>
-where
-    T: Clone + Num,
-{
-    pub fn ones(features: usize) -> Self {
-        let a = Array2::<T>::ones((features, features));
-        let b = Array2::<T>::ones((features, 1));
-        let c = Array2::<T>::ones((1, features));
-        let d = Array2::<T>::ones((1, 1));
-        Self::new(a, b, c, d)
-    }
-
-    pub fn zeros(features: usize) -> Self {
-        let a = Array2::<T>::zeros((features, features));
-        let b = Array2::<T>::zeros((features, 1));
-        let c = Array2::<T>::zeros((1, features));
-        let d = Array2::<T>::zeros((1, 1));
-        Self::new(a, b, c, d)
-    }
-}
-
-impl<T> SSMStore<T> {
+impl<T> SSM<T> {
     pub fn new(a: Array2<T>, b: Array2<T>, c: Array2<T>, d: Array2<T>) -> Self {
         Self { a, b, c, d }
     }
@@ -53,11 +33,24 @@ impl<T> SSMStore<T> {
     where
         T: Default,
     {
-        let a = Array2::<T>::default((features, features));
-        let b = Array2::<T>::default((features, 1));
-        let c = Array2::<T>::default((1, features));
-        let d = Array2::<T>::default((1, 1));
-        Self::new(a, b, c, d)
+        Self {
+            a: Array2::default((features, features)),
+            b: Array2::default((features, 1)),
+            c: Array2::default((1, features)),
+            d: Array2::default((1, 1)),
+        }
+    }
+
+    pub fn from_discrete(discrete: Discrete<T>) -> Self
+    where
+        T: Clone + Num,
+    {
+        Self {
+            a: discrete.a,
+            b: discrete.b,
+            c: discrete.c,
+            d: Array2::ones((1, 1)),
+        }
     }
 
     pub fn a(&self) -> &Array2<T> {
@@ -93,49 +86,85 @@ impl<T> SSMStore<T> {
     }
 }
 
-impl<T> SSMStore<T>
+impl<T> SSM<T>
 where
-    T: Scalar,
+    T: Clone + Num,
 {
-    pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
-        let step = |xs: &mut Array1<T>, us: ArrayView1<T>| {
-            let x1 = self.a().dot(xs) + self.b().dot(&us);
-            let y1 = self.c().dot(&x1);
-            *xs = x1;
-            Some(y1)
-        };
-        vstack(
-            u.outer_iter()
-                .scan(x0.clone(), step)
-                .collect::<Vec<_>>()
-                .as_slice(),
-        )
-    }
-}
-
-impl<T> SSMStore<T>
-where
-    T: Float + SampleUniform,
-    StandardNormal: Distribution<T>,
-{
-    pub fn init(mut self, features: usize) -> Self {
-        // let (lambda, p, b, _v) = dplr_hippo(features);
-        self.c = Array2::<T>::random((1, features), StandardNormal);
-        self.d = Array2::<T>::ones((1, 1));
-        self
+    pub fn ones(features: usize) -> Self {
+        let a = Array2::ones((features, features));
+        let b = Array2::ones((features, 1));
+        let c = Array2::ones((1, features));
+        let d = Array2::ones((1, 1));
+        Self::new(a, b, c, d)
     }
 
-    pub fn uniform(features: usize) -> Self {
-        let dk = T::one() / T::from(features).unwrap().sqrt();
-        let a = Array2::<T>::uniform_between(dk, (features, features));
-        let b = Array2::<T>::uniform_between(dk, (features, 1));
-        let c = Array2::<T>::uniform_between(dk, (1, features));
-        let d = Array2::<T>::ones((1, 1));
+    pub fn range(features: usize) -> Self
+    where
+        T: Float,
+    {
+        let a = Array::range(T::zero(), T::from(features * features).unwrap(), T::one())
+            .into_shape((features, features))
+            .unwrap();
+        let b = Array::range(T::zero(), T::from(features).unwrap(), T::one()).insert_axis(Axis(1));
+        let c = Array::range(T::zero(), T::from(features).unwrap(), T::one()).insert_axis(Axis(0));
+        let d = Array2::zeros((1, 1));
+        Self::new(a, b, c, d)
+    }
+
+    pub fn zeros(features: usize) -> Self {
+        let a = Array2::zeros((features, features));
+        let b = Array2::zeros((features, 1));
+        let c = Array2::zeros((1, features));
+        let d = Array2::zeros((1, 1));
         Self::new(a, b, c, d)
     }
 }
 
-impl<T> ops::Index<SSMParams> for SSMStore<T> {
+impl<T> SSM<T>
+where
+    T: Scalar + ScalarOperand,
+{
+    pub(crate) fn apply_discrete(&mut self, discrete: Discrete<T>) {
+        use SSMParams::*;
+        self[A] = discrete.a;
+        self[B] = discrete.b;
+        self[C] = discrete.c;
+    }
+
+    pub fn discretize(&mut self, step: f64) -> anyhow::Result<()>
+    where
+        T: Lapack,
+    {
+        use SSMParams::*;
+        let discrete = Discrete::discretize(&self[A], &self[B], &self[C], step)?;
+        self.apply_discrete(discrete);
+        Ok(())
+    }
+
+    pub fn k_conv(&self, l: usize) -> Array1<T> {
+        k_conv(&self.a, &self.b, &self.c, l)
+    }
+
+    pub fn scan(&self, u: &Array2<T>, x0: &Array1<T>) -> Result<Array2<T>, LinalgError> {
+        scan_ssm(&self.a, &self.b, &self.c, u, x0)
+    }
+}
+
+impl<T> SSM<T>
+where
+    T: Real + ScalarOperand,
+    StandardNormal: Distribution<T>,
+{
+    pub fn init(mut self, features: usize) -> Self {
+        self.a = lecun_normal((features, features));
+        self.b = lecun_normal((features, 1));
+        self.c = lecun_normal((1, features));
+        self.d = Array2::<T>::ones((1, 1));
+        self
+    }
+}
+
+impl<T> ops::Index<SSMParams> for SSM<T> {
     type Output = Array2<T>;
 
     fn index(&self, index: SSMParams) -> &Self::Output {
@@ -149,7 +178,7 @@ impl<T> ops::Index<SSMParams> for SSMStore<T> {
     }
 }
 
-impl<T> ops::IndexMut<SSMParams> for SSMStore<T> {
+impl<T> ops::IndexMut<SSMParams> for SSM<T> {
     fn index_mut(&mut self, index: SSMParams) -> &mut Self::Output {
         use SSMParams::*;
         match index {
@@ -161,31 +190,40 @@ impl<T> ops::IndexMut<SSMParams> for SSMStore<T> {
     }
 }
 
-impl<T> From<SSMStore<T>> for (Array2<T>, Array2<T>, Array2<T>, Array2<T>) {
-    fn from(store: SSMStore<T>) -> Self {
+impl<T> From<Discrete<T>> for SSM<T>
+where
+    T: Clone + Num,
+{
+    fn from(discrete: Discrete<T>) -> Self {
+        Self::from_discrete(discrete)
+    }
+}
+
+impl<T> From<SSM<T>> for (Array2<T>, Array2<T>, Array2<T>, Array2<T>) {
+    fn from(store: SSM<T>) -> Self {
         (store.a, store.b, store.c, store.d)
     }
 }
 
-impl<'a, T> From<&'a SSMStore<T>> for (&'a Array2<T>, &'a Array2<T>, &'a Array2<T>, &'a Array2<T>) {
-    fn from(store: &'a SSMStore<T>) -> Self {
+impl<'a, T> From<&'a SSM<T>> for (&'a Array2<T>, &'a Array2<T>, &'a Array2<T>, &'a Array2<T>) {
+    fn from(store: &'a SSM<T>) -> Self {
         (&store.a, &store.b, &store.c, &store.d)
     }
 }
 
-impl<T> From<(Array2<T>, Array2<T>, Array2<T>, Array2<T>)> for SSMStore<T> {
+impl<T> From<(Array2<T>, Array2<T>, Array2<T>, Array2<T>)> for SSM<T> {
     fn from((a, b, c, d): (Array2<T>, Array2<T>, Array2<T>, Array2<T>)) -> Self {
         Self::new(a, b, c, d)
     }
 }
 
-impl<T> From<SSMStore<T>> for HashMap<SSMParams, Array2<T>> {
-    fn from(store: SSMStore<T>) -> Self {
+impl<T> From<SSM<T>> for HashMap<SSMParams, Array2<T>> {
+    fn from(store: SSM<T>) -> Self {
         HashMap::from_iter(store.into_iter())
     }
 }
 
-impl<T> FromIterator<(SSMParams, Array2<T>)> for SSMStore<T>
+impl<T> FromIterator<(SSMParams, Array2<T>)> for SSM<T>
 where
     T: Clone + Default,
 {
@@ -215,7 +253,7 @@ where
     }
 }
 
-impl<T> IntoIterator for SSMStore<T> {
+impl<T> IntoIterator for SSM<T> {
     type Item = (SSMParams, Array2<T>);
     type IntoIter = std::collections::hash_map::IntoIter<SSMParams, Array2<T>>;
 

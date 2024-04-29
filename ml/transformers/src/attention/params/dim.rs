@@ -11,25 +11,9 @@
 //! - `heads`: The number of attention heads
 //! - `model`: The dimension of the model (embedding size)
 use crate::{HEADS, MODEL, QUERY_SIZE};
-use ndarray::prelude::{Ix2, Ix3, Ix4};
+use ndarray::prelude::Ix2;
 use ndarray::IntoDimension;
 use serde::{Deserialize, Serialize};
-
-pub trait Batched {
-    fn batch(&self) -> usize;
-}
-
-impl Batched for Ix3 {
-    fn batch(&self) -> usize {
-        self[0]
-    }
-}
-
-impl Batched for Ix4 {
-    fn batch(&self) -> usize {
-        self[0]
-    }
-}
 
 pub enum Shapes {
     Batched((usize, Box<Shapes>)),

@@ -6,13 +6,12 @@ use super::FFNParams;
 use crate::neural::prelude::{Forward, Layer, ReLU};
 use crate::prelude::{MODEL, NETWORK};
 use ndarray::prelude::{Array2, NdFloat};
-use num::Float;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct FFN<T = f64>
 where
-    T: Float,
+    T: Clone,
 {
     input: Layer<T>,
     output: Layer<T>,
@@ -21,9 +20,12 @@ where
 
 impl<T> FFN<T>
 where
-    T: Float,
+    T: Clone,
 {
-    pub fn new(model: usize, network: usize) -> Self {
+    pub fn new(model: usize, network: usize) -> Self
+    where
+        T: Default,
+    {
         Self {
             input: Layer::from_features(model, network),
             output: Layer::from_features(network, model),
@@ -42,7 +44,7 @@ where
 
 impl<T> Default for FFN<T>
 where
-    T: Float,
+    T: Clone + Default,
 {
     fn default() -> Self {
         Self::new(MODEL, NETWORK)

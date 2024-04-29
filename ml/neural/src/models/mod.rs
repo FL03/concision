@@ -11,7 +11,5 @@ pub(crate) mod model;
 pub(crate) mod modes;
 pub(crate) mod params;
 
-pub mod exp;
-
 #[cfg(test)]
 mod tests {}

@@ -4,45 +4,75 @@
 */
 pub use self::{arrays::*, assertions::*};
 
-use ndarray::linalg::Dot;
 use ndarray::prelude::*;
-use ndarray::{IntoDimension, ShapeError};
+use ndarray::{Data, IntoDimension, ScalarOperand, ShapeError};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::SeedableRng;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
-use num::complex::Complex;
-use num::traits::{AsPrimitive, Float, Num, NumCast};
+use num::complex::{Complex, ComplexDistribution};
+use num::traits::real::Real;
+use num::traits::{Float, Num, NumCast};
 use rand::distributions::uniform::{SampleUniform, Uniform};
 
-pub fn pad<T>(a: impl IntoIterator<Item = T>, pad: usize, value: Option<T>) -> Vec<T>
+/// Utilitary function that returns a new *n*-dimensional array of dimension `shape` with the same
+/// datatype and memory order as the input `arr`.
+pub fn array_like<S, A, D, Sh>(arr: &ArrayBase<S, D>, shape: Sh, elem: A) -> Array<A, D>
 where
-    T: Clone + Default,
+    S: Data<Elem = A>,
+    A: Clone,
+    D: Dimension,
+    Sh: ShapeBuilder<Dim = D>,
 {
-    let pad = vec![value.unwrap_or_default(); pad];
-    let mut res = Vec::from_iter(a);
-    res.extend(pad);
-    res
+    // TODO `is_standard_layout` only works on owned arrays. Change it if using `ArrayBase`.
+    if arr.is_standard_layout() {
+        Array::from_elem(shape, elem)
+    } else {
+        Array::from_elem(shape.f(), elem)
+    }
 }
+
+pub fn lecun_normal<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+where
+    D: Dimension,
+    T: Real + ScalarOperand,
+    StandardNormal: Distribution<T>,
+{
+    let dim = shape.into_dimension();
+    let n = dim.size();
+    let scale = T::from(n).unwrap().recip().sqrt();
+    Array::random(dim, StandardNormal) * scale
+}
+
+pub fn lecun_normal_seeded<T, D>(shape: impl IntoDimension<Dim = D>, seed: u64) -> Array<T, D>
+where
+    D: Dimension,
+    T: Real + ScalarOperand,
+    StandardNormal: Distribution<T>,
+{
+    let dim = shape.into_dimension();
+    let n = dim.size();
+    let scale = T::from(n).unwrap().recip().sqrt();
+    Array::random_using(dim, StandardNormal, &mut StdRng::seed_from_u64(seed)) * scale
+}
+
+/// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
+pub fn randc<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
+where
+    D: Dimension,
+    T: Clone + Num,
+    ComplexDistribution<T, T>: Distribution<Complex<T>>,
+{
+    let distr = ComplexDistribution::<T, T>::new(T::one(), T::one());
+    Array::random(shape, distr)
+}
+
 ///
 pub fn floor_div<T>(numerator: T, denom: T) -> T
 where
     T: Copy + Num,
 {
     (numerator - (numerator % denom)) / denom
-}
-
-pub fn arange<T>(a: T, b: T, h: T) -> Array1<T>
-where
-    T: AsPrimitive<usize> + Float,
-{
-    let n: usize = ((b - a) / h).as_();
-    let mut res = Array1::<T>::zeros(n);
-    res[0] = a;
-    for i in 1..n {
-        res[i] = res[i - 1] + h;
-    }
-    res
 }
 
 pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
@@ -68,21 +98,7 @@ where
     let n = dim.as_array_view().product();
     Array::from_iter((0..n).map(|x| T::from(x).unwrap())).into_shape(dim)
 }
-/// Raise a matrix to a power
-pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
-where
-    T: Clone + Num + 'static,
-    Array2<T>: Dot<Array2<T>, Output = Array2<T>>,
-{
-    if !a.is_square() {
-        panic!("Matrix must be square");
-    }
-    let mut res = Array2::<T>::eye(a.nrows());
-    for _ in 0..n {
-        res = res.dot(a);
-    }
-    res
-}
+
 ///
 pub fn randcomplex<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
 where

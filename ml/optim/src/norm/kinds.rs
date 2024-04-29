@@ -6,7 +6,7 @@ use super::Norm;
 use ndarray::prelude::{Array, NdFloat};
 use ndarray::Dimension;
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
+use strum::{Display, EnumIs, EnumIter, EnumString, VariantNames};
 
 #[derive(
     Clone,
@@ -18,13 +18,13 @@ use strum::{Display, EnumIs, EnumIter, EnumString, EnumVariantNames};
     EnumIs,
     EnumIter,
     EnumString,
-    EnumVariantNames,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
     Serialize,
+    VariantNames,
 )]
 #[repr(usize)]
 #[serde(rename_all = "lowercase")]

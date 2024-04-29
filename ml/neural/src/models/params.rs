@@ -13,17 +13,11 @@ use serde::{Deserialize, Serialize};
 use std::ops;
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
-pub struct ModelParams<T = f64>
-where
-    T: Float,
-{
+pub struct ModelParams<T = f64> {
     children: Vec<LayerParams<T>>,
 }
 
-impl<T> ModelParams<T>
-where
-    T: Float,
-{
+impl<T> ModelParams<T> {
     pub fn new() -> Self {
         Self {
             children: Vec::new(),
@@ -39,6 +33,7 @@ where
     pub fn with_shapes<Sh>(shapes: impl IntoIterator<Item = Sh>) -> Self
     where
         Sh: IntoDimension<Dim = Ix2>,
+        T: Clone + Default,
     {
         let tmp = Vec::from_iter(shapes.into_iter().map(IntoDimension::into_dimension));
         let mut children = Vec::new();
@@ -53,7 +48,10 @@ where
         self.children.is_empty()
     }
 
-    pub fn build_layers(mut self, shapes: impl IntoIterator<Item = (usize, usize)>) -> Self {
+    pub fn build_layers(mut self, shapes: impl IntoIterator<Item = (usize, usize)>) -> Self
+    where
+        T: Clone + Default,
+    {
         // let shapes = shapes.into_iter().map(|s| (s.inputs(), s.outputs()));
         for (inputs, outputs) in shapes.into_iter() {
             let features = LayerShape::new(inputs, outputs);
@@ -118,8 +116,6 @@ where
     }
 }
 
-impl<T> ModelParams<T> where T: NdFloat {}
-
 impl<T> Forward<Array2<T>> for ModelParams<T>
 where
     T: NdFloat,
@@ -137,19 +133,13 @@ where
     }
 }
 
-impl<T> AsRef<[LayerParams<T>]> for ModelParams<T>
-where
-    T: Float,
-{
+impl<T> AsRef<[LayerParams<T>]> for ModelParams<T> {
     fn as_ref(&self) -> &[LayerParams<T>] {
         &self.children
     }
 }
 
-impl<T> AsMut<[LayerParams<T>]> for ModelParams<T>
-where
-    T: Float,
-{
+impl<T> AsMut<[LayerParams<T>]> for ModelParams<T> {
     fn as_mut(&mut self) -> &mut [LayerParams<T>] {
         &mut self.children
     }
@@ -157,7 +147,7 @@ where
 
 impl<T> FromIterator<LayerShape> for ModelParams<T>
 where
-    T: Float,
+    T: Clone + Default,
 {
     fn from_iter<I>(iter: I) -> Self
     where

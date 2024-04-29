@@ -1,21 +1,15 @@
-extern crate concision;
+extern crate concision as cnc;
 
-use concision as cnc;
-
-use cnc::core::ops::fft::*;
-use cnc::prelude::{Arange, AsComplex, BoxResult};
+use cnc::core::ops::pad;
 
 use ndarray::prelude::*;
 
-fn main() -> BoxResult {
+fn main() -> anyhow::Result<()> {
     println!("Welcome to concision!");
     let samples = 8;
 
-    let arr = Array1::<f64>::arange(samples).mapv(AsComplex::as_re);
-    let buff = arr.clone().into_raw_vec();
-    let plan = FftPlan::new(samples);
-    println!("Permutations: {:?}", plan.plan());
-    let res = ifft(buff.as_slice(), &plan);
-    println!("{:?}", &res);
+    let arr = Array::range(0.0, (samples * samples) as f64, 1.0).into_shape((samples, samples))?;
+    let padded = pad(&arr, &[[0, 8]], 0.0.into());
+    println!("{:?}", &padded);
     Ok(())
 }

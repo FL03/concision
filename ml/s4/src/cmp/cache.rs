@@ -2,7 +2,7 @@
     Appellation: cache <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::data::prelude::Store;
+use crate::core::prelude::Store;
 use ndarray::prelude::{Array, Dimension, Ix2};
 // use num::{Complex, Float};
 use std::collections::HashMap;

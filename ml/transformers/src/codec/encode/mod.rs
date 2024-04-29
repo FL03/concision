@@ -16,8 +16,9 @@ pub(crate) mod utils {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::prelude::Mask;
-    use ndarray::Array2;
+    use crate::core::params::masks::Mask;
+
+    use ndarray::prelude::*;
 
     #[test]
     fn test_encoder() {

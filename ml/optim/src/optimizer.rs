@@ -2,7 +2,7 @@
     Appellation: optimizer <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::prelude::Params;
+use crate::core::params::Params;
 use ndarray::prelude::Array2;
 use num::Float;
 

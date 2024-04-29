@@ -2,16 +2,37 @@
    Appellation: specs <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{arrays::*, base::*, init::*, iter::*, math::*};
+pub use self::{arrays::*, init::*, math::*, storage::*};
 
 pub(crate) mod arrays;
-pub(crate) mod base;
 pub(crate) mod init;
-pub(crate) mod iter;
 pub(crate) mod math;
+pub(crate) mod storage;
 
-pub trait Named {
-    fn name(&self) -> &str;
+use ndarray::prelude::{Array, Dimension};
+
+pub trait Apply<T> {
+    fn apply<F>(&self, f: F) -> Self
+    where
+        F: Fn(&T) -> T;
+}
+
+impl<T, D> Apply<T> for Array<T, D>
+where
+    D: Dimension,
+{
+    fn apply<F>(&self, f: F) -> Self
+    where
+        F: Fn(&T) -> T,
+    {
+        self.map(f)
+    }
+}
+
+pub trait Transform<T> {
+    type Output;
+
+    fn transform(&self, args: &T) -> Self::Output;
 }
 
 pub(crate) mod utils {
@@ -71,16 +92,10 @@ mod tests {
     use ndarray::prelude::*;
 
     #[test]
-    fn test_arange() {
-        let exp = array![0.0, 1.0, 2.0, 3.0, 4.0];
-        assert_eq!(&exp, &Array1::<f64>::arange(5))
-    }
-
-    #[test]
     fn test_affine() {
         let x = array![[0.0, 1.0], [2.0, 3.0]];
 
-        let y = x.affine(4.0, -2.0).unwrap();
+        let y = x.affine(4.0, -2.0);
         assert_eq!(y, array![[-2.0, 2.0], [6.0, 10.0]]);
     }
 

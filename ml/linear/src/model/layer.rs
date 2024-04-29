@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::cmp::neurons::{Node, Perceptron};
-use crate::cmp::params::LayerShape;
-use crate::cmp::params::LinearParams as LayerParams;
+use crate::cmp::params::LinearParams;
+use crate::cmp::LayerShape;
 use crate::neural::prelude::{Activate, Features, Forward, Gradient};
 
 use ndarray::prelude::{Array2, Ix1, NdFloat};
@@ -24,7 +24,7 @@ where
     activator: A,
     features: LayerShape,
     name: String,
-    params: LayerParams<T>,
+    params: LinearParams<T>,
 }
 
 impl<T, A> Linear<T, A>
@@ -37,7 +37,7 @@ where
             activator,
             features,
             name: name.to_string(),
-            params: LayerParams::zeros(biased, features),
+            params: LinearParams::zeros(biased, features),
         }
     }
 
@@ -50,7 +50,7 @@ where
             activator: A::default(),
             features,
             name: String::new(),
-            params: LayerParams::zeros(false, features),
+            params: LinearParams::zeros(false, features),
         }
     }
 
@@ -78,15 +78,19 @@ where
         &mut self.features
     }
 
+    pub fn len(&self) -> usize {
+        self.params.len()
+    }
+
     pub fn name(&self) -> &str {
         &self.name
     }
 
-    pub fn params(&self) -> &LayerParams<T> {
+    pub fn params(&self) -> &LinearParams<T> {
         &self.params
     }
 
-    pub fn params_mut(&mut self) -> &mut LayerParams<T> {
+    pub fn params_mut(&mut self) -> &mut LinearParams<T> {
         &mut self.params
     }
 
@@ -153,22 +157,26 @@ where
     T: NdFloat + Signed,
 {
     pub fn grad(&mut self, gamma: T, args: &Array2<T>, targets: &Array2<T>) -> T {
-        let ns = T::from(args.shape()[0]).unwrap();
         let pred = self.forward(args);
-
-        let scale = T::from(2).unwrap() * ns;
-
+        // compute the error
         let errors = &pred - targets;
-        let dz = errors * self.activator.gradient(&pred);
-        let dw = args.t().dot(&dz) / scale;
+        // compute the gradient w.r.t. the predicted valued
+        let dp = self.activator.gradient(&pred);
+        // compute the gradient w.r.t. the error
+        let dz = &errors * self.activator.gradient(&errors);
+        // get the weights for the current layer
+        let wt = self.params.weights().t();
+        // compute the gradient for the current layer
+        let gradient = dz.dot(&wt) * &dp;
 
-        self.params_mut().weights_mut().scaled_add(-gamma, &dw.t());
+        self.params_mut().weights_mut().scaled_add(-gamma, &gradient.t());
 
         let loss = targets
             .mean_sq_err(&pred)
             .expect("Failed to calculate loss");
         T::from(loss).unwrap()
     }
+
 }
 
 impl<T, A> Linear<T, A>
@@ -178,7 +186,7 @@ where
     StandardNormal: Distribution<T>,
 {
     pub fn init(mut self, biased: bool) -> Self {
-        self.params = self.params.init(biased);
+        self.params = self.params.uniform(biased);
         self
     }
 }
@@ -254,7 +262,7 @@ where
             activator: A::default(),
             features,
             name: String::new(),
-            params: LayerParams::zeros(false, features),
+            params: LinearParams::zeros(false, features),
         }
     }
 }
@@ -278,7 +286,7 @@ where
     T: Float,
 {
     fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
-        let params = LayerParams::from_iter(nodes);
+        let params = LinearParams::from_iter(nodes);
         Self {
             activator: A::default(),
             features: *params.features(),

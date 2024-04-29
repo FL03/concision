@@ -16,7 +16,29 @@ impl<T> DPLRParams<T> {
     pub fn new(lambda: Array1<T>, p: Array1<T>, q: Array1<T>, b: Array1<T>, c: Array1<T>) -> Self {
         Self { lambda, p, q, b, c }
     }
+
+    pub fn b(&self) -> &Array1<T> {
+        &self.b
+    }
+
+    pub fn c(&self) -> &Array1<T> {
+        &self.c
+    }
+
+    pub fn lambda(&self) -> &Array1<T> {
+        &self.lambda
+    }
+
+    pub fn p(&self) -> &Array1<T> {
+        &self.p
+    }
+
+    pub fn q(&self) -> &Array1<T> {
+        &self.q
+    }
 }
+
+impl<T> DPLRParams<T> {}
 
 // impl<T> DPLRParams<T>
 // where

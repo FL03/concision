@@ -3,60 +3,43 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::SSMConfig;
-use crate::neural::Forward;
-use crate::ops::Discrete;
-use crate::params::{SSMParams::*, SSMStore};
-use crate::prelude::{discretize, k_conv};
-use ndarray::prelude::{Array1, Array2, Axis, NdFloat};
+use crate::neural::prelude::{Predict, PredictError};
+use crate::prelude::{casual_conv1d, SSM};
+use ndarray::prelude::{Array1, Axis};
 use ndarray::ScalarOperand;
-use ndarray_conv::{Conv2DFftExt, PaddingMode, PaddingSize};
-use ndarray_linalg::{Lapack, Scalar};
-use num::complex::ComplexFloat;
-use num::traits::{Float, FloatConst, Num, NumOps};
+use ndarray_linalg::{flatten, Lapack, Scalar};
+use ndarray_rand::rand_distr::{Distribution, StandardNormal};
+use num::complex::{Complex, ComplexFloat};
+use num::traits::real::Real;
 use rustfft::FftNum;
+use serde::{Deserialize, Serialize};
 
-pub struct SSM<T = f64> {
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct SSMLayer<T = f64> {
     cache: Array1<T>,
     config: SSMConfig,
     kernel: Array1<T>,
-    params: SSMStore<T>,
-    ssm: Discrete<T>,
+    ssm: SSM<T>,
 }
 
-impl<T> SSM<T> {
-    pub fn create(config: SSMConfig) -> Self
+impl<T> SSMLayer<T> {
+    pub fn new(config: SSMConfig) -> Self
     where
-        T: Clone + Default,
+        T: Default,
     {
-        let features = config.features();
-
-        let cache = Array1::<T>::default(features);
-        let kernel = Array1::<T>::default(features);
-        let params = SSMStore::from_features(features);
         Self {
-            cache,
+            cache: Array1::<T>::default(config.features()),
             config,
-            kernel,
-            params,
-            ssm: Discrete::from_features(features),
+            kernel: Array1::default(config.samples()),
+            ssm: SSM::from_features(config.features()),
         }
     }
-
     pub fn config(&self) -> &SSMConfig {
         &self.config
     }
 
     pub fn config_mut(&mut self) -> &mut SSMConfig {
         &mut self.config
-    }
-
-    pub fn discretize<S>(&self, step: S) -> anyhow::Result<Discrete<T>>
-    where
-        S: Scalar<Real = S, Complex = T> + ScalarOperand + NumOps<T, T>,
-        T: ComplexFloat<Real = S> + Lapack + NumOps<S>,
-    {
-        let discrete = discretize(&self.params[A], &self.params[B], &self.params[C], step)?;
-        Ok(discrete.into())
     }
 
     pub fn kernel(&self) -> &Array1<T> {
@@ -67,71 +50,74 @@ impl<T> SSM<T> {
         &mut self.kernel
     }
 
-    pub fn params(&self) -> &SSMStore<T> {
-        &self.params
+    pub fn ssm(&self) -> &SSM<T> {
+        &self.ssm
     }
 
-    pub fn params_mut(&mut self) -> &mut SSMStore<T> {
-        &mut self.params
+    pub fn ssm_mut(&mut self) -> &mut SSM<T> {
+        &mut self.ssm
     }
 }
 
-// impl<T> SSM<T>
-// where
-//     T: ComplexFloat + Lapack + NumOps<<T as Scalar>::Real> + Scalar<Complex = T>,
-//     <T as Scalar>::Real: ScalarOperand + NumOps + NumOps<T, T>,
-// {
-//     pub fn setup(mut self) -> Self {
-//         self.kernel = self.gen_filter();
+impl<T> SSMLayer<T>
+where
+    T: Default + Lapack + Real + Scalar + ScalarOperand,
+    StandardNormal: Distribution<T>,
+{
+    pub fn create(config: SSMConfig) -> anyhow::Result<Self> {
+        // initialize the state space model parameters
+        let mut ssm = SSM::from_features(config.features()).init(config.features());
+        // discretize the state space model
+        ssm.discretize(config.logstep())?;
+        // initialize the kernal with the convolution of the state space model
+        let kernel = ssm.k_conv(config.samples());
 
-//         self.ssm = self.discretize(self.config().step_size()).expect("");
-//         self
-//     }
+        let layer = Self {
+            cache: Array1::<T>::zeros(config.features()),
+            config,
+            kernel,
+            ssm,
+        };
+        Ok(layer)
+    }
+    /// Initialize the layer
+    pub fn init(mut self) -> anyhow::Result<Self> {
+        // initialize the state space model parameters
+        self.ssm = self.ssm.init(self.config.features());
+        // discretize the state space model
+        self.ssm.discretize(self.config.logstep())?;
+        // initialize the kernal with the convolution of the state space model
+        self.kernel = self.ssm.k_conv(self.config.samples());
 
-//     pub fn scan(
-//         &self,
-//         u: &Array2<T>,
-//         x0: &Array1<T>,
-//     ) -> Result<Array2<T>, ndarray_linalg::error::LinalgError> {
-//         self.params.scan(u, x0)
-//     }
+        Ok(self)
+    }
+}
 
-//     pub fn conv(&self, u: &Array2<T>) -> anyhow::Result<Array2<T>>
-//     where
-//         T: FftNum,
-//     {
-//         let mode = PaddingMode::<2, T>::Const(T::zero());
-//         let size = PaddingSize::Full;
-//         if let Some(res) = u.conv_2d_fft(&self.kernel.clone().insert_axis(Axis(1)), size, mode) {
-//             Ok(res)
-//         } else {
-//             Err(anyhow::anyhow!("convolution failed"))
-//         }
-//     }
+impl<T> SSMLayer<T>
+where
+    T: Lapack + Scalar + ScalarOperand,
+{
+    pub fn discretize(&mut self, step: f64) -> anyhow::Result<()> {
+        self.ssm.discretize(step)
+    }
+}
 
-//     pub fn gen_filter(&self) -> Array1<T> {
-//         k_conv(
-//             &self.params[A],
-//             &self.params[B],
-//             &self.params[C],
-//             self.config().samples(),
-//         )
-//     }
-// }
+impl<T> Predict<Array1<T>> for SSMLayer<T>
+where
+    T: FftNum + Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
+    Complex<T>: ComplexFloat<Real = T>,
+{
+    type Output = Array1<T>;
 
-// impl<T> Forward<Array2<T>> for SSM<T>
-// where
-//     T: FftNum + Lapack + NdFloat + Scalar,
-// {
-//     type Output = anyhow::Result<Array2<T>>;
-
-//     fn forward(&self, args: &Array2<T>) -> Self::Output {
-//         let res = if !self.config().decode() {
-//             self.conv(args)?
-//         } else {
-//             self.scan(args, &self.cache)?
-//         };
-//         let pred = res + args * &self.params[D];
-//         Ok(pred)
-//     }
-// }
+    fn predict(&self, args: &Array1<T>) -> Result<Self::Output, PredictError> {
+        let u = args.clone().insert_axis(Axis(1));
+        let pred = if !self.config().decode() {
+            casual_conv1d(args, &self.kernel)?
+        } else {
+            let ys = self.ssm.scan(&u, &self.cache)?;
+            flatten(ys)
+        };
+        let out = &pred + args * flatten(self.ssm.d().clone());
+        Ok(out)
+    }
+}

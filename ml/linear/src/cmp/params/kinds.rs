@@ -5,10 +5,6 @@
 use serde::{Deserialize, Serialize};
 use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
-pub trait ParamType: ToString {
-    fn kind(&self) -> String;
-}
-
 #[derive(
     Clone,
     Debug,
