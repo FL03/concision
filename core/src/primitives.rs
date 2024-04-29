@@ -5,6 +5,7 @@
 pub use self::{constants::*, types::*};
 
 pub use ndarray::ShapeError;
+// #[cfg(feature = "rand")]
 pub use ndarray_rand::rand_distr::uniform::SampleUniform;
 
 /// Collection of constants used throughout the system

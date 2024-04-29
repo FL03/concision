@@ -20,6 +20,10 @@ blas = [
     "ndarray/blas",
 ]
 
+# rand = [
+#     "dep:rand",
+#     "dep:ndarray-rand"
+# ]
 rand = []
 
 serde = [
@@ -29,6 +33,7 @@ serde = [
 
 serde-ext = [
     "dep:serde_json",
+    "ndarray/serde-1"
 ]
 
 std = []
@@ -46,11 +51,11 @@ test = true
 [dependencies]
 anyhow.workspace = true
 chrono = "0.4"
-ndarray = { features = ["serde-1"], version = "0.15" }
-ndarray-rand.workspace = true
+ndarray = "0.15"
+ndarray-rand = "0.14" # { optional = true, version = "0.14" }
 num.workspace = true
-rand = { features = [], version = "0.8" }
-serde = { optional = true, version = "1" }
+rand = "0.8" # { optional = true, version = "0.8" }
+serde = { features = ["derive"], optional = true, version = "1" }
 serde_json = { optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true

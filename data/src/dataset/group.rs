@@ -5,7 +5,6 @@
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
 use num::Float;
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DataGroup<T = f64, D = Ix2>
@@ -47,29 +46,35 @@ where
     }
 }
 
-impl<'a, T, D> Deserialize<'a> for DataGroup<T, D>
-where
-    T: Deserialize<'a> + Float,
-    D: Deserialize<'a> + Dimension,
-{
-    fn deserialize<Der>(deserializer: Der) -> Result<Self, Der::Error>
-    where
-        Der: serde::Deserializer<'a>,
-    {
-        let (data, targets) = Deserialize::deserialize(deserializer)?;
-        Ok(Self::new(data, targets))
-    }
-}
+#[cfg(feature = "serde")]
+mod serde_impl {
+    use super::*;
+    use serde::{Deserialize, Serialize};
 
-impl<T, D> Serialize for DataGroup<T, D>
-where
-    T: Float + Serialize,
-    D: Dimension + Serialize,
-{
-    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    impl<'a, T, D> Deserialize<'a> for DataGroup<T, D>
     where
-        Ser: serde::Serializer,
+        T: Deserialize<'a> + Float,
+        D: Deserialize<'a> + Dimension,
     {
-        (self.data(), self.targets()).serialize(serializer)
+        fn deserialize<Der>(deserializer: Der) -> Result<Self, Der::Error>
+        where
+            Der: serde::Deserializer<'a>,
+        {
+            let (data, targets) = Deserialize::deserialize(deserializer)?;
+            Ok(Self::new(data, targets))
+        }
+    }
+
+    impl<T, D> Serialize for DataGroup<T, D>
+    where
+        T: Float + Serialize,
+        D: Dimension + Serialize,
+    {
+        fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+        where
+            Ser: serde::Serializer,
+        {
+            (self.data(), self.targets()).serialize(serializer)
+        }
     }
 }

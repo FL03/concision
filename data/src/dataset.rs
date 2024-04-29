@@ -2,10 +2,12 @@
    Appellation: dataset <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize)]
-#[serde(rename_all = "lowercase")]
+pub mod group;
+
+/// A dataset is a collection of records, targets, and weights.
+#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase"))]
 pub struct Dataset<D, T, W> {
     pub records: D,
     pub targets: T,
@@ -34,13 +36,13 @@ impl<D, T, W> Dataset<D, T, W> {
     }
 }
 
-impl<D, T, W> std::fmt::Display for Dataset<D, T, W>
+impl<D, T, W> core::fmt::Display for Dataset<D, T, W>
 where
-    D: Serialize,
-    T: Serialize,
-    W: Serialize,
+    D: core::fmt::Display,
+    T: core::fmt::Display,
+    W: core::fmt::Display,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", serde_json::to_string(self).unwrap())
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "{{ records: {}, targets: {}, weights: {} }}", self.records, self.targets, self.weights)
     }
 }

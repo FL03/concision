@@ -3,10 +3,13 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::prelude::array_like;
-use core::borrow::Cow;
+#[cfg(not(feature = "std"))]
+use alloc::borrow::Cow;
 use ndarray::prelude::{Array, ArrayBase, Dimension};
 use ndarray::{AxisDescription, Data, Slice};
 use num::{FromPrimitive, Num, Zero};
+#[cfg(feature = "std")]
+use std::borrow::Cow;
 use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, VariantNames};
 
 fn read_pad(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {

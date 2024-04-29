@@ -6,7 +6,6 @@ use super::Errors;
 
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-#[serde(rename_all = "lowercase")]
 pub struct Error {
     pub kind: Errors,
     pub message: String,

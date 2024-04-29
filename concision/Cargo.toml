@@ -118,10 +118,12 @@ openblas-static = [
 
 serde = [
     "concision-core/serde",
+    "concision-data/serde",
 ]
 
 std = [
-    "concision-core/std"
+    "concision-core/std",
+    "concision-data/std",
 ]
 
 [lib]

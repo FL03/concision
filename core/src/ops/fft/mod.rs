@@ -22,11 +22,7 @@ pub(crate) mod utils {
     use super::FftPlan;
     use crate::prelude::AsComplex;
     use num::complex::{Complex, ComplexFloat};
-    use num::traits::{Float, FloatConst, Num, NumAssignOps, NumCast, NumOps};
-
-    // pub(crate) fn rsize(n: usize) -> usize {
-    //     (n / 2).floor() + 1
-    // }
+    use num::traits::{Float, FloatConst, NumAssignOps, NumCast, NumOps};
 
     pub(crate) fn fft_angle<T>(n: usize) -> T
     where
@@ -35,22 +31,8 @@ pub(crate) mod utils {
         T::TAU() / T::from(n).unwrap()
     }
 
-    pub(crate) fn floor<T>(lhs: T, rhs: T) -> T
-    where
-        T: Copy + Num,
-    {
-        (lhs - lhs % rhs) / rhs
-    }
-
-    pub(crate) fn unfloor<T>(lhs: T, rhs: T) -> T
-    where
-        T: Copy + Num,
-    {
-        (lhs * rhs) - lhs % rhs
-    }
-
     /// Computes the Fast Fourier Transform of a one-dimensional, complex-valued signal.
-    pub fn fft<S, T>(input: impl AsRef<[S]>, permute: &FftPlan) -> Vec<Complex<T>>
+    pub fn fft<S, T>(input: impl AsRef<[S]>, permute: &FftPlan) -> Vec<Complex<S::Real>>
     where
         S: ComplexFloat<Real = T>,
         T: Float + FloatConst,

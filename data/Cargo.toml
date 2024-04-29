@@ -12,37 +12,28 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = [
+    "std",
+]
 
 blas = [
     "ndarray/blas",
 ]
 
-# intel-mkl-system = [
-#     "linfa/intel-mkl-system",
-# ]
+serde = [
+    "dep:serde",
+    "serde-ext"
+]
 
-# intel-mkl-static = [
-#     "linfa/intel-mkl-static",
-# ]
+serde-ext = [
+    "dep:serde_json",
+    "concision-core/serde",
+    "ndarray/serde-1"
+]
 
-# netlib-system = [
-#     "linfa/netlib-system",
-# ]
-
-# netlib-static = [
-#     "linfa/netlib-static",
-# ]
-
-# openblas-system = [
-#     "linfa/openblas-system",
-# ]
-
-# openblas-static = [
-#     "linfa/openblas-static",
-# ]
-
-
+std = [
+    "concision-core/std",
+]
 
 [lib]
 bench = true
@@ -53,15 +44,18 @@ test = true
 [build-dependencies]
 
 [dependencies]
-concision-core = { path = "../core", version = "0.1.12" }
 anyhow.workspace = true
 itertools.workspace = true
-ndarray = { features = ["serde-1"], version = "0.15" }
+ndarray = "0.15"
 num.workspace = true
-serde.workspace = true
-serde_json.workspace = true
+serde = { features = ["derive"], optional = true, version = "1" }
+serde_json = { optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
+
+[dependencies.concision-core]
+path = "../core"
+version = "0.1.12"
 
 [dev-dependencies]
 
