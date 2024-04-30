@@ -21,6 +21,10 @@ blas = [
     "concision-neural/blas",
 ]
 
+std = [
+    
+]
+
 [lib]
 bench = true
 crate-type = ["rlib"]
@@ -31,7 +35,7 @@ test = true
 
 [dependencies]
 concision-core = { path = "../../core", version = "0.1.12" }
-concision-neural = { path = "../neural", version = "0.1.12" }
+concision-neural = { path = "../../nn/neural", version = "0.1.12" }
 
 anyhow.workspace = true
 ndarray = { features = ["serde-1"], version = "0.15" }

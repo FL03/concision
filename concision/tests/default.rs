@@ -1,4 +1,9 @@
-#[cfg(test)]
+/*
+   Appellation: default <mod>
+   Contrib: FL03 <jo3mccain@icloud.com>
+*/
+#![cfg(test)]
+
 #[test]
 fn compiles() {
     let f = |x: usize, y: usize| x + y;

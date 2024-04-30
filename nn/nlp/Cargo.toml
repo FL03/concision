@@ -12,10 +12,18 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = [
+    "std"
+]
 
 blas = [
     "ndarray/blas",
+]
+
+
+std = [
+    "ndarray/std",
+    "num/std",
 ]
 
 [lib]
@@ -36,10 +44,10 @@ serde.workspace = true
 serde_json.workspace = true
 smart-default.workspace = true
 strum.workspace = true
-tokenizers = { features = [], version = "0.15" }
+tokenizers = { features = [], version = "0.19" }
 
 [dev-dependencies]
-concision-core = { features = [], path = "../../core", version = "0.1.12" }
+concision-core = { path = "../../core", version = "0.1.12" }
 
 [package.metadata.docs.rs]
 all-features = true

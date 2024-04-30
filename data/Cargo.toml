@@ -33,6 +33,8 @@ serde-ext = [
 
 std = [
     "concision-core/std",
+    "ndarray/std",
+    "num/std"
 ]
 
 [lib]
@@ -47,7 +49,7 @@ test = true
 anyhow.workspace = true
 itertools.workspace = true
 ndarray = "0.15"
-num.workspace = true
+num = "0.4"
 serde = { features = ["derive"], optional = true, version = "1" }
 serde_json = { optional = true, version = "1" }
 smart-default.workspace = true

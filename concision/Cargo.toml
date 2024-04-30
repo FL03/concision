@@ -71,6 +71,16 @@ s4 = [
     "dep:concision-s4",
 ]
 
+serde = [
+    "concision-core/serde",
+    "concision-data/serde",
+]
+
+std = [
+    "concision-core/std",
+    "concision-data/std",
+]
+
 transformers = [
     "dep:concision-transformers"
 ]
@@ -122,16 +132,6 @@ openblas-static = [
     "concision-s4/openblas-static",
 ]
 
-serde = [
-    "concision-core/serde",
-    "concision-data/serde",
-]
-
-std = [
-    "concision-core/std",
-    "concision-data/std",
-]
-
 [lib]
 bench = true
 crate-type = ["rlib"]
@@ -146,12 +146,13 @@ concision-data = { optional = true, path = "../data", version = "0.1.12" }
 concision-derive = { optional = true, path = "../derive", version = "0.1.12" }
 concision-macros = { optional = true, path = "../macros", version = "0.1.12" }
 
-concision-linear = { optional = true, path = "../ml/linear", version = "0.1.12" }
-concision-neural = { optional = true, path = "../ml/neural", version = "0.1.12" }
-concision-nlp = { optional = true, path = "../ml/nlp", version = "0.1.12" }
-concision-optim = { optional = true, path = "../ml/optim", version = "0.1.12" }
-concision-s4 = { optional = true, path = "../ml/s4", version = "0.1.12" }
-concision-transformers = { optional = true, path = "../ml/transformers", version = "0.1.12" }
+concision-neural = { optional = true, path = "../nn/neural", version = "0.1.12" }
+concision-nlp = { optional = true, path = "../nn/nlp", version = "0.1.12" }
+concision-optim = { optional = true, path = "../nn/optim", version = "0.1.12" }
+concision-s4 = { optional = true, path = "../nn/s4", version = "0.1.12" }
+concision-transformers = { optional = true, path = "../nn/transformers", version = "0.1.12" }
+
+concision-linear = { optional = true, path = "../models/linear", version = "0.1.12" }
 
 [dev-dependencies]
 anyhow = "1"

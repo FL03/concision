@@ -16,7 +16,7 @@ pub(crate) mod variable;
 pub mod masks;
 pub mod store;
 
-use ndarray::prelude::{Array, Dimension, Ix2};
+use ndarray::{Array, ArrayBase, Dimension, Ix2};
 use std::collections::HashMap;
 
 pub trait Param {
@@ -57,16 +57,20 @@ where
     fn get_mut(&mut self, param: &K) -> Option<&mut Array<T, D>>;
 }
 
-impl<K, T, D> Params<K, T, D> for HashMap<K, Array<T, D>>
+/*
+    ********* implementations *********
+*/
+impl<K, S, D> Params<K, A, D> for HashMap<K, ArrayBase<S, D>>
 where
+    S: Data,
     D: Dimension,
-    K: std::cmp::Eq + std::hash::Hash,
+    K: core::cmp::Eq + core::hash::Hash,
 {
-    fn get(&self, param: &K) -> Option<&Array<T, D>> {
+    fn get(&self, param: &K) -> Option<&ArrayBase<S, D>> {
         self.get(param)
     }
 
-    fn get_mut(&mut self, param: &K) -> Option<&mut Array<T, D>> {
+    fn get_mut(&mut self, param: &K) -> Option<&mut ArrayBase<S, D>> {
         self.get_mut(param)
     }
 }
