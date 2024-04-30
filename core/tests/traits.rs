@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 extern crate concision_core as cnc;
-use cnc::traits::{Affine, AsComplex, Pow};
+use cnc::traits::{Affine, AsComplex, Powmat};
 use ndarray::prelude::*;
 use num::Complex;
 

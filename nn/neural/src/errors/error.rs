@@ -4,12 +4,12 @@
 */
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
+use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, VariantNames};
 
 #[derive(
+    AsRefStr,
     Clone,
     Debug,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -19,12 +19,13 @@ use strum::{Display, EnumCount, EnumIs, EnumIter, VariantNames};
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     SmartDefault,
     VariantNames,
+    Deserialize,
+    Serialize,
 )]
 #[non_exhaustive]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "lowercase", untagged)]
 #[strum(serialize_all = "lowercase")]
 pub enum MlError {
     Compute(ComputeError),
@@ -62,9 +63,9 @@ impl From<NetworkError> for MlError {
 }
 
 #[derive(
+    AsRefStr,
     Clone,
     Debug,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -74,9 +75,10 @@ impl From<NetworkError> for MlError {
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     SmartDefault,
     VariantNames,
+    Deserialize,
+    Serialize,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
@@ -129,9 +131,9 @@ impl From<ndarray_linalg::error::LinalgError> for PredictError {
 }
 
 #[derive(
+    AsRefStr,
     Clone,
     Debug,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -141,9 +143,10 @@ impl From<ndarray_linalg::error::LinalgError> for PredictError {
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     SmartDefault,
     VariantNames,
+    Deserialize,
+    Serialize,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
@@ -156,9 +159,9 @@ pub enum ComputeError {
 }
 
 #[derive(
+    AsRefStr,
     Clone,
     Debug,
-    Deserialize,
     Display,
     EnumCount,
     EnumIs,
@@ -168,9 +171,10 @@ pub enum ComputeError {
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     SmartDefault,
     VariantNames,
+    Deserialize,
+    Serialize,
 )]
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
@@ -181,8 +185,19 @@ pub enum NetworkError {
     Network(String),
 }
 
-pub enum ActivationError {}
+macro_rules! impl_from_error {
+    ($base:ident::$variant:ident<$($err:ty),*>) => {
+        $(
+            impl_from_error!(@impl $base::$variant<$err>);
+        )*
+    };
+    (@impl $base:ident::$variant:ident<$err:ty>) => {
+        impl From<$err> for $base {
+            fn from(err: $err) -> Self {
+                Self::$variant(err.to_string())
+            }
+        }
+    };
+}
 
-pub enum LayerError {}
-
-pub enum ModelError {}
+impl_from_error!(ComputeError::Arithmetic<core::num::ParseFloatError>);

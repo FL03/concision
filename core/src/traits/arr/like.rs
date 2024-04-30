@@ -26,6 +26,17 @@ pub trait ArrayLike {
     fn zeros_like(&self) -> Self;
 }
 
+
+pub trait IntoAxis {
+    fn into_axis(self) -> Axis;
+}
+
+
+
+/*
+    ******** implementations ********
+*/
+
 impl<T, D> ArrayLike for Array<T, D>
 where
     T: Clone + Default + Num,
@@ -58,9 +69,6 @@ where
     fn like(&self) -> Self::Item {
         Array::default(self.dim())
     }
-}
-pub trait IntoAxis {
-    fn into_axis(self) -> Axis;
 }
 
 impl<S> IntoAxis for S

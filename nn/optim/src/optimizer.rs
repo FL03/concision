@@ -2,19 +2,13 @@
     Appellation: optimizer <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::params::Params;
-use ndarray::prelude::Array2;
-use num::Float;
 
 pub trait Context {
     type Config;
     type Params;
 }
 
-pub trait Optimizer<T = f64>
-where
-    T: Float,
-{
+pub trait Optimizer<T = f64> {
     type Config;
     type Dataset;
     type Params;

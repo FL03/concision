@@ -7,15 +7,37 @@ use nd::{Array, Dimension, Ix2};
 use num::complex::Complex;
 use num::{Float, Num, Signed};
 
-pub trait AsComplex: Sized {
-    fn as_complex(self, real: bool) -> Complex<Self>;
 
-    fn as_re(self) -> Complex<Self> {
+
+pub trait IntoIm {
+    type Output;
+
+    fn into_complex(self) -> Self::Output;
+}
+pub trait AsComplex {
+    type Real;
+
+    fn as_complex(&self, real: bool) -> Complex<Self::Real>;
+
+    
+
+    fn as_re(&self) -> Complex<Self::Real> {
         self.as_complex(true)
     }
 
-    fn as_im(self) -> Complex<Self> {
+    fn as_im(&self) -> Complex<Self::Real> {
         self.as_complex(false)
+    }
+}
+
+pub trait IntoComplex: AsComplex {
+
+    fn into_complex(self, real: bool) -> Complex<Self::Real> where Self: Sized {
+        self.as_complex(real)
+    }
+
+    fn into_re(self) -> Complex<Self::Real> where Self: Sized {
+        self.as_complex(true)
     }
 }
 
@@ -29,7 +51,7 @@ pub trait FloorDiv<Rhs = Self> {
     fn floor_div(self, rhs: Rhs) -> Self::Output;
 }
 
-pub trait Pow<Rhs = Self> {
+pub trait Powmat<Rhs = Self> {
     type Output;
 
     fn pow(&self, rhs: Rhs) -> Self::Output;
@@ -48,15 +70,20 @@ pub trait SquareRoot {
 */
 impl<T> AsComplex for T
 where
-    T: Num,
+    T: Copy + Num,
 {
-    fn as_complex(self, real: bool) -> Complex<Self> {
+    type Real = T;
+
+    fn as_complex(&self, real: bool) -> Complex<Self> {
         match real {
-            true => Complex::new(self, Self::zero()),
-            false => Complex::new(Self::zero(), self),
+            true => Complex::new(*self, Self::zero()),
+            false => Complex::new(Self::zero(), *self),
         }
     }
 }
+
+impl<T> IntoComplex for T where T: AsComplex {}
+
 impl Conjugate for f32 {
     fn conj(&self) -> Self {
         *self
@@ -115,7 +142,7 @@ where
 //     }
 // }
 
-impl<T> Pow<i32> for Array<T, Ix2>
+impl<T> Powmat<i32> for Array<T, Ix2>
 where
     T: Clone + Num,
     Array<T, Ix2>: Dot<Self, Output = Self>,

@@ -10,7 +10,7 @@ use ndarray::prelude::*;
 use ndarray_linalg::flatten;
 use num::complex::Complex;
 
-use core::prelude::{assert_ok, seeded_uniform, AsComplex, Conjugate, Pow};
+use core::prelude::{assert_ok, seeded_uniform, Conjugate, IntoComplex, Powmat};
 use s4::cmp::kernel::kernel;
 use s4::hippo::dplr::DPLR;
 use s4::ops::{discretize, k_conv};
@@ -23,7 +23,7 @@ const SAMPLES: usize = 16;
 lazy_static! {
     static ref SEEDED_C: Array2<f64> = seeded_uniform(RNGKEY, 0.0, 1.0, (1, FEATURES));
     static ref SAMPLE_C: Array2<f64> = array![[0.02185547, 0.20907068, 0.23742378, 0.3723395]];
-    static ref SAMPLE_IM: Array2<Complex<f64>> = SAMPLE_C.clone().mapv(AsComplex::as_re);
+    static ref SAMPLE_IM: Array2<Complex<f64>> = SAMPLE_C.clone().mapv(IntoComplex::into_re);
 }
 
 #[test]

@@ -3,9 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 extern crate concision as cnc;
+extern crate concision_nn as nn;
 
-use cnc::neural::models::{Model, ModelConfig, ModelParams};
-use cnc::neural::prelude::{Features, Forward, Layer, LayerShape, Sigmoid};
+use nn::models::{Model, ModelConfig, ModelParams};
+use nn::prelude::{Features, Forward, Layer, LayerShape, Sigmoid};
 use cnc::prelude::linarr;
 
 use ndarray::prelude::{Array1, Ix2};

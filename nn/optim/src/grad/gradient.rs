@@ -2,9 +2,8 @@
     Appellation: grad <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::neural::func::activate::Sigmoid;
-use crate::neural::models::ModelParams;
-use crate::neural::prelude::{Forward, Gradient};
+use neural::models::ModelParams;
+use neural::prelude::{Forward, Gradient, Sigmoid};
 use ndarray::prelude::{Array2, Axis, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};

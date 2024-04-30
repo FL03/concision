@@ -14,15 +14,14 @@ version.workspace = true
 [features]
 default = [
     "data",
-    "ml",
     "std",
 ]
 
 full = [
     "default",
-    "derive",
-    "ml",
     "approx",
+    "derive",
+    "models",
     "serde",
 ]
 
@@ -47,29 +46,10 @@ linear = [
     "dep:concision-linear"
 ]
 
-ml = [
+models = [
     "linear",
-    "neural",
-    "nlp",
-    "optim",
-    "transformers",
 ]
 
-neural = [
-    "dep:concision-neural"
-]
-
-nlp = [
-    "dep:concision-nlp"
-]
-
-optim = [
-    "dep:concision-optim",
-]
-
-s4 = [
-    "dep:concision-s4",
-]
 
 serde = [
     "concision-core/serde",
@@ -81,55 +61,34 @@ std = [
     "concision-data/std",
 ]
 
-transformers = [
-    "dep:concision-transformers"
-]
-
 blas = [
     "concision-core/blas",
     "concision-data/blas",
     "concision-linear/blas",
-    "concision-neural/blas",
-    "concision-nlp/blas",
-    "concision-optim/blas",
-    "concision-s4/blas",
-    "concision-transformers/blas",
 ]
 
 intel-mkl-system = [
     "blas",
-    "concision-neural/intel-mkl-system",
-    "concision-s4/intel-mkl-system",
 ]
 
 intel-mkl-static = [
     "blas",
-    "concision-neural/intel-mkl-static",
-    "concision-s4/intel-mkl-static",
 ]
 
 netlib-system = [
     "blas",
-    "concision-neural/netlib-system",
-    "concision-s4/netlib-system",
 ]
 
 netlib-static = [
     "blas",
-    "concision-neural/netlib-static",
-    "concision-s4/netlib-static",
 ]
 
 openblas-system = [
     "blas",
-    "concision-neural/openblas-system",
-    "concision-s4/openblas-system",
 ]
 
 openblas-static = [
     "blas",
-    "concision-neural/openblas-static",
-    "concision-s4/openblas-static",
 ]
 
 [lib]
@@ -146,12 +105,7 @@ concision-data = { optional = true, path = "../data", version = "0.1.12" }
 concision-derive = { optional = true, path = "../derive", version = "0.1.12" }
 concision-macros = { optional = true, path = "../macros", version = "0.1.12" }
 
-concision-neural = { optional = true, path = "../nn/neural", version = "0.1.12" }
-concision-nlp = { optional = true, path = "../nn/nlp", version = "0.1.12" }
-concision-optim = { optional = true, path = "../nn/optim", version = "0.1.12" }
-concision-s4 = { optional = true, path = "../nn/s4", version = "0.1.12" }
-concision-transformers = { optional = true, path = "../nn/transformers", version = "0.1.12" }
-
+# **** Models ****
 concision-linear = { optional = true, path = "../models/linear", version = "0.1.12" }
 
 [dev-dependencies]

@@ -13,12 +13,16 @@ version.workspace = true
 
 
 [features]
-default = []
+default = [
+    "std",
+]
 
 blas = [
     "ndarray/blas",
     "concision-core/blas",
 ]
+
+std = []
 
 intel-mkl-system = [
     "blas",

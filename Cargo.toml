@@ -33,6 +33,10 @@ default-members = [
     "concision"
 ]
 
+exclude = [
+    # "nn/nn",
+]
+
 members = [
     "concision",
     "core",
@@ -41,6 +45,7 @@ members = [
     "macros",
     "models/linear",
     "nn/neural",
+    "nn/nn",
     "nn/nlp",
     "nn/optim",
     "nn/s4",

@@ -4,14 +4,12 @@
 */
 pub use self::{constants::*, types::*};
 
-pub(crate) mod constants {
+mod constants {
     pub const DEFAULT_BUFFER: usize = 1024;
 }
 
-pub(crate) mod statics {}
-
-pub(crate) mod types {
-    use crate::prelude::Forward;
+mod types {
+    use crate::prelude::{Forward, MlError};
     use ndarray::prelude::{Array, Ix2};
 
     pub type BoxedFunction<T> = Box<dyn Fn(T) -> T>;
@@ -21,4 +19,6 @@ pub(crate) mod types {
     pub type LayerBias<T = f64> = ndarray::Array1<T>;
 
     pub type LayerWeight<T = f64> = ndarray::Array2<T>;
+
+    pub type Result<T = ()> = core::result::Result<T, MlError>;
 }

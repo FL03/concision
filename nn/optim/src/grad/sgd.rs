@@ -113,6 +113,18 @@ pub struct Sgd {
 }
 
 impl Sgd {
+    pub fn batch_size(&self) -> usize {
+        self.batch_size
+    }
+
+    pub fn gamma(&self) -> f64 {
+        self.gamma
+    }
+
+    pub fn model(&self) -> &Layer {
+        &self.model
+    }
+
     pub fn step(&mut self) -> f64 {
         let loss = 0.0;
 
@@ -213,8 +225,8 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::prelude::linarr;
-    use crate::neural::prelude::{LayerShape, Sigmoid};
+    use concision::linarr;
+    use neural::prelude::{LayerShape, Sigmoid};
 
     #[test]
     fn test_sgd() {

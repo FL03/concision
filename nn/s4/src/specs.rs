@@ -24,7 +24,8 @@ pub trait NdFft {
 impl<T, D> NdFft for Array<T, D>
 where
     D: Dimension,
-    T: AsComplex + ComplexFloat + FftNum,
+    T: AsComplex<Real = <T as ComplexFloat>::Real> + ComplexFloat,
+    <T as ComplexFloat>::Real: FftNum,
 {
     type Output = Self;
 

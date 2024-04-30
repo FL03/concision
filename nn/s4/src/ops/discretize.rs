@@ -2,7 +2,7 @@
     Appellation: discretize <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::prelude::{Conjugate, Pow};
+use crate::core::prelude::{Conjugate, Powmat};
 
 use ndarray::{Array, Array1, Array2, Axis, ScalarOperand};
 use ndarray_linalg::{Inverse, Lapack, Scalar};

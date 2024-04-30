@@ -29,13 +29,13 @@ pub struct DescentParams {
 
 pub(crate) mod utils {
     use concision::prelude::BoxResult;
+    use core::ops::Sub;
     use ndarray::linalg::Dot;
     use ndarray::{Array, Array2, Dimension, NdFloat};
     use ndarray_stats::DeviationExt;
     use neural::exp::models::Module;
-    use neural::func::activate::Gradient;
+    use neural::prelude::Gradient;
     use num::{FromPrimitive, Signed};
-    use std::ops::Sub;
 
     pub fn gradient<'a, T, D>(
         gamma: T,
@@ -78,17 +78,14 @@ pub(crate) mod utils {
 
 #[cfg(test)]
 mod tests {
-
-    use super::*;
-    use crate::core::prelude::linarr;
-    use crate::neural::func::activate::{LinearActivation, Sigmoid};
-    use crate::neural::models::ModelParams;
-    use crate::neural::prelude::{Features, Forward, Layer, LayerShape};
-    use ndarray::prelude::{Array1, Ix2};
+    use concision::linarr;
+    use neural::models::ModelParams;
+    use neural::prelude::{Features, Forward, Layer, LayerShape, LinearActivation};
+    use ndarray::{Array1, Ix2};
 
     #[test]
     fn test_gradient_descent() {
-        let (epochs, gamma) = (10, 0.001);
+        let (epochs, _gamma) = (10, 0.001);
         let (samples, inputs) = (20, 5);
         let outputs = 4;
 
@@ -96,8 +93,8 @@ mod tests {
 
         let features = LayerShape::new(inputs, outputs);
 
-        let x = linarr::<f64, Ix2>((samples, features.inputs())).unwrap();
-        let y = linarr::<f64, Ix2>((samples, features.outputs())).unwrap();
+        let _x = linarr::<f64, Ix2>((samples, features.inputs())).unwrap();
+        let _y = linarr::<f64, Ix2>((samples, features.outputs())).unwrap();
 
         let mut shapes = vec![features];
         shapes.extend((0..3).map(|_| LayerShape::new(features.outputs(), features.outputs())));

@@ -10,11 +10,12 @@ extern crate ndarray as nd;
 
 pub use self::{primitives::*, traits::prelude::*, utils::*};
 
+#[macro_use]
+pub(crate) mod macros;
 pub(crate) mod primitives;
-
 pub(crate) mod utils;
 
-pub mod errors;
+pub mod error;
 pub mod ops;
 pub mod params;
 pub mod time;
@@ -25,7 +26,7 @@ pub mod prelude {
     pub use crate::primitives::*;
     pub use crate::utils::*;
 
-    pub use crate::errors::*;
+    pub use crate::error::*;
     pub use crate::time::*;
     pub use crate::traits::prelude::*;
 }

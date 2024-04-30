@@ -2,6 +2,8 @@
    Appellation: base <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+// #![cfg(feature = "rand")]
+use core::ops::Neg;
 use ndarray::{Array, Dimension, IntoDimension, Ix2};
 use ndarray_rand::rand::rngs::StdRng;
 use ndarray_rand::rand::{Rng, SeedableRng};
@@ -10,7 +12,6 @@ use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, Standard
 use ndarray_rand::RandomExt;
 use num::traits::real::Real;
 use num::traits::Float;
-use std::ops::Neg;
 
 pub trait GenerateRandom<T = f64, D = Ix2>: Sized
 where
