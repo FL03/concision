@@ -2,7 +2,7 @@
    Appellation: transformer <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::Transform;
+use concision::Transform;
 use ndarray::prelude::{Array2, NdFloat};
 
 #[derive(Clone, Debug, Default)]

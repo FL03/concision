@@ -10,7 +10,7 @@ use ndarray::prelude::*;
 use ndarray_linalg::flatten;
 use num::complex::Complex;
 
-use core::prelude::{assert_ok, seeded_uniform, Conjugate, IntoComplex, Powmat};
+use core::prelude::{assert_ok, seeded_uniform, Conjugate, IntoComplex, Matpow};
 use s4::cmp::kernel::kernel;
 use s4::hippo::dplr::DPLR;
 use s4::ops::{discretize, k_conv};

@@ -6,69 +6,24 @@
 //!
 //! ## Overview
 //!
-pub use self::{iter::*, kinds::*, param::*, variable::*};
+pub use self::{entry::*, kinds::*, parameter::*};
 
-pub(crate) mod iter;
+pub(crate) mod entry;
 pub(crate) mod kinds;
-pub(crate) mod param;
-pub(crate) mod variable;
+pub(crate) mod parameter;
 
-pub mod masks;
 pub mod store;
 
-use ndarray::{Array, ArrayBase, Data, Dimension};
-use std::collections::HashMap;
-
 pub trait Param {
-    type Dim: Dimension;
-
-    fn kind(&self) -> &ParamKind;
-
-    fn name(&self) -> &str;
+    type Key;
+    type Value;
 }
 
-pub trait Biased<T = f64> {
-    type Dim: Dimension;
-    /// Returns an owned reference to the bias of the layer.
-    fn bias(&self) -> &Array<T, Self::Dim>;
-    /// Returns a mutable reference to the bias of the layer.
-    fn bias_mut(&mut self) -> &mut Array<T, Self::Dim>;
-    /// Sets the bias of the layer.
-    fn set_bias(&mut self, bias: Array<T, Self::Dim>);
-}
-
-pub trait Weighted<T = f64> {
-    type Dim: Dimension;
-    /// Returns an owned reference to the weights of the layer.
-    fn weights(&self) -> &Array<T, Self::Dim>;
-    /// Returns a mutable reference to the weights of the layer.
-    fn weights_mut(&mut self) -> &mut Array<T, Self::Dim>;
-    /// Sets the weights of the layer.
-    fn set_weights(&mut self, weights: Array<T, Self::Dim>);
-}
-
-pub trait Params<K, V> {
-    fn get(&self, param: &K) -> Option<&V>;
-
-    fn get_mut(&mut self, param: &K) -> Option<&mut V>;
-}
-
-/*
- ********* implementations *********
-*/
-impl<K, S, D> Params<K, ArrayBase<S, D>> for HashMap<K, ArrayBase<S, D>>
-where
-    S: Data,
-    D: Dimension,
-    K: core::cmp::Eq + core::hash::Hash,
-{
-    fn get(&self, param: &K) -> Option<&ArrayBase<S, D>> {
-        self.get(param)
-    }
-
-    fn get_mut(&mut self, param: &K) -> Option<&mut ArrayBase<S, D>> {
-        self.get_mut(param)
-    }
+pub(crate) mod prelude {
+    pub use super::kinds::ParamKind;
+    pub use super::parameter::Parameter;
+    pub use super::store::ParamStore;
+    pub use super::Param;
 }
 
 #[cfg(test)]

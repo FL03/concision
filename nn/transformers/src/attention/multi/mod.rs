@@ -8,9 +8,8 @@ pub(crate) mod attention;
 pub(crate) mod params;
 
 use crate::attention::Weight;
-use crate::core::params::masks::Mask;
-use crate::core::prelude::BoxResult;
 use crate::ops::Split;
+use crate::prelude::{BoxResult, Mask};
 use ndarray::prelude::{Array2, NdFloat};
 
 pub trait MultiHead<T>
@@ -31,10 +30,9 @@ where
 
 pub(crate) mod utils {
     use crate::attention::scaled_dot_product_attention;
-    use crate::core::params::masks::Mask;
     use crate::ops::Merge;
-    use ndarray::prelude::{s, Array2, Array3, Array4, NdFloat};
-    use ndarray::ShapeError;
+    use crate::Mask;
+    use ndarray::{s, Array2, Array3, Array4, NdFloat, ShapeError};
 
     pub fn batched_multihead(
         query: &Array4<f64>,
@@ -83,7 +81,7 @@ pub(crate) mod utils {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::params::masks::Mask;
+    use crate::Mask;
 
     #[test]
     fn test_multihead_shape() {

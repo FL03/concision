@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::{Biased, Weighted};
-use crate::prelude::GenerateRandom;
+use concision::GenerateRandom;
 use ndarray::linalg::Dot;
 use ndarray::{Array, Axis, Dimension, IntoDimension, Ix2, NdFloat, RemoveAxis};
 use ndarray_rand::rand_distr::uniform::SampleUniform;

@@ -7,6 +7,8 @@
 //! This library implements the neural network primitives and specifications.
 //!
 #![feature(fn_traits, unboxed_closures)]
+extern crate concision_core as concision;
+
 pub use self::{primitives::*, specs::*, utils::*};
 
 pub(crate) mod primitives;
@@ -20,10 +22,12 @@ pub mod models;
 pub mod neurons;
 pub mod nn;
 pub mod ops;
+pub mod params;
 
+#[doc(hidden)]
 pub mod exp;
 
-pub(crate) use concision_core as core;
+pub(crate) use concision as core;
 
 pub mod prelude {
     pub use crate::primitives::*;
@@ -36,4 +40,5 @@ pub mod prelude {
     pub use crate::neurons::*;
     pub use crate::nn::*;
     pub use crate::ops::*;
+    pub use crate::params::*;
 }

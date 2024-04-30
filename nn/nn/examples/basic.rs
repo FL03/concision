@@ -5,9 +5,9 @@
 extern crate concision as cnc;
 extern crate concision_nn as nn;
 
+use cnc::prelude::linarr;
 use nn::models::{Model, ModelConfig, ModelParams};
 use nn::prelude::{Features, Forward, Layer, LayerShape, Sigmoid};
-use cnc::prelude::linarr;
 
 use ndarray::prelude::{Array1, Ix2};
 

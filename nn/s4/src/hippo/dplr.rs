@@ -6,18 +6,18 @@
 //!
 //!
 use super::nplr::NPLR;
-use crate::core::prelude::Conjugate;
+use crate::Conjugate;
+use core::ops::Neg;
 use ndarray::prelude::{Array, Array1, Array2, Axis};
 use ndarray::ScalarOperand;
 use ndarray_linalg::{Eigh, Lapack, Scalar, UPLO};
-use num::traits::NumOps;
-use num::{Complex, Num};
+use num::complex::Complex;
+use num::traits::{Num, NumOps};
 use serde::{Deserialize, Serialize};
-use std::ops::Neg;
 
 pub(crate) fn dplr<T>(features: usize) -> DPLR<T>
 where
-    T: Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
+    T: Conjugate + Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
     <T as Scalar>::Complex: Conjugate + Lapack,
     <T as Scalar>::Real: NumOps<<T as Scalar>::Complex, <T as Scalar>::Complex>,
 {
@@ -71,7 +71,7 @@ where
 
 impl<T> DPLR<T>
 where
-    T: Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
+    T: Conjugate + Scalar<Complex = Complex<T>, Real = T> + ScalarOperand,
     <T as Scalar>::Complex: Conjugate + Lapack,
     <T as Scalar>::Real: NumOps<Complex<T>, Complex<T>>,
 {

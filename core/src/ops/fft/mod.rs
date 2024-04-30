@@ -5,13 +5,12 @@
 //! # Fast Fourier Transform
 //!
 //!
-pub use self::{fft::*, modes::*, plan::*, utils::*};
+pub use self::prelude::*;
 
 pub(crate) mod fft;
-pub(crate) mod modes;
-pub(crate) mod plan;
 
-pub mod algorithms;
+pub mod modes;
+pub mod plan;
 
 pub trait Fft<T> {
     fn fft(&self) -> Vec<T>;
@@ -189,6 +188,14 @@ pub(crate) mod utils {
         let scale = T::from(n).unwrap().recip();
         result.iter().map(|x| x.re() * scale).collect()
     }
+}
+
+pub(crate) mod prelude {
+    pub use super::fft::*;
+    pub use super::modes::*;
+    pub use super::plan::*;
+    pub use super::utils::*;
+    pub use super::Fft;
 }
 
 #[cfg(test)]

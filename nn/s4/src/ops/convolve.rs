@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::core::ops::{pad, PadMode};
-use crate::core::prelude::Powmat;
+use crate::core::prelude::Matpow;
 use crate::prelude::{irfft, irfft_2d, rfft, rfft_2d};
 use ndarray::linalg::Dot;
 use ndarray::prelude::{s, Array, Array1, Array2};

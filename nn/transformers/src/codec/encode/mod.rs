@@ -16,7 +16,7 @@ pub(crate) mod utils {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::params::masks::Mask;
+    use crate::Mask;
 
     use ndarray::prelude::*;
 

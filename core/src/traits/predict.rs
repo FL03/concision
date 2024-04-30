@@ -12,19 +12,6 @@ pub trait Backward {
     fn backward(&self) -> Self::Output;
 }
 
-pub trait Module<T>: Forward<T> + Backward {
-    type Config;
-    type Params;
-
-    fn new(config: Self::Config) -> Self;
-
-    fn config(&self) -> &Self::Config;
-
-    fn config_mut(&mut self) -> &mut Self::Config;
-
-    fn parameters(&self) -> Self::Params;
-}
-
 /// [Forward] describes an object capable of forward propagation.
 pub trait Forward<T> {
     type Output;

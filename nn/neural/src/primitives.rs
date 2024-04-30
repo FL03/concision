@@ -12,6 +12,10 @@ mod types {
     use crate::prelude::{Forward, MlError};
     use ndarray::prelude::{Array, Ix2};
 
+    pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
+
+    pub type BoxResult<T = ()> = core::result::Result<T, BoxError>;
+
     pub type BoxedFunction<T> = Box<dyn Fn(T) -> T>;
     ///
     pub type ForwardDyn<T = f64, D = Ix2> = Box<dyn Forward<Array<T, D>, Output = Array<T, D>>>;

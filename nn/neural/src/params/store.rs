@@ -2,10 +2,16 @@
     Appellation: store <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{ParamKind, Parameter};
-use crate::Map;
+
+pub mod group;
+
+use crate::params::{ParamKind, Parameter};
+#[cfg(not(feature = "std"))]
+use alloc::collections::{btree_map, BTreeMap};
 use ndarray::prelude::{Dimension, Ix2};
 use num::Float;
+#[cfg(feature = "std")]
+use std::collections::{btree_map, BTreeMap};
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -14,7 +20,7 @@ where
     T: Float,
     D: Dimension,
 {
-    store: Map<ParamKind, Parameter<T, D>>,
+    store: BTreeMap<ParamKind, Parameter<T, D>>,
 }
 
 impl<T, D> ParamStore<T, D>
@@ -23,7 +29,9 @@ where
     T: Float,
 {
     pub fn new() -> Self {
-        Self { store: Map::new() }
+        Self {
+            store: BTreeMap::new(),
+        }
     }
 
     pub fn get(&self, kind: &ParamKind) -> Option<&Parameter<T, D>> {
@@ -55,43 +63,31 @@ where
     }
 }
 
-macro_rules! impl_into_iter {
-    ($($p:ident)::*) => {
-        impl_into_iter!(@impl $($p)::*);
-    };
-    (@impl $($p:ident)::*) => {
-        impl<T, D> IntoIterator for ParamStore<T, D>
-        where
-            D: Dimension,
-            T: Float,
-        {
-            type Item = (ParamKind, Parameter<T, D>);
-            type IntoIter = $($p)::*::IntoIter<ParamKind, Parameter<T, D>>;
+impl<T, D> IntoIterator for ParamStore<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    type Item = (ParamKind, Parameter<T, D>);
+    type IntoIter = btree_map::IntoIter<ParamKind, Parameter<T, D>>;
 
-            fn into_iter(self) -> Self::IntoIter {
-                self.store.into_iter()
-            }
-        }
-
-        impl<'a, T, D> IntoIterator for &'a mut ParamStore<T, D>
-        where
-            D: Dimension,
-            T: Float,
-        {
-            type Item = (&'a ParamKind, &'a mut Parameter<T, D>);
-            type IntoIter = $($p)::*::IterMut<'a, ParamKind, Parameter<T, D>>;
-
-            fn into_iter(self) -> Self::IntoIter {
-                self.store.iter_mut()
-            }
-        }
-    };
-
+    fn into_iter(self) -> Self::IntoIter {
+        self.store.into_iter()
+    }
 }
-#[cfg(feature = "std")]
-impl_into_iter!(std::collections::hash_map);
-#[cfg(not(feature = "std"))]
-impl_into_iter!(alloc::collections::btree_map);
+
+impl<'a, T, D> IntoIterator for &'a mut ParamStore<T, D>
+where
+    D: Dimension,
+    T: Float,
+{
+    type Item = (&'a ParamKind, &'a mut Parameter<T, D>);
+    type IntoIter = btree_map::IterMut<'a, ParamKind, Parameter<T, D>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.store.iter_mut()
+    }
+}
 
 #[cfg(test)]
 mod tests {

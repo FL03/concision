@@ -2,72 +2,14 @@
    Appellation: pad <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::prelude::array_like;
-#[cfg(not(feature = "std"))]
-use alloc::borrow::Cow;
-use ndarray::prelude::{Array, ArrayBase, Dimension};
-use ndarray::{AxisDescription, Data, Slice};
-use num::{FromPrimitive, Num, Zero};
-#[cfg(feature = "std")]
-use std::borrow::Cow;
+pub use self::utils::*;
+use num::Zero;
 use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, VariantNames};
 
-fn read_pad(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
-    if pad.len() == 1 && pad.len() < nb_dim {
-        // The user provided a single padding for all dimensions
-        Cow::from(vec![pad[0]; nb_dim])
-    } else if pad.len() == nb_dim {
-        Cow::from(pad)
-    } else {
-        panic!("Inconsistant number of dimensions and pad arrays");
-    }
-}
+pub trait PadItem<T> {
+    type Output;
 
-pub fn pad<S, A, D>(data: &ArrayBase<S, D>, pad: &[[usize; 2]], mode: PadMode<A>) -> Array<A, D>
-where
-    S: Data<Elem = A>,
-    A: Copy + FromPrimitive + Num,
-    D: Dimension,
-{
-    let pad = read_pad(data.ndim(), pad);
-    let mut new_dim = data.raw_dim();
-    for (ax, (&ax_len, pad)) in data.shape().iter().zip(pad.iter()).enumerate() {
-        new_dim[ax] = ax_len + pad[0] + pad[1];
-    }
-
-    let mut padded = array_like(&data, new_dim, mode.init());
-    pad_to(data, &pad, mode, &mut padded);
-    padded
-}
-
-pub fn pad_to<S, A, D>(
-    data: &ArrayBase<S, D>,
-    pad: &[[usize; 2]],
-    mode: PadMode<A>,
-    output: &mut Array<A, D>,
-) where
-    S: Data<Elem = A>,
-    A: Copy + FromPrimitive + Num,
-    D: Dimension,
-{
-    let pad = read_pad(data.ndim(), pad);
-
-    // Select portion of padded array that needs to be copied from the original array.
-    output
-        .slice_each_axis_mut(|ad| {
-            let AxisDescription { axis, len, .. } = ad;
-            let pad = pad[axis.index()];
-            Slice::from(pad[0]..len - pad[1])
-        })
-        .assign(data);
-
-    match mode.action() {
-        PadAction::StopAfterCopy => { /* Nothing */ }
-        _ => unimplemented!(),
-    }
-}
-pub trait Pad<T> {
-    fn pad(&self, pad: usize) -> Self;
+    fn pad(&self, pad: usize) -> Self::Output;
 }
 
 // impl<T, D> Pad<T> for Array<T, D>
@@ -174,4 +116,71 @@ impl<T> PadMode<T> {
 pub struct Padding<T> {
     pub mode: PadMode<T>,
     pub pad: usize,
+}
+
+mod utils {
+    use super::{PadAction, PadMode};
+    use crate::prelude::array_like;
+    #[cfg(not(feature = "std"))]
+    use alloc::borrow::Cow;
+    use ndarray::prelude::{Array, ArrayBase, Dimension};
+    use ndarray::{AxisDescription, Data, Slice};
+    use num::{FromPrimitive, Num};
+    #[cfg(feature = "std")]
+    use std::borrow::Cow;
+
+    fn read_pad(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
+        if pad.len() == 1 && pad.len() < nb_dim {
+            // The user provided a single padding for all dimensions
+            Cow::from(vec![pad[0]; nb_dim])
+        } else if pad.len() == nb_dim {
+            Cow::from(pad)
+        } else {
+            panic!("Inconsistant number of dimensions and pad arrays");
+        }
+    }
+
+    pub fn pad<S, A, D>(data: &ArrayBase<S, D>, pad: &[[usize; 2]], mode: PadMode<A>) -> Array<A, D>
+    where
+        S: Data<Elem = A>,
+        A: Copy + FromPrimitive + Num,
+        D: Dimension,
+    {
+        let pad = read_pad(data.ndim(), pad);
+        let mut new_dim = data.raw_dim();
+        for (ax, (&ax_len, pad)) in data.shape().iter().zip(pad.iter()).enumerate() {
+            new_dim[ax] = ax_len + pad[0] + pad[1];
+        }
+
+        let mut padded = array_like(&data, new_dim, mode.init());
+        pad_to(data, &pad, mode, &mut padded);
+        padded
+    }
+
+    pub fn pad_to<S, A, D>(
+        data: &ArrayBase<S, D>,
+        pad: &[[usize; 2]],
+        mode: PadMode<A>,
+        output: &mut Array<A, D>,
+    ) where
+        S: Data<Elem = A>,
+        A: Copy + FromPrimitive + Num,
+        D: Dimension,
+    {
+        let pad = read_pad(data.ndim(), pad);
+
+        // Select portion of padded array that needs to be copied from the original array.
+        output
+            .slice_each_axis_mut(|ad| {
+                let AxisDescription { axis, len, .. } = ad;
+                let pad = pad[axis.index()];
+                Slice::from(pad[0]..len - pad[1])
+            })
+            .assign(data);
+
+        match mode.action() {
+            PadAction::StopAfterCopy => { /* Nothing */ }
+            _ => unimplemented!(),
+        }
+    }
 }

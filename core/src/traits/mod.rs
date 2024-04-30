@@ -17,24 +17,14 @@ pub mod arr {
     pub(crate) mod ops;
 }
 
-use ndarray::prelude::{Array, Dimension};
-
-pub trait Apply<T> {
-    fn apply<F>(&self, f: F) -> Self
-    where
-        F: Fn(&T) -> T;
+pub trait Initialize {
+    fn init(&mut self);
 }
 
-impl<T, D> Apply<T> for Array<T, D>
-where
-    D: Dimension,
-{
-    fn apply<F>(&self, f: F) -> Self
-    where
-        F: Fn(&T) -> T,
-    {
-        self.map(f)
-    }
+pub trait Configure {
+    type Config;
+
+    fn setup(&mut self, config: Self::Config);
 }
 
 pub trait Transform<T> {
@@ -48,7 +38,7 @@ pub(crate) mod prelude {
     pub use super::math::*;
     pub use super::predict::*;
     pub use super::store::*;
-    pub use super::{Apply, Transform};
+    pub use super::{Initialize, Transform};
 }
 
 #[cfg(test)]

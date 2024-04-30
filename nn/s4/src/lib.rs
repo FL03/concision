@@ -5,7 +5,7 @@
 //! # Structured State Space Sequential Models (S4)
 //!
 //!  
-// extern crate concision_core as core;
+extern crate concision_core as concision;
 // extern crate concision_data as data;
 extern crate concision_neural as neural;
 
@@ -22,9 +22,7 @@ pub mod ops;
 pub mod params;
 pub mod ssm;
 
-pub(crate) use concision_core as core;
-// pub(crate) use concision_data as data;
-// pub(crate) use concision_neural as neural;
+pub(crate) use concision as core;
 
 pub mod prelude {
     pub use crate::primitives::*;

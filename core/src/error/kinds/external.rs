@@ -5,9 +5,26 @@
 use smart_default::SmartDefault;
 use strum::{AsRefStr, EnumCount, EnumIs, EnumIter, VariantNames};
 
-#[derive(AsRefStr, Clone, Debug, EnumCount, EnumIs, EnumIter, Eq, Hash, Ord, PartialEq, PartialOrd, SmartDefault, VariantNames)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize), serde(rename_all = "lowercase", untagged))]
-#[repr(C)]
+#[derive(
+    AsRefStr,
+    Clone,
+    Debug,
+    EnumCount,
+    EnumIs,
+    EnumIter,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    SmartDefault,
+    VariantNames,
+)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase", untagged)
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum ExternalError {
     Error(String),
@@ -29,7 +46,6 @@ impl ExternalError {
     }
 
     pub fn unknown() -> Self {
-
         ExternalError::Unknown
     }
 }
@@ -45,13 +61,6 @@ impl core::fmt::Display for ExternalError {
         };
         write!(f, "{}", msg)
     }
-}
-
-impl From<ExternalError> for super::Error {
-    fn from(err: ExternalError) -> Self {
-        super::Error::External(err)
-    }
-
 }
 
 #[cfg(feature = "std")]

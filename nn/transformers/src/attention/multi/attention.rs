@@ -4,9 +4,10 @@
 */
 use super::{multihead, MultiHeadParams};
 use crate::attention::Weight;
-use crate::core::params::masks::Mask;
-use crate::neural::prelude::{Forward, Layer};
 use crate::ops::Split;
+use crate::Mask;
+use neural::prelude::{Forward, Layer};
+
 use ndarray::prelude::{Array2, NdFloat};
 use ndarray::ShapeError;
 use ndarray_rand::rand_distr::uniform::SampleUniform;

@@ -4,7 +4,8 @@
 */
 use super::S4Config;
 use crate::cmp::kernel::kernel;
-use crate::core::prelude::{randcomplex, Conjugate};
+use crate::Conjugate;
+use concision::prelude::randcomplex;
 use neural::prelude::{Predict, PredictError};
 // use crate::prelude::SSMParams::*;
 use crate::hippo::dplr::DPLR;

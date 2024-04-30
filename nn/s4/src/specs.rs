@@ -2,10 +2,46 @@
     Appellation: specs <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::prelude::AsComplex;
+use concision::prelude::AsComplex;
 use ndarray::prelude::{Array, Dimension};
-use num::complex::ComplexFloat;
+use ndarray_linalg::Scalar;
+use num::complex::{Complex, ComplexFloat};
+use num::traits::{Num, Signed};
 use rustfft::{FftNum, FftPlanner};
+
+pub trait Conjugate {
+    fn conj(&self) -> Self;
+}
+
+impl Conjugate for f32 {
+    fn conj(&self) -> Self {
+        *self
+    }
+}
+
+impl Conjugate for f64 {
+    fn conj(&self) -> Self {
+        *self
+    }
+}
+
+impl<T> Conjugate for Complex<T>
+where
+    T: Clone + Conjugate + Num + Signed,
+{
+    fn conj(&self) -> Self {
+        Complex::conj(&self)
+    }
+}
+impl<A, D> Conjugate for Array<A, D>
+where
+    A: Clone + Conjugate,
+    D: Dimension,
+{
+    fn conj(&self) -> Self {
+        self.mapv(|i| i.conj())
+    }
+}
 
 pub trait Scan<S, T> {
     type Output;

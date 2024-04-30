@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Param, ParamKind};
-use crate::prelude::GenerateRandom;
+use concision::GenerateRandom;
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;

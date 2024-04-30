@@ -2,13 +2,13 @@
     Appellation: mask <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use core::ops;
 use ndarray::prelude::{Array, Array2, Dimension};
 use ndarray::ScalarOperand;
 use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
 use ndarray_rand::RandomExt;
 use num::traits::{Float, NumOps};
 use smart_default::SmartDefault;
-use std::ops;
 use strum::EnumIs;
 
 #[derive(Clone, Debug, EnumIs, PartialEq, SmartDefault)]

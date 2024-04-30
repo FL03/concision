@@ -2,12 +2,9 @@
    Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use nd::linalg::Dot;
-use nd::{Array, Dimension, Ix2};
+use nd::{Array, Dimension};
 use num::complex::Complex;
-use num::{Float, Num, Signed};
-
-
+use num::{Float, Num, Signed, Zero};
 
 pub trait IntoIm {
     type Output;
@@ -19,8 +16,6 @@ pub trait AsComplex {
 
     fn as_complex(&self, real: bool) -> Complex<Self::Real>;
 
-    
-
     fn as_re(&self) -> Complex<Self::Real> {
         self.as_complex(true)
     }
@@ -31,30 +26,31 @@ pub trait AsComplex {
 }
 
 pub trait IntoComplex: AsComplex {
-
-    fn into_complex(self, real: bool) -> Complex<Self::Real> where Self: Sized {
+    fn into_complex(self, real: bool) -> Complex<Self::Real>
+    where
+        Self: Sized,
+    {
         self.as_complex(real)
     }
 
-    fn into_re(self) -> Complex<Self::Real> where Self: Sized {
+    fn into_re(self) -> Complex<Self::Real>
+    where
+        Self: Sized,
+    {
         self.as_complex(true)
     }
 }
 
 pub trait Conjugate {
-    fn conj(&self) -> Self;
+    type Output;
+
+    fn conj(&self) -> Self::Output;
 }
 
 pub trait FloorDiv<Rhs = Self> {
     type Output;
 
     fn floor_div(self, rhs: Rhs) -> Self::Output;
-}
-
-pub trait Powmat<Rhs = Self> {
-    type Output;
-
-    fn pow(&self, rhs: Rhs) -> Self::Output;
 }
 
 pub trait RoundTo {
@@ -84,22 +80,31 @@ where
 
 impl<T> IntoComplex for T where T: AsComplex {}
 
-impl Conjugate for f32 {
-    fn conj(&self) -> Self {
-        *self
-    }
+macro_rules! impl_conj {
+    ($($t:ident<$res:ident>),*) => {
+        $(
+            impl_conj!(@impl $t<$res>);
+        )*
+    };
+    (@impl $t:ident<$res:ident>) => {
+        impl Conjugate for $t {
+            type Output = $res<$t>;
+
+            fn conj(&self) -> Self::Output {
+                Complex { re: *self, im: -$t::zero() }
+            }
+        }
+    };
 }
 
-impl Conjugate for f64 {
-    fn conj(&self) -> Self {
-        *self
-    }
-}
+impl_conj!(f32<Complex>, f64<Complex>);
 
 impl<T> Conjugate for Complex<T>
 where
     T: Clone + Signed,
 {
+    type Output = Complex<T>;
+
     fn conj(&self) -> Self {
         Complex::<T>::conj(self)
     }
@@ -108,9 +113,10 @@ where
 impl<T, D> Conjugate for Array<T, D>
 where
     D: Dimension,
-    T: Clone + Conjugate,
+    T: Clone + num::complex::ComplexFloat,
 {
-    fn conj(&self) -> Self {
+    type Output = Array<T, D>;
+    fn conj(&self) -> Self::Output {
         self.mapv(|x| x.conj())
     }
 }
@@ -141,25 +147,6 @@ where
 //         self.mapv(|x| x.pow(rhs))
 //     }
 // }
-
-impl<T> Powmat<i32> for Array<T, Ix2>
-where
-    T: Clone + Num,
-    Array<T, Ix2>: Dot<Self, Output = Self>,
-{
-    type Output = Self;
-
-    fn pow(&self, rhs: i32) -> Self::Output {
-        if !self.is_square() {
-            panic!("Matrix must be square to be raised to a power");
-        }
-        let mut res = Array::eye(self.shape()[0]);
-        for _ in 0..rhs {
-            res = res.dot(&self);
-        }
-        res
-    }
-}
 
 impl<T> RoundTo for T
 where

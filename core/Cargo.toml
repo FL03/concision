@@ -16,6 +16,13 @@ default = [
     "std",
 ]
 
+full = [
+    "default",
+    "approx",
+    "rand",
+    "serde",
+]
+
 approx = [
     "dep:approx",
     "ndarray/approx-0_5",

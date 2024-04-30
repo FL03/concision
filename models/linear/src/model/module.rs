@@ -2,8 +2,7 @@
     Appellation: module <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::ModuleParams;
-use concision::params::{Biased, Weighted};
+use crate::{Biased, ModuleParams, Weighted};
 use concision::traits::Forward;
 use ndarray::prelude::{Array2, NdFloat};
 use num::Float;

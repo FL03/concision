@@ -9,11 +9,12 @@
 extern crate concision_core as concision;
 extern crate concision_neural as neural;
 
-pub use self::cmp::*;
+pub use self::{cmp::*, traits::*};
 
 pub mod conv;
 pub mod dense;
 pub mod model;
+pub mod traits;
 
 pub(crate) mod cmp {
     pub(crate) use self::prelude::*;
@@ -37,4 +38,5 @@ pub(crate) type ModuleParams<K, V> = HashMap<K, Array2<V>>;
 pub mod prelude {
     pub use crate::cmp::prelude::*;
     pub use crate::model::*;
+    pub use crate::traits::*;
 }

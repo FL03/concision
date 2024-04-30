@@ -79,9 +79,9 @@ pub(crate) mod utils {
 #[cfg(test)]
 mod tests {
     use concision::linarr;
+    use ndarray::{Array1, Ix2};
     use neural::models::ModelParams;
     use neural::prelude::{Features, Forward, Layer, LayerShape, LinearActivation};
-    use ndarray::{Array1, Ix2};
 
     #[test]
     fn test_gradient_descent() {

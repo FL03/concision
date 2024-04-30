@@ -12,8 +12,8 @@ pub(crate) mod scan;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::prelude::randc_normal;
     use crate::hippo::dplr::DPLR;
+    use concision::randc_normal;
 
     const FEATURES: usize = 8;
     const RNGKEY: u64 = 1;

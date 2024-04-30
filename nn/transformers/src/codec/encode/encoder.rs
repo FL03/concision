@@ -4,10 +4,10 @@
 */
 use super::EncoderParams;
 use crate::attention::multi::MultiHeadAttention;
-use crate::core::params::masks::Mask;
 use crate::ffn::FFN;
-use crate::neural::prelude::{Forward, LayerNorm};
-use ndarray::prelude::Array2;
+use crate::Mask;
+use ndarray::Array2;
+use neural::prelude::{Forward, LayerNorm};
 
 pub struct Encoder {
     attention: MultiHeadAttention,

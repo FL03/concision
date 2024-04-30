@@ -6,7 +6,7 @@
 //!
 //!
 pub(crate) use self::utils::*;
-pub use self::{hippo::*, kinds::*};
+pub use self::{dplr::DPLR, hippo::*, kinds::*, nplr::NPLR};
 
 pub(crate) mod hippo;
 pub(crate) mod kinds;
@@ -38,12 +38,9 @@ pub(crate) mod utils {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use dplr::DPLR;
-    use nplr::NPLR;
-
-    use crate::core::prelude::Conjugate;
+    use crate::prelude::Conjugate;
     use ndarray::prelude::*;
-    use num::complex::ComplexFloat;
+    use ndarray_linalg::Scalar;
 
     #[test]
     fn test_hippo() {

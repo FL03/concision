@@ -2,10 +2,10 @@
     Appellation: grad <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use neural::models::ModelParams;
-use neural::prelude::{Forward, Gradient, Sigmoid};
 use ndarray::prelude::{Array2, Axis, NdFloat};
 use ndarray_stats::DeviationExt;
+use neural::models::ModelParams;
+use neural::prelude::{Forward, Gradient, Sigmoid};
 use num::{Float, Signed};
 
 pub struct Grad<T = f64, O = Sigmoid>

@@ -2,10 +2,7 @@
    Appellation: error <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::kinds::*;
-
-pub mod kinds;
-
+use super::kinds::ExternalError;
 use smart_default::SmartDefault;
 use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
@@ -53,5 +50,10 @@ impl std::error::Error for Error {}
 //     }
 // }
 
+impl From<ExternalError> for Error {
+    fn from(err: ExternalError) -> Self {
+        Error::External(err)
+    }
+}
 
 impl_from_error!(Error::IO<std::io::Error>);

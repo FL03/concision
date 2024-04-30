@@ -2,10 +2,11 @@
     Appellation: discretize <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::prelude::{Conjugate, Powmat};
-
+use crate::Conjugate;
+use concision::prelude::Matpow;
 use ndarray::{Array, Array1, Array2, Axis, ScalarOperand};
 use ndarray_linalg::{Inverse, Lapack, Scalar};
+use num::complex::ComplexFloat;
 
 pub fn discretize<T>(
     a: &Array2<T>,

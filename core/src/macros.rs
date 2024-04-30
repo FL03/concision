@@ -5,13 +5,14 @@
 
 macro_rules! impl_from_error {
     ($base:ident::$variant:ident<$($err:ty),* $(,)?>) => {
+        impl_from_error!(@loop $base::$variant<$($err),*>);
+    };
+    ($base:ident::$variant:ident<$err:ty>$($rest:tt)*) => {
+        impl_from_error!(@loop $base::$variant<$($err),*>$($rest)*);
+    };
+    (@loop $base:ident::$variant:ident<$($err:ty),* $(,)?>) => {
         $(
             impl_from_error!(@impl $base::$variant<$err>);
-        )*
-    };
-    ($base:ident::$variant:ident($p:path)<$($err:ty),* $(,)?>) => {
-        $(
-            impl_from_error!(@impl $base::$variant($p)<$err>);
         )*
     };
     (@impl $base:ident::$variant:ident<$err:ty>) => {

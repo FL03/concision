@@ -2,10 +2,10 @@
     Appellation: kernel <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::core::ops::fft::{ifft, FftPlan};
-use crate::core::prelude::Conjugate;
 use crate::params::DPLRParams;
-use crate::prelude::cauchy;
+use crate::prelude::{cauchy, Conjugate};
+
+use concision::ops::fft::{ifft, FftPlan};
 use ndarray::prelude::{Array, Array1};
 use ndarray::ScalarOperand;
 use ndarray_linalg::Scalar;
