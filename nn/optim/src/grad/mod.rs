@@ -28,12 +28,12 @@ pub struct DescentParams {
 }
 
 pub(crate) mod utils {
-    use crate::core::prelude::BoxResult;
-    use crate::neural::exp::models::Module;
-    use crate::neural::func::activate::Gradient;
+    use concision::prelude::BoxResult;
     use ndarray::linalg::Dot;
-    use ndarray::prelude::{Array, Array2, Dimension, NdFloat};
+    use ndarray::{Array, Array2, Dimension, NdFloat};
     use ndarray_stats::DeviationExt;
+    use neural::exp::models::Module;
+    use neural::func::activate::Gradient;
     use num::{FromPrimitive, Signed};
     use std::ops::Sub;
 

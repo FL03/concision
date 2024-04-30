@@ -42,8 +42,6 @@ pub mod prelude {
     pub use concision_macros::*;
     // #[cfg(feature = "ml")]
     // pub use concision_ml::prelude::*;
-    #[cfg(feature = "neural")]
-    pub use concision_neural::prelude::*;
     #[cfg(feature = "nlp")]
     pub use concision_nlp::prelude::*;
     #[cfg(feature = "optim")]

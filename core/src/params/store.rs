@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-
 pub mod group;
 
 use crate::params::{ParamKind, Parameter};

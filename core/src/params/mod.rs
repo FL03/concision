@@ -16,7 +16,7 @@ pub(crate) mod variable;
 pub mod masks;
 pub mod store;
 
-use ndarray::{Array, ArrayBase, Dimension, Ix2};
+use ndarray::{Array, ArrayBase, Data, Dimension};
 use std::collections::HashMap;
 
 pub trait Param {
@@ -47,20 +47,16 @@ pub trait Weighted<T = f64> {
     fn set_weights(&mut self, weights: Array<T, Self::Dim>);
 }
 
-pub trait Params<K = String, T = f64, D = Ix2>
-where
-    D: Dimension,
-    Self: IntoIterator<Item = (K, Array<T, D>)>,
-{
-    fn get(&self, param: &K) -> Option<&Array<T, D>>;
+pub trait Params<K, V> {
+    fn get(&self, param: &K) -> Option<&V>;
 
-    fn get_mut(&mut self, param: &K) -> Option<&mut Array<T, D>>;
+    fn get_mut(&mut self, param: &K) -> Option<&mut V>;
 }
 
 /*
-    ********* implementations *********
+ ********* implementations *********
 */
-impl<K, S, D> Params<K, A, D> for HashMap<K, ArrayBase<S, D>>
+impl<K, S, D> Params<K, ArrayBase<S, D>> for HashMap<K, ArrayBase<S, D>>
 where
     S: Data,
     D: Dimension,

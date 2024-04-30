@@ -6,9 +6,9 @@
 //!
 //!
 
-use crate::neural::prelude::{Activate, Features, Forward, Layer};
+use neural::prelude::{Activate, Features, Forward, Layer};
 // use crate::prelude::ObjectiveFn;
-use ndarray::prelude::{s, Array1, Array2, Axis, Ix2, NdFloat};
+use ndarray::{s, Array1, Array2, Axis, Ix2, NdFloat};
 use ndarray_stats::DeviationExt;
 use num::{Float, FromPrimitive, Signed};
 use rand::seq::SliceRandom;

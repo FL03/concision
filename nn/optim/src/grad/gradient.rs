@@ -106,11 +106,11 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::prelude::linarr;
-    use crate::neural::models::ModelParams;
-    use crate::neural::prelude::{Features, LayerShape, Sigmoid};
+    use concision::prelude::linarr;
+    use neural::models::ModelParams;
+    use neural::prelude::{Features, LayerShape, Sigmoid};
 
-    use ndarray::prelude::Ix2;
+    use ndarray::Ix2;
 
     pub fn assert_ok<T, E>(result: Result<T, E>) -> T
     where

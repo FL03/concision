@@ -3,15 +3,16 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Concision Optim
+//!
+
+extern crate concision_core as concision;
+extern crate concision_neural as neural;
 pub use self::{optimizer::*, primitives::*, specs::*, utils::*};
 
 pub(crate) mod optimizer;
 pub(crate) mod primitives;
 pub(crate) mod specs;
 pub(crate) mod utils;
-
-pub(crate) use concision_core as core;
-pub(crate) use concision_neural as neural;
 
 pub mod grad;
 pub mod norm;
