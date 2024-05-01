@@ -56,7 +56,7 @@ openblas-static = [
 
 
 [lib]
-bench = true
+bench = false
 crate-type = ["rlib"]
 doctest = false
 test = true

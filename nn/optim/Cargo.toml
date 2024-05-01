@@ -21,15 +21,15 @@ blas = [
 ]
 
 [lib]
-bench = true
+bench = false
 crate-type = ["rlib"]
 doctest = false
-test = true
+test = false
 
 [build-dependencies]
 
 [dependencies]
-concision-core = { path = "../../core", version = "0.1.12" }
+concision-core = { features = ["full"], path = "../../core", version = "0.1.12" }
 concision-neural = { path = "../neural" }
 
 anyhow.workspace = true

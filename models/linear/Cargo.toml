@@ -23,8 +23,6 @@ full = [
     "serde",
 ]
 
-alloc = []
-
 blas = [
     "concision-core/blas",
     "concision-neural/blas",

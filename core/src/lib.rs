@@ -22,6 +22,7 @@ pub(crate) mod primitives;
 pub(crate) mod utils;
 
 pub mod error;
+pub mod func;
 pub mod models;
 pub mod ops;
 pub mod params;
@@ -66,6 +67,7 @@ pub mod prelude {
     pub use super::utils::*;
 
     pub use super::error::prelude::*;
+    pub use super::func::prelude::*;
     pub use super::models::prelude::*;
     pub use super::ops::prelude::*;
     pub use super::params::prelude::*;

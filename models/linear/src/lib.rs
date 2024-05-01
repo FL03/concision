@@ -8,11 +8,11 @@
 //!
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(any(feature = "alloc", no_std))]
+#[cfg(no_std)]
 extern crate alloc;
 
 extern crate concision_core as concision;
-extern crate concision_neural as neural;
+// extern crate concision_neural as neural;
 extern crate ndarray as nd;
 extern crate ndarray_rand as ndrand;
 extern crate ndarray_stats as stats;

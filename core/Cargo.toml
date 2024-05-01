@@ -61,7 +61,7 @@ std = [
 
 [lib]
 bench = false
-crate-type = ["rlib"]
+crate-type = ["cdylib", "rlib", "lib"]
 doctest = false
 test = true
 
@@ -69,7 +69,6 @@ test = true
 
 [dependencies]
 approx = { optional = true, version = "0.5" }
-anyhow.workspace = true
 ndarray = "0.15"
 ndarray-rand = "0.14" # { optional = true, version = "0.14" }
 num = "0.4"

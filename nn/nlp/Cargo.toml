@@ -16,10 +16,24 @@ default = [
     "std"
 ]
 
+full = [
+    "default",
+    "serde",
+]
 blas = [
     "ndarray/blas",
 ]
 
+serde = [
+    "dep:serde",
+    "serde-ext",
+]
+
+serde-ext = [
+    "dep:serde_json",
+    "ndarray/serde-1",
+    "num/serde",
+]
 
 std = [
     "ndarray/std",
@@ -27,10 +41,10 @@ std = [
 ]
 
 [lib]
-bench = true
+bench = false
 crate-type = ["rlib"]
 doctest = false
-test = true
+test = false
 
 [build-dependencies]
 
@@ -38,13 +52,13 @@ test = true
 
 anyhow.workspace = true
 finalfusion = "0.18"
-ndarray = { features = ["serde-1"], version = "0.15" }
-num.workspace = true
-serde.workspace = true
-serde_json.workspace = true
+ndarray = "0.15"
+num = { features = ["rand"], version = "0.4" }
+serde = { features = ["derive"], optional = true, version = "1" }
+serde_json = { optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
-tokenizers = { features = [], version = "0.19" }
+tokenizers = "0.19"
 
 [dev-dependencies]
 concision-core = { path = "../../core", version = "0.1.12" }

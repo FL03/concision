@@ -21,7 +21,7 @@ blas = [
 ]
 
 [lib]
-bench = true
+bench = false
 crate-type = ["rlib"]
 doctest = false
 test = true
@@ -32,11 +32,11 @@ test = true
 concision-core = { path = "../../core", version = "0.1.12" }
 concision-neural = { path = "../neural", version = "0.1.12" }
 
-anyhow.workspace = true
-lazy_static.workspace = true
+anyhow = "1"
+lazy_static = "1"
 ndarray = { features = ["serde-1"], version = "0.15" }
-ndarray-rand.workspace = true
-ndarray-stats.workspace = true
+ndarray-rand = { features = [], version = "0.14" }
+ndarray-stats = "0.5"
 num = { features = ["rand", "serde"], version = "0.4" }
 serde = { features = ["derive"], version = "1" }
 serde_json = "1"
