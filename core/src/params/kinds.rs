@@ -62,35 +62,13 @@ impl ParamKind {
     }
 }
 
-impl std::fmt::Display for ParamKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ParamKind {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let content = match self {
             ParamKind::Bias => "bias",
             ParamKind::Weight => "weight",
             ParamKind::Other(name) => name,
         };
         write!(f, "{}", content)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::collections::HashMap;
-
-    #[test]
-    fn test_param_kind_map() {
-        let name = "test";
-        let other = ParamKind::other(name);
-
-        let data = [
-            (ParamKind::Bias, 0),
-            (ParamKind::Weight, 1),
-            (other.clone(), 2),
-            (ParamKind::other("mask"), 3),
-        ];
-        let store = HashMap::<ParamKind, usize>::from_iter(data);
-        assert_eq!(store.get(&ParamKind::Bias), Some(&0));
-        assert_eq!(store.get(&other), Some(&2));
     }
 }

@@ -6,9 +6,8 @@
 //!
 //! ## Overview
 //!
-pub use self::{entry::*, kinds::*, parameter::*};
+pub use self::{kinds::*, parameter::*};
 
-pub(crate) mod entry;
 pub(crate) mod kinds;
 pub(crate) mod parameter;
 
@@ -17,6 +16,10 @@ pub mod store;
 pub trait Param {
     type Key;
     type Value;
+}
+
+pub trait Params {
+    type Store;
 }
 
 pub(crate) mod prelude {

@@ -6,6 +6,9 @@
 //!
 //! This library implements the framework for building linear models.
 //!
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+
 extern crate concision_core as concision;
 extern crate concision_neural as neural;
 
@@ -17,7 +20,7 @@ pub mod model;
 pub mod traits;
 
 pub(crate) mod cmp {
-    pub(crate) use self::prelude::*;
+    pub use self::prelude::*;
 
     pub mod features;
     pub mod neurons;

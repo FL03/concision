@@ -5,11 +5,9 @@
 use crate::neural::prelude::Features;
 use ndarray::prelude::{Dimension, Ix2};
 use ndarray::IntoDimension;
-use serde::{Deserialize, Serialize};
 
-#[derive(
-    Clone, Copy, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct LinearShape {
     pub inputs: usize,
     pub outputs: usize,

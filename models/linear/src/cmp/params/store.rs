@@ -11,10 +11,12 @@ use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_rand::RandomExt;
 use neural::prelude::Features;
 use num::{Float, Num, Signed};
-use serde::{Deserialize, Serialize};
-use std::ops;
+#[cfg(feature = "std")]
+use std::vec;
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+
 pub struct LinearParams<T = f64> {
     pub features: LinearShape,
     bias: Option<Array1<T>>,
@@ -188,15 +190,15 @@ impl<T> Features for LinearParams<T> {
     }
 }
 
-impl<T, D> Forward<Array<T, D>> for LinearParams<T>
+impl<A, B, T> Forward<A> for LinearParams<T>
 where
-    D: Dimension,
-    T: NdFloat,
-    Array<T, D>: Dot<Array2<T>, Output = Array<T, D>> + ops::Add<Array1<T>, Output = Array<T, D>>,
+    A: Dot<Array2<T>, Output = B>,
+    B: core::ops::Add<Array1<T>, Output = B>,
+    T: Clone,
 {
-    type Output = Array<T, D>;
+    type Output = B;
 
-    fn forward(&self, input: &Array<T, D>) -> Self::Output {
+    fn forward(&self, input: &A) -> Self::Output {
         let wt = self.weights().t().to_owned();
         if let Some(bias) = self.bias() {
             return input.dot(&wt) + bias.clone();
@@ -210,7 +212,7 @@ where
     T: Float,
 {
     type Item = Node<T>;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
+    type IntoIter = vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
         if let Some(bias) = self.bias() {

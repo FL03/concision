@@ -2,7 +2,7 @@
     Appellation: group <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::{Biased, Weighted};
+use crate::{Biased, Weighted};
 use concision::GenerateRandom;
 use core::ops;
 use ndarray::linalg::Dot;
@@ -87,12 +87,10 @@ where
 
     pub fn init_bias(mut self) -> Self {
         let dk = (T::one() / T::from(self.inputs()).unwrap()).sqrt();
-        self.bias = Array::uniform_between(
-            dk,
-            self.features()
-                .remove_axis(Axis(self.features().ndim() - 1))
-                .clone(),
-        );
+        let dim = self
+            .features()
+            .remove_axis(Axis(self.features().ndim() - 1));
+        self.bias = Array::uniform_between(dk, dim);
         self
     }
 

@@ -2,14 +2,13 @@
     Appellation: kinds <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use serde::{Deserialize, Serialize};
-use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
+use strum::{AsRefStr, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 #[derive(
+    AsRefStr,
     Clone,
     Debug,
     Default,
-    Deserialize,
     EnumCount,
     EnumIs,
     EnumIter,
@@ -19,12 +18,14 @@ use strum::{EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
     Ord,
     PartialEq,
     PartialOrd,
-    Serialize,
     VariantNames,
 )]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "lowercase", untagged)
+)]
 #[non_exhaustive]
-#[repr(usize)]
-#[serde(rename_all = "lowercase", tag = "kind")]
 #[strum(serialize_all = "lowercase")]
 pub enum ParamKind {
     #[default]

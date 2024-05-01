@@ -47,12 +47,14 @@ serde = [
 serde-ext = [
     "dep:serde_json",
     "ndarray/serde-1",
-    "num/serde"
+    "num/serde",
+    "uuid/serde"
 ]
 
 std = [
     "ndarray/std",
     "num/std",
+    "uuid/std"
 ]
 
 [lib]
@@ -74,6 +76,7 @@ serde = { features = ["derive"], optional = true, version = "1" }
 serde_json = { optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
+uuid = { features = ["v4", "v7"], version = "1" }
 
 [dev-dependencies]
 approx = "0.5"

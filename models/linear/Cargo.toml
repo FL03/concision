@@ -13,16 +13,47 @@ version.workspace = true
 
 
 [features]
-default = []
+default = [
+    "std",
+]
+
+full = [
+    "default",
+    "rand",
+    "serde",
+]
 
 blas = [
-    "ndarray/blas",
     "concision-core/blas",
     "concision-neural/blas",
+    "ndarray/blas",
+]
+
+rand = []
+
+# rand = [
+#     "concision-core/rand",
+#     "dep:ndarray-rand",
+#     "num/rand"
+# ]
+
+
+serde = [
+    "dep:serde",
+    "serde-ext"
+]
+
+serde-ext = [
+    "dep:serde_json",
+    "concision-core/serde",
+    "ndarray/serde-1",
+    "num/serde"
 ]
 
 std = [
-    
+    "concision-core/std",
+    "ndarray/std",
+    "num/std",
 ]
 
 [lib]
@@ -38,12 +69,12 @@ concision-core = { path = "../../core", version = "0.1.12" }
 concision-neural = { path = "../../nn/neural", version = "0.1.12" }
 
 anyhow.workspace = true
-ndarray = { features = ["serde-1"], version = "0.15" }
+ndarray = "0.15"
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
 num.workspace = true
-serde.workspace = true
-serde_json.workspace = true
+serde = { features = ["derive"], optional = true, version = "1" }
+serde_json = { optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
 

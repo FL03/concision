@@ -50,15 +50,22 @@ models = [
     "linear",
 ]
 
+rand = [
+    "concision-core/rand",
+    "concision-data/rand",
+    "concision-linear/rand",
+]
 
 serde = [
     "concision-core/serde",
     "concision-data/serde",
+    "concision-linear/serde",
 ]
 
 std = [
     "concision-core/std",
     "concision-data/std",
+    "concision-linear/std",
 ]
 
 blas = [

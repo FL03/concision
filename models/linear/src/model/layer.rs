@@ -15,10 +15,10 @@ use ndarray_rand::rand_distr::uniform::SampleUniform;
 use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use ndarray_stats::DeviationExt;
 use num::{Float, Signed};
-use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Linear<T = f64, A = Box<dyn Activate<T>>>
+#[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct LinearLayer<T = f64, A = Box<dyn Activate<T>>>
 where
     A: Activate<T>,
     T: Float,
@@ -29,7 +29,7 @@ where
     params: LinearParams<T>,
 }
 
-impl<T, A> Linear<T, A>
+impl<T, A> LinearLayer<T, A>
 where
     A: Activate<T>,
     T: Float,
@@ -60,11 +60,11 @@ where
         &self.activator
     }
 
-    pub fn as_dyn(&self) -> Linear<T, Box<dyn Activate<T>>>
+    pub fn as_dyn(&self) -> LinearLayer<T, Box<dyn Activate<T>>>
     where
         A: Clone + 'static,
     {
-        Linear {
+        LinearLayer {
             activator: Box::new(self.activator.clone()),
             features: self.features.clone(),
             name: self.name.clone(),
@@ -125,7 +125,7 @@ where
     }
 }
 
-impl<T, A> Linear<T, A>
+impl<T, A> LinearLayer<T, A>
 where
     A: Activate<T>,
     T: Float + 'static,
@@ -143,7 +143,7 @@ where
     }
 }
 
-impl<T, A> Linear<T, A>
+impl<T, A> LinearLayer<T, A>
 where
     A: Activate<T>,
     T: NdFloat,
@@ -153,7 +153,7 @@ where
     }
 }
 
-impl<T, A> Linear<T, A>
+impl<T, A> LinearLayer<T, A>
 where
     A: Activate<T> + Gradient<T>,
     T: NdFloat + Signed,
@@ -182,7 +182,7 @@ where
     }
 }
 
-impl<T, A> Linear<T, A>
+impl<T, A> LinearLayer<T, A>
 where
     A: Activate<T>,
     T: Float + SampleUniform,
@@ -194,7 +194,7 @@ where
     }
 }
 
-impl<T, A> Features for Linear<T, A>
+impl<T, A> Features for LinearLayer<T, A>
 where
     A: Activate<T>,
     T: Float,
@@ -222,7 +222,7 @@ where
 //     }
 // }
 
-impl<T, A> Forward<Array2<T>> for Linear<T, A>
+impl<T, A> Forward<Array2<T>> for LinearLayer<T, A>
 where
     A: Activate<T>,
     T: NdFloat,
@@ -255,7 +255,7 @@ where
 //     }
 // }
 
-impl<T, A> From<LinearShape> for Linear<T, A>
+impl<T, A> From<LinearShape> for LinearLayer<T, A>
 where
     A: Activate<T> + Default,
     T: Float,
@@ -270,7 +270,7 @@ where
     }
 }
 
-impl<T, A> IntoIterator for Linear<T, A>
+impl<T, A> IntoIterator for LinearLayer<T, A>
 where
     A: Activate<T> + Default,
     T: Float,
@@ -283,7 +283,7 @@ where
     }
 }
 
-impl<T, A> FromIterator<Node<T>> for Linear<T, A>
+impl<T, A> FromIterator<Node<T>> for LinearLayer<T, A>
 where
     A: Activate<T> + Default,
     T: Float,

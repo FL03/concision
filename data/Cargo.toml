@@ -17,7 +17,12 @@ default = [
 ]
 
 blas = [
+    "concision-core/blas",
     "ndarray/blas",
+]
+
+rand = [
+    "concision-core/rand"
 ]
 
 serde = [

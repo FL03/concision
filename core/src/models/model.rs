@@ -8,9 +8,9 @@ pub trait Module {
     type Config;
     type Params;
 
-    fn config(&self) -> Self::Config;
+    fn config(&self) -> &Self::Config;
 
-    fn params(&self) -> Self::Params;
+    fn params(&self) -> &Self::Params;
 
     fn params_mut(&mut self) -> &mut Self::Params;
 }
