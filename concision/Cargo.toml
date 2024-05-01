@@ -100,7 +100,7 @@ openblas-static = [
 
 [lib]
 bench = true
-crate-type = ["rlib"]
+crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
