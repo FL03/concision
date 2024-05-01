@@ -2,11 +2,12 @@
    Appellation: utils <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+#![cfg(feature = "rand")]
 use ndarray::*;
-use ndarray_rand::rand::rngs::StdRng;
-use ndarray_rand::rand::SeedableRng;
-use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-use ndarray_rand::RandomExt;
+use ndrand::rand::rngs::StdRng;
+use ndrand::rand::SeedableRng;
+use ndrand::rand_distr::{Distribution, StandardNormal};
+use ndrand::RandomExt;
 use num::complex::{Complex, ComplexDistribution};
 use num::traits::real::Real;
 use num::Num;

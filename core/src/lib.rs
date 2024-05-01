@@ -26,7 +26,7 @@ pub mod func;
 pub mod models;
 pub mod ops;
 pub mod params;
-#[cfg(feature = "rand")]
+// #[cfg(feature = "rand")]
 pub mod rand;
 pub mod traits;
 

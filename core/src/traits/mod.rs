@@ -11,11 +11,9 @@ pub mod store;
 pub mod train;
 
 pub mod arr {
-    pub use self::generate::*;
     pub use self::{convert::*, like::*, ops::*};
 
     pub(crate) mod convert;
-    pub(crate) mod generate;
     pub(crate) mod like;
     pub(crate) mod ops;
 }

@@ -7,7 +7,6 @@
 
 extern crate concision_core as concision;
 extern crate concision_linear as linear;
-extern crate concision_neural as neural;
 
 use concision::prelude::{linarr, Forward};
 use linear::Features;
