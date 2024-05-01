@@ -1,11 +1,12 @@
 /*
-   Appellation: modes <mod>
+   Appellation: cmp <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use strum::{
     AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames,
 };
 
+///
 #[derive(
     AsRefStr,
     Clone,
@@ -62,6 +63,7 @@ impl From<FftDirection> for usize {
     }
 }
 
+///
 #[derive(
     AsRefStr,
     Clone,

@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::{Biased, Weighted};
-use concision::GenerateRandom;
+use concision::{Forward, GenerateRandom};
 use core::ops;
 use ndarray::linalg::Dot;
 use ndarray::{Array, Axis, Dimension, IntoDimension, Ix2, NdFloat, RemoveAxis};
@@ -59,14 +59,14 @@ where
 
 impl<T, D> ParamGroup<T, D>
 where
-    D: Dimension,
-    T: NdFloat,
-    Self: Biased<T, Dim = D> + Weighted<T, Dim = D>,
+    D: RemoveAxis,
+    Self: Biased<T, Dim = D::Smaller> + Weighted<T, Dim = D>,
 {
-    pub fn linear<D2>(&self, data: &Array<T, D2>) -> Array<T, D>
+    pub fn linear<A, B>(&self, data: &A) -> B
     where
-        Array<T, D2>: Dot<Array<T, D>, Output = Array<T, D>>
-            + ops::Add<Array<T, D::Smaller>, Output = Array<T, D>>,
+        A: Dot<Array<T, D>, Output = B>,
+        B: ops::Add<Array<T, D::Smaller>, Output = B>,
+        T: NdFloat,
     {
         data.dot(&self.weights().t().to_owned()) + self.bias().clone()
     }
@@ -74,7 +74,7 @@ where
 
 impl<T, D> ParamGroup<T, D>
 where
-    D: Dimension + RemoveAxis,
+    D: RemoveAxis,
     T: Float + SampleUniform,
     StandardNormal: Distribution<T>,
 {
@@ -138,6 +138,21 @@ where
 
     fn set_weights(&mut self, weights: Array<T, Self::Dim>) {
         self.weights = weights;
+    }
+}
+
+impl<A, B, T, D> Forward<A> for ParamGroup<T, D>
+where
+    A: Dot<Array<T, D>, Output = B>,
+    B: for<'a> ops::Add<&'a Array<T, D::Smaller>, Output = B>,
+    D: RemoveAxis,
+    T: NdFloat,
+{
+    type Output = B;
+
+    fn forward(&self, input: &A) -> Self::Output {
+        let wt = self.weights().t().to_owned();
+        input.dot(&wt) + self.bias()
     }
 }
 

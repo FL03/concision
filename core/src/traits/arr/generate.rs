@@ -1,5 +1,5 @@
 /*
-   Appellation: base <mod>
+   Appellation: generate <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 // #![cfg(feature = "rand")]

@@ -6,12 +6,14 @@ pub use self::prelude::*;
 
 pub mod math;
 pub mod predict;
+pub mod propagate;
 pub mod store;
 
 pub mod arr {
     pub use self::generate::*;
-    pub use self::{like::*, ops::*};
+    pub use self::{convert::*, like::*, ops::*};
 
+    pub(crate) mod convert;
     pub(crate) mod generate;
     pub(crate) mod like;
     pub(crate) mod ops;
@@ -37,6 +39,7 @@ pub(crate) mod prelude {
     pub use super::arr::*;
     pub use super::math::*;
     pub use super::predict::*;
+    pub use super::propagate::*;
     pub use super::store::*;
     pub use super::{Initialize, Transform};
 }

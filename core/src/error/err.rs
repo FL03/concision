@@ -2,7 +2,7 @@
    Appellation: error <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::kinds::ExternalError;
+use super::kinds::*;
 use smart_default::SmartDefault;
 use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
@@ -33,6 +33,7 @@ pub enum Error {
     IO(String),
     #[default]
     External(ExternalError),
+    Predict(PredictError),
     Shape(String),
 }
 
@@ -56,4 +57,11 @@ impl From<ExternalError> for Error {
     }
 }
 
+impl From<PredictError> for Error {
+    fn from(err: PredictError) -> Self {
+        Error::Predict(err)
+    }
+}
+
+#[cfg(feature = "std")]
 impl_from_error!(Error::IO<std::io::Error>);
