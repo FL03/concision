@@ -2,20 +2,20 @@
     Appellation: config <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::cmp::LinearShape;
+use super::Features;
 
 #[derive(Clone, Debug)]
-pub struct LinearConfig {
+pub struct Config {
     pub biased: bool,
     pub name: String,
-    pub shape: LinearShape,
+    pub shape: Features,
 }
 
-impl LinearConfig {
-    pub fn new(shape: LinearShape) -> Self {
+impl Config {
+    pub fn new(name: impl ToString, shape: Features) -> Self {
         Self {
             biased: false,
-            name: String::new(),
+            name: name.to_string(),
             shape,
         }
     }
@@ -43,7 +43,7 @@ impl LinearConfig {
         self
     }
 
-    pub fn with_shape(mut self, shape: LinearShape) -> Self {
+    pub fn with_shape(mut self, shape: Features) -> Self {
         self.shape = shape;
         self
     }

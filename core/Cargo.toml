@@ -37,7 +37,9 @@ blas = [
 #     "dep:ndarray-rand"
 #     "num/rand",
 # ]
-rand = []
+rand = [
+    "num/rand",
+]
 
 serde = [
     "dep:serde",
@@ -70,7 +72,7 @@ approx = { optional = true, version = "0.5" }
 anyhow.workspace = true
 ndarray = "0.15"
 ndarray-rand = "0.14" # { optional = true, version = "0.14" }
-num = { features = ["rand"], version = "0.4" }
+num = "0.4"
 rand = "0.8" # { optional = true, version = "0.8" }
 serde = { features = ["derive"], optional = true, version = "1" }
 serde_json = { optional = true, version = "1" }

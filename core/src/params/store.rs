@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{ParamKind, Parameter};
-use crate::Map;
+use crate::prelude::Map;
 use ndarray::prelude::{Dimension, Ix2};
 use num::Float;
 

@@ -18,8 +18,8 @@ where
 pub fn fft<S, T>(input: impl AsRef<[S]>, permute: &FftPlan) -> Vec<Complex<S::Real>>
 where
     S: ComplexFloat<Real = T>,
-    T: Float + FloatConst,
-    Complex<T>: ComplexFloat<Real = T> + NumOps<S> + NumOps<T>,
+    S::Real: Float + FloatConst,
+    Complex<S::Real>: ComplexFloat<Real = S::Real> + NumOps<S> + NumOps<S::Real>,
 {
     //
     let input = input.as_ref();

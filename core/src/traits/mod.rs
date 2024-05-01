@@ -6,8 +6,9 @@ pub use self::prelude::*;
 
 pub mod math;
 pub mod predict;
-pub mod propagate;
+pub mod setup;
 pub mod store;
+pub mod train;
 
 pub mod arr {
     pub use self::generate::*;
@@ -19,16 +20,6 @@ pub mod arr {
     pub(crate) mod ops;
 }
 
-pub trait Initialize {
-    fn init(&mut self);
-}
-
-pub trait Configure {
-    type Config;
-
-    fn setup(&mut self, config: Self::Config);
-}
-
 pub trait Transform<T> {
     type Output;
 
@@ -36,12 +27,14 @@ pub trait Transform<T> {
 }
 
 pub(crate) mod prelude {
+    pub use super::Transform;
+
     pub use super::arr::*;
     pub use super::math::*;
     pub use super::predict::*;
-    pub use super::propagate::*;
+    pub use super::setup::*;
     pub use super::store::*;
-    pub use super::{Initialize, Transform};
+    pub use super::train::*;
 }
 
 #[cfg(test)]

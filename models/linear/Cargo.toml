@@ -23,13 +23,18 @@ full = [
     "serde",
 ]
 
+alloc = []
+
 blas = [
     "concision-core/blas",
     "concision-neural/blas",
     "ndarray/blas",
 ]
 
-rand = []
+rand = [
+    "concision-core/rand",
+    "num/rand"
+]
 
 # rand = [
 #     "concision-core/rand",
@@ -40,7 +45,7 @@ rand = []
 
 serde = [
     "dep:serde",
-    "serde-ext"
+    "serde-ext",
 ]
 
 serde-ext = [
@@ -57,9 +62,9 @@ std = [
 ]
 
 [lib]
-bench = true
+bench = false
 crate-type = ["rlib"]
-doctest = false
+doctest = true
 test = true
 
 [build-dependencies]
@@ -72,13 +77,14 @@ anyhow.workspace = true
 ndarray = "0.15"
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
-num.workspace = true
+num = "0.4"
 serde = { features = ["derive"], optional = true, version = "1" }
 serde_json = { optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
 
 [dev-dependencies]
+lazy_static.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

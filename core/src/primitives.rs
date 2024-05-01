@@ -2,7 +2,6 @@
     Appellation: primitives <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub(crate) use self::base::*;
 pub use self::constants::*;
 #[cfg(feature = "std")]
 pub use self::std_types::*;
@@ -17,18 +16,6 @@ pub type ShapeResult<T = ()> = core::result::Result<T, ndarray::ShapeError>;
 
 mod constants {
     pub const DEFAULT_MODEL_SIZE: usize = 2048;
-}
-
-pub(crate) mod base {
-    #[cfg(not(feature = "std"))]
-    use alloc::collections;
-    #[cfg(feature = "std")]
-    use std::collections;
-
-    #[cfg(not(feature = "std"))]
-    pub type Map<K, V> = collections::BTreeMap<K, V>;
-    #[cfg(feature = "std")]
-    pub type Map<K, V> = collections::HashMap<K, V>;
 }
 
 #[cfg(feature = "std")]

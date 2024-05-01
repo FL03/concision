@@ -2,32 +2,38 @@
    Appellation: model <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Backward, Forward};
+use super::Module;
+use crate::error::PredictError;
+use crate::Predict;
 
-pub trait Module {
-    type Config;
-    type Params;
-
-    fn config(&self) -> &Self::Config;
-
-    fn params(&self) -> &Self::Params;
-
-    fn params_mut(&mut self) -> &mut Self::Params;
+pub struct Activator<F, M> {
+    activation: F,
+    module: M,
 }
 
-pub trait FeedForward<T>: Module
+impl<F, M> Activator<F, M>
 where
-    Self: Backward + Forward<T>,
+    F: for<'a> Fn(&'a M::Output) -> M::Output,
+    M: Predict<<M as Module>::Params> + Module,
 {
+    pub fn new(activation: F, module: M) -> Self {
+        Self { activation, module }
+    }
+
+    pub fn activate(&self, args: &M::Output) -> M::Output {
+        (self.activation)(args)
+    }
 }
 
-pub trait Model {
-    type Backend: ModelBackend;
-}
+impl<F, M> Predict<M::Params> for Activator<F, M>
+where
+    F: for<'a> Fn(&'a M::Output) -> M::Output,
+    M: Predict<<M as Module>::Params> + Module,
+{
+    type Output = M::Output;
 
-/// A trait for specifying the backend of a model.
-///
-/// The [Engine](ModelBackend::Engine) describes the type of nerual network being used; i.e. Convolution, Recurrant, Graph, etc.
-pub trait ModelBackend {
-    type Engine;
+    fn predict(&self, args: &M::Params) -> Result<Self::Output, PredictError> {
+        let res = self.module.predict(args)?;
+        Ok(self.activate(&res))
+    }
 }
