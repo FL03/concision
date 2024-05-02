@@ -18,8 +18,15 @@ default = [
 
 full = [
     "default",
+    "approx",
     "rand",
     "serde",
+]
+
+approx = [
+    "dep:approx",
+    "concision-core/approx",
+    "ndarray/approx-0_5",
 ]
 
 blas = [
@@ -64,7 +71,8 @@ test = true
 [build-dependencies]
 
 [dependencies]
-ndarray = "0.15"
+approx = { optional = true, version = "0.5"}
+ndarray.workspace = true
 ndarray-rand = { optional = true, version = "0.14" }
 ndarray-stats.workspace = true
 num.workspace = true

@@ -21,9 +21,11 @@ full = [
     "default",
     "approx",
     "derive",
-    "models",
+    "rand",
     "serde",
     "tracing",
+    "linear",
+    "gnn",
 ]
 
 approx = [
@@ -123,6 +125,10 @@ crate-type = ["lib"]
 doctest = false
 test = true
 
+[[example]]
+name = "linear"
+required-features = ["linear", "rand", "serde", "tracing"]
+
 [build-dependencies]
 
 [dependencies]
@@ -137,7 +143,10 @@ concision-gnn = { optional = true, path = "../models/gnn", version = "0.1.12" }
 
 [dev-dependencies]
 anyhow.workspace = true
+lazy_static.workspace = true
 ndarray.workspace = true
+tracing = "0.1"
+tracing-subscriber = "0.3"
 
 [package.metadata.docs.rs]
 all-features = true

@@ -6,18 +6,19 @@ use super::Config;
 use crate::params::LinearParams;
 use concision::models::Module;
 use concision::prelude::{Predict, PredictError};
-use ndarray::{Dimension, Ix2};
+use ndarray::{Dimension, Ix2, RemoveAxis};
 
 pub struct Linear<T = f64, D = Ix2>
 where
     D: Dimension,
 {
-    config: Config,
-    params: LinearParams<T, D>,
+    pub(crate) config: Config,
+    pub(crate) params: LinearParams<T, D>,
 }
+
 impl<T, D> Linear<T, D>
 where
-    D: Dimension,
+    D: RemoveAxis,
 {
     pub fn new(config: Config, params: LinearParams<T, D>) -> Self {
         Self { config, params }
@@ -25,12 +26,28 @@ where
 
     pub fn with_params<D2>(self, params: LinearParams<T, D2>) -> Linear<T, D2>
     where
-        D2: Dimension,
+        D2: RemoveAxis,
     {
         Linear {
             config: self.config,
             params,
         }
+    }
+
+    pub fn config(&self) -> &Config {
+        &self.config
+    }
+
+    pub fn params(&self) -> &LinearParams<T, D> {
+        &self.params
+    }
+
+    pub fn params_mut(&mut self) -> &mut LinearParams<T, D> {
+        &mut self.params
+    }
+
+    pub fn is_biased(&self) -> bool {
+        self.params().is_biased() || self.config.biased
     }
 }
 
@@ -46,7 +63,7 @@ impl<T> Linear<T> {
 
 impl<T, D> Module for Linear<T, D>
 where
-    D: Dimension,
+    D: RemoveAxis,
 {
     type Config = Config;
     type Params = LinearParams<T, D>;
@@ -64,14 +81,30 @@ where
     }
 }
 
+#[cfg(not(feature = "tracing"))]
 impl<A, B, T, D> Predict<A> for Linear<T, D>
 where
-    D: Dimension,
+    D: RemoveAxis,
     LinearParams<T, D>: Predict<A, Output = B>,
 {
     type Output = B;
 
     fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+        self.params.predict(input)
+    }
+}
+
+#[cfg(feature = "tracing")]
+impl<A, B, T, D> Predict<A> for Linear<T, D>
+where
+    D: RemoveAxis,
+    LinearParams<T, D>: Predict<A, Output = B>,
+{
+    type Output = B;
+
+    #[tracing::instrument(skip(self, input), level = "debug", name = "Linear::predict")]
+    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+        tracing::debug!("Predicting with linear model");
         self.params.predict(input)
     }
 }

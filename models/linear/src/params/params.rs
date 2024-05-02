@@ -14,7 +14,7 @@ use alloc::vec;
 #[cfg(feature = "std")]
 use std::vec;
 
-fn build_bias<T, F, D>(biased: bool, dim: D, builder: F) -> Option<Array<T, D::Smaller>>
+pub(crate) fn build_bias<T, F, D>(biased: bool, dim: D, builder: F) -> Option<Array<T, D::Smaller>>
 where
     D: RemoveAxis,
     F: Fn(D::Smaller) -> Array<T, D::Smaller>,
@@ -211,40 +211,5 @@ where
             params.set_node(i + 1, node.clone());
         }
         params
-    }
-}
-
-#[cfg(feature = "serde")]
-impl<'a, T, D> serde::Deserialize<'a> for LinearParams<T, D>
-where
-    T: serde::Deserialize<'a>,
-    D: serde::Deserialize<'a> + nd::RemoveAxis,
-    <D as nd::Dimension>::Smaller: serde::Deserialize<'a> + nd::Dimension,
-{
-    fn deserialize<Der>(deserializer: Der) -> Result<Self, Der::Error>
-    where
-        Der: serde::Deserializer<'a>,
-    {
-        let (bias, features, weights) = serde::Deserialize::deserialize(deserializer)?;
-        Ok(Self {
-            bias,
-            features,
-            weights,
-        })
-    }
-}
-#[cfg(feature = "serde")]
-
-impl<T, D> serde::Serialize for LinearParams<T, D>
-where
-    T: serde::Serialize,
-    D: nd::RemoveAxis + serde::Serialize,
-    <D as nd::Dimension>::Smaller: nd::Dimension + serde::Serialize,
-{
-    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
-    where
-        Ser: serde::Serializer,
-    {
-        (self.bias(), self.features(), self.weights()).serialize(serializer)
     }
 }

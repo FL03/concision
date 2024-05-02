@@ -50,3 +50,13 @@ impl Config {
         Self { shape, ..self }
     }
 }
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            biased: false,
+            name: String::new(),
+            shape: Features::default(),
+        }
+    }
+}

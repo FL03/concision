@@ -24,6 +24,7 @@ pub(crate) mod prelude {
     pub use super::direction::Direction;
     #[cfg(not(no_std))]
     pub use super::std_types::*;
+    pub use super::Result;
 }
 
 #[cfg(test)]

@@ -21,8 +21,14 @@ full = [
     "default",
     "rand",
     "serde",
+    "tracing",
 ]
 
+approx = [
+    "dep:approx",
+    "concision-core/approx",
+    "ndarray/approx-0_5",
+]
 blas = [
     "concision-core/blas",
     "ndarray/blas",
@@ -77,7 +83,7 @@ required-features = ["rand"]
 [dependencies]
 concision-core = { features = ["rand"], path = "../../core", version = "0.1.12" }
 
-anyhow.workspace = true
+approx = { optional = true, version = "0.5" }
 ndarray = "0.15"
 ndarray-rand.workspace = true
 ndarray-stats.workspace = true
