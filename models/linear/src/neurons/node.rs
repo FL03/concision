@@ -2,7 +2,7 @@
     Appellation: node <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{Forward, GenerateRandom};
+use concision::prelude::{Forward, GenerateRandom, Predict, PredictError};
 
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Array0, Array1, Array2, Dimension, NdFloat};
@@ -19,35 +19,67 @@ pub struct Node<T = f64> {
     weights: Array1<T>,
 }
 
-impl<T> Node<T>
-where
-    T: Clone + Num,
-{
-    pub fn create(biased: bool, features: usize) -> Self {
+impl<T> Node<T> {
+    pub fn new(biased: bool, features: usize) -> Self
+    where
+        T: Default,
+    {
         let bias = if biased {
-            Some(Array0::zeros(()))
+            Some(Array0::default(()))
         } else {
             None
         };
         Self {
             bias,
             features,
-            weights: Array1::zeros(features),
+            weights: Array1::default(features),
         }
     }
 
-    pub fn biased(features: usize) -> Self {
-        Self::create(true, features)
+    pub fn biased(self) -> Self
+    where
+        T: Default,
+    {
+        Self {
+            bias: Some(Array0::default(())),
+            ..self
+        }
     }
 
-    pub fn new(features: usize) -> Self {
-        Self::create(false, features)
+    pub fn unbiased(features: usize) -> Self
+    where
+        T: Default,
+    {
+        Self {
+            bias: None,
+            features,
+            weights: Array1::default(features),
+        }
     }
-}
-impl<T> Node<T>
-where
-    T: Num,
-{
+
+    pub fn activate<A>(&self, data: &Array2<T>, activator: A) -> Array1<T>
+    where
+        A: Fn(&Array1<T>) -> Array1<T>,
+        Node<T>: Forward<Array2<T>, Output = Array1<T>>
+    {
+        activator(&self.forward(data))
+    }
+
+    pub fn apply_gradient<G>(&mut self, gamma: T, grad: G)
+    where
+        G: for <'a> Fn(&'a T) -> T,
+        T: Copy + nd::LinalgScalar + num::Signed
+    {
+
+        let dw = self.weights().map(|w| grad(w));
+        
+        self.weights_mut().scaled_add(-gamma, &dw);
+        if let Some(bias) = self.bias_mut() {
+            let db = bias.map(|b| grad(b));
+            bias.scaled_add(-gamma, &db);
+        }
+    }
+
     pub fn bias(&self) -> Option<&Array0<T>> {
         self.bias.as_ref()
     }
@@ -62,6 +94,19 @@ where
 
     pub fn is_biased(&self) -> bool {
         self.bias.is_some()
+    }
+
+    pub fn linear(&self, data: &Array2<T>) -> Array1<T> 
+    where
+        T: Num + ScalarOperand,
+        Array2<T>: Dot<Array1<T>, Output = Array1<T>>,
+    {
+        let w = self.weights().t().to_owned();
+        if let Some(bias) = self.bias() {
+            data.dot(&w) + bias
+        } else {
+            data.dot(&w)
+        }
     }
 
     pub fn set_bias(&mut self, bias: Option<Array0<T>>) {
@@ -84,35 +129,15 @@ where
         &mut self.weights
     }
 
-    pub fn with_bias(mut self, bias: Option<Array0<T>>) -> Self {
-        self.bias = bias;
-        self
+    pub fn with_bias(self, bias: Option<Array0<T>>) -> Self {
+        Self { bias, ..self }
     }
 
-    pub fn with_features(mut self, features: usize) -> Self {
-        self.features = features;
-        self
+    pub fn with_weights(self, weights: Array1<T>) -> Self {
+        Self { weights, ..self }
     }
 
-    pub fn with_weights(mut self, weights: Array1<T>) -> Self {
-        self.weights = weights;
-        self
-    }
-}
-
-impl<T> Node<T>
-where
-    T: Num + ScalarOperand,
-    Array2<T>: Dot<Array1<T>, Output = Array1<T>>,
-{
-    pub fn linear(&self, data: &Array2<T>) -> Array1<T> {
-        let w = self.weights().t().to_owned();
-        if let Some(bias) = self.bias() {
-            data.dot(&w) + bias
-        } else {
-            data.dot(&w)
-        }
-    }
+    
 }
 impl<T> Node<T>
 where
@@ -138,43 +163,45 @@ where
         self.weights = Array1::uniform_between(dk, features);
         self
     }
+
+
+
+    
 }
 
-impl<T> Node<T>
+// impl<A, B, T> Forward<A> for Node<T>
+// where
+//     T: Clone,
+//     A: Dot<Array1<T>, Output = B>,
+//     B: ops::Add<Array0<T>, Output = B>,
+// {
+//     type Output = B;
+
+//     fn forward(&self, data: &A) -> B {
+//         let wt = self.weights().t().to_owned();
+//         let out = data.dot(&wt);
+//         if let Some(bias) = self.bias() {
+//             return out + bias.clone();
+//         }
+//         out
+//     }
+// }
+
+impl<A, B, T> Predict<A> for Node<T>
 where
-    T: NdFloat,
+    T: Clone,
+    A: Dot<Array1<T>, Output = B>,
+    B: ops::Add<Array0<T>, Output = B>,
 {
-    pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
-    where
-        G: Fn(&Array1<T>) -> Array1<T>,
-    {
-        let grad = gradient(self.weights());
-        self.weights_mut().scaled_add(-gamma, &grad);
-    }
+    type Output = B;
 
-    pub fn activate<A>(&self, data: &Array2<T>, activator: A) -> Array1<T>
-    where
-        A: Fn(&Array1<T>) -> Array1<T>,
-    {
-        activator(&self.forward(data))
-    }
-}
-
-impl<T, D> Forward<Array<T, D>> for Node<T>
-where
-    D: Dimension + RemoveAxis,
-    T: NdFloat,
-    Array<T, D>: Dot<Array1<T>, Output = Array<T, D::Smaller>>,
-    Array<T, D::Smaller>: ops::Add<Array0<T>, Output = Array<T, D::Smaller>>,
-{
-    type Output = Array<T, D::Smaller>;
-
-    fn forward(&self, data: &Array<T, D>) -> Self::Output {
-        let w = self.weights().t().to_owned();
+    fn predict(&self, data: &A) -> Result<Self::Output, PredictError> {
+        let wt = self.weights().t().to_owned();
+        let mut out = data.dot(&wt);
         if let Some(bias) = self.bias() {
-            return data.dot(&w) + bias.clone();
+            out = out + bias.clone();
         }
-        data.dot(&w)
+        Ok(out)
     }
 }
 

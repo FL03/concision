@@ -3,12 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Param, ParamKind};
-use crate::rand::GenerateRandom;
 use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
-use ndarray_rand::rand_distr::uniform::SampleUniform;
-use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 use uuid::Uuid;
 
@@ -19,11 +16,11 @@ where
     T: Float,
     D: Dimension,
 {
-    id: String,
-    features: D,
-    kind: ParamKind,
-    name: String,
-    value: Array<T, D>,
+    pub(crate) id: String,
+    pub(crate) features: D,
+    pub(crate) kind: ParamKind,
+    pub(crate) name: String,
+    pub(crate) value: Array<T, D>,
 }
 
 impl<T, D> Parameter<T, D>
@@ -102,19 +99,6 @@ where
             value: params,
             ..self
         }
-    }
-}
-
-impl<T, D> Parameter<T, D>
-where
-    D: Dimension,
-    T: Float + SampleUniform,
-    StandardNormal: Distribution<T>,
-{
-    pub fn init_uniform(mut self, dk: T) -> Self {
-        let dim = self.value.dim();
-        self.value = Array::uniform_between(dk, dim);
-        self
     }
 }
 

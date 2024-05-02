@@ -2,9 +2,9 @@
    Appellation: rand <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+#![cfg(feature = "rand")]
 
 pub use self::generate::*;
-#[cfg(feature = "rand")]
 pub use self::utils::*;
 
 pub(crate) mod generate;
@@ -15,6 +15,5 @@ pub use rand;
 
 pub(crate) mod prelude {
     pub use super::generate::*;
-    #[cfg(feature = "rand")]
     pub use super::utils::*;
 }

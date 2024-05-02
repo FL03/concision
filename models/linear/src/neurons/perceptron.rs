@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::Node;
-use concision::prelude::Forward;
-
+use concision::prelude::{Forward, Predict, PredictError};
+use core::ops;
 use ndarray::prelude::{Array0, Array1, Array2, NdFloat};
 use ndrand::rand_distr::uniform::SampleUniform;
 use ndrand::rand_distr::{Distribution, StandardNormal};
@@ -14,31 +14,20 @@ pub fn linear_activation<T: Clone>(x: &Array1<T>) -> Array1<T> {
     x.clone()
 }
 
-pub type BasicPerceptron<T> = Perceptron<T, dyn Fn(&Array1<T>) -> Array1<T>>;
+pub type Rho<T> = Box<dyn Fn(&T) -> T>;
 
-/// Artificial Neuron
-#[derive(Clone, Debug, PartialEq)]
+/// A perceptron
 pub struct Perceptron<T, F = Box<dyn Fn(&Array1<T>) -> Array1<T>>> {
     activation: F,
     node: Node<T>,
 }
 
-impl<T, F> Perceptron<T, F>
-where
-    T: Float,
-{
-    pub fn new(activation: F, features: usize) -> Self {
+impl<T, F> Perceptron<T, F> {
+    pub fn new(activation: F, features: usize) -> Self where T: Default {
         Self {
             activation,
-            node: Node::create(false, features),
+            node: Node::new(false, features),
         }
-    }
-
-    pub fn activate(&self, x: &Array1<T>) -> Array1<T>
-    where
-        F: for<'a> Fn(&'a Array1<T>) -> Array1<T>,
-    {
-        (self.activation)(x)
     }
 
     pub fn node(&self) -> &Node<T> {
@@ -105,7 +94,7 @@ where
     pub fn apply_gradient<G>(&mut self, gamma: T, gradient: G)
     where
         G: Fn(&Array1<T>) -> Array1<T>,
-        T: 'static,
+        T: Copy + nd::LinalgScalar + ops::Neg<Output = T>,
     {
         let grad = gradient(self.node().weights());
         self.update_with_gradient(gamma, &grad);
@@ -113,7 +102,7 @@ where
 
     pub fn update_with_gradient(&mut self, gamma: T, grad: &Array1<T>)
     where
-        T: 'static,
+        T: Copy + nd::LinalgScalar + ops::Neg<Output = T>,
     {
         self.node.weights_mut().scaled_add(-gamma, grad);
     }
@@ -142,16 +131,17 @@ where
     }
 }
 
-impl<T, A> Forward<Array2<T>> for Perceptron<T, A>
+impl<T, A> Predict<Array2<T>> for Perceptron<T, A>
 where
-    T: NdFloat,
-    A: Fn(&Array1<T>) -> Array1<T>,
+    A: for <'a> Fn(&'a T) -> T,
+    Node<T>: Forward<Array2<T>, Output = Array1<T>>
 {
     type Output = Array1<T>;
 
-    fn forward(&self, args: &Array2<T>) -> Self::Output {
+    fn predict(&self, args: &Array2<T>) -> Result<Self::Output, PredictError> {
         let linstep = self.params().forward(args);
-        self.activate(&linstep)
+        let res = linstep.map(|x| (self.rho())(x));
+        Ok(res)
     }
 }
 
