@@ -1,11 +1,14 @@
 /*
-    Appellation: group <mod>
+    Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 pub use self::kinds::*;
 
 pub(crate) mod kinds;
 
+mod impl_params;
+
+use crate::Biased;
 use crate::model::Features;
 use crate::{Node, Weighted};
 use concision::error::PredictError;
@@ -99,6 +102,10 @@ where
         self.bias.as_mut()
     }
 
+    pub fn unbiased(self) -> Self {
+        Self { bias: None, ..self }
+    }
+
     pub fn features(&self) -> &D {
         &self.features
     }
@@ -140,11 +147,8 @@ where
     }
 }
 
-impl<T> LinearParams<T>
-where
-    T: Float,
-{
-    pub fn set_node(&mut self, idx: usize, node: Node<T>) {
+impl<T> LinearParams<T> {
+    pub fn set_node(&mut self, idx: usize, node: Node<T>) where T: Float {
         if let Some(bias) = node.bias() {
             if !self.is_biased() {
                 let mut tmp = Array1::zeros(self.outputs());
@@ -170,7 +174,7 @@ where
     T: Float + SampleUniform,
     StandardNormal: Distribution<T>,
 {
-    pub fn init(mut self, biased: bool) -> Self {
+    pub fn init_uniform(mut self, biased: bool) -> Self {
         if biased {
             self = self.init_bias();
         }
@@ -193,83 +197,6 @@ where
     }
 }
 
-// impl<T, D> Biased<T> for ParamGroup<T, D>
-// where
-//     D: RemoveAxis,
-//     T: Float,
-// {
-//     type Dim = D::Smaller;
-
-//     fn bias(&self) -> &Array<T, Self::Dim> {
-//         self.bias.as_ref().unwrap()
-//     }
-
-//     fn bias_mut(&mut self) -> &mut Array<T, Self::Dim> {
-//         self.bias.as_mut().unwrap()
-//     }
-
-//     fn set_bias(&mut self, bias: Array<T, Self::Dim>) {
-//         self.bias = Some(bias);
-//     }
-// }
-
-impl<T, D> Weighted<T> for LinearParams<T, D>
-where
-    D: Dimension,
-    T: Float,
-{
-    type Dim = D;
-
-    fn weights(&self) -> &Array<T, Self::Dim> {
-        &self.weights
-    }
-
-    fn weights_mut(&mut self) -> &mut Array<T, Self::Dim> {
-        &mut self.weights
-    }
-
-    fn set_weights(&mut self, weights: Array<T, Self::Dim>) {
-        self.weights = weights;
-    }
-}
-
-impl<A, B, T, D> Predict<A> for LinearParams<T, D>
-where
-    A: Dot<Array<T, D>, Output = B>,
-    B: for<'a> ops::Add<&'a Array<T, D::Smaller>, Output = B>,
-    D: RemoveAxis,
-    T: NdFloat,
-{
-    type Output = B;
-
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-        let wt = self.weights().t().to_owned();
-        let res = input.dot(&wt);
-        if let Some(bias) = self.bias() {
-            return Ok(res + bias);
-        }
-        Ok(res)
-    }
-}
-
-impl<'a, A, B, T, D> Predict<A> for &'a LinearParams<T, D>
-where
-    A: Dot<Array<T, D>, Output = B>,
-    B: ops::Add<&'a Array<T, D::Smaller>, Output = B>,
-    D: RemoveAxis,
-    T: NdFloat,
-{
-    type Output = B;
-
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-        let wt = self.weights().t().to_owned();
-        let res = input.dot(&wt);
-        if let Some(bias) = self.bias() {
-            return Ok(res + bias);
-        }
-        Ok(res)
-    }
-}
 
 impl<T> IntoIterator for LinearParams<T>
 where

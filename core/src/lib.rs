@@ -11,7 +11,7 @@ extern crate ndarray as nd;
 #[cfg(feature = "rand")]
 extern crate ndarray_rand as ndrand;
 
-pub use self::{error::Error, primitives::*, traits::prelude::*, utils::*};
+pub use self::{error::Error, primitives::*, traits::prelude::*, types::prelude::*, utils::*};
 
 #[cfg(feature = "rand")]
 pub use self::rand::prelude::*;
@@ -29,6 +29,7 @@ pub mod params;
 // #[cfg(feature = "rand")]
 pub mod rand;
 pub mod traits;
+pub mod types;
 
 #[allow(unused_imports)]
 pub(crate) mod rust {
@@ -74,6 +75,7 @@ pub mod prelude {
     #[cfg(feature = "rand")]
     pub use super::rand::prelude::*;
     pub use super::traits::prelude::*;
+    pub use super::types::prelude::*;
 
     pub(crate) use super::rust::*;
 }

@@ -6,7 +6,7 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-data"
+name = "concision-gnn"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
@@ -29,45 +29,56 @@ blas = [
 
 rand = [
     "concision-core/rand",
+    "dep:ndarray-rand",
+    "num/rand"
 ]
+
 
 serde = [
     "dep:serde",
-    "serde-ext"
+    "serde-ext",
 ]
 
 serde-ext = [
-    # "dep:serde_json",
     "concision-core/serde",
-    "ndarray/serde-1"
+    "ndarray/serde-1",
+    "num/serde"
 ]
 
 std = [
     "concision-core/std",
     "ndarray/std",
-    "num/std"
+    "num/std",
+]
+
+tracing = [
+    "dep:tracing",
 ]
 
 [lib]
+bench = false
 crate-type = ["lib"]
-doctest = false
+doctest = true
 test = true
 
 [build-dependencies]
 
 [dependencies]
-itertools.workspace = true
-ndarray.workspace = true
+ndarray = "0.15"
+ndarray-rand = { optional = true, version = "0.14" }
+ndarray-stats.workspace = true
 num.workspace = true
 serde = { features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
+tracing = { optional = true, version = "0.1" }
 
 [dependencies.concision-core]
-path = "../core"
+path = "../../core"
 version = "0.1.12"
 
 [dev-dependencies]
+lazy_static.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

@@ -23,6 +23,7 @@ full = [
     "derive",
     "models",
     "serde",
+    "tracing",
 ]
 
 approx = [
@@ -38,40 +39,58 @@ derive = [
     "macros",
 ]
 
-macros = [
-    "dep:concision-macros"
+gnn = [
+    "dep:concision-gnn",
 ]
 
 linear = [
     "dep:concision-linear"
 ]
 
+macros = [
+    "dep:concision-macros"
+]
+
+
+
 models = [
     "linear",
+    "gnn",
 ]
 
 rand = [
     "concision-core/rand",
     "concision-data/rand",
     "concision-linear/rand",
+    "concision-gnn/rand",
 ]
 
 serde = [
     "concision-core/serde",
     "concision-data/serde",
     "concision-linear/serde",
+    "concision-gnn/serde",
 ]
 
 std = [
     "concision-core/std",
     "concision-data/std",
     "concision-linear/std",
+    "concision-gnn/std",
+]
+
+tracing = [
+    "concision-core/tracing",
+    # "concision-data/tracing",
+    "concision-linear/tracing",
+    "concision-gnn/tracing",
 ]
 
 blas = [
     "concision-core/blas",
     "concision-data/blas",
     "concision-linear/blas",
+    "concision-gnn/blas",
 ]
 
 intel-mkl-system = [
@@ -100,7 +119,7 @@ openblas-static = [
 
 [lib]
 bench = true
-crate-type = ["cdylib", "rlib"]
+crate-type = ["lib"]
 doctest = false
 test = true
 
@@ -114,14 +133,19 @@ concision-macros = { optional = true, path = "../macros", version = "0.1.12" }
 
 # **** Models ****
 concision-linear = { optional = true, path = "../models/linear", version = "0.1.12" }
+concision-gnn = { optional = true, path = "../models/gnn", version = "0.1.12" }
 
 [dev-dependencies]
-anyhow = "1"
-ndarray = "0.15"
+anyhow.workspace = true
+ndarray.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"
 
 [target.wasm32-unknown-unknown]
 

@@ -13,6 +13,8 @@ pub use concision_core::*;
 pub use concision_data as data;
 #[cfg(feature = "derive")]
 pub use concision_derive::*;
+#[cfg(feature = "gnn")]
+pub use concision_gnn as gnn;
 #[cfg(feature = "linear")]
 pub use concision_linear as linear;
 #[cfg(feature = "macros")]
@@ -24,6 +26,8 @@ pub mod prelude {
     pub use concision_data::prelude::*;
     #[cfg(feature = "derive")]
     pub use concision_derive::*;
+    #[cfg(feature = "gnn")]
+    pub use concision_gnn::prelude::*;
     #[cfg(feature = "linear")]
     pub use concision_linear::prelude::*;
     #[cfg(feature = "macros")]

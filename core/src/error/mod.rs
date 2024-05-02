@@ -10,11 +10,11 @@ pub mod kinds {
     pub use self::prelude::*;
 
     pub mod external;
-    pub mod models;
+    pub mod predict;
 
     pub(crate) mod prelude {
         pub use super::external::*;
-        pub use super::models::*;
+        pub use super::predict::*;
     }
 }
 

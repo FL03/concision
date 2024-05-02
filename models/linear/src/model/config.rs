@@ -4,7 +4,8 @@
 */
 use super::Features;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Config {
     pub biased: bool,
     pub name: String,
@@ -38,13 +39,14 @@ impl Config {
         }
     }
 
-    pub fn with_name(mut self, name: impl ToString) -> Self {
-        self.name = name.to_string();
-        self
+    pub fn with_name(self, name: impl ToString) -> Self {
+        Self {
+            name: name.to_string(),
+            ..self
+        }
     }
 
-    pub fn with_shape(mut self, shape: Features) -> Self {
-        self.shape = shape;
-        self
+    pub fn with_shape(self, shape: Features) -> Self {
+        Self { shape, ..self }
     }
 }

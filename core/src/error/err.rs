@@ -3,7 +3,6 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::kinds::*;
-use smart_default::SmartDefault;
 use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 #[derive(
@@ -20,7 +19,6 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantN
     Ord,
     PartialEq,
     PartialOrd,
-    SmartDefault,
     VariantNames,
 )]
 #[cfg_attr(
@@ -31,7 +29,6 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantN
 #[strum(serialize_all = "lowercase")]
 pub enum Error {
     IO(String),
-    #[default]
     External(ExternalError),
     Predict(PredictError),
     Shape(String),

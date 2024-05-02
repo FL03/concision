@@ -72,6 +72,21 @@ macro_rules! variant_constructor {
             Self::$variant($call())
         }
     };
+}
 
+macro_rules! impl_unary {
+    ($name:ident.$call:ident<$($T:ty),* $(,)?> -> $f:expr) => {
+        $(
+            impl_unary!(@base $name.$call<$T> -> $f);
+        )*
+    };
+    (@base $name:ident.$call:ident<$T:ty> -> $f:expr) => {
+        impl $name for $T {
+            type Output = $T;
 
+            fn $call(&self) -> Self::Output {
+                $f(self)
+            }
+        }
+    };
 }

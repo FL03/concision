@@ -43,6 +43,7 @@ impl<T> Linear<T> {
         Self { config, params }
     }
 }
+
 impl<T, D> Module for Linear<T, D>
 where
     D: Dimension,

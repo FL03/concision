@@ -29,30 +29,8 @@ updates:
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /ml
-    schedule:
-      interval: daily
-  - package-ecosystem: cargo
     directory: /models/linear
     schedule:
       interval: daily
   - package-ecosystem: cargo
-    directory: /nn/neural
-    schedule:
-      interval: daily
-  - package-ecosystem: cargo
-    directory: /nn/nlp
-    schedule:
-      interval: daily
-  - package-ecosystem: cargo
-    directory: /nn/optim
-    schedule:
-      interval: daily
-  - package-ecosystem: cargo
-    directory: /nn/s4
-    schedule:
-      interval: daily
-  - package-ecosystem: cargo
-    directory: /nn/transformers
-    schedule:
-      interval: daily
+    directory: /models/gnn

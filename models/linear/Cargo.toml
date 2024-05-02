@@ -58,16 +58,20 @@ std = [
     "num/std",
 ]
 
+tracing = [
+    "dep:tracing",
+]
+
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = ["lib"]
 doctest = true
 test = true
 
 [build-dependencies]
 
 [dependencies]
-concision-core = { path = "../../core", version = "0.1.12" }
+concision-core = { features = ["rand"], path = "../../core", version = "0.1.12" }
 
 anyhow.workspace = true
 ndarray = "0.15"
@@ -78,6 +82,7 @@ serde = { features = ["derive"], optional = true, version = "1" }
 serde_json = { optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
+tracing = { optional = true, version = "0.1" }
 
 [dev-dependencies]
 lazy_static.workspace = true

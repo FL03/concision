@@ -3,24 +3,26 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Data
-//!
-//!
-//!
-// #![feature(associated_type_defaults)]
+//! 
+//! This library works to provide a comprehensive set of utilities for working with datasets.
+
+#![cfg_attr(not(feature = "std"), no_std)]
+
+#[cfg(no_std)]
+extern crate alloc;
+
 extern crate concision_core as concision;
 
-pub use self::{dataset::Dataset, traits::prelude::*, types::prelude::*, utils::*};
+pub use self::{dataset::Dataset, traits::prelude::*, utils::*};
 
 pub(crate) mod utils;
 
 pub mod dataset;
 pub mod traits;
-pub mod types;
 
 pub mod prelude {
     pub use crate::utils::*;
 
     pub use crate::dataset::*;
     pub use crate::traits::prelude::*;
-    pub use crate::types::prelude::*;
 }

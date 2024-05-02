@@ -4,14 +4,14 @@
 */
 use ndarray::{Array, Dimension};
 
-pub trait Biased<T = f64> {
-    type Dim: Dimension;
+pub trait Biased {
+    type Bias;
     /// Returns an owned reference to the bias of the layer.
-    fn bias(&self) -> &Array<T, Self::Dim>;
+    fn bias(&self) -> &Self::Bias;
     /// Returns a mutable reference to the bias of the layer.
-    fn bias_mut(&mut self) -> &mut Array<T, Self::Dim>;
+    fn bias_mut(&mut self) -> &mut Self::Bias;
     /// Sets the bias of the layer.
-    fn set_bias(&mut self, bias: Array<T, Self::Dim>);
+    fn set_bias(&mut self, bias: Self::Bias);
 }
 
 pub trait Weighted<T = f64> {
@@ -23,3 +23,7 @@ pub trait Weighted<T = f64> {
     /// Sets the weights of the layer.
     fn set_weights(&mut self, weights: Array<T, Self::Dim>);
 }
+
+// macro_rules! impl_biased {
+//     (@impl $name:ty($))
+// }

@@ -47,7 +47,6 @@ serde = [
 ]
 
 serde-ext = [
-    "dep:serde_json",
     "ndarray/serde-1",
     "num/serde",
     "uuid/serde"
@@ -59,9 +58,13 @@ std = [
     "uuid/std"
 ]
 
+tracing = [
+    "dep:tracing"
+]
+
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = ["lib"]
 doctest = false
 test = true
 
@@ -69,14 +72,14 @@ test = true
 
 [dependencies]
 approx = { optional = true, version = "0.5" }
-ndarray = "0.15"
+ndarray.workspace = true
 ndarray-rand = "0.14" # { optional = true, version = "0.14" }
-num = "0.4"
+num.workspace = true
 rand = "0.8" # { optional = true, version = "0.8" }
 serde = { features = ["derive"], optional = true, version = "1" }
-serde_json = { optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
+tracing = { optional = true, version = "0.1" }
 uuid = { features = ["v4", "v7"], version = "1" }
 
 [dev-dependencies]

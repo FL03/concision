@@ -64,8 +64,8 @@ test = true
 [build-dependencies]
 
 [dependencies]
-concision-core = { features = ["rand", "serde"], path = "../../core", version = "0.1.12" }
-concision-data = { path = "../../data", version = "0.1.12" }
+concision-core = { features = ["full"], path = "../../core", version = "0.1.12" }
+concision-data = { features = ["full"], path = "../../data", version = "0.1.12" }
 concision-neural = { path = "../neural" }
 
 anyhow.workspace = true

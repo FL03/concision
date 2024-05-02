@@ -3,7 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::{Array, Axis, Dimension, NdFloat, RemoveAxis};
-use num::{Float, Zero};
+use num::complex::ComplexFloat;
+use num::{Float, One, Zero};
 
 pub fn relu<T>(args: &T) -> T
 where
@@ -16,11 +17,12 @@ where
     }
 }
 
-pub fn sigmoid<T>(args: &T) -> T
+pub fn sigmoid<T, D>(args: &Array<T, D>) -> Array<<T as Sigmoid>::Output, D>
 where
-    T: Float,
+    D: Dimension,
+    T: Clone + Sigmoid,
 {
-    T::one() / (T::one() + (-args.clone()).exp())
+    args.mapv(|x| x.sigmoid())
 }
 
 pub fn softmax<T, D>(args: &Array<T, D>) -> Array<T, D>
@@ -47,9 +49,62 @@ where
     }
 }
 
-pub fn tanh<T>(args: &T) -> T
+pub fn tanh<T, D>(args: &Array<T, D>) -> Array<<T as Tanh>::Output, D>
 where
-    T: Float,
+    D: Dimension,
+    T: Clone + Tanh,
 {
-    args.tanh()
+    args.mapv(|x| x.tanh())
 }
+
+macro_rules! unary {
+    ($($name:ident.$call:ident),* $(,)?) => {
+        $(
+            unary!(@impl $name.$call);
+        )*
+    };
+    (@impl $name:ident.$call:ident) => {
+        pub trait $name {
+            type Output;
+
+            fn $call(&self) -> Self::Output;
+        }
+    };
+}
+
+unary!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
+
+/*
+ ********** Implementations **********
+*/
+
+impl<T, D> Sigmoid for Array<T, D>
+where
+    D: Dimension,
+    T: Clone + Sigmoid,
+{
+    type Output = Array<<T as Sigmoid>::Output, D>;
+
+    fn sigmoid(&self) -> Self::Output {
+        self.mapv(|x| x.sigmoid())
+    }
+}
+
+macro_rules! impl_sigmoid {
+    ($($T:ty),* $(,)?) => {
+        $(
+            impl_sigmoid!(@base $T);
+        )*
+    };
+    (@base $T:ty) => {
+        impl Sigmoid for $T {
+            type Output = $T;
+
+            fn sigmoid(&self) -> Self::Output {
+                (<$T>::one() + (-self).exp()).recip()
+            }
+        }
+    };
+}
+
+impl_sigmoid!(f32, f64, num::Complex<f32>, num::Complex<f64>);
