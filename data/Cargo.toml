@@ -12,56 +12,75 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = [
+    "std",
+]
+
+full = [
+    "default",
+    "approx",
+    "rand",
+    "serde",
+    "tracing",
+]
+
+approx = [
+    "dep:approx",
+    "concision-core/approx",
+    "ndarray/approx-0_5",
+]
 
 blas = [
+    "concision-core/blas",
     "ndarray/blas",
 ]
 
-# intel-mkl-system = [
-#     "linfa/intel-mkl-system",
-# ]
+rand = [
+    "concision-core/rand",
+]
 
-# intel-mkl-static = [
-#     "linfa/intel-mkl-static",
-# ]
+serde = [
+    "dep:serde",
+    "serde-ext"
+]
 
-# netlib-system = [
-#     "linfa/netlib-system",
-# ]
+serde-ext = [
+    # "dep:serde_json",
+    "concision-core/serde",
+    "ndarray/serde-1"
+]
 
-# netlib-static = [
-#     "linfa/netlib-static",
-# ]
+std = [
+    "concision-core/std",
+    "ndarray/std",
+    "num/std"
+]
 
-# openblas-system = [
-#     "linfa/openblas-system",
-# ]
-
-# openblas-static = [
-#     "linfa/openblas-static",
-# ]
-
-
+tracing = [
+    "dep:tracing",
+    "concision-core/tracing",
+]
 
 [lib]
-bench = true
-crate-type = ["rlib"]
+crate-type = ["lib"]
 doctest = false
 test = true
 
 [build-dependencies]
 
 [dependencies]
-concision-core = { path = "../core", version = "0.1.12" }
-anyhow.workspace = true
+approx = { optional = true, version = "0.5" }
 itertools.workspace = true
-ndarray = { features = ["serde-1"], version = "0.15" }
+ndarray.workspace = true
 num.workspace = true
-serde.workspace = true
-serde_json.workspace = true
+serde = { features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
+tracing = { optional = true, version = "0.1" }
+
+[dependencies.concision-core]
+path = "../core"
+version = "0.1.12"
 
 [dev-dependencies]
 

@@ -12,34 +12,79 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = [
+    "std",
+]
+
+full = [
+    "default",
+    "approx",
+    "rand",
+    "serde",
+]
+
+approx = [
+    "dep:approx",
+    "ndarray/approx-0_5",
+]
 
 blas = [
     "ndarray/blas",
 ]
 
+# rand = [
+#     "dep:rand",
+#     "dep:ndarray-rand"
+#     "num/rand",
+# ]
+rand = [
+    "num/rand",
+]
+
+serde = [
+    "dep:serde",
+    "serde-ext"
+]
+
+serde-ext = [
+    "ndarray/serde-1",
+    "num/serde",
+    "uuid/serde"
+]
+
+std = [
+    "ndarray/std",
+    "num/std",
+    "uuid/std"
+]
+
+tracing = [
+    "dep:tracing"
+]
+
 [lib]
 bench = false
-crate-type = ["rlib"]
+crate-type = ["lib"]
 doctest = false
 test = true
 
 [build-dependencies]
 
 [dependencies]
-anyhow.workspace = true
-chrono = "0.4"
-ndarray = { features = ["serde-1"], version = "0.15" }
-ndarray-rand.workspace = true
+approx = { optional = true, version = "0.5" }
+ndarray.workspace = true
+ndarray-rand = "0.14" # { optional = true, version = "0.14" }
 num.workspace = true
-rand = { features = [], version = "0.8" }
-serde.workspace = true
-serde_json.workspace = true
+rand = "0.8" # { optional = true, version = "0.8" }
+serde = { features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
+tracing = { optional = true, version = "0.1" }
+uuid = { features = ["v4", "v7"], version = "1" }
 
 [dev-dependencies]
-lazy_static.workspace = true
+approx = "0.5"
+lazy_static = "1"
 
 [package.metadata.docs.rs]
 all-features = true

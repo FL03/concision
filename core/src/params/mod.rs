@@ -6,69 +6,31 @@
 //!
 //! ## Overview
 //!
-pub use self::{iter::*, kinds::*, param::*, variable::*};
+pub use self::{kinds::*, parameter::*};
 
-pub(crate) mod iter;
 pub(crate) mod kinds;
-pub(crate) mod param;
-pub(crate) mod variable;
+pub(crate) mod parameter;
 
-pub mod masks;
-pub mod stores;
+pub mod store;
 
-use ndarray::prelude::{Array, Dimension, Ix2};
-use std::collections::HashMap;
+mod impls {
+    mod impl_rand;
+}
 
 pub trait Param {
-    type Dim: Dimension;
-
-    fn kind(&self) -> &ParamKind;
-
-    fn name(&self) -> &str;
+    type Key;
+    type Value;
 }
 
-pub trait Biased<T = f64> {
-    type Dim: Dimension;
-    /// Returns an owned reference to the bias of the layer.
-    fn bias(&self) -> &Array<T, Self::Dim>;
-    /// Returns a mutable reference to the bias of the layer.
-    fn bias_mut(&mut self) -> &mut Array<T, Self::Dim>;
-    /// Sets the bias of the layer.
-    fn set_bias(&mut self, bias: Array<T, Self::Dim>);
+pub trait Params {
+    type Store;
 }
 
-pub trait Weighted<T = f64> {
-    type Dim: Dimension;
-    /// Returns an owned reference to the weights of the layer.
-    fn weights(&self) -> &Array<T, Self::Dim>;
-    /// Returns a mutable reference to the weights of the layer.
-    fn weights_mut(&mut self) -> &mut Array<T, Self::Dim>;
-    /// Sets the weights of the layer.
-    fn set_weights(&mut self, weights: Array<T, Self::Dim>);
-}
-
-pub trait Params<K = String, T = f64, D = Ix2>
-where
-    D: Dimension,
-    Self: IntoIterator<Item = (K, Array<T, D>)>,
-{
-    fn get(&self, param: &K) -> Option<&Array<T, D>>;
-
-    fn get_mut(&mut self, param: &K) -> Option<&mut Array<T, D>>;
-}
-
-impl<K, T, D> Params<K, T, D> for HashMap<K, Array<T, D>>
-where
-    D: Dimension,
-    K: std::cmp::Eq + std::hash::Hash,
-{
-    fn get(&self, param: &K) -> Option<&Array<T, D>> {
-        self.get(param)
-    }
-
-    fn get_mut(&mut self, param: &K) -> Option<&mut Array<T, D>> {
-        self.get_mut(param)
-    }
+pub(crate) mod prelude {
+    pub use super::kinds::ParamKind;
+    pub use super::parameter::Parameter;
+    pub use super::store::ParamStore;
+    pub use super::Param;
 }
 
 #[cfg(test)]

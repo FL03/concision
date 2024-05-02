@@ -1,6 +1,6 @@
 extern crate concision as cnc;
 
-use cnc::core::ops::pad;
+use cnc::ops::pad;
 
 use ndarray::prelude::*;
 

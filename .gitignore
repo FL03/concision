@@ -1,43 +1,44 @@
-# Config
+# Artifacts
+
+**/.artifacts/data/
+**/.docker/data/
+
+
+## Caches
+
+**/.cache/
+
+# Configuration Files
+
 **/config.*
 **/*.config.*
 
 **/*.env
 **/*.env.*
 
-# Directories
-**/__pycache__/
-**/__sapper__/
+### Exceptions
+!**/default.config.*
+!**/*.config.cjs
+!**/*.config.js
+!**/*.config.mjs
+!**/config.py
+!**/config.rs
 
-**/.DS_STORE/
-**/.artifacts/data/
-**/.cache/
-**/.docker/data/
+!**/example.env.*
+!**/*.env.example
+!**/*.env.default
+
+# Dev
+
+### Idea
+
 **/.idea/
-**/.pytest_cache/
-**/.svelte-kit/
+
+### vscode
+
 **/.vscode/
 
-**/artifacts/
-**/build/
-**/debug/
-**/dist/
-**/env/
-**/node_modules/
-**/target/
-**/venv/
-
 # File Extensions
-**/*.bk
-**/*.bk.*
-
-**/*.csv
-**/*.csv.*
-
-**/*.db
-**/*.db.*
-
-**/*.db-*.*
 
 **/*.lock
 **/*.lock.*
@@ -47,16 +48,62 @@
 **/*.log
 **/*.log.*
 
-**/*.whl
-**/*.whl.*
+### Data Files
+
+**/*.csv
+**/*.csv.*
+
+**/*.db
+**/*.db.*
+
+**/*.db-*.*
 
 **/*.zip
 **/*.zip.*
 
-# Exceptions
-!**/default.config.*
-!**/*.env.example
-!**/*.config.js
-!**/*.config.cjs
 
-!**/config.rs
+
+## Rust
+**/debug/
+**/target/
+
+**/*.bk
+**/*.bk.*
+
+**/Cargo.lock
+
+## Node
+**/build/
+**/debug/
+**/dist/
+**/node_modules/
+
+### SvelteKit
+**/__sapper__/
+**/.DS_STORE/
+**/.svelte-kit/
+
+## Python
+**/__pycache__/
+**/.pytest_cache/
+**/venv/
+
+**/*.egg
+**/*.egg.*
+
+**/*.egg-info
+
+**/*.pyc
+**/*.pyc.*
+
+**/*.pyo
+**/*.pyo.*
+
+**/*.pyz
+**/*.pyz.*
+
+**/*.pyzw
+**/*.pyzw.*
+
+**/*.whl
+**/*.whl.*

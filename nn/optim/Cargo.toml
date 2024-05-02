@@ -1,0 +1,56 @@
+[package]
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "concision-optim"
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[features]
+default = []
+
+blas = [
+    "ndarray/blas",
+    "concision-core/blas",
+    "concision-neural/blas",
+]
+
+[lib]
+bench = false
+crate-type = ["rlib"]
+doctest = false
+test = false
+
+[build-dependencies]
+
+[dependencies]
+concision-core = { features = ["full"], path = "../../core", version = "0.1.12" }
+concision-neural = { path = "../neural" }
+
+anyhow.workspace = true
+itertools = { features = [], version = "0.12" }
+lazy_static.workspace = true
+ndarray = { features = ["serde-1"], version = "0.15" }
+ndarray-rand.workspace = true
+ndarray-stats.workspace = true
+num.workspace = true
+rand = "0.8"
+serde = { features = ["derive"], version = "1" }
+serde_json = "1"
+smart-default = "0.7"
+strum = { features = ["derive"], version = "0.26" }
+
+[dev-dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
+[target.wasm32-unknown-unknown]
+
+[target.wasm32-wasi]

@@ -1,0 +1,122 @@
+[package]
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "concision-nn"
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[features]
+default = [
+    "std",
+]
+
+full = [
+    "default",
+    "approx",
+    "nlp",
+    "optim",
+    "serde",
+    "transformers",    
+]
+
+approx = []
+
+nlp = [
+    "dep:concision-nlp"
+]
+
+optim = [
+    "dep:concision-optim",
+]
+
+s4 = [
+    "dep:concision-s4",
+]
+
+serde = []
+
+std = []
+
+transformers = [
+    "dep:concision-transformers"
+]
+
+blas = [
+    "concision-neural/blas",
+    "concision-nlp/blas",
+    "concision-optim/blas",
+    "concision-s4/blas",
+    "concision-transformers/blas",
+]
+
+intel-mkl-system = [
+    "blas",
+    "concision-neural/intel-mkl-system",
+    "concision-s4/intel-mkl-system",
+]
+
+intel-mkl-static = [
+    "blas",
+    "concision-neural/intel-mkl-static",
+    "concision-s4/intel-mkl-static",
+]
+
+netlib-system = [
+    "blas",
+    "concision-neural/netlib-system",
+    "concision-s4/netlib-system",
+]
+
+netlib-static = [
+    "blas",
+    "concision-neural/netlib-static",
+    "concision-s4/netlib-static",
+]
+
+openblas-system = [
+    "blas",
+    "concision-neural/openblas-system",
+    "concision-s4/openblas-system",
+]
+
+openblas-static = [
+    "blas",
+    "concision-neural/openblas-static",
+    "concision-s4/openblas-static",
+]
+
+[lib]
+bench = false
+crate-type = ["rlib"]
+doctest = false
+test = false
+
+[build-dependencies]
+
+[dependencies]
+concision-neural = { path = "../neural", version = "0.1.12" }
+concision-nlp = { optional = true, path = "../nlp", version = "0.1.12" }
+concision-optim = { optional = true, path = "../optim", version = "0.1.12" }
+concision-s4 = { optional = true, path = "../s4", version = "0.1.12" }
+concision-transformers = { optional = true, path = "../transformers", version = "0.1.12" }
+
+
+[dev-dependencies]
+anyhow = "1"
+approx = "0.5"
+concision = { path = "../../concision" }
+ndarray = { features = ["approx-0_5", "serde-1"], version = "0.15" }
+
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
+[target.wasm32-unknown-unknown]
+
+[target.wasm32-wasi]

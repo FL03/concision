@@ -1,0 +1,72 @@
+[package]
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "concision-nlp"
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[features]
+default = [
+    "std"
+]
+
+full = [
+    "default",
+    "serde",
+]
+blas = [
+    "ndarray/blas",
+]
+
+serde = [
+    "dep:serde",
+    "serde-ext",
+]
+
+serde-ext = [
+    "dep:serde_json",
+    "ndarray/serde-1",
+    "num/serde",
+]
+
+std = [
+    "ndarray/std",
+    "num/std",
+]
+
+[lib]
+bench = false
+crate-type = ["rlib"]
+doctest = false
+test = false
+
+[build-dependencies]
+
+[dependencies]
+
+anyhow.workspace = true
+finalfusion = "0.18"
+ndarray = "0.15"
+num = { features = ["rand"], version = "0.4" }
+serde = { features = ["derive"], optional = true, version = "1" }
+serde_json = { optional = true, version = "1" }
+smart-default.workspace = true
+strum.workspace = true
+tokenizers = "0.19"
+
+[dev-dependencies]
+concision-core = { path = "../../core", version = "0.1.12" }
+
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
+[target.wasm32-unknown-unknown]
+
+[target.wasm32-wasi]
