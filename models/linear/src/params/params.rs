@@ -2,22 +2,11 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::kinds::*;
-
-pub(crate) mod kinds;
-
-mod impl_params;
-
-use crate::Biased;
 use crate::model::Features;
-use crate::{Node, Weighted};
-use concision::error::PredictError;
-use concision::{GenerateRandom, Predict};
+use crate::Node;
 use core::ops;
 use nd::linalg::Dot;
 use nd::*;
-use ndarray_rand::rand_distr::uniform::SampleUniform;
-use ndarray_rand::rand_distr::{Distribution, StandardNormal};
 use num::{Float, One, Zero};
 
 #[cfg(no_std)]
@@ -42,18 +31,18 @@ pub struct LinearParams<T = f64, D = Ix2>
 where
     D: Dimension,
 {
-    bias: Option<Array<T, D::Smaller>>,
-    features: D,
-    weights: Array<T, D>,
+    pub(crate) bias: Option<Array<T, D::Smaller>>,
+    pub(crate) features: D,
+    pub(crate) weights: Array<T, D>,
 }
 
-impl<T, D> LinearParams<T, D>
+impl<A, D> LinearParams<A, D>
 where
     D: RemoveAxis,
 {
     pub fn new(biased: bool, dim: impl IntoDimension<Dim = D>) -> Self
     where
-        T: Clone + Default,
+        A: Clone + Default,
     {
         let dim = dim.into_dimension();
         let bias = build_bias(biased, dim.clone(), |dim| Array::default(dim));
@@ -67,7 +56,7 @@ where
     pub fn ones<Sh>(shape: Sh) -> Self
     where
         Sh: ShapeBuilder<Dim = D>,
-        T: Clone + One,
+        A: Clone + One,
     {
         let shape = shape.into_shape();
         let dim = shape.raw_dim().clone();
@@ -82,7 +71,7 @@ where
     pub fn zeros<Sh>(shape: Sh) -> Self
     where
         Sh: ShapeBuilder<Dim = D>,
-        T: Clone + Zero,
+        A: Clone + Zero,
     {
         let shape = shape.into_shape();
         let dim = shape.raw_dim().clone();
@@ -94,11 +83,22 @@ where
         }
     }
 
-    pub fn bias(&self) -> Option<&Array<T, D::Smaller>> {
+    pub fn activate<F>(&mut self, f: F) -> LinearParams<A, D>
+    where
+        F: for<'a> Fn(&'a A) -> A,
+    {
+        LinearParams {
+            bias: self.bias().map(|b| b.map(|b| f(b))),
+            features: self.features.clone(),
+            weights: self.weights().map(|w| f(w)),
+        }
+    }
+
+    pub fn bias(&self) -> Option<&Array<A, D::Smaller>> {
         self.bias.as_ref()
     }
 
-    pub fn bias_mut(&mut self) -> Option<&mut Array<T, D::Smaller>> {
+    pub fn bias_mut(&mut self) -> Option<&mut Array<A, D::Smaller>> {
         self.bias.as_mut()
     }
 
@@ -118,11 +118,11 @@ where
         self.bias.is_some()
     }
 
-    pub fn linear<A, B>(&self, data: &A) -> B
+    pub fn linear<T, B>(&self, data: &T) -> B
     where
-        A: Dot<Array<T, D>, Output = B>,
-        B: for<'a> ops::Add<&'a Array<T, D::Smaller>, Output = B>,
-        T: NdFloat,
+        T: Dot<Array<A, D>, Output = B>,
+        B: for<'a> ops::Add<&'a Array<A, D::Smaller>, Output = B>,
+        A: NdFloat,
     {
         let dot = data.dot(&self.weights().t().to_owned());
         if let Some(bias) = self.bias() {
@@ -138,17 +138,20 @@ where
         self.weights.shape().first().unwrap().clone()
     }
 
-    pub fn weights(&self) -> &Array<T, D> {
+    pub fn weights(&self) -> &Array<A, D> {
         &self.weights
     }
 
-    pub fn weights_mut(&mut self) -> &mut Array<T, D> {
+    pub fn weights_mut(&mut self) -> &mut Array<A, D> {
         &mut self.weights
     }
 }
 
 impl<T> LinearParams<T> {
-    pub fn set_node(&mut self, idx: usize, node: Node<T>) where T: Float {
+    pub fn set_node(&mut self, idx: usize, node: Node<T>)
+    where
+        T: Float,
+    {
         if let Some(bias) = node.bias() {
             if !self.is_biased() {
                 let mut tmp = Array1::zeros(self.outputs());
@@ -167,36 +170,6 @@ impl<T> LinearParams<T> {
             .assign(&node.weights());
     }
 }
-
-impl<T, D> LinearParams<T, D>
-where
-    D: RemoveAxis,
-    T: Float + SampleUniform,
-    StandardNormal: Distribution<T>,
-{
-    pub fn init_uniform(mut self, biased: bool) -> Self {
-        if biased {
-            self = self.init_bias();
-        }
-        self.init_weight()
-    }
-
-    pub fn init_bias(mut self) -> Self {
-        let dk = (T::one() / T::from(self.inputs()).unwrap()).sqrt();
-        let dim = self
-            .features()
-            .remove_axis(Axis(self.features().ndim() - 1));
-        self.bias = Some(Array::uniform_between(dk, dim));
-        self
-    }
-
-    pub fn init_weight(mut self) -> Self {
-        let dk = (T::one() / T::from(self.inputs()).unwrap()).sqrt();
-        self.weights = Array::uniform_between(dk, self.features().clone());
-        self
-    }
-}
-
 
 impl<T> IntoIterator for LinearParams<T>
 where
@@ -242,40 +215,36 @@ where
 }
 
 #[cfg(feature = "serde")]
-
-mod impl_serde {
-    use super::*;
-    use serde::{Deserialize, Serialize};
-    impl<'a, T, D> Deserialize<'a> for LinearParams<T, D>
+impl<'a, T, D> serde::Deserialize<'a> for LinearParams<T, D>
+where
+    T: serde::Deserialize<'a>,
+    D: serde::Deserialize<'a> + nd::RemoveAxis,
+    <D as nd::Dimension>::Smaller: serde::Deserialize<'a> + nd::Dimension,
+{
+    fn deserialize<Der>(deserializer: Der) -> Result<Self, Der::Error>
     where
-        T: Deserialize<'a> + Float,
-        D: Deserialize<'a> + Dimension,
-        <D as Dimension>::Smaller: Deserialize<'a> + Dimension,
+        Der: serde::Deserializer<'a>,
     {
-        fn deserialize<Der>(deserializer: Der) -> Result<Self, Der::Error>
-        where
-            Der: serde::Deserializer<'a>,
-        {
-            let (bias, features, weights) = Deserialize::deserialize(deserializer)?;
-            Ok(Self {
-                bias,
-                features,
-                weights,
-            })
-        }
+        let (bias, features, weights) = serde::Deserialize::deserialize(deserializer)?;
+        Ok(Self {
+            bias,
+            features,
+            weights,
+        })
     }
+}
+#[cfg(feature = "serde")]
 
-    impl<T, D> Serialize for LinearParams<T, D>
+impl<T, D> serde::Serialize for LinearParams<T, D>
+where
+    T: serde::Serialize,
+    D: nd::RemoveAxis + serde::Serialize,
+    <D as nd::Dimension>::Smaller: nd::Dimension + serde::Serialize,
+{
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
-        T: Float + Serialize,
-        D: Dimension + RemoveAxis + Serialize,
-        <D as Dimension>::Smaller: Dimension + Serialize,
+        Ser: serde::Serializer,
     {
-        fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
-        where
-            Ser: serde::Serializer,
-        {
-            (self.bias(), self.features(), self.weights()).serialize(serializer)
-        }
+        (self.bias(), self.features(), self.weights()).serialize(serializer)
     }
 }

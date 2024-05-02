@@ -2,8 +2,8 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Config, LinearParams};
-
+use super::Config;
+use crate::params::LinearParams;
 use concision::models::Module;
 use concision::prelude::{Predict, PredictError};
 use ndarray::{Dimension, Ix2};

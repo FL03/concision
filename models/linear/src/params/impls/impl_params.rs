@@ -2,12 +2,12 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::params::LinearParams;
 use crate::{Biased, Weighted};
-use crate::model::LinearParams;
 use concision::prelude::{Predict, PredictError};
 use core::ops::Add;
-use nd::*;
 use nd::linalg::Dot;
+use nd::*;
 use num::Float;
 
 impl<T, D> Biased for LinearParams<T, D>
@@ -30,22 +30,21 @@ where
     }
 }
 
-impl<T, D> Weighted<T> for LinearParams<T, D>
+impl<T, D> Weighted for LinearParams<T, D>
 where
     D: Dimension,
-    T: Float,
 {
-    type Dim = D;
+    type Weight = Array<T, D>;
 
-    fn weights(&self) -> &Array<T, Self::Dim> {
+    fn weights(&self) -> &Self::Weight {
         &self.weights
     }
 
-    fn weights_mut(&mut self) -> &mut Array<T, Self::Dim> {
+    fn weights_mut(&mut self) -> &mut Self::Weight {
         &mut self.weights
     }
 
-    fn set_weights(&mut self, weights: Array<T, Self::Dim>) {
+    fn set_weights(&mut self, weights: Self::Weight) {
         self.weights = weights;
     }
 }

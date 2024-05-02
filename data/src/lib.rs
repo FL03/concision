@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # Data
-//! 
+//!
 //! This library works to provide a comprehensive set of utilities for working with datasets.
 
 #![cfg_attr(not(feature = "std"), no_std)]

@@ -6,6 +6,13 @@ pub use self::prelude::*;
 
 pub mod nl;
 
+pub fn linear<T>(x: &T) -> T
+where
+    T: Clone,
+{
+    x.clone()
+}
+
 pub(crate) mod prelude {
     pub use super::nl::*;
 }

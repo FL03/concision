@@ -2,17 +2,20 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{config::Config, features::Features, linear::Linear, params::LinearParams};
+pub use self::{config::*, features::*, linear::*};
 
 mod linear;
 
 pub mod config;
 pub mod features;
-pub mod params;
+
+mod impls {
+    #[cfg(feature = "rand")]
+    mod impl_init;
+}
 
 pub(crate) mod prelude {
     pub use super::config::Config as LinearConfig;
     pub use super::features::Features as LinearFeatures;
     pub use super::linear::Linear;
-    pub use super::params::LinearParams;
 }

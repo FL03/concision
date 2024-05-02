@@ -68,6 +68,10 @@ crate-type = ["lib"]
 doctest = true
 test = true
 
+[[test]]
+name = "model"
+required-features = ["rand"]
+
 [build-dependencies]
 
 [dependencies]

@@ -3,7 +3,8 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::kinds::*;
-use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
+use crate::models::ModelError;
+use strum::{AsRefStr, Display, EnumCount, EnumIs, VariantNames};
 
 #[derive(
     AsRefStr,
@@ -12,8 +13,6 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantN
     Display,
     EnumCount,
     EnumIs,
-    EnumIter,
-    EnumString,
     Eq,
     Hash,
     Ord,
@@ -31,6 +30,7 @@ pub enum Error {
     IO(String),
     External(ExternalError),
     Predict(PredictError),
+    Model(ModelError),
     Shape(String),
 }
 
@@ -48,17 +48,24 @@ impl std::error::Error for Error {}
 //     }
 // }
 
-impl From<ExternalError> for Error {
-    fn from(err: ExternalError) -> Self {
-        Error::External(err)
-    }
-}
-
-impl From<PredictError> for Error {
-    fn from(err: PredictError) -> Self {
-        Error::Predict(err)
-    }
-}
-
 #[cfg(feature = "std")]
 impl_from_error!(Error::IO<std::io::Error>);
+
+macro_rules! from_err {
+    ($($variant:ident<$err:ty>),* $(,)*) => {
+        $(
+            from_err!(@impl $variant<$err>);
+        )*
+    };
+    (@impl $variant:ident<$err:ty>) => {
+        impl From<$err> for Error {
+            fn from(err: $err) -> Self {
+                Error::$variant(err)
+            }
+        }
+    };
+}
+
+from_err!(External<ExternalError>);
+from_err!(Model<ModelError>);
+from_err!(Predict<PredictError>);

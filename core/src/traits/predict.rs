@@ -4,14 +4,12 @@
 */
 use crate::error::PredictError;
 
-pub trait Activate {
+pub trait Activate<T> {
     type Output;
 
-    fn activate(&self) -> Self::Output;
-}
-
-pub trait FeedForward: Forward<Self::Params> {
-    type Params;
+    fn activate<F>(&self, f: F) -> Self::Output
+    where
+        F: for<'a> Fn(&'a T) -> T;
 }
 
 /// [Forward] describes an object capable of forward propagation.

@@ -2,7 +2,6 @@
     Appellation: traits <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::{Array, Dimension};
 
 pub trait Biased {
     type Bias;
@@ -14,16 +13,14 @@ pub trait Biased {
     fn set_bias(&mut self, bias: Self::Bias);
 }
 
-pub trait Weighted<T = f64> {
-    type Dim: Dimension;
+pub trait Weighted {
+    type Weight;
     /// Returns an owned reference to the weights of the layer.
-    fn weights(&self) -> &Array<T, Self::Dim>;
+    fn weights(&self) -> &Self::Weight;
     /// Returns a mutable reference to the weights of the layer.
-    fn weights_mut(&mut self) -> &mut Array<T, Self::Dim>;
+    fn weights_mut(&mut self) -> &mut Self::Weight;
     /// Sets the weights of the layer.
-    fn set_weights(&mut self, weights: Array<T, Self::Dim>);
+    fn set_weights(&mut self, weights: Self::Weight);
 }
 
-// macro_rules! impl_biased {
-//     (@impl $name:ty($))
-// }
+pub trait StdParams: Biased + Weighted {}
