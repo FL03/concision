@@ -169,24 +169,6 @@ where
     
 }
 
-// impl<A, B, T> Forward<A> for Node<T>
-// where
-//     T: Clone,
-//     A: Dot<Array1<T>, Output = B>,
-//     B: ops::Add<Array0<T>, Output = B>,
-// {
-//     type Output = B;
-
-//     fn forward(&self, data: &A) -> B {
-//         let wt = self.weights().t().to_owned();
-//         let out = data.dot(&wt);
-//         if let Some(bias) = self.bias() {
-//             return out + bias.clone();
-//         }
-//         out
-//     }
-// }
-
 impl<A, B, T> Predict<A> for Node<T>
 where
     T: Clone,
