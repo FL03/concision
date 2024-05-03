@@ -11,11 +11,23 @@ pub mod store;
 pub mod train;
 
 pub mod arr {
-    pub use self::{convert::*, like::*, ops::*};
+    pub use self::{like::*, misc::*, ops::*};
 
-    pub(crate) mod convert;
     pub(crate) mod like;
+    pub(crate) mod misc;
     pub(crate) mod ops;
+}
+
+pub trait Decrement {
+    type Output;
+
+    fn dec(&self) -> Self::Output;
+}
+
+pub trait Increment {
+    type Output;
+
+    fn inc(&self) -> Self::Output;
 }
 
 pub trait Transform<T> {
@@ -24,8 +36,22 @@ pub trait Transform<T> {
     fn transform(&self, args: &T) -> Self::Output;
 }
 
+/*
+ ******** implementations ********
+*/
+impl<D> Decrement for D
+where
+    D: nd::RemoveAxis,
+{
+    type Output = D::Smaller;
+
+    fn dec(&self) -> Self::Output {
+        self.remove_axis(nd::Axis(self.ndim() - 1))
+    }
+}
+
 pub(crate) mod prelude {
-    pub use super::Transform;
+    pub use super::{Decrement, Transform};
 
     pub use super::arr::*;
     pub use super::math::*;

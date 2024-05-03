@@ -19,6 +19,7 @@ default = [
 
 full = [
     "default",
+    "approx",
     "rand",
     "serde",
     "tracing",
@@ -76,6 +77,10 @@ test = true
 
 [[test]]
 name = "model"
+required-features = ["rand"]
+
+[[test]]
+name = "params"
 required-features = ["rand"]
 
 [build-dependencies]

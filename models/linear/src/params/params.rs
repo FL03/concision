@@ -2,8 +2,8 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::build_bias;
 use crate::model::Features;
-use crate::Node;
 use core::ops;
 use nd::linalg::Dot;
 use nd::*;
@@ -14,17 +14,7 @@ use alloc::vec;
 #[cfg(feature = "std")]
 use std::vec;
 
-pub(crate) fn build_bias<T, F, D>(biased: bool, dim: D, builder: F) -> Option<Array<T, D::Smaller>>
-where
-    D: RemoveAxis,
-    F: Fn(D::Smaller) -> Array<T, D::Smaller>,
-{
-    if biased {
-        Some(builder(dim.remove_axis(Axis(dim.ndim() - 1))))
-    } else {
-        None
-    }
-}
+pub(crate) type Node<T> = (Array<T, Ix1>, Option<Array<T, Ix0>>);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LinearParams<T = f64, D = Ix2>
@@ -46,6 +36,19 @@ where
     {
         let dim = dim.into_dimension();
         let bias = build_bias(biased, dim.clone(), |dim| Array::default(dim));
+        Self {
+            bias,
+            features: dim.clone(),
+            weights: Array::default(dim),
+        }
+    }
+
+    pub fn default(dim: impl IntoDimension<Dim = D>) -> Self
+    where
+        A: Clone + Default,
+    {
+        let dim = dim.into_dimension();
+        let bias = build_bias(true, dim.clone(), |dim| Array::default(dim));
         Self {
             bias,
             features: dim.clone(),
@@ -150,24 +153,25 @@ where
 impl<T> LinearParams<T> {
     pub fn set_node(&mut self, idx: usize, node: Node<T>)
     where
-        T: Float,
+        T: Clone + Default,
     {
-        if let Some(bias) = node.bias() {
+        let (weight, bias) = node;
+        if let Some(bias) = bias {
             if !self.is_biased() {
-                let mut tmp = Array1::zeros(self.outputs());
-                tmp.index_axis_mut(Axis(0), idx).assign(bias);
+                let mut tmp = Array1::default(self.outputs());
+                tmp.index_axis_mut(Axis(0), idx).assign(&bias);
                 self.bias = Some(tmp);
             }
             self.bias
                 .as_mut()
                 .unwrap()
                 .index_axis_mut(Axis(0), idx)
-                .assign(bias);
+                .assign(&bias);
         }
 
         self.weights_mut()
             .index_axis_mut(Axis(0), idx)
-            .assign(&node.weights());
+            .assign(&weight);
     }
 }
 
@@ -184,7 +188,7 @@ where
                 .weights()
                 .axis_iter(Axis(0))
                 .zip(bias.axis_iter(Axis(0)))
-                .map(|(w, b)| (w.to_owned(), b.to_owned()).into())
+                .map(|(w, b)| (w.to_owned(), Some(b.to_owned())))
                 .collect::<Vec<_>>()
                 .into_iter();
         }
@@ -196,20 +200,73 @@ where
     }
 }
 
-impl<T> FromIterator<Node<T>> for LinearParams<T>
+impl<T> FromIterator<(Array1<T>, Option<Array0<T>>)> for LinearParams<T, Ix2>
 where
-    T: Float,
+    T: Clone + Default,
 {
-    fn from_iter<I: IntoIterator<Item = Node<T>>>(nodes: I) -> Self {
+    fn from_iter<I: IntoIterator<Item = (Array1<T>, Option<Array0<T>>)>>(nodes: I) -> Self {
         let nodes = nodes.into_iter().collect::<Vec<_>>();
         let mut iter = nodes.iter();
         let node = iter.next().unwrap();
-        let shape = Features::new(node.features(), nodes.len());
-        let mut params = Self::zeros(shape);
+        let shape = Features::new(node.0.shape()[0], nodes.len());
+        let mut params = LinearParams::default(shape);
         params.set_node(0, node.clone());
         for (i, node) in iter.into_iter().enumerate() {
             params.set_node(i + 1, node.clone());
         }
         params
+    }
+}
+
+impl<A> From<(Array<A, Ix1>, A)> for LinearParams<A, Ix1>
+where
+    A: Clone,
+{
+    fn from((weights, bias): (Array<A, Ix1>, A)) -> Self {
+        let bias = Array::from_elem((), bias);
+        Self {
+            bias: Some(bias),
+            features: weights.raw_dim(),
+            weights,
+        }
+    }
+}
+
+impl<A> From<(Array<A, Ix1>, Option<A>)> for LinearParams<A, Ix1>
+where
+    A: Clone,
+{
+    fn from((weights, bias): (Array<A, Ix1>, Option<A>)) -> Self {
+        let bias = bias.map(|b| Array::from_elem((), b));
+        Self {
+            bias,
+            features: weights.raw_dim(),
+            weights,
+        }
+    }
+}
+impl<T, D> From<(Array<T, D>, Array<T, D::Smaller>)> for LinearParams<T, D>
+where
+    D: RemoveAxis,
+{
+    fn from((weights, bias): (Array<T, D>, Array<T, D::Smaller>)) -> Self {
+        Self {
+            bias: Some(bias),
+            features: weights.raw_dim(),
+            weights,
+        }
+    }
+}
+
+impl<T, D> From<(Array<T, D>, Option<Array<T, D::Smaller>>)> for LinearParams<T, D>
+where
+    D: RemoveAxis,
+{
+    fn from((weights, bias): (Array<T, D>, Option<Array<T, D::Smaller>>)) -> Self {
+        Self {
+            bias,
+            features: weights.raw_dim(),
+            weights,
+        }
     }
 }

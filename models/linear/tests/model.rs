@@ -7,7 +7,7 @@
 extern crate concision_core as concision;
 extern crate concision_linear as linear;
 
-use concision::prelude::{linarr, Predict};
+use concision::{linarr, Predict};
 use linear::{Config, Features, Linear};
 
 use lazy_static::lazy_static;

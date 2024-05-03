@@ -19,20 +19,19 @@ extern crate ndarray_stats as stats;
 
 pub use self::model::{Config, Features, Linear};
 pub use self::params::LinearParams;
-pub use self::{neurons::*, traits::*};
+#[allow(unused_imports)]
+pub use self::{traits::*, utils::*};
+
+pub(crate) mod utils;
 
 pub mod conv;
 pub mod dense;
 pub mod model;
-#[doc(hidden)]
-pub mod neurons;
 pub mod params;
 pub mod traits;
 
 pub mod prelude {
     pub use crate::model::prelude::*;
-    #[doc(hidden)]
-    pub use crate::neurons::Perceptron;
     pub use crate::params::prelude::*;
     pub use crate::traits::*;
 }
