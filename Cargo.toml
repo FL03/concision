@@ -15,7 +15,6 @@ version = "0.1.12" # TODO - Update the cargo package version
 # ndtensor = { features = ["full"], branch = "v0.1.1", git = "https://github.com/FL03/ndtensor", version = "0.1" }
 # scsys = { features = ["full"], branch = "v0.2.2", git = "https://github.com/scattered-systems/scsys", version = "0.2" }
 
-anyhow = "1"
 approx = "0.5"
 itertools = "0.12"
 lazy_static = "1"

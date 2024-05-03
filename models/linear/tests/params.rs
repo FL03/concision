@@ -5,7 +5,6 @@
 extern crate concision_core as concision;
 extern crate concision_linear as linear;
 
-use concision::func::activate::{softmax, Softmax};
 use concision::Predict;
 use linear::{Features, LinearParams};
 use ndarray::*;
@@ -16,6 +15,6 @@ fn test_linear_params() {
     let features = Features::new(inputs, outputs);
     let data = Array2::<f64>::zeros((samples, inputs));
     let params = LinearParams::default(features.clone()).init_uniform(true);
-    let y = params.forward(&data).unwrap();
+    let y = params.predict(&data).unwrap();
     assert_eq!(y.dim(), (samples, outputs));
 }

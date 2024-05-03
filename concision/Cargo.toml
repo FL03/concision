@@ -142,7 +142,7 @@ concision-linear = { optional = true, path = "../models/linear", version = "0.1.
 concision-gnn = { optional = true, path = "../models/gnn", version = "0.1.12" }
 
 [dev-dependencies]
-anyhow.workspace = true
+anyhow = "1"
 lazy_static.workspace = true
 ndarray.workspace = true
 tracing = "0.1"

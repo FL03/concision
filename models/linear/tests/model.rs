@@ -28,5 +28,5 @@ fn test_linear() {
 
     let model: Linear<f64> = Linear::std(CONFIG.clone()).uniform();
 
-    let y = model.predict(&data).unwrap();
+    let _y = model.predict(&data).unwrap();
 }
