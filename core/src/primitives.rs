@@ -5,8 +5,8 @@
 pub use self::constants::*;
 
 pub use ndarray::ShapeError;
-// #[cfg(feature = "rand")]
-pub use ndarray_rand::rand_distr::uniform::SampleUniform;
+#[cfg(feature = "rand")]
+pub use ndrand::rand_distr::uniform::SampleUniform;
 
 ///
 pub type ShapeResult<T = ()> = core::result::Result<T, ndarray::ShapeError>;

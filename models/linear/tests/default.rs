@@ -1,8 +1,7 @@
 /*
-    Appellation: model <test>
+    Appellation: default <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![cfg(test)]
 
 fn add<A, B, C>(a: A, b: B) -> C
 where

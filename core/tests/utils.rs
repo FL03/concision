@@ -1,4 +1,7 @@
-#[cfg(test)]
+/*
+   Appellation: utils <test>
+   Contrib: FL03 <jo3mccain@icloud.com>
+*/
 extern crate concision_core;
 
 use concision_core as cnc;
