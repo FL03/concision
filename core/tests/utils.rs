@@ -2,13 +2,8 @@
    Appellation: utils <test>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-extern crate concision_core;
-
-use concision_core as cnc;
-
-use cnc::prelude::{linarr, tril};
-use cnc::traits::{Conjugate, Inverse};
-use ndarray::prelude::{array, Array2};
+use concision_core::prelude::{linarr, tril, Conjugate, Inverse};
+use ndarray::*;
 use num::Complex;
 
 #[test]
@@ -42,7 +37,7 @@ fn test_inverse() {
 
 #[test]
 fn test_linarr() {
-    let args: Array2<f64> = cnc::linarr((2, 3)).unwrap();
+    let args: Array2<f64> = linarr((2, 3)).unwrap();
     assert_eq!(&args, &array![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]);
 }
 

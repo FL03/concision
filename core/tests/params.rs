@@ -2,12 +2,9 @@
    Appellation: params <test>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-extern crate concision_core as concision;
-
-use concision::linarr;
-use concision::params::{Parameter, ParamKind};
-use ndarray::*;
+use concision_core::prelude::{linarr, ParamKind, Parameter};
 use ndarray::linalg::Dot;
+use ndarray::*;
 
 #[test]
 fn test_parameter() {
@@ -36,5 +33,4 @@ fn test_param_kind_map() {
     for (kind, expected) in &data {
         assert_eq!(kind.to_string(), expected.to_string());
     }
-    
 }

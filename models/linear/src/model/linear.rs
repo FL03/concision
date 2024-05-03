@@ -2,12 +2,12 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Config;
+use crate::model::Config;
 use crate::params::LinearParams;
-use concision::models::Module;
-use concision::prelude::{Predict, PredictError};
+use concision::prelude::{Module, Predict, PredictError};
 use ndarray::{Dimension, Ix2, RemoveAxis};
 
+/// Linear model
 pub struct Linear<T = f64, D = Ix2>
 where
     D: Dimension,
@@ -81,7 +81,6 @@ where
     }
 }
 
-#[cfg(not(feature = "tracing"))]
 impl<A, B, T, D> Predict<A> for Linear<T, D>
 where
     D: RemoveAxis,
@@ -89,21 +88,12 @@ where
 {
     type Output = B;
 
+    #[cfg_attr(
+        feature = "tracing",
+        tracing::instrument(skip(self, input), level = "debug", name = "Linear::predict")
+    )]
     fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-        self.params.predict(input)
-    }
-}
-
-#[cfg(feature = "tracing")]
-impl<A, B, T, D> Predict<A> for Linear<T, D>
-where
-    D: RemoveAxis,
-    LinearParams<T, D>: Predict<A, Output = B>,
-{
-    type Output = B;
-
-    #[tracing::instrument(skip(self, input), level = "debug", name = "Linear::predict")]
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+        #[cfg(feature = "tracing")]
         tracing::debug!("Predicting with linear model");
         self.params.predict(input)
     }

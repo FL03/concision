@@ -2,9 +2,7 @@
    Appellation: model <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Module;
-use crate::error::PredictError;
-use crate::Predict;
+use crate::prelude::{Module, Predict, PredictError};
 
 pub struct Activator<F, M> {
     activation: F,

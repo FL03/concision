@@ -1,5 +1,5 @@
 /*
-   Appellation: modules <traits>
+   Appellation: modules <traits::nn>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 

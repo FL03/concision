@@ -2,9 +2,9 @@
     Appellation: stores <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-#[cfg(not(feature = "std"))]
+#[cfg(no_std)]
 use alloc::collections::{btree_map, BTreeMap};
-#[cfg(feature = "std")]
+#[cfg(not(no_std))]
 use std::collections::{btree_map, hash_map, BTreeMap, HashMap};
 
 pub trait Entry<'a> {
