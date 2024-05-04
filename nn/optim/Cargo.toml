@@ -32,13 +32,12 @@ test = false
 concision-core = { features = ["full"], path = "../../core", version = "0.1.12" }
 concision-neural = { path = "../neural" }
 
-anyhow.workspace = true
-itertools = { features = [], version = "0.12" }
-lazy_static.workspace = true
+anyhow = "1"
+itertools = "0.12"
 ndarray = { features = ["serde-1"], version = "0.15" }
-ndarray-rand.workspace = true
-ndarray-stats.workspace = true
-num.workspace = true
+ndarray-rand = "0.14"
+ndarray-stats = "0.5"
+num = { features = ["rand", "serde"], version = "0.4" }
 rand = "0.8"
 serde = { features = ["derive"], version = "1" }
 serde_json = "1"

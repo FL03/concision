@@ -38,6 +38,7 @@ serde-ext = [
 std = [
     "ndarray/std",
     "num/std",
+    "strum/std",
 ]
 
 [lib]

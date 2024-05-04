@@ -46,7 +46,7 @@ pub enum Error {
 // }
 
 #[cfg(feature = "std")]
-impl_from_error!(Error::IO<std::io::Error>);
+error_from!(Error::IO<std::io::Error>);
 
 macro_rules! from_err {
     ($($variant:ident<$err:ty>),* $(,)*) => {

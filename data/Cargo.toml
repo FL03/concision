@@ -53,7 +53,8 @@ serde-ext = [
 std = [
     "concision-core/std",
     "ndarray/std",
-    "num/std"
+    "num/std",
+    "strum/std",
 ]
 
 tracing = [

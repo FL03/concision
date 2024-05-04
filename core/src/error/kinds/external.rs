@@ -67,4 +67,4 @@ impl From<Box<dyn std::error::Error>> for ExternalError {
     }
 }
 
-impl_from_error!(ExternalError::Error<&str, String>);
+error_from!(ExternalError::Error<&str, String>);

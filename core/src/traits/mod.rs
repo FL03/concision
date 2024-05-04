@@ -33,13 +33,11 @@ pub mod nn {
     }
 }
 
-
 pub trait Transform<T> {
     type Output;
 
     fn transform(&self, args: &T) -> Self::Output;
 }
-
 
 pub(crate) mod prelude {
     pub use super::Transform;

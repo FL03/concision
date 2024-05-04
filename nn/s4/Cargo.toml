@@ -68,14 +68,14 @@ concision-core = { features = ["full"], path = "../../core", version = "0.1.12" 
 concision-data = { features = ["full"], path = "../../data", version = "0.1.12" }
 concision-neural = { path = "../neural" }
 
-anyhow.workspace = true
-itertools.workspace = true
-lazy_static.workspace = true
+anyhow = "1"
+itertools = "0.12"
+lazy_static = "1"
 ndarray = { features = ["approx", "blas", "serde-1"], version = "0.15" }
 ndarray-conv = "0.3"
 ndarray-linalg = "0.16"
-ndarray-rand.workspace = true
-ndarray-stats.workspace = true
+ndarray-rand = "0.14"
+ndarray-stats = "0.5"
 ndrustfft = "0.4"
 num = { features = ["rand", "serde"], version = "0.4" }
 rand = "0.8"

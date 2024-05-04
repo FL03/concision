@@ -4,16 +4,16 @@
 */
 #![allow(unused_macros)]
 
-macro_rules! impl_from_error {
+macro_rules! error_from {
     ($base:ident::$variant:ident<$($err:ty),* $(,)?>) => {
-        impl_from_error!(@loop $base::$variant<$($err),*>);
+        error_from!(@loop $base::$variant<$($err),*>);
     };
     ($base:ident::$variant:ident<$err:ty>$($rest:tt)*) => {
-        impl_from_error!(@loop $base::$variant<$($err),*>$($rest)*);
+        error_from!(@loop $base::$variant<$($err),*>$($rest)*);
     };
     (@loop $base:ident::$variant:ident<$($err:ty),* $(,)?>) => {
         $(
-            impl_from_error!(@impl $base::$variant<$err>);
+            error_from!(@impl $base::$variant<$err>);
         )*
     };
     (@impl $base:ident::$variant:ident<$err:ty>) => {

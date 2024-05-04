@@ -5,7 +5,7 @@
 use nd::{Axis, RemoveAxis};
 
 /// Decrement generally describes an object capable of _decrementing_ itself;
-/// 
+///
 /// Here, it is used on a [Dimension](ndarray::Dimension) enabling it to
 /// remove and return an axis from itself.
 pub trait Decrement {
@@ -19,7 +19,6 @@ pub trait Increment {
 
     fn inc(&self) -> Self::Output;
 }
-
 
 /*
  ******** implementations ********

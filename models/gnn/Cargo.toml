@@ -56,6 +56,7 @@ std = [
     "concision-core/std",
     "ndarray/std",
     "num/std",
+    "strum/std",
 ]
 
 tracing = [

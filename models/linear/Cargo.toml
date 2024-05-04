@@ -30,22 +30,17 @@ approx = [
     "concision-core/approx",
     "ndarray/approx-0_5",
 ]
+
 blas = [
     "concision-core/blas",
     "ndarray/blas",
 ]
 
 rand = [
+    "dep:ndarray-rand",
     "concision-core/rand",
     "num/rand"
 ]
-
-# rand = [
-#     "concision-core/rand",
-#     "dep:ndarray-rand",
-#     "num/rand"
-# ]
-
 
 serde = [
     "dep:serde",
@@ -63,6 +58,7 @@ std = [
     "concision-core/std",
     "ndarray/std",
     "num/std",
+    "strum/std",
 ]
 
 tracing = [
@@ -89,8 +85,8 @@ required-features = ["rand"]
 concision-core = { features = ["rand"], path = "../../core", version = "0.1.12" }
 
 approx = { optional = true, version = "0.5" }
-ndarray = "0.15"
-ndarray-rand.workspace = true
+ndarray.workspace = true
+ndarray-rand = { optional = true, version = "0.14" }
 ndarray-stats.workspace = true
 num.workspace = true
 serde = { features = ["derive"], optional = true, version = "1" }
