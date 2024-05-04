@@ -75,18 +75,31 @@ macro_rules! variant_constructor {
 }
 
 macro_rules! impl_unary {
-    ($name:ident.$call:ident<$($T:ty),* $(,)?> -> $f:expr) => {
-        $(
-            impl_unary!(@base $name.$call<$T> -> $f);
-        )*
+    ($name:ident.$call:ident<$T:ty>($f:expr) $($rest:tt)*) => {
+        impl_unary!(@impl $name.$call<$T>($f) $($rest)*);
     };
-    (@base $name:ident.$call:ident<$T:ty> -> $f:expr) => {
+    (@impl $name:ident.$call:ident<$T:ty>($f:expr)) => {
         impl $name for $T {
             type Output = $T;
 
             fn $call(&self) -> Self::Output {
                 $f(self)
             }
+        }
+    };
+}
+
+macro_rules! build_unary_trait {
+    ($($name:ident.$call:ident),* $(,)?) => {
+        $(
+            build_unary_trait!(@impl $name.$call);
+        )*
+    };
+    (@impl $name:ident.$call:ident) => {
+        pub trait $name {
+            type Output;
+
+            fn $call(&self) -> Self::Output;
         }
     };
 }

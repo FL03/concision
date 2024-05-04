@@ -2,7 +2,11 @@
    Appellation: plan <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::rust::{slice, vec};
+#[cfg(no_std)]
+use alloc::vec::{self, Vec};
+use core::slice;
+#[cfg(not(no_std))]
+use std::vec;
 
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]

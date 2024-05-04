@@ -5,8 +5,8 @@
 use crate::prelude::{Module, Predict, PredictError};
 
 pub struct Activator<F, M> {
-    activation: F,
     module: M,
+    rho: F,
 }
 
 impl<F, M> Activator<F, M>
@@ -14,12 +14,12 @@ where
     F: for<'a> Fn(&'a M::Output) -> M::Output,
     M: Predict<<M as Module>::Params> + Module,
 {
-    pub fn new(activation: F, module: M) -> Self {
-        Self { activation, module }
+    pub fn new(module: M, rho: F,) -> Self {
+        Self { module, rho }
     }
 
     pub fn activate(&self, args: &M::Output) -> M::Output {
-        (self.activation)(args)
+        (self.rho)(args)
     }
 }
 

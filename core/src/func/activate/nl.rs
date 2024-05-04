@@ -2,7 +2,7 @@
     Appellation: sigmoid <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::{Array, Axis, Dimension, NdFloat, RemoveAxis};
+use ndarray::*;
 use num::complex::ComplexFloat;
 use num::{Float, One, Zero};
 
@@ -57,46 +57,32 @@ where
     args.mapv(|x| x.tanh())
 }
 
-macro_rules! unary {
-    ($($name:ident.$call:ident),* $(,)?) => {
-        $(
-            unary!(@impl $name.$call);
-        )*
-    };
-    (@impl $name:ident.$call:ident) => {
-        pub trait $name {
-            type Output;
-
-            fn $call(&self) -> Self::Output;
-        }
-    };
-}
-
-unary!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
+build_unary_trait!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
 
 /*
  ********** Implementations **********
 */
 
-impl<T, D> Sigmoid for Array<T, D>
-where
-    D: Dimension,
-    T: Clone + Sigmoid,
-{
-    type Output = Array<<T as Sigmoid>::Output, D>;
-
-    fn sigmoid(&self) -> Self::Output {
-        self.mapv(|x| x.sigmoid())
-    }
-}
-
-macro_rules! impl_sigmoid {
-    ($($T:ty),* $(,)?) => {
+macro_rules! impl_nl {
+    ($name:ident: $($T:ty),* $(,)?) => {
         $(
-            impl_sigmoid!(@base $T);
+            impl_nl!(@impl $name: $T);
         )*
     };
-    (@base $T:ty) => {
+    (@impl relu: $T:ty) => {
+        impl ReLU for $T {
+            type Output = $T;
+
+            fn relu(&self) -> Self::Output {
+                if *self > <$T>::zero() {
+                    *self
+                } else {
+                    <$T>::zero()
+                }
+            }
+        }
+    };
+    (@impl sigmoid: $T:ty) => {
         impl Sigmoid for $T {
             type Output = $T;
 
@@ -105,6 +91,41 @@ macro_rules! impl_sigmoid {
             }
         }
     };
+    (@impl tanh: $T:ty) => {
+        impl Tanh for $T {
+            type Output = $T;
+
+            fn tanh(&self) -> Self::Output {
+                <$T>::tanh(*self)
+            }
+        }
+    };
 }
 
-impl_sigmoid!(f32, f64, num::Complex<f32>, num::Complex<f64>);
+impl_nl!(relu: f32, f64);
+impl_nl!(sigmoid: f32, f64, num::Complex<f32>, num::Complex<f64>);
+impl_nl!(tanh: f32, f64, num::Complex<f32>, num::Complex<f64>);
+
+macro_rules! impl_rho_arr {
+    ($($name:ident.$call:ident),* $(,)?) => {
+        $(
+            impl_rho_arr!(@impl $name.$call);
+        )*
+    };
+    (@impl $name:ident.$call:ident) => {
+        impl<A, S, D> $name for ArrayBase<S, D> 
+        where 
+            A: Clone + $name, 
+            D: Dimension, 
+            S: Data<Elem = A> 
+        {
+            type Output = Array<<A as $name>::Output, D>;
+
+            fn $call(&self) -> Self::Output {
+                self.mapv(|x| x.$call())
+            }
+        }
+    };
+}
+
+impl_rho_arr!(ReLU.relu, Sigmoid.sigmoid, Tanh.tanh);

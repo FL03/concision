@@ -4,6 +4,7 @@
 */
 pub use self::prelude::*;
 
+pub mod binary;
 pub mod nl;
 
 pub fn linear<T>(x: &T) -> T
@@ -12,6 +13,8 @@ where
 {
     x.clone()
 }
+
+
 
 pub(crate) mod prelude {
     pub use super::nl::*;
