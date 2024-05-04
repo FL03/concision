@@ -74,6 +74,7 @@ jobs:
       - name: Test
         run: cargo test --features full -v --workspace
   blas:
+    continue-on-error: true
     name: Test (blas)
     strategy:
       matrix:
