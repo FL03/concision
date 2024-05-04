@@ -4,6 +4,7 @@
 */
 pub use self::prelude::*;
 
+pub mod adjust;
 pub mod math;
 pub mod setup;
 pub mod store;
@@ -32,17 +33,6 @@ pub mod nn {
     }
 }
 
-pub trait Decrement {
-    type Output;
-
-    fn dec(&self) -> Self::Output;
-}
-
-pub trait Increment {
-    type Output;
-
-    fn inc(&self) -> Self::Output;
-}
 
 pub trait Transform<T> {
     type Output;
@@ -50,23 +40,11 @@ pub trait Transform<T> {
     fn transform(&self, args: &T) -> Self::Output;
 }
 
-/*
- ******** implementations ********
-*/
-impl<D> Decrement for D
-where
-    D: nd::RemoveAxis,
-{
-    type Output = D::Smaller;
-
-    fn dec(&self) -> Self::Output {
-        self.remove_axis(nd::Axis(self.ndim() - 1))
-    }
-}
 
 pub(crate) mod prelude {
-    pub use super::{Decrement, Transform};
+    pub use super::Transform;
 
+    pub use super::adjust::*;
     pub use super::arr::*;
     pub use super::math::*;
     pub use super::nn::prelude::*;

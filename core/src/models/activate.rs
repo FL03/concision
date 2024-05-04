@@ -14,7 +14,7 @@ where
     F: for<'a> Fn(&'a M::Output) -> M::Output,
     M: Predict<<M as Module>::Params> + Module,
 {
-    pub fn new(module: M, rho: F,) -> Self {
+    pub fn new(module: M, rho: F) -> Self {
         Self { module, rho }
     }
 

@@ -14,12 +14,9 @@ pub trait ModelBackend {
     type Engine;
 }
 
-
 pub trait NeuralNetworkStack {
     const NHIDDEN: Option<usize> = None;
     type Input;
     type Hidden;
     type Output;
-
-
 }

@@ -1,5 +1,5 @@
 /*
-   Appellation: ops <mod>
+   Appellation: math <traits>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use nd::{Array, Dimension};

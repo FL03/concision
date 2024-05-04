@@ -2,6 +2,7 @@
    Appellation: func <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+//! Functional
 pub use self::prelude::*;
 
 pub mod activate;

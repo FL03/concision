@@ -4,25 +4,23 @@
 */
 use ndarray::*;
 use num::complex::ComplexFloat;
-use num::{Float, One, Zero};
+use num::{Float, Zero};
 
 pub fn relu<T>(args: &T) -> T
 where
     T: Clone + PartialOrd + Zero,
 {
     if args > &T::zero() {
-        args.clone()
-    } else {
-        T::zero()
+        return args.clone();
     }
+    T::zero()
 }
 
-pub fn sigmoid<T, D>(args: &Array<T, D>) -> Array<<T as Sigmoid>::Output, D>
+pub fn sigmoid<T>(args: &T) -> T
 where
-    D: Dimension,
-    T: Clone + Sigmoid,
+    T: ComplexFloat,
 {
-    args.mapv(|x| x.sigmoid())
+    (T::one() + (*args).neg().exp()).recip()
 }
 
 pub fn softmax<T, D>(args: &Array<T, D>) -> Array<T, D>
@@ -49,12 +47,11 @@ where
     }
 }
 
-pub fn tanh<T, D>(args: &Array<T, D>) -> Array<<T as Tanh>::Output, D>
+pub fn tanh<T>(args: &T) -> T
 where
-    D: Dimension,
-    T: Clone + Tanh,
+    T: ComplexFloat,
 {
-    args.mapv(|x| x.tanh())
+    args.tanh()
 }
 
 build_unary_trait!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
@@ -62,70 +59,75 @@ build_unary_trait!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
 /*
  ********** Implementations **********
 */
-
-macro_rules! impl_nl {
-    ($name:ident: $($T:ty),* $(,)?) => {
+macro_rules! nonlinear {
+    ($($rho:ident<$($T:ty),* $(,)?>::$call:ident),* $(,)? ) => {
         $(
-            impl_nl!(@impl $name: $T);
+            nonlinear!(@loop $rho<$($T),*>::$call);
         )*
     };
-    (@impl relu: $T:ty) => {
-        impl ReLU for $T {
-            type Output = $T;
-
-            fn relu(&self) -> Self::Output {
-                if *self > <$T>::zero() {
-                    *self
-                } else {
-                    <$T>::zero()
-                }
-            }
-        }
-    };
-    (@impl sigmoid: $T:ty) => {
-        impl Sigmoid for $T {
-            type Output = $T;
-
-            fn sigmoid(&self) -> Self::Output {
-                (<$T>::one() + (-self).exp()).recip()
-            }
-        }
-    };
-    (@impl tanh: $T:ty) => {
-        impl Tanh for $T {
-            type Output = $T;
-
-            fn tanh(&self) -> Self::Output {
-                <$T>::tanh(*self)
-            }
-        }
-    };
-}
-
-impl_nl!(relu: f32, f64);
-impl_nl!(sigmoid: f32, f64, num::Complex<f32>, num::Complex<f64>);
-impl_nl!(tanh: f32, f64, num::Complex<f32>, num::Complex<f64>);
-
-macro_rules! impl_rho_arr {
-    ($($name:ident.$call:ident),* $(,)?) => {
+    (@loop $rho:ident<$($T:ty),* $(,)?>::$call:ident ) => {
         $(
-            impl_rho_arr!(@impl $name.$call);
+            nonlinear!(@impl $rho<$T>::$call);
         )*
+
+        nonlinear!(@arr $rho::$call);
     };
-    (@impl $name:ident.$call:ident) => {
-        impl<A, S, D> $name for ArrayBase<S, D> 
-        where 
-            A: Clone + $name, 
-            D: Dimension, 
-            S: Data<Elem = A> 
+    (@impl $rho:ident<$T:ty>::$call:ident) => {
+        impl $rho for $T {
+            type Output = $T;
+
+            fn $call(&self) -> Self::Output {
+                $call(self)
+            }
+        }
+
+        impl<'a> $rho for &'a $T {
+            type Output = $T;
+
+            fn $call(&self) -> Self::Output {
+                $call(*self)
+            }
+        }
+
+    };
+    (@arr $name:ident::$call:ident) => {
+        impl<A, S, D> $name for ArrayBase<S, D>
+        where
+            A: Clone + $name,
+            D: Dimension,
+            S: Data<Elem = A>
         {
             type Output = Array<<A as $name>::Output, D>;
 
             fn $call(&self) -> Self::Output {
-                self.mapv(|x| x.$call())
+                self.map($name::$call)
             }
         }
     };
+
 }
 
-impl_rho_arr!(ReLU.relu, Sigmoid.sigmoid, Tanh.tanh);
+nonlinear!(
+    ReLU < f32,
+    f64,
+    i8,
+    i16,
+    i32,
+    i64,
+    i128,
+    isize,
+    u8,
+    u16,
+    u32,
+    u64,
+    u128,
+    usize > ::relu,
+    Sigmoid < f32,
+    f64,
+    num::Complex<f32>,
+    num::Complex < f64 >> ::sigmoid,
+    Tanh < f32,
+    f64,
+    num::Complex<f32>,
+    num::Complex < f64 >> ::tanh,
+);

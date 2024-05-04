@@ -6,6 +6,31 @@ pub use self::prelude::*;
 
 mod err;
 
+pub trait ErrKind {}
+
+macro_rules! impl_error_type {
+    ($($ty:ty),* $(,)*) => {
+        $(impl_error_type!(@impl $ty);)*
+    };
+    (@impl $ty:ty) => {
+        impl ErrKind for $ty {}
+
+        impl_error_type!(@std $ty);
+    };
+    (@std $ty:ty) => {
+
+        #[cfg(feature = "std")]
+        impl std::error::Error for $ty {}
+    };
+}
+
+impl_error_type!(
+    err::Error,
+    kinds::ExternalError,
+    kinds::PredictError,
+    crate::models::ModelError
+);
+
 pub mod kinds {
     pub use self::prelude::*;
 

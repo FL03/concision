@@ -50,9 +50,6 @@ impl ExternalError {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for ExternalError {}
-
 impl core::fmt::Display for ExternalError {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         let msg = match self {

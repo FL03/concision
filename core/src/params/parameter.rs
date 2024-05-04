@@ -26,11 +26,10 @@ impl<T, D> Parameter<T, D>
 where
     D: Dimension,
 {
-    pub fn new(
-        features: impl IntoDimension<Dim = D>,
-        kind: ParamKind,
-        name: impl ToString,
-    ) -> Self where T: Clone + Default {
+    pub fn new(features: impl IntoDimension<Dim = D>, kind: ParamKind, name: impl ToString) -> Self
+    where
+        T: Clone + Default,
+    {
         let features = features.into_dimension();
         Self {
             id: Uuid::new_v4().to_string(),

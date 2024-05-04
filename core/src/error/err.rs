@@ -23,7 +23,7 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, VariantNames};
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "lowercase", untagged)
+    serde(rename_all = "lowercase", tag = "kind")
 )]
 #[strum(serialize_all = "lowercase")]
 pub enum Error {
@@ -33,9 +33,6 @@ pub enum Error {
     Model(ModelError),
     Shape(String),
 }
-
-#[cfg(feature = "std")]
-impl std::error::Error for Error {}
 
 // impl core::fmt::Display for Error {
 //     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
@@ -66,6 +63,8 @@ macro_rules! from_err {
     };
 }
 
-from_err!(External<ExternalError>);
-from_err!(Model<ModelError>);
-from_err!(Predict<PredictError>);
+from_err!(
+    External<ExternalError>,
+    Model<ModelError>,
+    Predict<PredictError>,
+);

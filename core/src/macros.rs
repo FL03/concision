@@ -51,25 +51,20 @@ macro_rules! nested_constructor {
 }
 
 macro_rules! variant_constructor {
-    ($(($($rest:tt),*)),*) => {
+    ($($rest:tt),* $(,)?) => {
         $(
             variant_constructor!(@loop $($rest),*);
         )*
     };
-    ($(($variant:ident $($rest:tt),*, $method:ident)),*) => {
+    ($($variant:ident.$method:ident$(($call:expr))?),* $(,)?) => {
         $(
-            variant_constructor!(@loop $variant $($rest),*, $method);
+            variant_constructor!(@loop $variant.$method$(($call))?);
         )*
     };
-    (@loop $variant:ident, $method:ident) => {
-        pub fn $method() -> Self {
-            Self::$variant
-        }
-    };
 
-    (@loop $variant:ident($call:expr), $method:ident) => {
+    (@loop $variant:ident.$method:ident$(($call:expr))?) => {
         pub fn $method() -> Self {
-            Self::$variant($call())
+            Self::$variant$(($call))?
         }
     };
 }
