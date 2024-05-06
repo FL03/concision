@@ -27,10 +27,10 @@ pub trait Params {
 }
 
 pub(crate) mod prelude {
+    pub use super::{Param, Params};
     pub use super::kinds::ParamKind;
     pub use super::parameter::Parameter;
     pub use super::store::ParamStore;
-    pub use super::Param;
 }
 
 #[cfg(test)]

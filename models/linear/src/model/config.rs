@@ -21,6 +21,7 @@ impl Config {
         }
     }
 
+
     pub fn is_biased(&self) -> bool {
         self.biased
     }

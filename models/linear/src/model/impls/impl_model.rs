@@ -26,18 +26,18 @@ where
     }
 }
 
-impl<A, B, T, D> Predict<A> for Linear<T, D>
+impl<X, Y, A, D> Predict<X> for Linear<A, D>
 where
     D: RemoveAxis,
-    LinearParams<T, D>: Predict<A, Output = B>,
+    LinearParams<A, D>: Predict<X, Output = Y>,
 {
-    type Output = B;
+    type Output = Y;
 
     #[cfg_attr(
         feature = "tracing",
         tracing::instrument(skip_all, fields(name=%self.config.name), level = "debug", name = "predict", target = "linear")
     )]
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &X) -> Result<Self::Output, PredictError> {
         #[cfg(feature = "tracing")]
         tracing::debug!("Predicting with linear model");
         self.params.predict(input)

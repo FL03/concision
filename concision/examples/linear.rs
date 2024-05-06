@@ -4,8 +4,9 @@
 */
 extern crate concision as cnc;
 
-use cnc::linear::{Config, Features, Linear};
 use cnc::{linarr, Predict, Result};
+use cnc::func::Sigmoid;
+use cnc::linear::{Config, Features, Linear};
 
 use ndarray::Ix2;
 
@@ -33,6 +34,7 @@ fn main() -> Result<()> {
 
     let model: Linear<f64> = Linear::std(config).uniform();
 
-    let y = model.predict(&data).unwrap();
+    let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
+    println!("Predictions: {:?}", y);
     Ok(())
 }

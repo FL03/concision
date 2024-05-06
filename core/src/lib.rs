@@ -23,7 +23,7 @@ pub(crate) mod utils;
 
 pub mod error;
 pub mod func;
-pub mod models;
+pub mod nn;
 pub mod ops;
 pub mod params;
 #[cfg(feature = "rand")]
@@ -69,7 +69,7 @@ pub mod prelude {
 
     pub use super::error::prelude::*;
     pub use super::func::prelude::*;
-    pub use super::models::prelude::*;
+    pub use super::nn::prelude::*;
     pub use super::ops::prelude::*;
     pub use super::params::prelude::*;
     #[cfg(feature = "rand")]

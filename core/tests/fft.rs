@@ -2,9 +2,10 @@
     Appellation: default <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+extern crate concision_core as concision;
 
-use concision_core::ops::fft::*;
-use concision_core::prelude::almost_equal;
+use concision::ops::fft::*;
+use concision::prelude::almost_equal;
 use lazy_static::lazy_static;
 use num::complex::{Complex, ComplexFloat};
 

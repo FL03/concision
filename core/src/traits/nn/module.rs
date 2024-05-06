@@ -16,3 +16,7 @@ pub trait Module {
 
     fn params_mut(&mut self) -> &mut Self::Params;
 }
+
+pub trait NeuralNetwork: Module {
+    
+}

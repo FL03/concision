@@ -23,6 +23,8 @@ full = [
     "serde",
 ]
 
+alloc = []
+
 approx = [
     "dep:approx",
     "ndarray/approx-0_5",
@@ -50,8 +52,11 @@ serde-ext = [
 ]
 
 std = [
+    "alloc",
     "ndarray/std",
     "num/std",
+    "rand/std",
+    "rand/std_rng",
     "serde/std",
     "strum/std",
     "uuid/std"
@@ -74,7 +79,8 @@ approx = { optional = true, version = "0.5" }
 ndarray.workspace = true
 ndarray-rand = { optional = true, version = "0.14" }
 num.workspace = true
-rand = { optional = true, version = "0.8" }
+rand = { default-features = false, optional = true, version = "0.8" }
+rand_distr = { default-features = false, optional = true, version = "0.4" }
 serde = { default-features = false, features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true

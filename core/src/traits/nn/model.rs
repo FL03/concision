@@ -20,3 +20,11 @@ pub trait NeuralNetworkStack {
     type Hidden;
     type Output;
 }
+
+#[allow(dead_code)]
+pub struct ModelBase<C, P> {
+    pub(crate) id: usize,
+    config: C,
+    params: P,
+}
+

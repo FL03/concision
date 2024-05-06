@@ -28,7 +28,7 @@ impl_error_type!(
     err::Error,
     kinds::ExternalError,
     kinds::PredictError,
-    crate::models::ModelError
+    crate::nn::ModelError
 );
 
 pub mod kinds {

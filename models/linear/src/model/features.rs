@@ -2,7 +2,8 @@
    Appellation: features <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::{Dimension, IntoDimension, Ix2, ShapeBuilder};
+use nd::{Dimension, ErrorKind, IntoDimension, Ix2, ShapeBuilder, ShapeError};
+
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -12,22 +13,36 @@ pub struct Features {
 }
 
 impl Features {
-    pub fn new(inputs: usize, outputs: usize) -> Self {
+    pub fn new(outputs: usize, inputs: usize) -> Self {
         Self { inputs, outputs }
     }
 
-    pub fn from_dimension<Sh>(shape: Sh) -> Self
+    pub fn from_dimension<D>(dim: D) -> Result<Self, ShapeError>
     where
-        Sh: ShapeBuilder<Dim = Ix2>,
+        D: Dimension,
+    {
+        if dim.ndim() == 1 {
+            let res = Self::new(1, dim[0]);
+            return Ok(res);
+        } else if dim.ndim() >= 2 {
+            let res = Self::new(dim[0], dim[1]);
+            return Ok(res);
+        }
+        Err(ShapeError::from_kind(ErrorKind::IncompatibleShape))
+    }
+
+    pub fn from_shape<D, Sh>(shape: Sh) -> Self
+    where
+        D: nd::RemoveAxis,
+        Sh: ShapeBuilder<Dim = D>,
     {
         let shape = shape.into_shape();
         let dim = shape.raw_dim().clone();
-        let (outputs, inputs) = dim.into_pattern();
-        Self::new(inputs, outputs)
+        Self::from_dimension(dim).expect("Invalid shape")
     }
 
     pub fn neuron(inputs: usize) -> Self {
-        Self::new(inputs, 1)
+        Self::new(1, inputs)
     }
 
     pub fn inputs(&self) -> usize {
@@ -58,10 +73,9 @@ impl IntoDimension for Features {
 }
 
 impl TryFrom<nd::ArrayView1<'_, usize>> for Features {
-    type Error = nd::ShapeError;
+    type Error = ShapeError;
 
     fn try_from(shape: nd::ArrayView1<'_, usize>) -> Result<Self, Self::Error> {
-        use nd::{ErrorKind, ShapeError};
         if shape.len() == 1 {
             let tmp = Self {
                 inputs: shape[0],

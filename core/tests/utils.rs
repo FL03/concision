@@ -43,7 +43,7 @@ fn test_linarr() {
 
 #[test]
 fn test_tril() {
-    let a = linarr::<f64, ndarray::Ix2>((3, 3)).unwrap();
+    let a = linarr::<f64, Ix2>((3, 3)).unwrap();
     let exp = array![[1.0, 0.0, 0.0], [4.0, 5.0, 0.0], [7.0, 8.0, 9.0]];
     assert_eq!(exp, tril(&a));
 }

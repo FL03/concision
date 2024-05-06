@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::kinds::*;
-use crate::models::ModelError;
+use crate::nn::ModelError;
 use strum::{AsRefStr, Display, EnumCount, EnumIs, VariantNames};
 
 #[derive(

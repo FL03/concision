@@ -34,17 +34,21 @@ pub trait Predict<T> {
 /*
  ********* Implementations *********
 */
-impl<S, T> Forward<T> for S
+impl<S, T> Forward<T> for Option<S>
 where
-    S: Predict<T, Output = T>,
+    S: Forward<T, Output = T>,
     T: Clone,
 {
     type Output = T;
 
     fn forward(&self, args: &T) -> Self::Output {
-        self.predict(args).unwrap()
+        match self {
+            Some(s) => s.forward(args),
+            None => args.clone(),
+        }
     }
 }
+
 impl<S, T> Predict<T> for Option<S>
 where
     S: Predict<T, Output = T>,
