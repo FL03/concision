@@ -4,40 +4,38 @@
 */
 #![cfg(feature = "serde")]
 
-use crate::params::{Entry, LinearParams};
+use crate::params::{Entry, LinearParamsBase};
 use nd::*;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-impl<'a, T, D> Deserialize<'a> for LinearParams<T, D>
+impl<'a, A, S, D> Deserialize<'a> for LinearParamsBase<S, D>
 where
-    T: Deserialize<'a>,
+    A: Deserialize<'a>,
     D: Deserialize<'a> + RemoveAxis,
+    S: DataOwned<Elem = A>,
     <D as Dimension>::Smaller: Deserialize<'a> + Dimension,
 {
     fn deserialize<Der>(deserializer: Der) -> Result<Self, Der::Error>
     where
         Der: Deserializer<'a>,
     {
-        let (bias, features, weights) = Deserialize::deserialize(deserializer)?;
-        Ok(Self {
-            bias,
-            features,
-            weights,
-        })
+        let (bias, weights) = Deserialize::deserialize(deserializer)?;
+        Ok(Self { bias, weights })
     }
 }
 
-impl<T, D> Serialize for LinearParams<T, D>
+impl<A, S, D> Serialize for LinearParamsBase<S, D>
 where
-    T: Serialize,
+    A: Serialize,
     D: RemoveAxis + Serialize,
+    S: Data<Elem = A>,
     <D as Dimension>::Smaller: Dimension + Serialize,
 {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
         Ser: Serializer,
     {
-        (self.bias(), self.features(), self.weights()).serialize(serializer)
+        (self.bias(), self.weights()).serialize(serializer)
     }
 }
 

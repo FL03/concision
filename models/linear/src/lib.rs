@@ -18,7 +18,7 @@ extern crate ndarray_rand as ndrand;
 extern crate ndarray_stats as stats;
 
 pub use self::model::{Config, Features, Linear};
-pub use self::params::LinearParams;
+pub use self::params::LinearParamsBase;
 #[allow(unused_imports)]
 pub use self::{traits::*, utils::*};
 

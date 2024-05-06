@@ -5,12 +5,12 @@
 use crate::model::Config;
 use crate::params::LinearParams;
 use concision::prelude::{Module, Predict, PredictError};
-use ndarray::{Dimension, Ix2, RemoveAxis};
+use ndarray::{Ix2, RemoveAxis};
 
 /// Linear model
 pub struct Linear<T = f64, D = Ix2>
 where
-    D: Dimension,
+    D: RemoveAxis,
 {
     pub(crate) config: Config,
     pub(crate) params: LinearParams<T, D>,

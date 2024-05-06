@@ -2,8 +2,7 @@
    Appellation: features <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Dimension, Ix2};
-use ndarray::IntoDimension;
+use ndarray::{Dimension, IntoDimension, Ix2, ShapeBuilder};
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -17,8 +16,12 @@ impl Features {
         Self { inputs, outputs }
     }
 
-    pub fn from_dimension(shape: impl IntoDimension<Dim = Ix2>) -> Self {
-        let dim = shape.into_dimension();
+    pub fn from_dimension<Sh>(shape: Sh) -> Self
+    where
+        Sh: ShapeBuilder<Dim = Ix2>,
+    {
+        let shape = shape.into_shape();
+        let dim = shape.raw_dim().clone();
         let (outputs, inputs) = dim.into_pattern();
         Self::new(inputs, outputs)
     }
@@ -51,6 +54,28 @@ impl IntoDimension for Features {
 
     fn into_dimension(self) -> Self::Dim {
         ndarray::Ix2(self.outputs, self.inputs)
+    }
+}
+
+impl TryFrom<nd::ArrayView1<'_, usize>> for Features {
+    type Error = nd::ShapeError;
+
+    fn try_from(shape: nd::ArrayView1<'_, usize>) -> Result<Self, Self::Error> {
+        use nd::{ErrorKind, ShapeError};
+        if shape.len() == 1 {
+            let tmp = Self {
+                inputs: shape[0],
+                outputs: 1,
+            };
+            return Ok(tmp);
+        } else if shape.len() >= 2 {
+            let tmp = Self {
+                inputs: shape[1],
+                outputs: shape[0],
+            };
+            return Ok(tmp);
+        }
+        Err(ShapeError::from_kind(ErrorKind::IncompatibleShape))
     }
 }
 
