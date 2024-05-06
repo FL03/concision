@@ -102,3 +102,48 @@ where
         }
     }
 }
+
+impl<A, S, D> Copy for LinearParamsBase<S, D>
+where
+    A: Copy,
+    D: Copy + RemoveAxis,
+    S: Copy + RawDataClone<Elem = A>,
+    <D as Dimension>::Smaller: Copy,
+{}
+
+impl<A, S, D> PartialEq for LinearParamsBase<S, D>
+where
+    A: PartialEq,
+    D: RemoveAxis,
+    S: Data<Elem = A>,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.weights == other.weights && self.bias == other.bias
+    }
+}
+
+impl<A, S, D> PartialEq<(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)> for LinearParamsBase<S, D>
+where
+    A: PartialEq,
+    D: RemoveAxis,
+    S: Data<Elem = A>,
+{
+    fn eq(&self, (weights, bias): &(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)) -> bool {
+        self.weights == weights && self.bias == *bias
+    }
+}
+
+impl<A, S, D> PartialEq<(ArrayBase<S, D>, ArrayBase<S, D::Smaller>)> for LinearParamsBase<S, D>
+where
+    A: PartialEq,
+    D: RemoveAxis,
+    S: Data<Elem = A>,
+{
+    fn eq(&self, (weights, bias): &(ArrayBase<S, D>, ArrayBase<S, D::Smaller>)) -> bool {
+        let mut cmp = self.weights == weights;
+        if let Some(b) = &self.bias {
+            cmp &= b == bias;
+        }
+        cmp
+    }
+}

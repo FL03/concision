@@ -10,7 +10,9 @@ pub mod config;
 pub mod features;
 
 mod impls {
-    mod impl_init;
+    pub mod impl_init;
+    pub mod impl_linear;
+    pub mod impl_model;
 }
 
 pub(crate) mod prelude {

@@ -6,11 +6,6 @@ use nd::{Array, Dimension};
 use num::complex::Complex;
 use num::{Float, Num, Signed, Zero};
 
-pub trait IntoIm {
-    type Output;
-
-    fn into_complex(self) -> Self::Output;
-}
 pub trait AsComplex {
     type Real;
 

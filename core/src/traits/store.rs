@@ -5,7 +5,7 @@
 #[cfg(no_std)]
 use alloc::collections::{btree_map, BTreeMap};
 #[cfg(not(no_std))]
-use std::collections::{btree_map, hash_map, BTreeMap, HashMap};
+use std::collections::{btree_map, BTreeMap};
 
 pub trait Entry<'a> {
     type Key;
@@ -82,8 +82,9 @@ macro_rules! impl_store {
 }
 
 impl_entry!(btree_map where K: Ord);
-#[cfg(feature = "std")]
-impl_entry!(hash_map where K: Eq + core::hash::Hash);
 impl_store!(BTreeMap<K, V>, where K: Ord);
+
 #[cfg(feature = "std")]
-impl_store!(HashMap<K, V>, where K: Eq + core::hash::Hash);
+impl_entry!(std::collections::hash_map where K: Eq + core::hash::Hash);
+#[cfg(feature = "std")]
+impl_store!(std::collections::HashMap<K, V>, where K: Eq + core::hash::Hash);

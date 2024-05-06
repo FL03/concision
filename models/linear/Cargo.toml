@@ -48,7 +48,6 @@ serde = [
 ]
 
 serde-ext = [
-    "dep:serde_json",
     "concision-core/serde",
     "ndarray/serde-1",
     "num/serde"
@@ -58,6 +57,7 @@ std = [
     "concision-core/std",
     "ndarray/std",
     "num/std",
+    "serde/std",
     "strum/std",
 ]
 
@@ -89,8 +89,7 @@ ndarray.workspace = true
 ndarray-rand = { optional = true, version = "0.14" }
 ndarray-stats.workspace = true
 num.workspace = true
-serde = { features = ["derive"], optional = true, version = "1" }
-serde_json = { optional = true, version = "1" }
+serde = { default-features = false, features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
 tracing = { optional = true, version = "0.1" }
