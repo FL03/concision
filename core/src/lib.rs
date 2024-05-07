@@ -2,38 +2,80 @@
    Appellation: core <library>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Concision Core
-pub use self::{primitives::*, specs::*, utils::*};
+#![cfg_attr(not(feature = "std"), no_std)]
+#![crate_name = "concision_core"]
 
+#[cfg(no_std)]
+extern crate alloc;
+extern crate ndarray as nd;
+#[cfg(feature = "rand")]
+extern crate ndarray_rand as ndrand;
+
+pub use self::{error::Error, primitives::*, traits::prelude::*, types::prelude::*, utils::*};
+
+#[cfg(feature = "rand")]
+pub use self::rand::prelude::*;
+
+#[macro_use]
+pub(crate) mod macros;
 pub(crate) mod primitives;
-
 pub(crate) mod utils;
 
-pub mod errors;
-pub mod id;
-pub mod masks;
+pub mod error;
+pub mod func;
+pub mod nn;
 pub mod ops;
 pub mod params;
-pub mod specs;
-pub mod states;
-pub mod time;
+#[cfg(feature = "rand")]
+pub mod rand;
+pub mod traits;
+pub mod types;
 
-pub trait Transform<T> {
-    type Output;
+#[allow(unused_imports)]
+pub(crate) mod rust {
+    pub(crate) use core::*;
 
-    fn transform(&self, args: &T) -> Self::Output;
+    #[cfg(no_std)]
+    pub(crate) use self::no_std::*;
+    #[cfg(feature = "std")]
+    pub(crate) use self::with_std::*;
+
+    #[cfg(no_std)]
+    mod no_std {
+        pub use alloc::borrow::Cow;
+        pub use alloc::boxed::{self, Box};
+        pub use alloc::collections::{self, BTreeMap, BTreeSet, BinaryHeap, VecDeque};
+        pub use alloc::vec::{self, Vec};
+    }
+    #[cfg(feature = "std")]
+    mod with_std {
+        pub use std::borrow::Cow;
+        pub use std::boxed::{self, Box};
+        pub use std::collections::{self, BTreeMap, BTreeSet, BinaryHeap, VecDeque};
+        pub(crate) use std::sync::Arc;
+        pub use std::vec::{self, Vec};
+    }
+
+    #[cfg(no_std)]
+    pub type Map<K, V> = collections::BTreeMap<K, V>;
+    #[cfg(feature = "std")]
+    pub type Map<K, V> = collections::HashMap<K, V>;
 }
 
 pub mod prelude {
-    pub use super::Transform;
 
-    pub use crate::primitives::*;
-    pub use crate::utils::*;
+    pub use super::primitives::*;
+    pub use super::utils::*;
 
-    pub use crate::errors::*;
-    pub use crate::id::*;
-    pub use crate::masks::*;
-    pub use crate::specs::*;
-    pub use crate::states::*;
-    pub use crate::time::*;
+    pub use super::error::prelude::*;
+    pub use super::func::prelude::*;
+    pub use super::nn::prelude::*;
+    pub use super::ops::prelude::*;
+    pub use super::params::prelude::*;
+    #[cfg(feature = "rand")]
+    pub use super::rand::prelude::*;
+    pub use super::traits::prelude::*;
+    pub use super::types::prelude::*;
+
+    pub(crate) use super::rust::*;
 }

@@ -3,26 +3,24 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 pub use self::{arrays::*, assertions::*};
+use nd::*;
+use num::traits::{Float, Num};
 
-use ndarray::linalg::Dot;
-use ndarray::prelude::*;
-use ndarray::{IntoDimension, ShapeError};
-use ndarray_rand::rand::rngs::StdRng;
-use ndarray_rand::rand::SeedableRng;
-use ndarray_rand::rand_distr::{Distribution, StandardNormal};
-use ndarray_rand::RandomExt;
-use num::complex::Complex;
-use num::traits::{AsPrimitive, Float, Num, NumCast};
-use rand::distributions::uniform::{SampleUniform, Uniform};
-
-pub fn pad<T>(a: impl IntoIterator<Item = T>, pad: usize, value: Option<T>) -> Vec<T>
+/// Utilitary function that returns a new *n*-dimensional array of dimension `shape` with the same
+/// datatype and memory order as the input `arr`.
+pub fn array_like<S, A, D, Sh>(arr: &ArrayBase<S, D>, shape: Sh, elem: A) -> Array<A, D>
 where
-    T: Clone + Default,
+    A: Clone,
+    D: Dimension,
+    S: Data<Elem = A>,
+    Sh: ShapeBuilder<Dim = D>,
 {
-    let pad = vec![value.unwrap_or_default(); pad];
-    let mut res = Vec::from_iter(a);
-    res.extend(pad);
-    res
+    // TODO `is_standard_layout` only works on owned arrays. Change it if using `ArrayBase`.
+    if arr.is_standard_layout() {
+        Array::from_elem(shape, elem)
+    } else {
+        Array::from_elem(shape.f(), elem)
+    }
 }
 ///
 pub fn floor_div<T>(numerator: T, denom: T) -> T
@@ -32,157 +30,28 @@ where
     (numerator - (numerator % denom)) / denom
 }
 
-pub fn arange<T>(a: T, b: T, h: T) -> Array1<T>
-where
-    T: AsPrimitive<usize> + Float,
-{
-    let n: usize = ((b - a) / h).as_();
-    let mut res = Array1::<T>::zeros(n);
-    res[0] = a;
-    for i in 1..n {
-        res[i] = res[i - 1] + h;
-    }
-    res
-}
-
-pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
-    Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
-}
-
-pub fn linarr<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
-where
-    D: Dimension,
-    T: Float,
-{
-    let dim = dim.into_dimension();
-    let n = dim.as_array_view().product();
-    Array::linspace(T::one(), T::from(n).unwrap(), n).into_shape(dim)
-}
-
-pub fn linspace<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
-where
-    D: Dimension,
-    T: NumCast,
-{
-    let dim = dim.into_dimension();
-    let n = dim.as_array_view().product();
-    Array::from_iter((0..n).map(|x| T::from(x).unwrap())).into_shape(dim)
-}
-/// Raise a matrix to a power
-pub fn powmat<T>(a: &Array2<T>, n: usize) -> Array2<T>
-where
-    T: Clone + Num + 'static,
-    Array2<T>: Dot<Array2<T>, Output = Array2<T>>,
-{
-    if !a.is_square() {
-        panic!("Matrix must be square");
-    }
-    let mut res = Array2::<T>::eye(a.nrows());
-    for _ in 0..n {
-        res = res.dot(a);
-    }
-    res
-}
-///
-pub fn randcomplex<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
-where
-    D: Dimension,
-    T: Copy + Num,
-    StandardNormal: Distribution<T>,
-{
-    let dim = shape.into_dimension();
-    let re = Array::random(dim.clone(), StandardNormal);
-    let im = Array::random(dim.clone(), StandardNormal);
-    let mut res = Array::zeros(dim);
-    ndarray::azip!((re in &re, im in &im, res in &mut res) {
-        *res = Complex::new(*re, *im);
-    });
-    res
-}
-/// creates a matrix from the given shape filled with numerical elements [0, n) spaced evenly by 1
-pub fn rangespace<T, D>(dim: impl IntoDimension<Dim = D>) -> Array<T, D>
-where
-    D: Dimension,
-    T: Num + NumCast,
-{
-    let dim = dim.into_dimension();
-    let iter = (0..dim.size()).map(|i| T::from(i).unwrap());
-    Array::from_shape_vec(dim, iter.collect()).unwrap()
-}
 /// Round the given value to the given number of decimal places.
 pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
     let factor = T::from(10).expect("").powi(decimals as i32);
     (val * factor).round() / factor
 }
 
-/// Creates a random array from a uniform distribution using a given key
-pub fn seeded_uniform<T, D>(
-    key: u64,
-    start: T,
-    stop: T,
-    shape: impl IntoDimension<Dim = D>,
-) -> Array<T, D>
-where
-    D: Dimension,
-    T: SampleUniform,
-{
-    Array::random_using(
-        shape,
-        Uniform::new(start, stop),
-        &mut StdRng::seed_from_u64(key),
-    )
-}
-///
-pub fn seeded_stdnorm<T, D>(key: u64, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
-where
-    D: Dimension,
-    StandardNormal: Distribution<T>,
-{
-    Array::random_using(shape, StandardNormal, &mut StdRng::seed_from_u64(key))
-}
-///
-pub fn randc_normal<T, D>(key: u64, shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
-where
-    D: Dimension,
-    T: Copy + Num,
-    StandardNormal: Distribution<T>,
-{
-    let dim = shape.into_dimension();
-    let re = seeded_stdnorm(key, dim.clone());
-    let im = seeded_stdnorm(key, dim.clone());
-    let mut res = Array::zeros(dim);
-    ndarray::azip!((re in &re, im in &im, res in &mut res) {
-        *res = Complex::new(*re, *im);
-    });
-    res
-}
-/// Given a shape, generate a random array using the StandardNormal distribution
-pub fn stdnorm<T, D>(shape: impl IntoDimension<Dim = D>) -> Array<T, D>
-where
-    D: Dimension,
-    StandardNormal: Distribution<T>,
-{
-    Array::random(shape, StandardNormal)
-}
-
 pub(crate) mod assertions {
-    use ndarray::prelude::{Array, Dimension};
-    use ndarray::ScalarOperand;
+    use ndarray::{Array, Dimension, ScalarOperand};
     use num::traits::{FromPrimitive, Signed};
-    use std::fmt::Debug;
     ///
     pub fn assert_atol<T, D>(a: &Array<T, D>, b: &Array<T, D>, tol: T)
     where
         D: Dimension,
-        T: Debug + FromPrimitive + PartialOrd + ScalarOperand + Signed,
+        T: FromPrimitive + PartialOrd + ScalarOperand + Signed + ToString,
     {
         let err = (b - a).mapv(|i| i.abs()).mean().unwrap();
-        assert!(err <= tol, "Error: {:?}", err);
+        assert!(err <= tol, "Error: {}", err.to_string());
     }
     /// A function helper for testing that some result is ok
     pub fn assert_ok<T, E>(res: Result<T, E>) -> T
     where
-        E: Debug,
+        E: core::fmt::Debug,
     {
         assert!(res.is_ok(), "Error: {:?}", res.err());
         res.unwrap()
@@ -190,10 +59,10 @@ pub(crate) mod assertions {
     ///
     pub fn assert_approx<T>(a: T, b: T, epsilon: T)
     where
-        T: Debug + PartialOrd + Signed,
+        T: PartialOrd + Signed + ToString,
     {
         let err = (b - a).abs();
-        assert!(err < epsilon, "Error: {:?}", err)
+        assert!(err < epsilon, "Error: {}", err.to_string())
     }
     ///
     pub fn almost_equal<T>(a: T, b: T, epsilon: T) -> bool
@@ -205,9 +74,12 @@ pub(crate) mod assertions {
 }
 
 pub(crate) mod arrays {
-    use ndarray::prelude::{s, Array, Array1, Array2, Axis};
-    use ndarray::{concatenate, RemoveAxis};
-    use num::traits::{Num, Zero};
+    use ndarray::{
+        concatenate, s, Array, Array1, Array2, Axis, Dimension, IntoDimension, RemoveAxis,
+        ScalarOperand, ShapeError,
+    };
+    use num::traits::{Float, Num, NumAssign, NumCast, Zero};
+
     /// Creates an n-dimensional array from an iterator of n dimensional arrays.
     pub fn concat_iter<D, T>(
         axis: usize,
@@ -223,6 +95,85 @@ pub(crate) mod arrays {
             out = concatenate!(Axis(axis), out, i);
         }
         out
+    }
+
+    pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
+        Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
+    }
+
+    pub fn inverse<T>(matrix: &Array2<T>) -> Option<Array2<T>>
+    where
+        T: Copy + NumAssign + ScalarOperand,
+    {
+        let (rows, cols) = matrix.dim();
+
+        if !matrix.is_square() {
+            return None; // Matrix must be square for inversion
+        }
+
+        let identity = Array2::eye(rows);
+
+        // Construct an augmented matrix by concatenating the original matrix with an identity matrix
+        let mut aug = Array2::zeros((rows, 2 * cols));
+        aug.slice_mut(s![.., ..cols]).assign(matrix);
+        aug.slice_mut(s![.., cols..]).assign(&identity);
+
+        // Perform Gaussian elimination to reduce the left half to the identity matrix
+        for i in 0..rows {
+            let pivot = aug[[i, i]];
+
+            if pivot == T::zero() {
+                return None; // Matrix is singular
+            }
+
+            aug.slice_mut(s![i, ..]).mapv_inplace(|x| x / pivot);
+
+            for j in 0..rows {
+                if i != j {
+                    let am = aug.clone();
+                    let factor = aug[[j, i]];
+                    let rhs = am.slice(s![i, ..]);
+                    aug.slice_mut(s![j, ..])
+                        .zip_mut_with(&rhs, |x, &y| *x -= y * factor);
+                }
+            }
+        }
+
+        // Extract the inverted matrix from the augmented matrix
+        let inverted = aug.slice(s![.., cols..]);
+
+        Some(inverted.to_owned())
+    }
+
+    pub fn linarr<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
+    where
+        D: Dimension,
+        T: Float,
+    {
+        let dim = dim.into_dimension();
+        let n = dim.as_array_view().product();
+        Array::linspace(T::one(), T::from(n).unwrap(), n).into_shape(dim)
+    }
+
+    pub fn linspace<T, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<T, D>, ShapeError>
+    where
+        D: Dimension,
+        T: NumCast,
+    {
+        let dim = dim.into_dimension();
+        let n = dim.as_array_view().product();
+        Array::from_iter((0..n).map(|x| T::from(x).unwrap())).into_shape(dim)
+    }
+
+    /// creates a matrix from the given shape filled with numerical elements [0, n) spaced evenly by 1
+    pub fn rangespace<T, D>(dim: impl IntoDimension<Dim = D>) -> Array<T, D>
+    where
+        D: Dimension,
+        T: Num + NumCast,
+    {
+        let dim = dim.into_dimension();
+        let iter = (0..dim.size()).map(|i| T::from(i).unwrap());
+        Array::from_shape_vec(dim, iter.collect()).unwrap()
     }
     /// Creates a larger array from an iterator of smaller arrays.
     pub fn stack_iter<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
@@ -290,5 +241,3 @@ pub(crate) mod arrays {
         res
     }
 }
-
-pub(crate) mod linalg {}

@@ -2,37 +2,27 @@
    Appellation: data <library>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Concision Data
+//! # Data
 //!
-#![feature(associated_type_defaults)]
+//! This library works to provide a comprehensive set of utilities for working with datasets.
 
-pub use self::misc::*;
+#![cfg_attr(not(feature = "std"), no_std)]
 
-pub(crate) mod misc;
-pub(crate) mod primitives;
+#[cfg(no_std)]
+extern crate alloc;
+
+extern crate concision_core as concision;
+
+pub use self::{dataset::Dataset, traits::prelude::*, utils::*};
+
 pub(crate) mod utils;
 
-pub mod datasets;
-pub mod df;
-pub mod flows;
-pub mod mat;
-pub mod shape;
-pub mod specs;
-pub mod store;
-pub mod tensors;
-
-pub(crate) use concision_core as core;
+pub mod dataset;
+pub mod traits;
 
 pub mod prelude {
-    pub use crate::misc::*;
-    // pub use linfa::dataset::{Dataset, DatasetBase, DatasetView};
+    pub use crate::utils::*;
 
-    pub use crate::datasets::*;
-    pub use crate::df::*;
-    pub use crate::flows::*;
-
-    pub use crate::shape::*;
-    pub use crate::specs::*;
-    pub use crate::store::*;
-    pub use crate::tensors::*;
+    pub use crate::dataset::*;
+    pub use crate::traits::prelude::*;
 }

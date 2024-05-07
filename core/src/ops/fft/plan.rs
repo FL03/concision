@@ -2,10 +2,14 @@
    Appellation: plan <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::FftDirection;
-use serde::{Deserialize, Serialize};
+#[cfg(no_std)]
+use alloc::vec::{self, Vec};
+use core::slice;
+#[cfg(not(no_std))]
+use std::vec;
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct FftPlan {
     plan: Vec<usize>,
 }
@@ -67,7 +71,7 @@ impl FromIterator<usize> for FftPlan {
 
 impl IntoIterator for FftPlan {
     type Item = usize;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
+    type IntoIter = vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.plan.into_iter()
@@ -76,7 +80,7 @@ impl IntoIterator for FftPlan {
 
 impl<'a> IntoIterator for &'a mut FftPlan {
     type Item = &'a mut usize;
-    type IntoIter = std::slice::IterMut<'a, usize>;
+    type IntoIter = slice::IterMut<'a, usize>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.plan.iter_mut()

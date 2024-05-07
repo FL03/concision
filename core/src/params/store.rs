@@ -3,18 +3,18 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{ParamKind, Parameter};
+use crate::prelude::Map;
 use ndarray::prelude::{Dimension, Ix2};
 use num::Float;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct ParamStore<T = f64, D = Ix2>
 where
     T: Float,
     D: Dimension,
 {
-    store: HashMap<ParamKind, Parameter<T, D>>,
+    store: Map<ParamKind, Parameter<T, D>>,
 }
 
 impl<T, D> ParamStore<T, D>
@@ -23,9 +23,7 @@ where
     T: Float,
 {
     pub fn new() -> Self {
-        Self {
-            store: HashMap::new(),
-        }
+        Self { store: Map::new() }
     }
 
     pub fn get(&self, kind: &ParamKind) -> Option<&Parameter<T, D>> {
@@ -57,31 +55,43 @@ where
     }
 }
 
-impl<T, D> IntoIterator for ParamStore<T, D>
-where
-    D: Dimension,
-    T: Float,
-{
-    type Item = (ParamKind, Parameter<T, D>);
-    type IntoIter = std::collections::hash_map::IntoIter<ParamKind, Parameter<T, D>>;
+macro_rules! impl_into_iter {
+    ($($p:ident)::*) => {
+        impl_into_iter!(@impl $($p)::*);
+    };
+    (@impl $($p:ident)::*) => {
+        impl<T, D> IntoIterator for ParamStore<T, D>
+        where
+            D: Dimension,
+            T: Float,
+        {
+            type Item = (ParamKind, Parameter<T, D>);
+            type IntoIter = $($p)::*::IntoIter<ParamKind, Parameter<T, D>>;
 
-    fn into_iter(self) -> Self::IntoIter {
-        self.store.into_iter()
-    }
+            fn into_iter(self) -> Self::IntoIter {
+                self.store.into_iter()
+            }
+        }
+
+        impl<'a, T, D> IntoIterator for &'a mut ParamStore<T, D>
+        where
+            D: Dimension,
+            T: Float,
+        {
+            type Item = (&'a ParamKind, &'a mut Parameter<T, D>);
+            type IntoIter = $($p)::*::IterMut<'a, ParamKind, Parameter<T, D>>;
+
+            fn into_iter(self) -> Self::IntoIter {
+                self.store.iter_mut()
+            }
+        }
+    };
+
 }
-
-impl<'a, T, D> IntoIterator for &'a mut ParamStore<T, D>
-where
-    D: Dimension,
-    T: Float,
-{
-    type Item = (&'a ParamKind, &'a mut Parameter<T, D>);
-    type IntoIter = std::collections::hash_map::IterMut<'a, ParamKind, Parameter<T, D>>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.store.iter_mut()
-    }
-}
+#[cfg(feature = "std")]
+impl_into_iter!(std::collections::hash_map);
+#[cfg(not(feature = "std"))]
+impl_into_iter!(alloc::collections::btree_map);
 
 #[cfg(test)]
 mod tests {
