@@ -86,8 +86,6 @@ required-features = ["rand"]
 [build-dependencies]
 
 [dependencies]
-concision-core = { features = ["rand"], path = "../../core", version = "0.1.12" }
-
 approx = { optional = true, version = "0.5" }
 ndarray.workspace = true
 ndarray-rand = { optional = true, version = "0.14" }
@@ -97,6 +95,11 @@ serde = { default-features = false, features = ["derive"], optional = true, vers
 smart-default.workspace = true
 strum.workspace = true
 tracing = { optional = true, version = "0.1" }
+
+[dependencies.concision-core]
+default-features = false
+path = "../../core"
+version = "0.1.13"
 
 [dev-dependencies]
 lazy_static.workspace = true

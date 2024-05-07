@@ -90,7 +90,7 @@ std = [
 
 tracing = [
     "concision-core/tracing",
-    # "concision-data/tracing",
+    "concision-data/tracing",
     "concision-linear/tracing",
     "concision-gnn/tracing",
 ]
@@ -138,15 +138,36 @@ required-features = ["linear", "rand", "serde", "tracing"]
 
 [build-dependencies]
 
-[dependencies]
-concision-core = { path = "../core", version = "0.1.12" }
-concision-data = { optional = true, path = "../data", version = "0.1.12" }
-concision-derive = { optional = true, path = "../derive", version = "0.1.12" }
-concision-macros = { optional = true, path = "../macros", version = "0.1.12" }
+[dependencies.concision-core]
+path = "../core"
+version = "0.1.13"
 
-# **** Models ****
-concision-linear = { optional = true, path = "../models/linear", version = "0.1.12" }
-concision-gnn = { optional = true, path = "../models/gnn", version = "0.1.12" }
+[dependencies.concision-data]
+optional = true
+path = "../data"
+version = "0.1.13"
+
+[dependencies.concision-derive]
+optional = true
+path = "../derive"
+version = "0.1.13"
+
+[dependencies.concision-macros]
+optional = true
+path = "../macros"
+version = "0.1.13"
+
+# *************** Models ***************
+
+[dependencies.concision-gnn]
+optional = true
+path = "../models/gnn"
+version = "0.1.13"
+
+[dependencies.concision-linear]
+optional = true
+path = "../models/linear"
+version = "0.1.13"
 
 [dev-dependencies]
 anyhow = "1"
