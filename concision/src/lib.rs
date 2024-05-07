@@ -10,12 +10,15 @@
 
 pub use concision_core::*;
 #[cfg(feature = "data")]
+#[doc(inline)]
 pub use concision_data as data;
 #[cfg(feature = "derive")]
 pub use concision_derive::*;
 #[cfg(feature = "gnn")]
+#[doc(inline)]
 pub use concision_gnn as gnn;
 #[cfg(feature = "linear")]
+#[doc(inline)]
 pub use concision_linear as linear;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
