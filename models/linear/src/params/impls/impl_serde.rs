@@ -4,11 +4,11 @@
 */
 #![cfg(feature = "serde")]
 
-use crate::params::{Entry, LinearParamsBase};
+use crate::params::{Entry, ParamsBase};
 use nd::*;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-impl<'a, A, S, D> Deserialize<'a> for LinearParamsBase<S, D>
+impl<'a, A, S, D> Deserialize<'a> for ParamsBase<S, D>
 where
     A: Deserialize<'a>,
     D: Deserialize<'a> + RemoveAxis,
@@ -24,7 +24,7 @@ where
     }
 }
 
-impl<A, S, D> Serialize for LinearParamsBase<S, D>
+impl<A, S, D> Serialize for ParamsBase<S, D>
 where
     A: Serialize,
     D: RemoveAxis + Serialize,

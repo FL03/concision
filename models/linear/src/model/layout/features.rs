@@ -51,8 +51,8 @@ impl Features {
         (self.features, self.dmodel)
     }
 
-    pub fn neuron(inputs: usize) -> Self {
-        Self::new(1, inputs)
+    pub fn neuron(d_model: usize) -> Self {
+        Self::new(1, d_model)
     }
 
     pub fn dmodel(&self) -> usize {
@@ -70,7 +70,7 @@ impl Features {
 
 impl core::fmt::Display for Features {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "({}, {})", self.dmodel, self.features)
+        write!(f, "({}, {})", self.features(), self.dmodel(),)
     }
 }
 
@@ -78,7 +78,13 @@ impl IntoDimension for Features {
     type Dim = Ix2;
 
     fn into_dimension(self) -> Self::Dim {
-        ndarray::Ix2(self.features, self.dmodel)
+        ndarray::Ix2(self.features(), self.dmodel())
+    }
+}
+
+impl PartialEq<(usize, usize)> for Features {
+    fn eq(&self, other: &(usize, usize)) -> bool {
+        self.features() == other.0 && self.dmodel() == other.1
     }
 }
 

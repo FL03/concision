@@ -19,7 +19,7 @@ macro_rules! params_ty {
         $(params_ty!(@impl $name<$repr>);)*
     };
     (@impl $name:ident<$repr:ident>) => {
-        pub type $name<T = f64, D = nd::Ix2> = LinearParamsBase<ndarray::$repr<T>, D>;
+        pub type $name<T = f64, D = nd::Ix2> = ParamsBase<ndarray::$repr<T>, D>;
     };
 }
 

@@ -11,16 +11,16 @@ impl<T> Linear<T> {
     where
         T: Clone + Default,
     {
-        let params = LinearParams::default(config.is_biased(), config.shape);
+        let params = LinearParams::default(config.is_biased(), config.dim());
         Self { config, params }
     }
 }
 
-impl<T, D> Borrow<Config> for Linear<T, D>
+impl<T, D> Borrow<Config<D>> for Linear<T, D>
 where
     D: RemoveAxis,
 {
-    fn borrow(&self) -> &Config {
+    fn borrow(&self) -> &Config<D> {
         &self.config
     }
 }

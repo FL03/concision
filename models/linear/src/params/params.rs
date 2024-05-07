@@ -13,14 +13,14 @@ use alloc::vec;
 #[cfg(feature = "std")]
 use std::vec;
 
-pub(crate) type Node<T> = (Array<T, Ix1>, Option<Array<T, Ix0>>);
+pub(crate) type Node<A = f64> = (Array<A, Ix1>, Option<Array<A, Ix0>>);
 
 macro_rules! constructor {
     ($call:ident where $($rest:tt)*) => {
         constructor!(@impl $call where $($rest)*);
     };
     (@impl $call:ident where $($rest:tt)*) => {
-        pub fn $call<Sh>(biased: bool, shape: Sh) -> LinearParamsBase<S, D>
+        pub fn $call<Sh>(biased: bool, shape: Sh) -> ParamsBase<S, D>
         where
             Sh: ndarray::ShapeBuilder<Dim = D>,
             $($rest)*
@@ -35,7 +35,7 @@ macro_rules! constructor {
     };
 }
 
-pub struct LinearParamsBase<S, D = Ix2>
+pub struct ParamsBase<S, D = Ix2>
 where
     D: RemoveAxis,
     S: RawData,
@@ -44,7 +44,7 @@ where
     pub(crate) weights: ArrayBase<S, D>,
 }
 
-impl<A, S, D> LinearParamsBase<S, D>
+impl<A, S, D> ParamsBase<S, D>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,
@@ -141,7 +141,7 @@ where
     }
 }
 
-impl<A, S> LinearParamsBase<S>
+impl<A, S> ParamsBase<S>
 where
     S: RawData<Elem = A>,
 {
@@ -170,7 +170,7 @@ where
     }
 }
 
-impl<A, S> IntoIterator for LinearParamsBase<S>
+impl<A, S> IntoIterator for ParamsBase<S>
 where
     A: Clone,
     S: Data<Elem = A>,
@@ -196,7 +196,7 @@ where
     }
 }
 
-impl<A, S> FromIterator<(Array1<A>, Option<Array0<A>>)> for LinearParamsBase<S, Ix2>
+impl<A, S> FromIterator<(Array1<A>, Option<Array0<A>>)> for ParamsBase<S, Ix2>
 where
     A: Clone + Default,
     S: DataOwned<Elem = A> + DataMut,
@@ -206,7 +206,7 @@ where
         let mut iter = nodes.iter();
         let node = iter.next().unwrap();
         let shape = Features::new(node.0.shape()[0], nodes.len());
-        let mut params = LinearParamsBase::default(true, shape);
+        let mut params = ParamsBase::default(true, shape);
         params.set_node(0, node.clone());
         for (i, node) in iter.into_iter().enumerate() {
             params.set_node(i + 1, node.clone());
@@ -219,7 +219,7 @@ macro_rules! impl_from {
 
 
     (A) => {
-        impl<A> From<(Array1<A>, A)> for LinearParamsBase<OwnedRepr<A>, Ix1>
+        impl<A> From<(Array1<A>, A)> for ParamsBase<OwnedRepr<A>, Ix1>
         where
             A: Clone,
         {
@@ -231,7 +231,7 @@ macro_rules! impl_from {
                 }
             }
         }
-        impl<A> From<(Array1<A>, Option<A>)> for LinearParamsBase<OwnedRepr<A>, Ix1>
+        impl<A> From<(Array1<A>, Option<A>)> for ParamsBase<OwnedRepr<A>, Ix1>
         where
             A: Clone,
         {
@@ -248,7 +248,7 @@ macro_rules! impl_from {
 
     };
     (@impl $b:ty) => {
-        impl<A, S, D> From<(ArrayBase<S, D>, Option<$b>)> for LinearParamsBase<S, D>
+        impl<A, S, D> From<(ArrayBase<S, D>, Option<$b>)> for ParamsBase<S, D>
         where
             D: RemoveAxis,
             S: RawData<Elem = A>,
@@ -261,7 +261,7 @@ macro_rules! impl_from {
             }
         }
 
-        impl<A, S, D> From<(ArrayBase<S, D>, $b)> for LinearParamsBase<S, D>
+        impl<A, S, D> From<(ArrayBase<S, D>, $b)> for ParamsBase<S, D>
         where
             D: RemoveAxis,
             S: RawData<Elem = A>,

@@ -10,7 +10,7 @@ impl<T, D> Module for Linear<T, D>
 where
     D: RemoveAxis,
 {
-    type Config = Config;
+    type Config = Config<D>;
     type Params = LinearParams<T, D>;
 
     fn config(&self) -> &Self::Config {

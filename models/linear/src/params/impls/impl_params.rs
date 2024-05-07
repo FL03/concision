@@ -2,7 +2,7 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::LinearParamsBase;
+use crate::params::ParamsBase;
 use crate::{Biased, Weighted};
 use concision::prelude::{Predict, PredictError};
 use core::ops::Add;
@@ -10,7 +10,7 @@ use nd::linalg::Dot;
 use nd::*;
 use num::complex::ComplexFloat;
 
-impl<A, S, D> LinearParamsBase<S, D>
+impl<A, S, D> ParamsBase<S, D>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,
@@ -19,13 +19,13 @@ where
     where
         F: for<'a> Fn(&'a Y) -> Y,
         S: Data<Elem = A>,
-        Self: concision::Predict<X, Output = Y>,
+        Self: Predict<X, Output = Y>,
     {
         f(&self.predict(args).unwrap())
     }
 }
 
-impl<A, S, D> Biased for LinearParamsBase<S, D>
+impl<A, S, D> Biased for ParamsBase<S, D>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,
@@ -45,7 +45,7 @@ where
     }
 }
 
-impl<A, S, D> Weighted for LinearParamsBase<S, D>
+impl<A, S, D> Weighted for ParamsBase<S, D>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,
@@ -65,7 +65,7 @@ where
     }
 }
 
-impl<A, B, T, S, D> Predict<A> for LinearParamsBase<S, D>
+impl<A, B, T, S, D> Predict<A> for ParamsBase<S, D>
 where
     A: Dot<Array<T, D>, Output = B>,
     B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
@@ -85,7 +85,7 @@ where
     }
 }
 
-impl<'a, A, B, T, S, D> Predict<A> for &'a LinearParamsBase<S, D>
+impl<'a, A, B, T, S, D> Predict<A> for &'a ParamsBase<S, D>
 where
     A: Dot<Array<T, D>, Output = B>,
     B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
@@ -105,7 +105,7 @@ where
     }
 }
 
-impl<A, S, D> Clone for LinearParamsBase<S, D>
+impl<A, S, D> Clone for ParamsBase<S, D>
 where
     A: Clone,
     D: RemoveAxis,
@@ -119,7 +119,7 @@ where
     }
 }
 
-impl<A, S, D> Copy for LinearParamsBase<S, D>
+impl<A, S, D> Copy for ParamsBase<S, D>
 where
     A: Copy,
     D: Copy + RemoveAxis,
@@ -128,7 +128,7 @@ where
 {
 }
 
-impl<A, S, D> PartialEq for LinearParamsBase<S, D>
+impl<A, S, D> PartialEq for ParamsBase<S, D>
 where
     A: PartialEq,
     D: RemoveAxis,
@@ -139,8 +139,7 @@ where
     }
 }
 
-impl<A, S, D> PartialEq<(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)>
-    for LinearParamsBase<S, D>
+impl<A, S, D> PartialEq<(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)> for ParamsBase<S, D>
 where
     A: PartialEq,
     D: RemoveAxis,
@@ -151,7 +150,7 @@ where
     }
 }
 
-impl<A, S, D> PartialEq<(ArrayBase<S, D>, ArrayBase<S, D::Smaller>)> for LinearParamsBase<S, D>
+impl<A, S, D> PartialEq<(ArrayBase<S, D>, ArrayBase<S, D::Smaller>)> for ParamsBase<S, D>
 where
     A: PartialEq,
     D: RemoveAxis,

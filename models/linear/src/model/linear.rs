@@ -12,7 +12,7 @@ pub struct Linear<T = f64, D = Ix2>
 where
     D: RemoveAxis,
 {
-    pub(crate) config: Config,
+    pub(crate) config: Config<D>,
     pub(crate) params: LinearParams<T, D>,
 }
 
@@ -28,17 +28,22 @@ where
     //     let params = LinearParams::new(config.biased, config.shape);
     //     Self { config, params }
     // }
+    pub fn from_config(config: Config<D>) -> Self
+    where
+        T: Clone + Default,
+    {
+        let params = LinearParams::default(config.is_biased(), config.dim());
+        Self { config, params }
+    }
     pub fn with_params<D2>(self, params: LinearParams<T, D2>) -> Linear<T, D2>
     where
         D2: RemoveAxis,
     {
-        Linear {
-            config: self.config,
-            params,
-        }
+        let config = self.config.into_dimensionality(params.raw_dim()).unwrap();
+        Linear { config, params }
     }
 
-    pub fn config(&self) -> &Config {
+    pub fn config(&self) -> &Config<D> {
         &self.config
     }
 
