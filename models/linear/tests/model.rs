@@ -2,6 +2,7 @@
     Appellation: model <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#[allow(dead_code)]
 extern crate concision_core as concision;
 extern crate concision_linear as linear;
 
@@ -13,27 +14,25 @@ use lazy_static::lazy_static;
 use ndarray::*;
 
 const SAMPLES: usize = 20;
-const INPUTS: usize = 5;
-const OUTPUT: usize = 3;
+const D_MODEL: usize = 5;
+const DOUT: usize = 3;
 
 lazy_static! {
-    static ref FEATURES: Features = Features::new(OUTPUT, INPUTS);
-    static ref CONFIG: Config = Config::new("test", FEATURES.clone());
-    static ref SAMPLE_DATA: Array<f64, Ix2> = linarr::<f64, Ix2>((SAMPLES, INPUTS)).unwrap();
-    static ref SHAPE: (usize, usize, usize) = (SAMPLES, INPUTS, OUTPUT);
+    static ref FEATURES: Features = Features::new(DOUT, D_MODEL);
+    static ref CONFIG: Config =
+        Config::from_dim(FEATURES.clone().into_dimension()).with_name("test_model");
+    static ref SAMPLE_DATA: Array<f64, Ix2> = linarr::<f64, Ix2>((SAMPLES, D_MODEL)).unwrap();
+    static ref SHAPE: (usize, (usize, usize)) = (SAMPLES, (DOUT, D_MODEL));
 }
 
 #[test]
 fn test_linear() {
-    let (samples, inputs, outputs) = (20, 5, 3);
+    let (samples, (outputs, inputs)) = *SHAPE;
 
-    let features = Features::new(outputs, inputs);
-    let config = Config::new("test", features.clone()).biased();
+    let model: Linear<f64> = Linear::std(CONFIG.clone()).uniform();
 
-    let data = linarr::<f64, Ix2>((samples, inputs)).unwrap();
-
-    let model: Linear<f64> = Linear::std(config).uniform();
-
+    let data = SAMPLE_DATA.clone();
     let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
+
     assert_eq!(y.shape(), &[samples, outputs]);
 }

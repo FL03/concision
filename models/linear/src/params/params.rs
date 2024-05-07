@@ -13,6 +13,7 @@ use alloc::vec;
 #[cfg(feature = "std")]
 use std::vec;
 
+pub(crate) type BuilderResult<S, D = Ix2, E = Ix1> = (ArrayBase<S, D>, Option<ArrayBase<S, E>>);
 pub(crate) type Node<A = f64> = (Array<A, Ix1>, Option<Array<A, Ix0>>);
 
 macro_rules! constructor {
@@ -27,13 +28,35 @@ macro_rules! constructor {
         {
             let shape = shape.into_shape();
             let dim = shape.raw_dim().clone();
-            Self {
+            ParamsBase {
                 bias: build_bias(biased, dim.clone(), |dim| ArrayBase::$call(dim)),
                 weights: ArrayBase::$call(dim),
             }
         }
     };
 }
+
+macro_rules! builder {
+    ($call:ident<$($t:ident),* $(,)?> where $($rest:tt)*) => {
+        builder!(@impl $call<$($t),*> where $($rest)*);
+    };
+    (@impl $call:ident<$($t:ident),*> where $($rest:tt)*) => {
+        pub fn $call<S, D, Sh, $($t),*>(biased: bool, shape: Sh) -> (ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)
+        where
+            D: RemoveAxis,
+            Sh: ShapeBuilder<Dim = D>,
+            $($rest)*
+        {
+            let shape = shape.into_shape();
+            let dim = shape.raw_dim().clone();
+            let bias = build_bias(biased, dim.clone(), |dim| ArrayBase::$call(dim));
+            let weight = ArrayBase::$call(dim);
+            (weight, bias)
+        }
+    };
+}
+
+builder!(default<A> where A: Clone + Default, S: DataOwned<Elem = A>);
 
 pub struct ParamsBase<S, D = Ix2>
 where
@@ -63,6 +86,15 @@ where
             bias: None,
             weights: ArrayBase::default(shape),
         }
+    }
+
+    pub fn build<Sh, B>(biased: bool, shape: Sh, builder: B) -> Self
+    where
+        B: Fn(bool, Sh) -> BuilderResult<S, D, D::Smaller>,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        let (weights, bias) = builder(biased, shape);
+        Self { bias, weights }
     }
 
     pub fn biased<F>(self, builder: F) -> Self

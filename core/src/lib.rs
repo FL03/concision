@@ -5,13 +5,15 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![crate_name = "concision_core"]
 
-#[cfg(no_std)]
+#[cfg(feature = "alloc")]
 extern crate alloc;
 extern crate ndarray as nd;
 #[cfg(feature = "rand")]
 extern crate ndarray_rand as ndrand;
 
-pub use self::{error::ErrorKind, primitives::*, traits::prelude::*, types::prelude::*, utils::*};
+pub use self::error::{Error, ErrorKind, PredictError};
+pub use self::nn::{Backward, Forward, Module, Predict};
+pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::*};
 
 #[cfg(feature = "rand")]
 pub use self::rand::prelude::*;
@@ -31,37 +33,6 @@ pub mod rand;
 pub mod traits;
 pub mod types;
 
-#[allow(unused_imports)]
-pub(crate) mod rust {
-    pub(crate) use core::*;
-
-    #[cfg(no_std)]
-    pub(crate) use self::no_std::*;
-    #[cfg(feature = "std")]
-    pub(crate) use self::with_std::*;
-
-    #[cfg(no_std)]
-    mod no_std {
-        pub use alloc::borrow::Cow;
-        pub use alloc::boxed::{self, Box};
-        pub use alloc::collections::{self, BTreeMap, BTreeSet, BinaryHeap, VecDeque};
-        pub use alloc::vec::{self, Vec};
-    }
-    #[cfg(feature = "std")]
-    mod with_std {
-        pub use std::borrow::Cow;
-        pub use std::boxed::{self, Box};
-        pub use std::collections::{self, BTreeMap, BTreeSet, BinaryHeap, VecDeque};
-        pub(crate) use std::sync::Arc;
-        pub use std::vec::{self, Vec};
-    }
-
-    #[cfg(no_std)]
-    pub type Map<K, V> = collections::BTreeMap<K, V>;
-    #[cfg(feature = "std")]
-    pub type Map<K, V> = collections::HashMap<K, V>;
-}
-
 pub mod prelude {
 
     pub use super::primitives::*;
@@ -77,5 +48,5 @@ pub mod prelude {
     pub use super::traits::prelude::*;
     pub use super::types::prelude::*;
 
-    pub(crate) use super::rust::*;
+    pub(crate) use super::primitives::rust::*;
 }

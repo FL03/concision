@@ -121,9 +121,13 @@ pub struct Padding<T> {
 mod utils {
     use super::{PadAction, PadMode};
     use crate::prelude::array_like;
-    use crate::rust::Cow;
     use ndarray::{Array, ArrayBase, AxisDescription, Data, Dimension, Slice};
     use num::{FromPrimitive, Num};
+
+    #[cfg(no_std)]
+    use alloc::borrow::Cow;
+    #[cfg(feature = "std")]
+    use std::borrow::Cow;
 
     fn read_pad(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
         if pad.len() == 1 && pad.len() < nb_dim {

@@ -20,21 +20,14 @@ impl<T, D> Linear<T, D>
 where
     D: RemoveAxis,
 {
-    // pub fn new(biased: bool, dim: impl IntoDimension<Dim = D>) -> Self
-    // where
-    //     T: Clone + Default,
-    // {
-    //     let config = Config::from_dimension(dim);
-    //     let params = LinearParams::new(config.biased, config.shape);
-    //     Self { config, params }
-    // }
-    pub fn from_config(config: Config<D>) -> Self
+    pub fn new(config: Config<D>) -> Self
     where
         T: Clone + Default,
     {
         let params = LinearParams::default(config.is_biased(), config.dim());
         Self { config, params }
     }
+
     pub fn with_params<D2>(self, params: LinearParams<T, D2>) -> Linear<T, D2>
     where
         D2: RemoveAxis,

@@ -2,14 +2,16 @@
     Appellation: rand <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#![cfg(feature = "rand")]
+
 use crate::bias_dim;
-use crate::params::LinearParamsBase;
+use crate::params::ParamsBase;
 use concision::prelude::GenerateRandom;
 use nd::*;
 use ndrand::rand_distr::{uniform, Distribution, StandardNormal};
 use num::Float;
 
-impl<A, D> LinearParamsBase<OwnedRepr<A>, D>
+impl<A, D> ParamsBase<OwnedRepr<A>, D>
 where
     A: Float + uniform::SampleUniform,
     D: RemoveAxis,

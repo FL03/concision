@@ -9,7 +9,6 @@ mod params;
 
 mod impls {
     mod impl_params;
-    #[cfg(feature = "rand")]
     mod impl_rand;
     mod impl_serde;
 }

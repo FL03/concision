@@ -7,6 +7,7 @@ extern crate concision as cnc;
 use cnc::func::Sigmoid;
 use cnc::linear::{Config, Features, Linear};
 use cnc::{linarr, Predict, Result};
+use ndarray::{IntoDimension, Ix2};
 
 fn tracing() {
     use tracing::Level;
@@ -27,8 +28,8 @@ fn main() -> Result<()> {
 
     let (samples, dmodel, features) = (20, 5, 3);
     let shape = Features::new(features, dmodel);
-    let config = Config::new("example", shape).biased();
-    let data = linarr::<f64, ndarray::Ix2>((samples, dmodel)).unwrap();
+    let config = Config::from_dim(shape.into_dimension()).biased();
+    let data = linarr::<f64, Ix2>((samples, dmodel)).unwrap();
 
     let model: Linear<f64> = Linear::std(config).uniform();
 
