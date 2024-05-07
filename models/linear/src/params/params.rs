@@ -2,8 +2,7 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::build_bias;
-use crate::model::Features;
+use crate::{build_bias, Features};
 use core::ops;
 use nd::linalg::Dot;
 use nd::*;
@@ -54,41 +53,30 @@ where
     constructor!(ones where A: Clone + One, S: DataOwned);
     constructor!(zeros where A: Clone + Zero, S: DataOwned);
 
-    pub fn new(biased: bool, dim: impl IntoDimension<Dim = D>) -> Self
+    pub fn new<Sh>(shape: Sh) -> Self
     where
         A: Clone + Default,
         S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
     {
-        let dim = dim.into_dimension();
         Self {
-            bias: build_bias(biased, dim.clone(), |dim| ArrayBase::default(dim)),
-            weights: ArrayBase::default(dim),
+            bias: None,
+            weights: ArrayBase::default(shape),
         }
     }
 
     pub fn biased<F>(self, builder: F) -> Self
     where
-        F: FnOnce(D::Smaller) -> ArrayBase<S, D::Smaller>,
+        F: Fn(D::Smaller) -> ArrayBase<S, D::Smaller>,
     {
         Self {
-            bias: Some(builder(self.weights.raw_dim().remove_axis(Axis(0)))),
+            bias: build_bias(true, self.raw_dim(), builder),
             ..self
         }
     }
 
     pub fn unbiased(self) -> Self {
         Self { bias: None, ..self }
-    }
-
-    pub fn activate<F>(&mut self, f: F) -> LinearParamsBase<OwnedRepr<A>, D>
-    where
-        F: for<'a> Fn(&'a A) -> A,
-        S: Data<Elem = A>,
-    {
-        LinearParamsBase {
-            bias: self.bias().map(|b| b.map(|b| f(b))),
-            weights: self.weights().map(|w| f(w)),
-        }
     }
 
     pub fn bias(&self) -> Option<&ArrayBase<S, D::Smaller>> {
@@ -99,16 +87,24 @@ where
         self.bias.as_mut()
     }
 
-    pub fn features(&self) -> D {
-        self.weights.raw_dim()
+    pub fn weights(&self) -> &ArrayBase<S, D> {
+        &self.weights
+    }
+
+    pub fn weights_mut(&mut self) -> &mut ArrayBase<S, D> {
+        &mut self.weights
+    }
+
+    pub fn features(&self) -> Features {
+        Features::from_shape(self.shape())
     }
 
     pub fn inputs(&self) -> usize {
-        self.weights.shape().last().unwrap().clone()
+        self.features().dmodel()
     }
 
     pub fn is_biased(&self) -> bool {
-        self.bias.is_some()
+        self.bias().is_some()
     }
 
     pub fn linear<T, B>(&self, data: &T) -> B
@@ -125,19 +121,23 @@ where
         dot
     }
 
+    pub fn ndim(&self) -> usize {
+        self.weights().ndim()
+    }
+
     pub fn outputs(&self) -> usize {
-        if self.features().ndim() == 1 {
+        if self.ndim() == 1 {
             return 1;
         }
-        self.weights.shape().first().unwrap().clone()
+        self.shape()[1]
     }
 
-    pub fn weights(&self) -> &ArrayBase<S, D> {
-        &self.weights
+    pub fn raw_dim(&self) -> D {
+        self.weights().raw_dim()
     }
 
-    pub fn weights_mut(&mut self) -> &mut ArrayBase<S, D> {
-        &mut self.weights
+    pub fn shape(&self) -> &[usize] {
+        self.weights().shape()
     }
 }
 

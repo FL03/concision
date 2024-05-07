@@ -2,8 +2,7 @@
     Appellation: rand <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![cfg(feature = "rand")]
-
+use crate::bias_dim;
 use crate::params::LinearParamsBase;
 use concision::prelude::GenerateRandom;
 use nd::*;
@@ -25,16 +24,26 @@ where
 
     pub fn init_bias(mut self) -> Self {
         let dk = (A::one() / A::from(self.inputs()).unwrap()).sqrt();
-        let dim = self
-            .features()
-            .remove_axis(Axis(self.features().ndim() - 1));
+        let dim = bias_dim(self.raw_dim());
         self.bias = Some(Array::uniform_between(dk, dim));
         self
     }
 
     pub fn init_weight(mut self) -> Self {
         let dk = (A::one() / A::from(self.inputs()).unwrap()).sqrt();
-        self.weights = Array::uniform_between(dk, self.features().clone());
+        self.weights = Array::uniform_between(dk, self.raw_dim());
         self
+    }
+
+    pub fn uniform(self) -> Self {
+        let dk = (A::one() / A::from(self.inputs()).unwrap()).sqrt();
+        let bias = if self.is_biased() {
+            let dim = bias_dim(self.raw_dim());
+            Some(Array::uniform_between(dk, dim))
+        } else {
+            None
+        };
+        let weights = Array::uniform_between(dk, self.raw_dim());
+        Self { bias, weights }
     }
 }

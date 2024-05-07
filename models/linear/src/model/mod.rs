@@ -2,12 +2,25 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{config::*, features::*, linear::*};
+pub use self::{config::Config, linear::Linear};
+
+pub use self::layout::prelude::*;
 
 mod linear;
 
 pub mod config;
-pub mod features;
+
+pub mod layout {
+    pub use self::{features::*, layout::*};
+
+    mod features;
+    mod layout;
+
+    pub(crate) mod prelude {
+        pub use super::features::Features;
+        pub use super::layout::Layout;
+    }
+}
 
 mod impls {
     pub mod impl_init;
@@ -16,7 +29,5 @@ mod impls {
 }
 
 pub(crate) mod prelude {
-    pub use super::config::Config as LinearConfig;
-    pub use super::features::Features as LinearFeatures;
     pub use super::linear::Linear;
 }

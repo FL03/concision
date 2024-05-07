@@ -39,8 +39,6 @@ pub trait Transform<T> {
     fn transform(&self, args: &T) -> Self::Output;
 }
 
-
-
 pub(crate) mod prelude {
     pub use super::Transform;
 

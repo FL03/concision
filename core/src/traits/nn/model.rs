@@ -27,4 +27,3 @@ pub struct ModelBase<C, P> {
     config: C,
     params: P,
 }
-

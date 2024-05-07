@@ -23,6 +23,10 @@ full = [
     "serde",
 ]
 
+alloc = [
+    "concision-core/alloc",
+]
+
 approx = [
     "dep:approx",
     "concision-core/approx",

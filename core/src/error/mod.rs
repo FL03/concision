@@ -6,6 +6,8 @@ pub use self::prelude::*;
 
 mod err;
 
+pub mod kinds;
+
 pub trait ErrKind {}
 
 macro_rules! impl_error_type {
@@ -25,25 +27,12 @@ macro_rules! impl_error_type {
 }
 
 impl_error_type!(
-    err::Error,
+    kinds::Error,
     kinds::ExternalError,
     kinds::PredictError,
     crate::nn::ModelError
 );
 
-pub mod kinds {
-    pub use self::prelude::*;
-
-    pub mod external;
-    pub mod predict;
-
-    pub(crate) mod prelude {
-        pub use super::external::*;
-        pub use super::predict::*;
-    }
-}
-
 pub(crate) mod prelude {
-    pub use super::err::*;
-    pub use super::kinds::prelude::*;
+    pub use super::kinds::*;
 }

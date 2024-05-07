@@ -5,7 +5,7 @@
 use crate::model::Config;
 use crate::params::LinearParams;
 use concision::prelude::{Predict, Result};
-use nd::{Ix2, RemoveAxis};
+use nd::{Array, Ix2, RemoveAxis};
 
 /// Linear model
 pub struct Linear<T = f64, D = Ix2>
@@ -42,6 +42,22 @@ where
         &self.config
     }
 
+    pub fn bias(&self) -> Option<&Array<T, D::Smaller>> {
+        self.params.bias()
+    }
+
+    pub fn bias_mut(&mut self) -> Option<&mut Array<T, D::Smaller>> {
+        self.params.bias_mut()
+    }
+
+    pub fn weights(&self) -> &Array<T, D> {
+        self.params.weights()
+    }
+
+    pub fn weights_mut(&mut self) -> &mut Array<T, D> {
+        self.params.weights_mut()
+    }
+
     pub fn params(&self) -> &LinearParams<T, D> {
         &self.params
     }
@@ -54,9 +70,11 @@ where
         self.config().is_biased() || self.params().is_biased()
     }
 
-    pub fn activate<Y, F>(&self, args: &nd::Array<T, D>, func: F) -> Result<Y> where F: for <'a> Fn(&'a Y) -> Y, Self: Predict<nd::Array<T, D>, Output = Y> {
+    pub fn activate<X, Y, F>(&self, args: &X, func: F) -> Result<Y>
+    where
+        F: for<'a> Fn(&'a Y) -> Y,
+        Self: Predict<X, Output = Y>,
+    {
         Ok(func(&self.predict(args)?))
     }
 }
-
-

@@ -8,6 +8,22 @@ use concision::prelude::{Predict, PredictError};
 use core::ops::Add;
 use nd::linalg::Dot;
 use nd::*;
+use num::complex::ComplexFloat;
+
+impl<A, S, D> LinearParamsBase<S, D>
+where
+    D: RemoveAxis,
+    S: RawData<Elem = A>,
+{
+    pub fn activate<F, X, Y>(&mut self, args: &X, f: F) -> Y
+    where
+        F: for<'a> Fn(&'a Y) -> Y,
+        S: Data<Elem = A>,
+        Self: concision::Predict<X, Output = Y>,
+    {
+        f(&self.predict(args).unwrap())
+    }
+}
 
 impl<A, S, D> Biased for LinearParamsBase<S, D>
 where
@@ -55,15 +71,15 @@ where
     B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
     D: RemoveAxis,
     S: Data<Elem = T>,
-    T: NdFloat,
+    T: ComplexFloat,
 {
     type Output = B;
 
     fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
         let wt = self.weights().t().to_owned();
-        let res = input.dot(&wt);
+        let mut res = input.dot(&wt);
         if let Some(bias) = self.bias() {
-            return Ok(res + bias);
+            res = res + bias;
         }
         Ok(res)
     }
@@ -81,9 +97,9 @@ where
 
     fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
         let wt = self.weights().t().to_owned();
-        let res = input.dot(&wt);
+        let mut res = input.dot(&wt);
         if let Some(bias) = self.bias() {
-            return Ok(res + bias);
+            res = res + bias;
         }
         Ok(res)
     }
@@ -109,7 +125,8 @@ where
     D: Copy + RemoveAxis,
     S: Copy + RawDataClone<Elem = A>,
     <D as Dimension>::Smaller: Copy,
-{}
+{
+}
 
 impl<A, S, D> PartialEq for LinearParamsBase<S, D>
 where
@@ -122,7 +139,8 @@ where
     }
 }
 
-impl<A, S, D> PartialEq<(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)> for LinearParamsBase<S, D>
+impl<A, S, D> PartialEq<(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)>
+    for LinearParamsBase<S, D>
 where
     A: PartialEq,
     D: RemoveAxis,

@@ -7,12 +7,11 @@ use core::borrow::{Borrow, BorrowMut};
 use nd::RemoveAxis;
 
 impl<T> Linear<T> {
-    
     pub fn std(config: Config) -> Self
     where
         T: Clone + Default,
     {
-        let params = LinearParams::new(config.biased, config.shape);
+        let params = LinearParams::default(config.is_biased(), config.shape);
         Self { config, params }
     }
 }
