@@ -26,6 +26,8 @@ pub trait Forward<T> {
     {
         f(&self.forward(args))
     }
+
+    
 }
 
 /// [ForwardIter] describes any iterators whose elements implement [Forward].
