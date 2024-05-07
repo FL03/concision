@@ -4,8 +4,7 @@
 */
 #![cfg(feature = "rand")]
 
-pub use self::generate::*;
-pub use self::utils::*;
+pub use self::prelude::*;
 
 pub(crate) mod generate;
 pub(crate) mod utils;

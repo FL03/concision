@@ -1,23 +1,10 @@
 /*
-   Appellation: traits <mod>
+   Appellation: params <test>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![cfg(test)]
-
-#[cfg(not(feature = "std"))]
-extern crate alloc;
-
-extern crate concision_core as concision;
-
-use concision::linarr;
-use concision::params::{ParamKind, Parameter};
+use concision_core::prelude::{linarr, ParamKind, Parameter};
 use ndarray::linalg::Dot;
-use ndarray::prelude::{Ix1, Ix2};
-
-#[cfg(not(feature = "std"))]
-use alloc::collections::BTreeMap as Map;
-#[cfg(feature = "std")]
-use std::collections::HashMap as Map;
+use ndarray::*;
 
 #[test]
 fn test_parameter() {
@@ -37,12 +24,13 @@ fn test_param_kind_map() {
     let other = ParamKind::other(name);
 
     let data = [
-        (ParamKind::Bias, 0),
-        (ParamKind::Weight, 1),
-        (other.clone(), 2),
-        (ParamKind::other("mask"), 3),
+        (ParamKind::Bias, "bias"),
+        (ParamKind::Weight, "weight"),
+        (other.clone(), "test"),
+        (ParamKind::other("mask"), "mask"),
     ];
-    let store = Map::<ParamKind, usize>::from_iter(data);
-    assert_eq!(store.get(&ParamKind::Bias), Some(&0));
-    assert_eq!(store.get(&other), Some(&2));
+
+    for (kind, expected) in &data {
+        assert_eq!(kind.to_string(), expected.to_string());
+    }
 }

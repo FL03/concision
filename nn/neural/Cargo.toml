@@ -25,7 +25,8 @@ blas = [
 std = [
     "concision-core/std",
     "ndarray/std",
-    "num/std"
+    "num/std",
+    "strum/std",
 ]
 
 intel-mkl-system = [
@@ -69,21 +70,20 @@ test = true
 [dependencies]
 concision-core = { features = ["full"], path = "../../core", version = "0.1.12" }
 
-anyhow.workspace = true
-itertools.workspace = true
+anyhow = "1"
+itertools = "0.12"
 ndarray = { features = ["serde-1"], version = "0.15" }
 ndarray-linalg = "0.16"
-ndarray-rand.workspace = true
-ndarray-stats.workspace = true
+ndarray-rand = "0.14"
+ndarray-stats = "0.5"
 num = { features = ["rand", "serde"], version = "0.4" }
 petgraph = { features = ["serde-1"], version = "0.6" }
-serde.workspace = true
-serde_json.workspace = true
-smart-default.workspace = true
-strum.workspace = true
+serde = { features = ["derive"], version = "1" }
+serde_json = "1"
+smart-default = "0.7"
+strum = { features = ["derive"], version = "0.26" }
 
 [dev-dependencies]
-# computare.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

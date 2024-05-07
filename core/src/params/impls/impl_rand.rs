@@ -11,7 +11,6 @@ use ndrand::rand_distr::uniform::SampleUniform;
 use ndrand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 
-
 impl<T, D> Parameter<T, D>
 where
     D: Dimension,

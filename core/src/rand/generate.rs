@@ -2,14 +2,13 @@
    Appellation: generate <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-// #![cfg(feature = "rand")]
 use core::ops::Neg;
-use ndarray::{Array, Dimension, IntoDimension, Ix2};
-use ndarray_rand::rand::rngs::StdRng;
-use ndarray_rand::rand::{Rng, SeedableRng};
-use ndarray_rand::rand_distr::uniform::{SampleUniform, Uniform};
-use ndarray_rand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
-use ndarray_rand::RandomExt;
+use ndarray::*;
+use ndrand::rand::rngs::StdRng;
+use ndrand::rand::{Rng, SeedableRng};
+use ndrand::rand_distr::uniform::{SampleUniform, Uniform};
+use ndrand::rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
+use ndrand::RandomExt;
 use num::traits::real::Real;
 use num::traits::Float;
 
@@ -17,18 +16,16 @@ pub trait GenerateRandom<T = f64, D = Ix2>: Sized
 where
     D: Dimension,
 {
-    fn rand<IdS>(dim: impl IntoDimension<Dim = D>, distr: IdS) -> Self
-    where
-        IdS: Distribution<T>;
-
-    fn rand_using<IdS, R: ?Sized>(
-        dim: impl IntoDimension<Dim = D>,
-        distr: IdS,
-        rng: &mut R,
-    ) -> Self
+    fn rand<Sh, IdS>(dim: Sh, distr: IdS) -> Self
     where
         IdS: Distribution<T>,
-        R: Rng;
+        Sh: ShapeBuilder<Dim = D>;
+
+    fn rand_using<Sh, IdS, R: ?Sized>(dim: Sh, distr: IdS, rng: &mut R) -> Self
+    where
+        IdS: Distribution<T>,
+        R: Rng,
+        Sh: ShapeBuilder<Dim = D>;
 
     fn bernoulli(dim: impl IntoDimension<Dim = D>, p: Option<f64>) -> Result<Self, BernoulliError>
     where
@@ -80,18 +77,20 @@ where
     D: Dimension,
     StandardNormal: Distribution<T>,
 {
-    fn rand<IdS>(dim: impl IntoDimension<Dim = D>, distr: IdS) -> Self
+    fn rand<Sh, Dtr>(dim: Sh, distr: Dtr) -> Self
     where
-        IdS: Distribution<T>,
+        Dtr: Distribution<T>,
+        Sh: ShapeBuilder<Dim = D>,
     {
-        Self::random(dim.into_dimension(), distr)
+        Self::random(dim, distr)
     }
 
-    fn rand_using<IdS, R: ?Sized>(dim: impl IntoDimension<Dim = D>, distr: IdS, rng: &mut R) -> Self
+    fn rand_using<Sh, Dtr, R>(dim: Sh, distr: Dtr, rng: &mut R) -> Self
     where
-        IdS: Distribution<T>,
-        R: Rng,
+        Dtr: Distribution<T>,
+        R: Rng + ?Sized,
+        Sh: ShapeBuilder<Dim = D>,
     {
-        Self::random_using(dim.into_dimension(), distr, rng)
+        Self::random_using(dim, distr, rng)
     }
 }

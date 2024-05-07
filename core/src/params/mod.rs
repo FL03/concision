@@ -30,7 +30,7 @@ pub(crate) mod prelude {
     pub use super::kinds::ParamKind;
     pub use super::parameter::Parameter;
     pub use super::store::ParamStore;
-    pub use super::Param;
+    pub use super::{Param, Params};
 }
 
 #[cfg(test)]

@@ -4,16 +4,16 @@
 */
 #![allow(unused_macros)]
 
-macro_rules! impl_from_error {
+macro_rules! error_from {
     ($base:ident::$variant:ident<$($err:ty),* $(,)?>) => {
-        impl_from_error!(@loop $base::$variant<$($err),*>);
+        error_from!(@loop $base::$variant<$($err),*>);
     };
     ($base:ident::$variant:ident<$err:ty>$($rest:tt)*) => {
-        impl_from_error!(@loop $base::$variant<$($err),*>$($rest)*);
+        error_from!(@loop $base::$variant<$($err),*>$($rest)*);
     };
     (@loop $base:ident::$variant:ident<$($err:ty),* $(,)?>) => {
         $(
-            impl_from_error!(@impl $base::$variant<$err>);
+            error_from!(@impl $base::$variant<$err>);
         )*
     };
     (@impl $base:ident::$variant:ident<$err:ty>) => {
@@ -51,42 +51,50 @@ macro_rules! nested_constructor {
 }
 
 macro_rules! variant_constructor {
-    ($(($($rest:tt),*)),*) => {
+    ($($rest:tt),* $(,)?) => {
         $(
             variant_constructor!(@loop $($rest),*);
         )*
     };
-    ($(($variant:ident $($rest:tt),*, $method:ident)),*) => {
+    ($($variant:ident.$method:ident$(($call:expr))?),* $(,)?) => {
         $(
-            variant_constructor!(@loop $variant $($rest),*, $method);
+            variant_constructor!(@loop $variant.$method$(($call))?);
         )*
     };
-    (@loop $variant:ident, $method:ident) => {
-        pub fn $method() -> Self {
-            Self::$variant
-        }
-    };
 
-    (@loop $variant:ident($call:expr), $method:ident) => {
+    (@loop $variant:ident.$method:ident$(($call:expr))?) => {
         pub fn $method() -> Self {
-            Self::$variant($call())
+            Self::$variant$(($call))?
         }
     };
 }
 
 macro_rules! impl_unary {
-    ($name:ident.$call:ident<$($T:ty),* $(,)?> -> $f:expr) => {
-        $(
-            impl_unary!(@base $name.$call<$T> -> $f);
-        )*
+    ($name:ident.$call:ident<$T:ty>($f:expr) $($rest:tt)*) => {
+        impl_unary!(@impl $name.$call<$T>($f) $($rest)*);
     };
-    (@base $name:ident.$call:ident<$T:ty> -> $f:expr) => {
+    (@impl $name:ident.$call:ident<$T:ty>($f:expr)) => {
         impl $name for $T {
             type Output = $T;
 
             fn $call(&self) -> Self::Output {
                 $f(self)
             }
+        }
+    };
+}
+
+macro_rules! build_unary_trait {
+    ($($name:ident.$call:ident),* $(,)?) => {
+        $(
+            build_unary_trait!(@impl $name.$call);
+        )*
+    };
+    (@impl $name:ident.$call:ident) => {
+        pub trait $name {
+            type Output;
+
+            fn $call(&self) -> Self::Output;
         }
     };
 }

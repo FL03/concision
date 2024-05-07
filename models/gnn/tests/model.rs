@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #![allow(unused)]
-#![cfg(test)]
 
 extern crate concision_core as concision;
 extern crate concision_gnn as gnn;

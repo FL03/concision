@@ -13,3 +13,17 @@ pub trait Model {
 pub trait ModelBackend {
     type Engine;
 }
+
+pub trait NeuralNetworkStack {
+    const NHIDDEN: Option<usize> = None;
+    type Input;
+    type Hidden;
+    type Output;
+}
+
+#[allow(dead_code)]
+pub struct ModelBase<C, P> {
+    pub(crate) id: usize,
+    config: C,
+    params: P,
+}

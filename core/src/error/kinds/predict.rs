@@ -35,7 +35,10 @@ pub enum PredictError {
     TypeError,
 }
 
-impl PredictError {}
-
-#[cfg(feature = "std")]
-impl std::error::Error for PredictError {}
+impl PredictError {
+    variant_constructor!(
+        ArithmeticError.arithmetic_error,
+        ShapeMismatch.shape_mismatch,
+        TypeError.type_error
+    );
+}

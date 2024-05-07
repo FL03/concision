@@ -1,5 +1,5 @@
 /*
-   Appellation: modules <traits>
+   Appellation: modules <traits::nn>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 
@@ -16,3 +16,5 @@ pub trait Module {
 
     fn params_mut(&mut self) -> &mut Self::Params;
 }
+
+pub trait NeuralNetwork: Module {}

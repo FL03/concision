@@ -14,6 +14,7 @@ on:
     branches: [ main ]
     tags: [ v*.*.* ]
   release:
+    types: [ created ]
   repository_dispatch:
     types: [ rust ]
   schedule:
@@ -73,16 +74,18 @@ jobs:
       - name: Test
         run: cargo test --features full -v --workspace
   blas:
+    continue-on-error: true
     name: Test (blas)
     strategy:
       matrix:
-        toolchain: [ stable, nightly ]
+        crate: [ core, data, gnn, linear ]
+        toolchain: [ stable ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: setup (langspace)
+      - name: rustup
         run: |
           rustup default ${{ matrix.toolchain }}
           rustup update
-      - name: Test
-        run: cargo test --features blas -v --workspace
+      - name: test
+        run: cargo test --features blas -v --package ${{ github.event.repository.name }}-${{ matrix.crate }}

@@ -2,7 +2,6 @@
    Appellation: utils <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![cfg(feature = "rand")]
 use ndarray::*;
 use ndrand::rand::rngs::StdRng;
 use ndrand::rand::SeedableRng;

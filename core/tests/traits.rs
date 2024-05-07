@@ -1,11 +1,8 @@
 /*
-   Appellation: traits <mod>
+   Appellation: traits <test>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![cfg(test)]
-extern crate concision_core as cnc;
-
-use cnc::traits::{Affine, AsComplex, Matpow};
+use concision_core::traits::{Affine, AsComplex, Matpow};
 use ndarray::prelude::*;
 use num::Complex;
 

@@ -24,6 +24,10 @@ full = [
     "tracing",
 ]
 
+alloc = [
+    "concision-core/alloc",
+]
+
 approx = [
     "dep:approx",
     "concision-core/approx",
@@ -45,7 +49,6 @@ serde = [
 ]
 
 serde-ext = [
-    # "dep:serde_json",
     "concision-core/serde",
     "ndarray/serde-1"
 ]
@@ -53,7 +56,9 @@ serde-ext = [
 std = [
     "concision-core/std",
     "ndarray/std",
-    "num/std"
+    "num/std",
+    "serde/std",
+    "strum/std",
 ]
 
 tracing = [
@@ -73,12 +78,13 @@ approx = { optional = true, version = "0.5" }
 itertools.workspace = true
 ndarray.workspace = true
 num.workspace = true
-serde = { features = ["derive"], optional = true, version = "1" }
+serde = { default-features = false, features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
 tracing = { optional = true, version = "0.1" }
 
 [dependencies.concision-core]
+default-features = false
 path = "../core"
 version = "0.1.12"
 

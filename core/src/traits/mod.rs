@@ -4,18 +4,33 @@
 */
 pub use self::prelude::*;
 
+pub mod adjust;
 pub mod math;
-pub mod predict;
 pub mod setup;
 pub mod store;
-pub mod train;
 
 pub mod arr {
-    pub use self::{convert::*, like::*, ops::*};
+    pub use self::{like::*, misc::*, ops::*};
 
-    pub(crate) mod convert;
     pub(crate) mod like;
+    pub(crate) mod misc;
     pub(crate) mod ops;
+}
+
+pub mod nn {
+    pub use self::prelude::*;
+
+    pub mod model;
+    pub mod module;
+    pub mod predict;
+    pub mod train;
+
+    pub(crate) mod prelude {
+        pub use super::model::*;
+        pub use super::module::*;
+        pub use super::predict::*;
+        pub use super::train::*;
+    }
 }
 
 pub trait Transform<T> {
@@ -27,12 +42,12 @@ pub trait Transform<T> {
 pub(crate) mod prelude {
     pub use super::Transform;
 
+    pub use super::adjust::*;
     pub use super::arr::*;
     pub use super::math::*;
-    pub use super::predict::*;
+    pub use super::nn::prelude::*;
     pub use super::setup::*;
     pub use super::store::*;
-    pub use super::train::*;
 }
 
 #[cfg(test)]

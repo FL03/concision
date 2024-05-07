@@ -26,12 +26,12 @@ use strum::{
     VariantArray,
     VariantNames,
 )]
-#[repr(usize)]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "lowercase", untagged)
 )]
+#[repr(usize)]
 #[strum(serialize_all = "lowercase")]
 pub enum FftDirection {
     #[default]
@@ -83,12 +83,12 @@ impl From<FftDirection> for usize {
     VariantArray,
     VariantNames,
 )]
-#[repr(usize)]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "lowercase", untagged)
 )]
+#[repr(usize)]
 #[strum(serialize_all = "lowercase")]
 pub enum FftMode {
     #[default]

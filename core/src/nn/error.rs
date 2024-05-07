@@ -36,6 +36,3 @@ impl ModelError {
 
     // })
 }
-
-#[cfg(feature = "std")]
-impl std::error::Error for ModelError {}

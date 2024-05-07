@@ -13,7 +13,6 @@ use uuid::Uuid;
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Parameter<T = f64, D = Ix2>
 where
-    T: Float,
     D: Dimension,
 {
     pub(crate) id: String,
@@ -25,21 +24,19 @@ where
 
 impl<T, D> Parameter<T, D>
 where
-    T: Float,
     D: Dimension,
 {
-    pub fn new(
-        features: impl IntoDimension<Dim = D>,
-        kind: ParamKind,
-        name: impl ToString,
-    ) -> Self {
+    pub fn new(features: impl IntoDimension<Dim = D>, kind: ParamKind, name: impl ToString) -> Self
+    where
+        T: Clone + Default,
+    {
         let features = features.into_dimension();
         Self {
             id: Uuid::new_v4().to_string(),
             features: features.clone(),
             kind,
             name: name.to_string(),
-            value: Array::zeros(features),
+            value: Array::default(features),
         }
     }
 
