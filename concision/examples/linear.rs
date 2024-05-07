@@ -9,14 +9,13 @@ use cnc::linear::{Config, Features, Linear};
 use cnc::{linarr, Predict, Result};
 
 fn tracing() {
-    use tracing::Level::DEBUG;
+    use tracing::Level;
     use tracing_subscriber::fmt::time;
 
     tracing_subscriber::fmt()
         .compact()
         .with_ansi(true)
-        .with_level(true)
-        .with_max_level(DEBUG)
+        .with_max_level(Level::DEBUG)
         .with_target(false)
         .with_timer(time::uptime())
         .init();
@@ -27,8 +26,8 @@ fn main() -> Result<()> {
     tracing::info!("Starting linear model example");
 
     let (samples, dmodel, features) = (20, 5, 3);
-    let features = Features::new(features, dmodel);
-    let config = Config::new("example", features).biased();
+    let shape = Features::new(features, dmodel);
+    let config = Config::new("example", shape).biased();
     let data = linarr::<f64, ndarray::Ix2>((samples, dmodel)).unwrap();
 
     let model: Linear<f64> = Linear::std(config).uniform();
