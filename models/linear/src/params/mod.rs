@@ -2,6 +2,7 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#[doc(inline)]
 pub use self::{entry::*, params::*};
 
 pub mod entry;

@@ -12,7 +12,7 @@ extern crate ndarray as nd;
 extern crate ndarray_rand as ndrand;
 
 pub use self::error::{Error, ErrorKind, PredictError};
-pub use self::nn::{Backward, Forward, Module, Predict};
+pub use self::nn::Module;
 pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::*};
 
 #[cfg(feature = "rand")]

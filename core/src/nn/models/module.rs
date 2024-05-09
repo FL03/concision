@@ -2,7 +2,7 @@
    Appellation: modules <traits::nn>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::nn::Predict;
+use crate::Predict;
 
 /// A `Module` defines any object that may be used as a layer in a neural network.
 /// [Config](Module::Config) is a type that defines the configuration of the module; including any and all hyperparameters.
