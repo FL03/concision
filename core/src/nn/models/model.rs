@@ -14,8 +14,10 @@ pub trait ModelBackend {
     type Engine;
 }
 
+#[doc(hidden)]
 pub trait NeuralNetworkStack {
     const NHIDDEN: Option<usize> = None;
+
     type Input;
     type Hidden;
     type Output;
@@ -26,4 +28,11 @@ pub struct ModelBase<C, P> {
     pub(crate) id: usize,
     config: C,
     params: P,
+}
+
+pub struct ModelStore<I, H, O> {
+    pub(crate) id: usize,
+    pub(crate) input: I,
+    pub(crate) hidden: Vec<H>,
+    pub(crate) output: O,
 }

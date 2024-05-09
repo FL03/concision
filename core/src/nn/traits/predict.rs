@@ -19,15 +19,6 @@ pub trait Forward<T> {
     type Output;
 
     fn forward(&self, args: &T) -> Self::Output;
-
-    fn activate<F>(&self, args: &T, f: F) -> Self::Output
-    where
-        F: for<'a> Fn(&'a Self::Output) -> Self::Output,
-    {
-        f(&self.forward(args))
-    }
-
-    
 }
 
 /// [ForwardIter] describes any iterators whose elements implement [Forward].

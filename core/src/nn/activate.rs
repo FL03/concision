@@ -4,7 +4,7 @@
 */
 use crate::prelude::{Module, Predict, PredictError};
 
-pub struct Activator<F, M> {
+pub struct Activator<F, M> where M: Module {
     module: M,
     rho: F,
 }
