@@ -43,7 +43,8 @@ members = [
     "derive",
     "macros",
     "models/linear",
-    "models/gnn"
+    "models/gnn",
+    "models/kan",
 ]
 
 resolver = "2"

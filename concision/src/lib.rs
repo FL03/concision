@@ -17,12 +17,16 @@ pub use concision_derive::*;
 #[cfg(feature = "gnn")]
 #[doc(inline)]
 pub use concision_gnn as gnn;
+#[cfg(feature = "kan")]
+#[doc(inline)]
+pub use concision_kan as kan;
 #[cfg(feature = "linear")]
 #[doc(inline)]
 pub use concision_linear as linear;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
 
+#[allow(unused_imports)]
 pub mod prelude {
     pub use concision_core::prelude::*;
     #[cfg(feature = "data")]
@@ -31,6 +35,8 @@ pub mod prelude {
     pub use concision_derive::*;
     #[cfg(feature = "gnn")]
     pub use concision_gnn::prelude::*;
+    #[cfg(feature = "kan")]
+    pub use concision_kan::prelude::*;
     #[cfg(feature = "linear")]
     pub use concision_linear::prelude::*;
     #[cfg(feature = "macros")]
