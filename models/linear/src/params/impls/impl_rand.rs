@@ -17,6 +17,10 @@ where
     D: RemoveAxis,
     StandardNormal: Distribution<A>,
 {
+    pub(crate) fn dk(&self) -> A {
+        A::from(self.in_features()).unwrap().recip().sqrt()
+    }
+
     pub fn init_uniform(mut self, biased: bool) -> Self {
         if biased {
             self = self.init_bias();
@@ -25,20 +29,18 @@ where
     }
 
     pub fn init_bias(mut self) -> Self {
-        let dk = (A::one() / A::from(self.inputs()).unwrap()).sqrt();
         let dim = bias_dim(self.raw_dim());
-        self.bias = Some(Array::uniform_between(dk, dim));
+        self.bias = Some(Array::uniform_between(self.dk(), dim));
         self
     }
 
     pub fn init_weight(mut self) -> Self {
-        let dk = (A::one() / A::from(self.inputs()).unwrap()).sqrt();
-        self.weights = Array::uniform_between(dk, self.raw_dim());
+        self.weights = Array::uniform_between(self.dk(), self.raw_dim());
         self
     }
 
     pub fn uniform(self) -> Self {
-        let dk = (A::one() / A::from(self.inputs()).unwrap()).sqrt();
+        let dk = self.dk();
         let bias = if self.is_biased() {
             let dim = bias_dim(self.raw_dim());
             Some(Array::uniform_between(dk, dim))

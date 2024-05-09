@@ -37,7 +37,13 @@ blas = [
 rand = [
     "dep:rand",
     "dep:ndarray-rand",
+    "rand-ext",
+]
+
+rand-ext = [
     "num/rand",
+    "uuid/rng",
+    "uuid/v4",
 ]
 
 serde = [
@@ -66,6 +72,10 @@ tracing = [
     "dep:tracing"
 ]
 
+wasm = []
+
+wasi = []
+
 [lib]
 bench = false
 crate-type = ["lib"]
@@ -85,7 +95,7 @@ serde = { default-features = false, features = ["derive"], optional = true, vers
 smart-default.workspace = true
 strum.workspace = true
 tracing = { optional = true, version = "0.1" }
-uuid = { features = ["v4", "v7"], version = "1" }
+uuid = { default-features = false, features = ["v4"], version = "1" }
 
 
 

@@ -18,6 +18,7 @@ pub use self::{dataset::Dataset, traits::prelude::*, utils::*};
 pub(crate) mod utils;
 
 pub mod dataset;
+pub mod tensor;
 pub mod traits;
 
 pub mod prelude {

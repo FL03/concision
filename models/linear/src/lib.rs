@@ -17,15 +17,19 @@ extern crate ndarray as nd;
 extern crate ndarray_rand as ndrand;
 extern crate ndarray_stats as stats;
 
-pub use self::model::{Config, Features, Linear};
+pub use self::model::{Config, Features, Layout, Linear};
 pub use self::params::LinearParams;
 #[allow(unused_imports)]
 pub use self::{traits::*, utils::*};
 
 pub(crate) mod utils;
 
+#[doc(hidden)]
 pub mod conv;
+#[doc(hidden)]
 pub mod dense;
+#[doc(hidden)]
+pub mod mlp;
 pub mod model;
 pub mod params;
 pub mod traits;

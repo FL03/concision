@@ -25,14 +25,14 @@ macro_rules! params_ty {
 params_ty!(LinearParams<OwnedRepr>, LinearParamsShared<OwnedArcRepr>,);
 
 pub(crate) mod prelude {
-    pub use super::entry::{Entry as LinearEntry, Param as LinearParam};
-    pub use super::LinearParams;
+    pub use super::{LinearParams, LinearParamsShared};
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use core::str::FromStr;
+    use nd::Array1;
 
     #[test]
     fn test_param_kind() {
@@ -44,8 +44,7 @@ mod tests {
 
     #[test]
     fn test_ones() {
-        let a = LinearParams::<f64>::ones(false, (1, 300)).biased(nd::Array1::ones);
-
+        let a = LinearParams::<f64>::ones(false, (1, 300)).biased(Array1::ones);
         assert!(a.is_biased());
     }
 }

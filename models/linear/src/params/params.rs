@@ -119,7 +119,7 @@ where
         self.bias.as_mut()
     }
 
-    pub fn weights(&self) -> &ArrayBase<S, D> {
+    pub const fn weights(&self) -> &ArrayBase<S, D> {
         &self.weights
     }
 
@@ -131,7 +131,7 @@ where
         Features::from_shape(self.shape())
     }
 
-    pub fn inputs(&self) -> usize {
+    pub fn in_features(&self) -> usize {
         self.features().dmodel()
     }
 
@@ -157,17 +157,17 @@ where
         self.weights().ndim()
     }
 
-    pub fn outputs(&self) -> usize {
+    pub fn out_features(&self) -> usize {
         if self.ndim() == 1 {
             return 1;
         }
         self.shape()[1]
     }
-
+    /// Returns the raw dimension of the weights.
     pub fn raw_dim(&self) -> D {
         self.weights().raw_dim()
     }
-
+    /// Returns the shape of the weights.
     pub fn shape(&self) -> &[usize] {
         self.weights().shape()
     }
@@ -185,7 +185,7 @@ where
         let (weight, bias) = node;
         if let Some(bias) = bias {
             if !self.is_biased() {
-                let mut tmp = ArrayBase::default(self.outputs());
+                let mut tmp = ArrayBase::default(self.out_features());
                 tmp.index_axis_mut(Axis(0), idx).assign(&bias);
                 self.bias = Some(tmp);
             }

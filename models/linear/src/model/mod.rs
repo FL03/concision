@@ -2,9 +2,8 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{config::Config, linear::Linear};
-
 pub use self::layout::prelude::*;
+pub use self::{config::Config, linear::Linear};
 
 mod linear;
 

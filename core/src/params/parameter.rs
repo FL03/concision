@@ -9,6 +9,16 @@ use ndarray::IntoDimension;
 use num::Float;
 use uuid::Uuid;
 
+#[cfg(feature = "rand")]
+pub(crate) fn gen_id() -> Uuid {
+    Uuid::new_v4()
+}
+
+#[cfg(not(feature = "rand"))]
+pub(crate) fn gen_id() -> Uuid {
+    uuid::Uuid::new_v8()
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Parameter<T = f64, D = Ix2>
@@ -32,7 +42,7 @@ where
     {
         let features = features.into_dimension();
         Self {
-            id: Uuid::new_v4().to_string(),
+            id: gen_id().to_string(),
             features: features.clone(),
             kind,
             name: name.to_string(),

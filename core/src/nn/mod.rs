@@ -18,6 +18,7 @@ pub mod traits {
         pub use super::train::*;
     }
 }
+
 pub(crate) mod prelude {
     pub use super::activate::Activator;
     pub use super::error::ModelError;

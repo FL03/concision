@@ -2,10 +2,12 @@
     Appellation: primitives <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::constants::*;
+pub use consts::*;
 
-mod constants {
+pub mod consts {
+
     pub const DEFAULT_MODEL_SIZE: usize = 2048;
+    pub const EPSILON: f64 = 1e-8;
 }
 
 #[allow(unused_imports)]

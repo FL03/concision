@@ -3,25 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 pub use self::{arrays::*, assertions::*};
-use nd::*;
 use num::traits::{Float, Num};
 
-/// Utilitary function that returns a new *n*-dimensional array of dimension `shape` with the same
-/// datatype and memory order as the input `arr`.
-pub fn array_like<S, A, D, Sh>(arr: &ArrayBase<S, D>, shape: Sh, elem: A) -> Array<A, D>
-where
-    A: Clone,
-    D: Dimension,
-    S: Data<Elem = A>,
-    Sh: ShapeBuilder<Dim = D>,
-{
-    // TODO `is_standard_layout` only works on owned arrays. Change it if using `ArrayBase`.
-    if arr.is_standard_layout() {
-        Array::from_elem(shape, elem)
-    } else {
-        Array::from_elem(shape.f(), elem)
-    }
-}
 ///
 pub fn floor_div<T>(numerator: T, denom: T) -> T
 where
@@ -31,27 +14,22 @@ where
 }
 
 /// Round the given value to the given number of decimal places.
-pub fn round_to<T: Float>(val: T, decimals: usize) -> T {
+pub fn round_to<T>(val: T, decimals: usize) -> T
+where
+    T: Float,
+{
     let factor = T::from(10).expect("").powi(decimals as i32);
     (val * factor).round() / factor
 }
 
 pub(crate) mod assertions {
-    use ndarray::{Array, Dimension, ScalarOperand};
-    use num::traits::{FromPrimitive, Signed};
-    ///
-    pub fn assert_atol<T, D>(a: &Array<T, D>, b: &Array<T, D>, tol: T)
-    where
-        D: Dimension,
-        T: FromPrimitive + PartialOrd + ScalarOperand + Signed + ToString,
-    {
-        let err = (b - a).mapv(|i| i.abs()).mean().unwrap();
-        assert!(err <= tol, "Error: {}", err.to_string());
-    }
+    use core::fmt;
+    use num::traits::Signed;
+
     /// A function helper for testing that some result is ok
     pub fn assert_ok<T, E>(res: Result<T, E>) -> T
     where
-        E: core::fmt::Debug,
+        E: fmt::Debug,
     {
         assert!(res.is_ok(), "Error: {:?}", res.err());
         res.unwrap()

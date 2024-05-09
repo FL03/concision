@@ -36,7 +36,15 @@ where
         Linear { config, params }
     }
 
-    pub fn config(&self) -> &Config<D> {
+    pub fn activate<X, Y, F>(&self, args: &X, func: F) -> Result<Y>
+    where
+        F: for<'a> Fn(&'a Y) -> Y,
+        Self: Predict<X, Output = Y>,
+    {
+        Ok(func(&self.predict(args)?))
+    }
+
+    pub const fn config(&self) -> &Config<D> {
         &self.config
     }
 
@@ -56,7 +64,7 @@ where
         self.params.weights_mut()
     }
 
-    pub fn params(&self) -> &LinearParams<T, D> {
+    pub const fn params(&self) -> &LinearParams<T, D> {
         &self.params
     }
 
@@ -66,13 +74,5 @@ where
 
     pub fn is_biased(&self) -> bool {
         self.config().is_biased() || self.params().is_biased()
-    }
-
-    pub fn activate<X, Y, F>(&self, args: &X, func: F) -> Result<Y>
-    where
-        F: for<'a> Fn(&'a Y) -> Y,
-        Self: Predict<X, Output = Y>,
-    {
-        Ok(func(&self.predict(args)?))
     }
 }
