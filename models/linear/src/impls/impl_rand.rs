@@ -4,14 +4,14 @@
 */
 #![cfg(feature = "rand")]
 
+use crate::params::{ParamMode, ParamsBase};
 use crate::{bias_dim, Linear};
-use crate::params::{ParamsBase, ParamMode};
-use concision::rand::rand_distr::{uniform, Distribution, StandardNormal};
 use concision::prelude::GenerateRandom;
+use concision::rand::rand_distr::{uniform, Distribution, StandardNormal};
 use nd::*;
 use num::Float;
 
-impl<A, D, K> Linear<A, D, K>
+impl<A, D, K> Linear<K, A, D>
 where
     A: Float + uniform::SampleUniform,
     D: RemoveAxis,
@@ -27,10 +27,11 @@ where
     }
 }
 
-impl<A, D> ParamsBase<OwnedRepr<A>, D>
+impl<A, D, K> ParamsBase<OwnedRepr<A>, D, K>
 where
     A: Float + uniform::SampleUniform,
     D: RemoveAxis,
+    K: ParamMode,
     StandardNormal: Distribution<A>,
 {
     pub(crate) fn dk(&self) -> A {
@@ -64,8 +65,8 @@ where
             None
         };
         let weights = Array::uniform_between(dk, self.raw_dim());
-        Self { 
-            bias, 
+        Self {
+            bias,
             weights,
             _mode: self._mode,
         }

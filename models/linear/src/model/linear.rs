@@ -75,8 +75,18 @@ where
         &mut self.params
     }
 
+    pub fn into_biased(self) -> Linear<Biased, A, D>
+    where
+        A: Default,
+    {
+        Linear {
+            config: self.config.into_biased(),
+            params: self.params.into_biased(),
+        }
+    }
+
     pub fn is_biased(&self) -> bool {
-        K::BIASED
+        K::BIASED || self.config().is_biased()
     }
 
     pub fn with_name(self, name: impl ToString) -> Self {

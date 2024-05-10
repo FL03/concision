@@ -5,25 +5,26 @@
 
 #[allow(unused_macros)]
 macro_rules! params {
-    (bias: $bias:expr, weight: $weight:expr $(,)?) => {
-        params!(@biased bias: $bias, weight: $weight);
+    {$($k:ident: $v:expr),* $(,)?} => {
+        params!(@new $($k: $v),*);
     };
-    (@new bias: $bias:expr, weight: $weight:expr, mode: $mode:ty) => {
+    (@new bias: $b:expr, weights: $w:expr, mode: $mode:ty) => {
         $crate::params::ParamsBase {
-            bias: $bias,
-            weights: $weight,
-            _mode: $mode,
+            bias: $b,
+            weights: $w,
+            _mode: core::marker::PhantomData::<$mode>,
         }
     };
-    (@biased bias: $bias:expr, weight: $weight:expr, mode: $mode:ty) => {
-        $crate::params::ParamsBase {
-            bias: $bias,
-            weights: $weight,
-            _mode: core::marker::PhantomData,
-        }
+    (@new bias: $b:expr, weights: $w:expr) => {
+        params!(@new bias: $b, weights: $w, mode: $crate::params::mode::Biased);
+    };
+    (@new bias: $b:expr, weights: $w:expr) => {
+        params!(@new bias: Some($b), weights: $w, mode: $crate::params::mode::Biased);
+    };
+    (@new weights: $w:expr) => {
+        params!(@new bias: None, weights: $w, mode: $crate::params::mode::Unbiased);
     };
 }
-
 
 macro_rules! impl_param_builder {
     ($call:ident where $($rest:tt)*) => {

@@ -8,8 +8,6 @@ use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
 use num::Float;
 
-
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Parameter<T = f64, D = Ix2>

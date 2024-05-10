@@ -3,15 +3,31 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
+pub trait State {
+    type Mode: ParamMode;
+}
 
 pub trait ParamMode: 'static {
     const BIASED: bool = false;
 
     fn is_biased(&self) -> bool {
-        core::any::TypeId::of::<Self>() == core::any::TypeId::of::<Biased>()
+        Self::BIASED
     }
 
     private!();
+}
+
+impl<T> ParamMode for Option<T>
+where
+    T: 'static,
+{
+    const BIASED: bool = false;
+
+    fn is_biased(&self) -> bool {
+        self.is_some()
+    }
+
+    seal!();
 }
 
 macro_rules! param_mode {
@@ -36,7 +52,7 @@ macro_rules! param_mode {
 
 }
 
-param_mode!{
-    Biased: true, 
+param_mode! {
+    Biased: true,
     Unbiased: false,
 }

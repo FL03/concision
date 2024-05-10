@@ -9,9 +9,9 @@ pub(crate) mod math;
 pub(crate) mod tensor;
 
 pub(crate) mod prelude {
+    #[allow(unused_imports)]
     #[doc(hidden)]
     pub use super::id::*;
     pub use super::math::*;
     pub use super::tensor::*;
 }
-

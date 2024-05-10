@@ -6,9 +6,9 @@ extern crate concision_core as concision;
 extern crate concision_linear as linear;
 
 use concision::prelude::{linarr, Sigmoid};
-use linear::{Config, Features, Linear};
-
 use lazy_static::lazy_static;
+use linear::params::{Biased, Unbiased};
+use linear::{Config, Features, Linear};
 use ndarray::*;
 
 const SAMPLES: usize = 20;
@@ -33,7 +33,7 @@ fn test_config() {
 fn test_linear() {
     let (samples, (outputs, inputs)) = SHAPE;
 
-    let model: Linear<f64> = Linear::from_features(inputs, outputs).uniform();
+    let model: Linear<Biased, f64> = Linear::from_features(inputs, outputs).uniform();
 
     let data = linarr::<f64, Ix2>((samples, inputs)).unwrap();
     let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
@@ -46,9 +46,9 @@ fn test_bias_ty() {
     use linear::{Biased, Unbiased};
     let (_samples, (outputs, inputs)) = SHAPE;
 
-    let model: Linear<f64, Ix2, Biased> = Linear::from_features(inputs, outputs).uniform();
+    let model: Linear<Biased, f64> = Linear::from_features(inputs, outputs).uniform();
     assert!(model.is_biased());
 
-    let model: Linear<f64, Ix2, Unbiased> = Linear::from_features(inputs, outputs).uniform();
+    let model: Linear<Unbiased, f64> = Linear::from_features(inputs, outputs).uniform();
     assert!(!model.is_biased());
 }

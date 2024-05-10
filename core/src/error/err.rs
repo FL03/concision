@@ -5,7 +5,6 @@
 use super::ErrorKind;
 use crate::uuid;
 
-
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize,))]
 pub struct Error {

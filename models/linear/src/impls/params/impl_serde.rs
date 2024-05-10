@@ -4,7 +4,8 @@
 */
 #![cfg(feature = "serde")]
 
-use crate::params::{Entry, ParamsBase};
+use crate::params::{Entry, ParamMode, ParamsBase};
+use core::marker::PhantomData;
 use nd::*;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -20,7 +21,11 @@ where
         Der: Deserializer<'a>,
     {
         let (bias, weights) = Deserialize::deserialize(deserializer)?;
-        Ok(Self { bias, weights, _mode: PhantomData })
+        Ok(Self {
+            bias,
+            weights,
+            _mode: PhantomData,
+        })
     }
 }
 
@@ -28,6 +33,7 @@ impl<A, S, D, K> Serialize for ParamsBase<S, D, K>
 where
     A: Serialize,
     D: RemoveAxis + Serialize,
+    K: ParamMode,
     S: Data<Elem = A>,
     <D as Dimension>::Smaller: Dimension + Serialize,
 {

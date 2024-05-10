@@ -2,18 +2,13 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::ParamsBase;
 use crate::params::mode::*;
+use crate::params::ParamsBase;
 use concision::prelude::{Predict, PredictError};
 use core::ops::Add;
 use nd::linalg::Dot;
 use nd::*;
 use num::complex::ComplexFloat;
-
-#[cfg(feature = "alloc")]
-use alloc::vec;
-#[cfg(feature = "std")]
-use std::vec;
 
 impl<A, K, S, D> ParamsBase<S, D, K>
 where
@@ -30,7 +25,6 @@ where
         f(&self.predict(args).unwrap())
     }
 }
-
 
 impl<'a, A, B, T, S, D, K> Predict<A> for &'a ParamsBase<S, D, K>
 where
@@ -75,34 +69,6 @@ where
     S: Copy + RawDataClone<Elem = A>,
     <D as Dimension>::Smaller: Copy,
 {
-}
-
-impl<A, S, D, E> IntoIterator for ParamsBase<S, D>
-where
-    A: Clone,
-    D: Dimension<Smaller = E> + RemoveAxis,
-    S: Data<Elem = A>,
-    E: RemoveAxis,
-{
-    type Item = (Array<A, E>, Option<Array<A, E::Smaller>>);
-    type IntoIter = vec::IntoIter<Self::Item>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        if let Some(bias) = self.bias() {
-            return self
-                .weights()
-                .axis_iter(Axis(0))
-                .zip(bias.axis_iter(Axis(0)))
-                .map(|(w, b)| (w.to_owned(), Some(b.to_owned())))
-                .collect::<Vec<_>>()
-                .into_iter();
-        }
-        self.weights()
-            .axis_iter(Axis(0))
-            .map(|w| (w.to_owned(), None))
-            .collect::<Vec<_>>()
-            .into_iter()
-    }
 }
 
 impl<A, S, D> PartialEq for ParamsBase<S, D>

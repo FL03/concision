@@ -2,16 +2,14 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::mode::*;
+use super::Node;
 use crate::{build_bias, Features};
-use crate::params::mode::*;
 use core::marker::PhantomData;
 use nd::*;
 use num::{One, Zero};
 
-pub(crate) type Pair<A, B = A> = (A, B);
-pub(crate) type MaybePair<A, B = A> = Pair<A, Option<B>>;
-pub(crate) type Node<A = f64, D = Ix1, E = Ix0> = MaybePair<Array<A, D>, Array<A, E>>;
-
+///
 pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2, K = Unbiased>
 where
     D: Dimension,
@@ -49,24 +47,30 @@ where
     where
         F: Fn(Sh) -> ArrayBase<S, D>,
         Sh: ShapeBuilder<Dim = D>,
-        
     {
         let _weights = builder(shape);
         unimplemented!()
     }
 
-    pub fn biased<F>(self, builder: F) -> Self
+    pub fn into_biased(self) -> ParamsBase<S, D, Biased>
     where
-        F: Fn(D::Smaller) -> ArrayBase<S, D::Smaller>,
+        A: Default,
+        S: DataOwned,
     {
-        Self {
-            bias: build_bias(true, self.raw_dim(), builder),
-            ..self
+        let sm = crate::bias_dim(self.raw_dim());
+        ParamsBase {
+            bias: Some(ArrayBase::default(sm)),
+            weights: self.weights,
+            _mode: PhantomData,
         }
     }
 
-    pub fn unbiased(self) -> Self {
-        Self { bias: None, ..self }
+    pub fn into_unbiased(self) -> ParamsBase<S, D, Unbiased> {
+        ParamsBase {
+            bias: None,
+            weights: self.weights,
+            _mode: PhantomData,
+        }
     }
 
     pub fn bias(&self) -> Option<&ArrayBase<S, D::Smaller>> {
@@ -117,8 +121,46 @@ where
     }
 }
 
-impl<A, S> ParamsBase<S>
+impl<A, S, D> ParamsBase<S, D, Biased>
 where
+    D: RemoveAxis,
+    S: RawData<Elem = A>,
+{
+    pub fn biased<Sh>(shape: Sh) -> Self
+    where
+        A: Default,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        let dim = shape.into_shape().raw_dim().clone();
+        Self {
+            bias: build_bias(true, dim.clone(), ArrayBase::default),
+            weights: ArrayBase::default(dim),
+            _mode: PhantomData,
+        }
+    }
+}
+
+impl<A, S, D> ParamsBase<S, D, Unbiased>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
+    pub fn unbiased() -> Self
+    where
+        A: Default,
+        S: DataOwned,
+    {
+        Self {
+            bias: None,
+            weights: Default::default(),
+            _mode: PhantomData,
+        }
+    }
+}
+impl<A, S, K> ParamsBase<S, Ix2, K>
+where
+    K: ParamMode,
     S: RawData<Elem = A>,
 {
     pub fn set_node(&mut self, idx: usize, node: Node<A>)
@@ -146,7 +188,12 @@ where
     }
 }
 
-impl<A, S, D> Default for ParamsBase<S, D> where A: Default, D: Dimension, S: DataOwned<Elem = A> {
+impl<A, S, D> Default for ParamsBase<S, D, Unbiased>
+where
+    A: Default,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+{
     fn default() -> Self {
         Self {
             bias: None,
@@ -155,5 +202,3 @@ impl<A, S, D> Default for ParamsBase<S, D> where A: Default, D: Dimension, S: Da
         }
     }
 }
-
-
