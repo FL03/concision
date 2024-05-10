@@ -22,6 +22,8 @@ pub use self::params::LinearParams;
 #[allow(unused_imports)]
 pub use self::{traits::*, utils::*};
 
+#[macro_use]
+pub(crate) mod seal;
 pub(crate) mod utils;
 
 #[doc(hidden)]
@@ -34,8 +36,22 @@ pub mod model;
 pub mod params;
 pub mod traits;
 
+mod impls {
+    pub mod model {
+        pub mod impl_init;
+        pub mod impl_linear;
+        pub mod impl_model;
+    }
+
+    pub mod params {
+        pub mod impl_params;
+        pub mod impl_rand;
+        pub mod impl_serde;
+    }
+}
+
 pub mod prelude {
     pub use crate::model::prelude::*;
     pub use crate::params::prelude::*;
-    pub use crate::traits::*;
+    pub use crate::traits::prelude::*;
 }

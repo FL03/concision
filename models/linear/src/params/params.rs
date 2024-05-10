@@ -3,18 +3,11 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::{build_bias, Features};
-use core::ops;
-use nd::linalg::Dot;
 use nd::*;
 use num::{One, Zero};
 
-#[cfg(feature = "alloc")]
-use alloc::vec;
-#[cfg(feature = "std")]
-use std::vec;
-
-pub(crate) type BuilderResult<S, D = Ix2, E = Ix1> = (ArrayBase<S, D>, Option<ArrayBase<S, E>>);
-pub(crate) type Node<A = f64> = (Array<A, Ix1>, Option<Array<A, Ix0>>);
+pub(crate) type BuilderResult<S, D = Ix1, E = Ix0> = (ArrayBase<S, D>, Option<ArrayBase<S, E>>);
+pub(crate) type Node<A = f64, D = Ix1, E = Ix0> = (Array<A, D>, Option<Array<A, E>>);
 
 macro_rules! constructor {
     ($call:ident where $($rest:tt)*) => {
@@ -60,7 +53,7 @@ builder!(default<A> where A: Clone + Default, S: DataOwned<Elem = A>);
 
 pub struct ParamsBase<S, D = Ix2>
 where
-    D: RemoveAxis,
+    D: Dimension,
     S: RawData,
 {
     pub(crate) bias: Option<ArrayBase<S, D::Smaller>>,
@@ -139,20 +132,6 @@ where
         self.bias().is_some()
     }
 
-    pub fn linear<T, B>(&self, data: &T) -> B
-    where
-        A: NdFloat,
-        B: for<'a> ops::Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
-        S: Data<Elem = A>,
-        T: Dot<Array<A, D>, Output = B>,
-    {
-        let dot = data.dot(&self.weights().t().to_owned());
-        if let Some(bias) = self.bias() {
-            return dot + bias;
-        }
-        dot
-    }
-
     pub fn ndim(&self) -> usize {
         self.weights().ndim()
     }
@@ -202,32 +181,6 @@ where
     }
 }
 
-impl<A, S> IntoIterator for ParamsBase<S>
-where
-    A: Clone,
-    S: Data<Elem = A>,
-{
-    type Item = Node<A>;
-    type IntoIter = vec::IntoIter<Self::Item>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        if let Some(bias) = self.bias() {
-            return self
-                .weights()
-                .axis_iter(Axis(0))
-                .zip(bias.axis_iter(Axis(0)))
-                .map(|(w, b)| (w.to_owned(), Some(b.to_owned())))
-                .collect::<Vec<_>>()
-                .into_iter();
-        }
-        self.weights()
-            .axis_iter(Axis(0))
-            .map(|w| (w.to_owned(), None).into())
-            .collect::<Vec<_>>()
-            .into_iter()
-    }
-}
-
 impl<A, S> FromIterator<(Array1<A>, Option<Array0<A>>)> for ParamsBase<S, Ix2>
 where
     A: Clone + Default,
@@ -237,7 +190,7 @@ where
         let nodes = nodes.into_iter().collect::<Vec<_>>();
         let mut iter = nodes.iter();
         let node = iter.next().unwrap();
-        let shape = Features::new(node.0.shape()[0], nodes.len());
+        let shape = Features::new(node.0.len(), nodes.len());
         let mut params = ParamsBase::default(true, shape);
         params.set_node(0, node.clone());
         for (i, node) in iter.into_iter().enumerate() {

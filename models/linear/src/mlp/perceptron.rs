@@ -20,7 +20,10 @@ where
         Self { module, rho }
     }
 
-    pub fn activate<T>(&self, args: &T) -> T where F: Fn(&T) -> T {
+    pub fn activate<T>(&self, args: &T) -> T
+    where
+        F: Fn(&T) -> T,
+    {
         (self.rho)(args)
     }
 }

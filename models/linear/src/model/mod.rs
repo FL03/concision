@@ -9,6 +9,36 @@ mod linear;
 
 pub mod config;
 
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize,))]
+pub enum Biased {}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize,))]
+pub enum Unbiased {}
+
+pub trait ParamMode: 'static {
+    type Mode;
+
+    private!();
+}
+
+macro_rules! impl_param_ty {
+    ($($T:ty),* $(,)?) => {
+        $(impl_param_ty!(@impl $T);)*
+    };
+    (@impl $T:ty) => {
+        impl ParamMode for $T {
+            type Mode = $T;
+
+            seal!();
+        }
+    };
+
+}
+
+impl_param_ty!(Biased, Unbiased,);
+
 pub mod layout {
     pub use self::{features::*, layout::*};
 
@@ -19,12 +49,6 @@ pub mod layout {
         pub use super::features::Features;
         pub use super::layout::Layout;
     }
-}
-
-mod impls {
-    pub mod impl_init;
-    pub mod impl_linear;
-    pub mod impl_model;
 }
 
 pub(crate) mod prelude {

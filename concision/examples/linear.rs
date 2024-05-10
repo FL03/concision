@@ -4,6 +4,7 @@
 */
 extern crate concision as cnc;
 
+use cnc::linear::model::Biased;
 use cnc::linear::Linear;
 use cnc::prelude::{linarr, Result, Sigmoid};
 use ndarray::Ix2;
@@ -28,7 +29,8 @@ fn main() -> Result<()> {
     let (samples, d_in, d_out) = (20, 5, 3);
     let data = linarr::<f64, Ix2>((samples, d_in)).unwrap();
 
-    let model: Linear<f64> = Linear::from_features(true, d_in, d_out).uniform();
+    let model: Linear<f64, Ix2, Biased> = Linear::from_features(d_in, d_out).uniform();
+    assert!(model.is_biased());
 
     let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
     assert_eq!(y.dim(), (samples, d_out));

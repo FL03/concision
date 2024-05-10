@@ -4,7 +4,6 @@
 */
 pub use self::prelude::*;
 
-
 pub mod math;
 pub mod predict;
 pub mod train;
@@ -47,10 +46,9 @@ pub(crate) mod prelude {
     pub use super::math::*;
     pub use super::predict::*;
     pub use super::train::*;
-    
+
     pub use super::arr::prelude::*;
     pub use super::misc::prelude::*;
-
 }
 
 #[cfg(test)]

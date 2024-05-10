@@ -28,7 +28,6 @@ pub use concision_linear as linear;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
 
-
 pub mod prelude {
     pub use concision_core::prelude::*;
     #[cfg(feature = "data")]

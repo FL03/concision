@@ -29,7 +29,7 @@ lazy_static! {
 fn test_linear() {
     let (samples, (outputs, inputs)) = *SHAPE;
 
-    let model: Linear<f64> = Linear::new(CONFIG.clone()).uniform();
+    let model: Linear<f64> = Linear::from_config(CONFIG.clone()).uniform();
 
     let data = SAMPLE_DATA.clone();
     let y = model.activate(&data, Sigmoid::sigmoid).unwrap();

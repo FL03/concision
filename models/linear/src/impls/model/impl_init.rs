@@ -4,20 +4,22 @@
 */
 #![cfg(feature = "rand")]
 
-use crate::model::Linear;
-use nd::*;
+use crate::model::{Linear, ParamMode};
+use nd::RemoveAxis;
 use ndrand::rand_distr::{uniform, Distribution, StandardNormal};
 use num::Float;
 
-impl<T, D> Linear<T, D>
+impl<A, D, K> Linear<A, D, K>
 where
+    A: Float + uniform::SampleUniform,
     D: RemoveAxis,
-    T: Float + uniform::SampleUniform,
-    StandardNormal: Distribution<T>,
+    K: ParamMode,
+    StandardNormal: Distribution<A>,
 {
     pub fn uniform(self) -> Self {
+        let biased = self.is_biased();
         Self {
-            params: self.params.init_uniform(self.config.biased),
+            params: self.params.init_uniform(biased),
             ..self
         }
     }

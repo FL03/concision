@@ -3,12 +3,16 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::ParamsBase;
-use crate::{Biased, Weighted};
 use concision::prelude::{Predict, PredictError};
 use core::ops::Add;
 use nd::linalg::Dot;
 use nd::*;
 use num::complex::ComplexFloat;
+
+#[cfg(feature = "alloc")]
+use alloc::vec;
+#[cfg(feature = "std")]
+use std::vec;
 
 impl<A, S, D> ParamsBase<S, D>
 where
@@ -22,46 +26,6 @@ where
         Self: Predict<X, Output = Y>,
     {
         f(&self.predict(args).unwrap())
-    }
-}
-
-impl<A, S, D> Biased for ParamsBase<S, D>
-where
-    D: RemoveAxis,
-    S: RawData<Elem = A>,
-{
-    type Bias = ArrayBase<S, D::Smaller>;
-
-    fn bias(&self) -> &Self::Bias {
-        self.bias.as_ref().unwrap()
-    }
-
-    fn bias_mut(&mut self) -> &mut Self::Bias {
-        self.bias.as_mut().unwrap()
-    }
-
-    fn set_bias(&mut self, bias: Self::Bias) {
-        self.bias = Some(bias);
-    }
-}
-
-impl<A, S, D> Weighted for ParamsBase<S, D>
-where
-    D: RemoveAxis,
-    S: RawData<Elem = A>,
-{
-    type Weight = ArrayBase<S, D>;
-
-    fn weights(&self) -> &Self::Weight {
-        &self.weights
-    }
-
-    fn weights_mut(&mut self) -> &mut Self::Weight {
-        &mut self.weights
-    }
-
-    fn set_weights(&mut self, weights: Self::Weight) {
-        self.weights = weights;
     }
 }
 
@@ -126,6 +90,34 @@ where
     S: Copy + RawDataClone<Elem = A>,
     <D as Dimension>::Smaller: Copy,
 {
+}
+
+impl<A, S, D, E> IntoIterator for ParamsBase<S, D>
+where
+    A: Clone,
+    D: Dimension<Smaller = E> + RemoveAxis,
+    S: Data<Elem = A>,
+    E: RemoveAxis,
+{
+    type Item = (Array<A, E>, Option<Array<A, E::Smaller>>);
+    type IntoIter = vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        if let Some(bias) = self.bias() {
+            return self
+                .weights()
+                .axis_iter(Axis(0))
+                .zip(bias.axis_iter(Axis(0)))
+                .map(|(w, b)| (w.to_owned(), Some(b.to_owned())))
+                .collect::<Vec<_>>()
+                .into_iter();
+        }
+        self.weights()
+            .axis_iter(Axis(0))
+            .map(|w| (w.to_owned(), None))
+            .collect::<Vec<_>>()
+            .into_iter()
+    }
 }
 
 impl<A, S, D> PartialEq for ParamsBase<S, D>

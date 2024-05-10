@@ -8,12 +8,6 @@ pub use self::{entry::*, params::*};
 pub mod entry;
 mod params;
 
-mod impls {
-    mod impl_params;
-    mod impl_rand;
-    mod impl_serde;
-}
-
 macro_rules! params_ty {
     ($($name:ident<$repr:ident>),* $(,)?) => {
         $(params_ty!(@impl $name<$repr>);)*

@@ -2,51 +2,55 @@
     Appellation: config <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Features;
-use crate::model::Layout;
+use super::layout::{Features, Layout};
+use super::{Biased, ParamMode, Unbiased};
+use core::marker::PhantomData;
 use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Config<D = Ix2>
+pub struct Config<D = Ix2, B = Biased>
 where
     D: Dimension,
 {
-    pub biased: bool,
     pub layout: Layout<D>,
     pub name: String,
+    _biased: PhantomData<B>,
 }
 
-impl<D> Config<D>
+impl<D, K> Config<D, K>
 where
     D: Dimension,
+    K: ParamMode,
 {
+    pub fn new(layout: Layout<D>, name: impl ToString) -> Self {
+        Self {
+            layout,
+            name: name.to_string(),
+            _biased: PhantomData,
+        }
+    }
+
     pub fn from_dim(dim: D) -> Self
     where
         D: RemoveAxis,
     {
-        Self {
-            biased: false,
-            layout: Layout::new(dim),
-            name: String::new(),
+        Self::new(Layout::from_dim(dim).unwrap(), "")
+    }
+
+    pub fn biased(self) -> Config<D, Biased> {
+        Config {
+            _biased: PhantomData,
+            layout: self.layout,
+            name: self.name,
         }
     }
 
-    pub fn is_biased(&self) -> bool {
-        self.biased
-    }
-
-    pub fn biased(self) -> Self {
-        Self {
-            biased: true,
-            ..self
-        }
-    }
-
-    pub fn unbiased(self) -> Self {
-        Self {
-            biased: false,
-            ..self
+    pub fn unbiased(self) -> Config<D, Unbiased> {
+        Config {
+            _biased: PhantomData,
+            layout: self.layout,
+            name: self.name,
         }
     }
 
@@ -57,35 +61,44 @@ where
         }
     }
 
-    pub fn with_layout<E>(self, layout: Layout<E>) -> Config<E>
+    pub fn with_layout<E>(self, layout: Layout<E>) -> Config<E, K>
     where
         E: Dimension,
     {
         Config {
-            biased: self.biased,
             layout,
             name: self.name,
+            _biased: self._biased,
         }
+    }
+
+    pub fn dim(&self) -> D {
+        self.layout.dim().clone()
     }
 
     pub fn into_pattern(self) -> D::Pattern {
         self.dim().into_pattern()
     }
 
-    pub fn into_dimensionality<E>(self, dim: E) -> Result<Config<E>, nd::ShapeError>
+    pub fn into_dimensionality<E>(self, dim: E) -> Result<Config<E, K>, nd::ShapeError>
     where
         E: Dimension,
     {
         let tmp = Config {
-            biased: self.biased,
             layout: self.layout.into_dimensionality(dim)?,
             name: self.name,
+            _biased: self._biased,
         };
         Ok(tmp)
     }
 
-    pub fn dim(&self) -> D {
-        self.layout.dim().clone()
+    pub fn is_biased(&self) -> bool
+    where
+        K: 'static,
+    {
+        use core::any::TypeId;
+
+        TypeId::of::<K>() == TypeId::of::<Biased>()
     }
 
     pub fn features(&self) -> Features {
@@ -105,13 +118,16 @@ where
     }
 }
 
-
-impl Config {
-    pub fn from_features(biased: bool, inputs: usize, outputs: usize) -> Self {
+impl<K> Config<Ix2, K> {
+    pub fn std(inputs: usize, outputs: usize) -> Self {
         Self {
-            biased,
             layout: Layout::new((outputs, inputs).into_dimension()),
             name: String::new(),
+            _biased: PhantomData,
         }
     }
 }
+
+impl<D> Config<D, Biased> where D: Dimension {}
+
+impl<D> Config<D, Unbiased> where D: Dimension {}

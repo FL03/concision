@@ -2,14 +2,21 @@
     Appellation: impl_linear <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::model::ParamMode;
 use crate::{Config, Linear, LinearParams};
 use core::borrow::{Borrow, BorrowMut};
-use nd::RemoveAxis;
+use nd::{Ix2, RemoveAxis};
 
-impl<A> Linear<A> {
-    pub fn from_features(biased: bool, inputs: usize, outputs: usize) -> Self where A: Default {
-        let config = Config::from_features(biased, inputs, outputs);
-        let params = LinearParams::default(biased, config.dim());
+impl<A, K> Linear<A, Ix2, K>
+where
+    K: ParamMode,
+{
+    pub fn from_features(inputs: usize, outputs: usize) -> Self
+    where
+        A: Default,
+    {
+        let config = Config::std(inputs, outputs);
+        let params = LinearParams::default(config.is_biased(), config.dim());
         Self { config, params }
     }
 }
