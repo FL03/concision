@@ -4,8 +4,6 @@
 
 [![clippy](https://github.com/FL03/concision/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/clippy.yml)
 [![rust](https://github.com/FL03/concision/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/rust.yml)
-[![crates.io](https://github.com/FL03/concision/actions/workflows/crates.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/crates.yml)
-
 
 ***
 
