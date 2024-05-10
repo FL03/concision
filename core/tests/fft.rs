@@ -4,7 +4,7 @@
 */
 extern crate concision_core as concision;
 
-use approx::{assert_abs_diff_eq, abs_diff_eq};
+use approx::assert_abs_diff_eq;
 use concision::ops::fft::*;
 use lazy_static::lazy_static;
 use num::complex::{Complex, ComplexFloat};
@@ -92,7 +92,7 @@ fn test_rfft() {
     // let plan = FftPlan::new(fft.len());
     let ifft = dbg!(irfft(&res, &plan));
     for (x, y) in ifft.iter().zip(polynomial.iter()) {
-        assert_abs_diff_eq!(*x, *y, epsilon=EPSILON);
+        assert_abs_diff_eq!(*x, *y, epsilon = EPSILON);
     }
 }
 
@@ -123,7 +123,7 @@ fn square_small_polynomial() {
         .collect::<Vec<_>>();
     let expected = [1.0, 2.0, 1.0, 4.0, 4.0, 0.0, 4.0, 0.0, 0.0];
     for (x, y) in ifft.iter().zip(expected.iter()) {
-        assert_abs_diff_eq!(*x, *y);
+        assert_abs_diff_eq!(*x, *y, epsilon = EPSILON);
     }
 }
 
@@ -144,6 +144,6 @@ fn square_big_polynomial() {
         .collect::<Vec<_>>();
     let expected = (0..((n << 1) - 1)).map(|i| std::cmp::min(i + 1, (n << 1) - 1 - i) as f64);
     for (&x, y) in ifft.iter().zip(expected) {
-        assert_abs_diff_eq!(x, y, EPSILON);
+        assert_abs_diff_eq!(x, y);
     }
 }

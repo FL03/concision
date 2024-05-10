@@ -35,5 +35,4 @@ pub(crate) mod prelude {
 
 pub trait Activator {
     type Output;
-    
 }

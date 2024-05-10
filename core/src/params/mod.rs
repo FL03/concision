@@ -42,13 +42,14 @@ mod tests {
 
     #[test]
     fn test_parameter() {
-        let a = linarr::<f64, Ix1>((3,)).unwrap();
-        let p = linarr::<f64, Ix2>((3, 3)).unwrap();
+        let value = linarr::<f64, Ix2>((3, 3)).unwrap();
         let mut param = Parameter::<f64, Ix2>::new((10, 1), ParamKind::Bias, "bias");
-        param.set_params(p.clone());
+        param.set_params(value.clone());
 
         assert_eq!(param.kind(), &ParamKind::Bias);
         assert_eq!(param.name(), "bias");
-        assert_eq!(param.dot(&a), p.dot(&a));
+
+        let x = linarr::<f64, Ix1>((3,)).unwrap();
+        assert_eq!(param.dot(&x), value.dot(&x));
     }
 }

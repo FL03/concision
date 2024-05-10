@@ -4,7 +4,7 @@
 */
 #![cfg(feature = "rand")]
 
-use crate::model::{Linear, ParamMode};
+use crate::{Linear, ParamMode};
 use nd::RemoveAxis;
 use ndrand::rand_distr::{uniform, Distribution, StandardNormal};
 use num::Float;

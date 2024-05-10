@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::layout::{Features, Layout};
-use super::{Biased, ParamMode, Unbiased};
+use crate::{Biased, ParamMode, Unbiased};
 use core::marker::PhantomData;
 use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
 
@@ -23,22 +23,15 @@ where
     D: Dimension,
     K: ParamMode,
 {
-    pub fn new(layout: Layout<D>, name: impl ToString) -> Self {
+    pub fn new() -> Self {
         Self {
-            layout,
-            name: name.to_string(),
+            layout: Layout::default(),
+            name: String::new(),
             _biased: PhantomData,
         }
     }
 
-    pub fn from_dim(dim: D) -> Self
-    where
-        D: RemoveAxis,
-    {
-        Self::new(Layout::from_dim(dim).unwrap(), "")
-    }
-
-    pub fn biased(self) -> Config<D, Biased> {
+    pub fn into_biased(self) -> Config<D, Biased> {
         Config {
             _biased: PhantomData,
             layout: self.layout,
@@ -46,7 +39,7 @@ where
         }
     }
 
-    pub fn unbiased(self) -> Config<D, Unbiased> {
+    pub fn into_unbiased(self) -> Config<D, Unbiased> {
         Config {
             _biased: PhantomData,
             layout: self.layout,
@@ -128,6 +121,44 @@ impl<K> Config<Ix2, K> {
     }
 }
 
-impl<D> Config<D, Biased> where D: Dimension {}
+impl<D> Config<D, Biased>
+where
+    D: Dimension,
+{
+    pub fn biased() -> Self {
+        Self::new()
+    }
 
-impl<D> Config<D, Unbiased> where D: Dimension {}
+    pub fn from_dim_biased(dim: D) -> Self
+    where
+        D: RemoveAxis,
+    {
+        let layout = Layout::from_dim(dim).unwrap();
+        Self::new().with_layout(layout)
+    }
+}
+
+impl<D> Config<D, Unbiased>
+where
+    D: Dimension,
+{
+    pub fn unbiased() -> Self {
+        Self::new()
+    }
+
+    pub fn from_dim(dim: D) -> Config<D, Unbiased>
+    where
+        D: RemoveAxis,
+    {
+        Config::<D, Unbiased>::new().with_layout(Layout::from_dim(dim).unwrap())
+    }
+}
+
+impl<D> Default for Config<D, Biased>
+where
+    D: Dimension,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}

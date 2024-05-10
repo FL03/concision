@@ -2,16 +2,17 @@
     Appellation: impl_model <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Config, Linear, LinearParams};
+use crate::{Config, Linear, LinearParams, ParamMode};
 use concision::prelude::{Module, Predict, PredictError};
 use nd::RemoveAxis;
 
-impl<T, D> Module for Linear<T, D>
+impl<A, D, K> Module for Linear<A, D, K>
 where
     D: RemoveAxis,
+    K: ParamMode,
 {
-    type Config = Config<D>;
-    type Params = LinearParams<T, D>;
+    type Config = Config<D, K>;
+    type Params = LinearParams<A, D>;
 
     fn config(&self) -> &Self::Config {
         &self.config

@@ -3,8 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Config, Layout};
-use crate::model::{Biased, ParamMode};
-use crate::params::LinearParams;
+use crate::{Biased, LinearParams, ParamMode};
 use concision::prelude::{Predict, Result};
 use nd::{Array, Ix2, RemoveAxis};
 
@@ -35,7 +34,7 @@ where
     where
         A: Clone + Default,
     {
-        let config = Config::new(layout, name);
+        let config = Config::<D, K>::new().with_layout(layout).with_name(name);
         let params = LinearParams::default(biased, config.dim());
         Self { config, params }
     }
@@ -78,6 +77,13 @@ where
 
     pub fn is_biased(&self) -> bool {
         self.config().is_biased() || self.params().is_biased()
+    }
+
+    pub fn with_name(self, name: impl ToString) -> Self {
+        Self {
+            config: self.config.with_name(name),
+            ..self
+        }
     }
 }
 

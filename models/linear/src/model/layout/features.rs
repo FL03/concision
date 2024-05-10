@@ -2,8 +2,8 @@
    Appellation: features <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use nd::prelude::{Dimension, Ix2, ShapeBuilder};
 use nd::{ErrorKind, IntoDimension, RemoveAxis, ShapeError};
-use nd::prelude::{Dimension, Ix2, ShapeBuilder,};
 
 pub(crate) fn features<D>(dim: D) -> Result<Features, ShapeError>
 where
@@ -21,7 +21,7 @@ where
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Features {
-    pub dmodel: usize,   // inputs
+    pub dmodel: usize,  // inputs
     pub outputs: usize, // outputs
 }
 
@@ -47,7 +47,10 @@ impl Features {
         features(dim).unwrap()
     }
 
-    pub fn check_dim<D>(&self, dim: D) -> bool where D: Dimension {
+    pub fn check_dim<D>(&self, dim: D) -> bool
+    where
+        D: Dimension,
+    {
         if dim.ndim() == 1 {
             self.dmodel == dim[0]
         } else if dim.ndim() >= 2 {

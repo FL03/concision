@@ -7,10 +7,7 @@ use nd::*;
 use num::traits::{NumAssign, Zero};
 
 /// Creates an n-dimensional array from an iterator of n dimensional arrays.
-pub fn concat_iter<D, T>(
-    axis: usize,
-    iter: impl IntoIterator<Item = Array<T, D>>,
-) -> Array<T, D>
+pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where
     D: RemoveAxis,
     T: Clone,
@@ -22,7 +19,6 @@ where
     }
     out
 }
-
 
 pub fn inverse<T>(matrix: &Array2<T>) -> Option<Array2<T>>
 where
@@ -98,19 +94,19 @@ where
 pub(crate) mod gen {
     use nd::{Array, Array1, Dimension, IntoDimension, ShapeError};
     use num::traits::{Float, FromPrimitive, Num, NumCast};
+
     pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
         Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
     }
 
-    pub fn linarr<A, D>(dim: impl IntoDimension<Dim = D>) -> Result<Array<A, D>, ShapeError>
+    pub fn linarr<A, D>(dim: impl Clone + IntoDimension<Dim = D>) -> Result<Array<A, D>, ShapeError>
     where
         A: Float,
         D: Dimension,
     {
         let dim = dim.into_dimension();
         let n = dim.size();
-        Array::linspace(A::zero(), A::from(n).unwrap() - A::one(), n)
-            .into_shape(dim)
+        Array::linspace(A::zero(), A::from(n - 1).unwrap(), n).into_shape(dim)
     }
 
     pub fn linspace<T>(start: T, end: T, n: usize) -> Vec<T>
@@ -121,11 +117,12 @@ pub(crate) mod gen {
             panic!("linspace requires at least two points");
         }
 
-        let step = (end - start) / T::from_usize(n).unwrap();
+        let step = (end - start) / T::from_usize(n - 1).unwrap();
 
-        (0..n).map(|i| start + step * T::from_usize(i).unwrap()).collect()
+        (0..n)
+            .map(|i| start + step * T::from_usize(i).unwrap())
+            .collect()
     }
-
     /// creates a matrix from the given shape filled with numerical elements [0, n) spaced evenly by 1
     pub fn rangespace<A, D>(dim: impl IntoDimension<Dim = D>) -> Array<A, D>
     where

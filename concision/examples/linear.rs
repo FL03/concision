@@ -4,8 +4,7 @@
 */
 extern crate concision as cnc;
 
-use cnc::linear::model::Biased;
-use cnc::linear::Linear;
+use cnc::linear::{Biased, Linear};
 use cnc::prelude::{linarr, Result, Sigmoid};
 use ndarray::Ix2;
 

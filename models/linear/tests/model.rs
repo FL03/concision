@@ -2,12 +2,11 @@
     Appellation: model <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-// #[allow(dead_code)]
 extern crate concision_core as concision;
 extern crate concision_linear as linear;
 
 use concision::prelude::{linarr, Sigmoid};
-use linear::{Config, Features, Linear, Unbiased};
+use linear::{Config, Features, Linear};
 
 use lazy_static::lazy_static;
 use ndarray::*;
@@ -24,9 +23,9 @@ lazy_static! {
 #[test]
 fn test_config() {
     let dim = FEATURES.clone().into_dimension();
-    let config = Config::from_dim(dim).biased();
+    let config = Config::from_dim_biased(dim);
     assert!(config.is_biased());
-    let config = Config::from_dim(dim).unbiased();
+    let config = Config::from_dim(dim);
     assert!(!config.is_biased());
 }
 

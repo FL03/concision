@@ -37,7 +37,6 @@ fn test_inverse() {
     assert_eq!(None, b.inverse());
 }
 
-
 #[test]
 fn test_linarr() {
     let args: Array2<f64> = linarr((2, 3)).unwrap();

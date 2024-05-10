@@ -35,7 +35,7 @@ pub mod types;
 
 pub mod prelude {
     pub(crate) use super::primitives::rust::*;
-    
+
     pub use super::error::prelude::*;
     pub use super::func::prelude::*;
     pub use super::nn::prelude::*;
@@ -47,7 +47,4 @@ pub mod prelude {
     pub use super::traits::prelude::*;
     pub use super::types::prelude::*;
     pub use super::utils::prelude::*;
-
-
-    
 }

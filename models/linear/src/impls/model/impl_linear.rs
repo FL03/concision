@@ -2,8 +2,7 @@
     Appellation: impl_linear <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::model::ParamMode;
-use crate::{Config, Linear, LinearParams};
+use crate::{Config, Linear, LinearParams, ParamMode};
 use core::borrow::{Borrow, BorrowMut};
 use nd::{Ix2, RemoveAxis};
 
