@@ -2,37 +2,54 @@
     Appellation: model <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-#[allow(dead_code)]
+// #[allow(dead_code)]
 extern crate concision_core as concision;
 extern crate concision_linear as linear;
 
-use concision::func::Sigmoid;
-use concision::{linarr, Predict};
-use linear::{Config, Features, Linear};
+use concision::prelude::{linarr, Sigmoid};
+use linear::{Config, Features, Linear, Unbiased};
 
 use lazy_static::lazy_static;
 use ndarray::*;
 
 const SAMPLES: usize = 20;
 const D_MODEL: usize = 5;
-const DOUT: usize = 3;
+const OUTPUTS: usize = 3;
+const SHAPE: (usize, (usize, usize)) = (SAMPLES, (OUTPUTS, D_MODEL));
 
 lazy_static! {
-    static ref FEATURES: Features = Features::new(DOUT, D_MODEL);
-    static ref CONFIG: Config =
-        Config::from_dim(FEATURES.clone().into_dimension()).with_name("test_model");
-    static ref SAMPLE_DATA: Array<f64, Ix2> = linarr::<f64, Ix2>((SAMPLES, D_MODEL)).unwrap();
-    static ref SHAPE: (usize, (usize, usize)) = (SAMPLES, (DOUT, D_MODEL));
+    static ref FEATURES: Features = Features::new(OUTPUTS, D_MODEL);
+}
+
+#[test]
+fn test_config() {
+    let dim = FEATURES.clone().into_dimension();
+    let config = Config::from_dim(dim).biased();
+    assert!(config.is_biased());
+    let config = Config::from_dim(dim).unbiased();
+    assert!(!config.is_biased());
 }
 
 #[test]
 fn test_linear() {
-    let (samples, (outputs, inputs)) = *SHAPE;
+    let (samples, (outputs, inputs)) = SHAPE;
 
-    let model: Linear<f64> = Linear::from_config(CONFIG.clone()).uniform();
+    let model: Linear<f64> = Linear::from_features(inputs, outputs).uniform();
 
-    let data = SAMPLE_DATA.clone();
+    let data = linarr::<f64, Ix2>((samples, inputs)).unwrap();
     let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
 
     assert_eq!(y.shape(), &[samples, outputs]);
+}
+
+#[test]
+fn test_bias_ty() {
+    use linear::{Biased, Unbiased};
+    let (_samples, (outputs, inputs)) = SHAPE;
+
+    let model: Linear<f64, Ix2, Biased> = Linear::from_features(inputs, outputs).uniform();
+    assert!(model.is_biased());
+
+    let model: Linear<f64, Ix2, Unbiased> = Linear::from_features(inputs, outputs).uniform();
+    assert!(!model.is_biased());
 }

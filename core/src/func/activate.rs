@@ -32,3 +32,8 @@ pub(crate) mod prelude {
     pub use super::nl::*;
     pub use super::{linear, LinearActivation};
 }
+
+pub trait Activator {
+    type Output;
+    
+}

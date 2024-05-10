@@ -67,6 +67,14 @@ tracing = [
     "concision-core/tracing",
 ]
 
+wasm = [
+    "concision-core/wasm",
+]
+
+wasi = [    
+    "concision-core/wasi",
+]
+
 [lib]
 crate-type = ["lib"]
 doctest = false

@@ -34,19 +34,20 @@ pub mod traits;
 pub mod types;
 
 pub mod prelude {
-
-    pub use super::primitives::*;
-    pub use super::utils::*;
-
+    pub(crate) use super::primitives::rust::*;
+    
     pub use super::error::prelude::*;
     pub use super::func::prelude::*;
     pub use super::nn::prelude::*;
     pub use super::ops::prelude::*;
     pub use super::params::prelude::*;
+    pub use super::primitives::*;
     #[cfg(feature = "rand")]
     pub use super::rand::prelude::*;
     pub use super::traits::prelude::*;
     pub use super::types::prelude::*;
+    pub use super::utils::prelude::*;
 
-    pub(crate) use super::primitives::rust::*;
+
+    
 }

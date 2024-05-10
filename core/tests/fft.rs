@@ -1,11 +1,11 @@
 /*
-    Appellation: default <test>
+    Appellation: fft <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 extern crate concision_core as concision;
 
+use approx::{assert_abs_diff_eq, abs_diff_eq};
 use concision::ops::fft::*;
-use concision::prelude::almost_equal;
 use lazy_static::lazy_static;
 use num::complex::{Complex, ComplexFloat};
 
@@ -86,13 +86,13 @@ fn test_rfft() {
     res.extend(tmp);
     assert!(fft.len() == EXPECTED_RFFT.len());
     for (x, y) in fft.iter().zip(EXPECTED_RFFT.iter()) {
-        assert!(almost_equal(x.re(), y.re(), EPSILON));
-        assert!(almost_equal(x.im(), y.im(), EPSILON));
+        assert_abs_diff_eq!(x.re(), y.re());
+        assert_abs_diff_eq!(x.im(), y.im());
     }
     // let plan = FftPlan::new(fft.len());
     let ifft = dbg!(irfft(&res, &plan));
     for (x, y) in ifft.iter().zip(polynomial.iter()) {
-        assert!(almost_equal(*x, *y, EPSILON));
+        assert_abs_diff_eq!(*x, *y, epsilon=EPSILON);
     }
 }
 
@@ -106,7 +106,7 @@ fn small_polynomial_returns_self() {
         .map(|i| i.re())
         .collect::<Vec<_>>();
     for (x, y) in ifft.iter().zip(polynomial.iter()) {
-        assert!(almost_equal(*x, *y, EPSILON));
+        assert_abs_diff_eq!(*x, *y, epsilon = EPSILON);
     }
 }
 
@@ -123,7 +123,7 @@ fn square_small_polynomial() {
         .collect::<Vec<_>>();
     let expected = [1.0, 2.0, 1.0, 4.0, 4.0, 0.0, 4.0, 0.0, 0.0];
     for (x, y) in ifft.iter().zip(expected.iter()) {
-        assert!(almost_equal(*x, *y, EPSILON));
+        assert_abs_diff_eq!(*x, *y);
     }
 }
 
@@ -144,6 +144,6 @@ fn square_big_polynomial() {
         .collect::<Vec<_>>();
     let expected = (0..((n << 1) - 1)).map(|i| std::cmp::min(i + 1, (n << 1) - 1 - i) as f64);
     for (&x, y) in ifft.iter().zip(expected) {
-        assert!(almost_equal(x, y, EPSILON));
+        assert_abs_diff_eq!(x, y, EPSILON);
     }
 }

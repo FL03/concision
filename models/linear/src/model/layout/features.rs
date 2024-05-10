@@ -2,8 +2,8 @@
    Appellation: features <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
-use nd::{ErrorKind, ShapeBuilder, ShapeError};
+use nd::{ErrorKind, IntoDimension, RemoveAxis, ShapeError};
+use nd::prelude::{Dimension, Ix2, ShapeBuilder,};
 
 pub(crate) fn features<D>(dim: D) -> Result<Features, ShapeError>
 where
@@ -22,12 +22,12 @@ where
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Features {
     pub dmodel: usize,   // inputs
-    pub features: usize, // outputs
+    pub outputs: usize, // outputs
 }
 
 impl Features {
-    pub fn new(features: usize, dmodel: usize) -> Self {
-        Self { dmodel, features }
+    pub fn new(outputs: usize, dmodel: usize) -> Self {
+        Self { dmodel, outputs }
     }
 
     pub fn from_dim<D>(dim: D) -> Self
@@ -39,7 +39,7 @@ impl Features {
 
     pub fn from_shape<D, Sh>(shape: Sh) -> Self
     where
-        D: nd::RemoveAxis,
+        D: RemoveAxis,
         Sh: ShapeBuilder<Dim = D>,
     {
         let shape = shape.into_shape();
@@ -47,8 +47,18 @@ impl Features {
         features(dim).unwrap()
     }
 
+    pub fn check_dim<D>(&self, dim: D) -> bool where D: Dimension {
+        if dim.ndim() == 1 {
+            self.dmodel == dim[0]
+        } else if dim.ndim() >= 2 {
+            self.outputs == dim[0] && self.dmodel == dim[1]
+        } else {
+            false
+        }
+    }
+
     pub fn into_pattern(self) -> (usize, usize) {
-        (self.features, self.dmodel)
+        (self.outputs, self.dmodel)
     }
 
     pub fn neuron(d_model: usize) -> Self {
@@ -60,7 +70,7 @@ impl Features {
     }
 
     pub fn features(&self) -> usize {
-        self.features
+        self.outputs
     }
 
     pub fn uniform_scale<T: num::Float>(&self) -> T {
@@ -113,8 +123,8 @@ impl_from!(
 impl_from!(
     nd::Ix2: Features { |f: Features| f.into_dimension() },
     nd::IxDyn: Features { |f: Features| f.into_dimension().into_dyn() },
-    [usize; 2]: Features { |f: Features| [f.features, f.dmodel] },
-    (usize, usize): Features { |f: Features| (f.features, f.dmodel) },
+    [usize; 2]: Features { |f: Features| [f.outputs, f.dmodel] },
+    (usize, usize): Features { |f: Features| (f.outputs, f.dmodel) },
 );
 
 impl<'a, D> From<&'a D> for Features

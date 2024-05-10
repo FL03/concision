@@ -11,12 +11,12 @@ pub mod train;
 pub mod arr {
     pub use self::prelude::*;
 
-    pub(crate) mod like;
+    pub(crate) mod create;
     pub(crate) mod misc;
     pub(crate) mod ops;
 
     pub(crate) mod prelude {
-        pub use super::like::*;
+        pub use super::create::*;
         pub use super::misc::*;
         pub use super::ops::*;
     }

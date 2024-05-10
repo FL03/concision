@@ -98,3 +98,10 @@ macro_rules! build_unary_trait {
         }
     };
 }
+
+
+// macro_rules! linspace {
+//     ($start:expr, $end:expr, $n:expr) => {
+        
+//     };
+// }

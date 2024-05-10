@@ -22,6 +22,7 @@ full = [
     "approx",
     "rand",
     "serde",
+    "tracing",
 ]
 
 alloc = []
@@ -82,6 +83,10 @@ bench = false
 crate-type = ["lib"]
 doctest = false
 test = true
+
+[[test]]
+name = "fft"
+required-features = ["approx"]
 
 [build-dependencies]
 

@@ -70,6 +70,14 @@ tracing = [
     "dep:tracing",
 ]
 
+wasm = [
+    "concision-core/wasm",
+]
+
+wasi = [    
+    "concision-core/wasi",
+]
+
 [lib]
 bench = false
 crate-type = ["lib"]

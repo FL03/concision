@@ -103,6 +103,22 @@ tracing = [
     "concision-linear/tracing",
 ]
 
+wasm = [
+    "concision-core/wasm",
+    "concision-data/wasm",
+    "concision-gnn/wasm",
+    "concision-kan/wasm",
+    "concision-linear/wasm",
+]
+
+wasi = [    
+    "concision-core/wasi",
+    "concision-data/wasi",
+    "concision-gnn/wasi",
+    "concision-kan/wasi",
+    "concision-linear/wasi",
+]
+
 blas = [
     "concision-core/blas",
     "concision-data/blas",

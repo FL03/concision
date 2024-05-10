@@ -76,9 +76,9 @@ macro_rules! impl_store {
     };
 }
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(all(feature = "alloc", no_std))]
 impl_entry!(alloc::collections::btree_map where K: Ord);
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(all(feature = "alloc", no_std))]
 impl_store!(alloc::collections::BTreeMap<K, V>, where K: Ord);
 #[cfg(feature = "std")]
 impl_entry!(std::collections::btree_map where K: Ord);
