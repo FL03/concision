@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 pub use self::prelude::*;
-#[cfg(not(no_std))]
+#[cfg(feature = "std")]
 pub use self::std_types::*;
 
 pub mod direction;
@@ -12,7 +12,7 @@ pub mod direction;
 /// Defaults to `Result<(), Error>`
 pub type Result<T = ()> = core::result::Result<T, crate::error::ErrorKind>;
 
-#[cfg(not(no_std))]
+#[cfg(feature = "std")]
 mod std_types {
     ///
     pub type BoxError = Box<dyn std::error::Error + Send + Sync + 'static>;
@@ -22,7 +22,7 @@ mod std_types {
 
 pub(crate) mod prelude {
     pub use super::direction::Direction;
-    #[cfg(not(no_std))]
+    #[cfg(feature = "std")]
     pub use super::std_types::*;
     pub use super::Result;
 }

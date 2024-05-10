@@ -8,7 +8,7 @@ use nd::linalg::Dot;
 use nd::*;
 use num::{One, Zero};
 
-#[cfg(no_std)]
+#[cfg(feature = "alloc")]
 use alloc::vec;
 #[cfg(feature = "std")]
 use std::vec;

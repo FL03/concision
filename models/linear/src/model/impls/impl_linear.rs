@@ -7,6 +7,9 @@ use core::borrow::{Borrow, BorrowMut};
 use nd::RemoveAxis;
 
 impl<T> Linear<T> {
+    // pub fn from_features(biased: bool, inputs: usize, outputs: usize) -> Self {
+
+    // }
     pub fn std(config: Config) -> Self
     where
         T: Clone + Default,

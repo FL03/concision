@@ -6,8 +6,10 @@
 //!
 //! Concision aims to be a complete machine learning library written in pure Rust.
 //!
+#![allow(unused_imports)]
 #![crate_name = "concision"]
 
+#[doc(inline)]
 pub use concision_core::*;
 #[cfg(feature = "data")]
 #[doc(inline)]
@@ -26,7 +28,7 @@ pub use concision_linear as linear;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
 
-#[allow(unused_imports)]
+
 pub mod prelude {
     pub use concision_core::prelude::*;
     #[cfg(feature = "data")]
