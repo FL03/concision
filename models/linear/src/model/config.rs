@@ -1,41 +1,49 @@
 /*
-    Appellation: config <mod>
+    Appellation: config <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::Features;
+use super::layout::{Features, Layout};
+use crate::params::mode::*;
+use core::marker::PhantomData;
+use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Config {
-    pub biased: bool,
+pub struct Config<D = Ix2, B = Biased>
+where
+    D: Dimension,
+{
+    pub layout: Layout<D>,
     pub name: String,
-    pub shape: Features,
+    _biased: PhantomData<B>,
 }
 
-impl Config {
-    pub fn new(name: impl ToString, shape: Features) -> Self {
+impl<D, K> Config<D, K>
+where
+    D: Dimension,
+    K: ParamMode,
+{
+    pub fn new() -> Self {
         Self {
-            biased: false,
-            name: name.to_string(),
-            shape,
+            layout: Layout::default(),
+            name: String::new(),
+            _biased: PhantomData,
         }
     }
 
-    pub fn is_biased(&self) -> bool {
-        self.biased
-    }
-
-    pub fn biased(self) -> Self {
-        Self {
-            biased: true,
-            ..self
+    pub fn into_biased(self) -> Config<D, Biased> {
+        Config {
+            _biased: PhantomData,
+            layout: self.layout,
+            name: self.name,
         }
     }
 
-    pub fn unbiased(self) -> Self {
-        Self {
-            biased: false,
-            ..self
+    pub fn into_unbiased(self) -> Config<D, Unbiased> {
+        Config {
+            _biased: PhantomData,
+            layout: self.layout,
+            name: self.name,
         }
     }
 
@@ -46,17 +54,111 @@ impl Config {
         }
     }
 
-    pub fn with_shape(self, shape: Features) -> Self {
-        Self { shape, ..self }
+    pub fn with_layout<E>(self, layout: Layout<E>) -> Config<E, K>
+    where
+        E: Dimension,
+    {
+        Config {
+            layout,
+            name: self.name,
+            _biased: self._biased,
+        }
+    }
+
+    pub fn dim(&self) -> D {
+        self.layout.dim().clone()
+    }
+
+    pub fn into_pattern(self) -> D::Pattern {
+        self.dim().into_pattern()
+    }
+
+    pub fn into_dimensionality<E>(self, dim: E) -> Result<Config<E, K>, nd::ShapeError>
+    where
+        E: Dimension,
+    {
+        let tmp = Config {
+            layout: self.layout.into_dimensionality(dim)?,
+            name: self.name,
+            _biased: self._biased,
+        };
+        Ok(tmp)
+    }
+
+    pub fn is_biased(&self) -> bool
+    where
+        K: 'static,
+    {
+        use core::any::TypeId;
+
+        TypeId::of::<K>() == TypeId::of::<Biased>()
+    }
+
+    pub fn features(&self) -> Features {
+        self.layout.features()
+    }
+
+    pub fn layout(&self) -> &Layout<D> {
+        &self.layout
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn ndim(&self) -> usize {
+        self.layout.ndim()
     }
 }
 
-impl Default for Config {
-    fn default() -> Self {
+impl<K> Config<Ix2, K> {
+    pub fn std(inputs: usize, outputs: usize) -> Self {
         Self {
-            biased: false,
+            layout: Layout::new((outputs, inputs).into_dimension()),
             name: String::new(),
-            shape: Features::default(),
+            _biased: PhantomData,
         }
+    }
+}
+
+impl<D> Config<D, Biased>
+where
+    D: Dimension,
+{
+    pub fn biased() -> Self {
+        Self::new()
+    }
+
+    pub fn from_dim_biased(dim: D) -> Self
+    where
+        D: RemoveAxis,
+    {
+        let layout = Layout::from_dim(dim).unwrap();
+        Self::new().with_layout(layout)
+    }
+}
+
+impl<D> Config<D, Unbiased>
+where
+    D: Dimension,
+{
+    pub fn unbiased() -> Self {
+        Self::new()
+    }
+
+    pub fn from_dim(dim: D) -> Config<D, Unbiased>
+    where
+        D: RemoveAxis,
+    {
+        Config::<D, Unbiased>::new().with_layout(Layout::from_dim(dim).unwrap())
+    }
+}
+
+impl<D> Default for Config<D, Biased>
+where
+    D: Dimension,
+{
+    fn default() -> Self {
+        Self::new()
     }
 }

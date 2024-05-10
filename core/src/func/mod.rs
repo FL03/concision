@@ -6,7 +6,9 @@
 pub use self::prelude::*;
 
 pub mod activate;
+pub mod loss;
 
 pub(crate) mod prelude {
     pub use super::activate::prelude::*;
+    pub use super::loss::prelude::*;
 }

@@ -27,12 +27,13 @@ macro_rules! impl_error_type {
 }
 
 impl_error_type!(
-    kinds::Error,
+    kinds::ErrorKind,
     kinds::ExternalError,
     kinds::PredictError,
     crate::nn::ModelError
 );
 
 pub(crate) mod prelude {
+    pub use super::err::Error;
     pub use super::kinds::*;
 }

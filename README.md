@@ -1,11 +1,11 @@
 # Concision
-
-[![clippy](https://github.com/FL03/concision/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/clippy.yml)
-[![publish](https://github.com/FL03/concision/actions/workflows/publish.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/publish.yml)
-[![rust](https://github.com/FL03/concision/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/rust.yml)
-
 [![crates.io](https://img.shields.io/crates/v/concision.svg)](https://crates.io/crates/concision)
 [![docs.rs](https://docs.rs/concision/badge.svg)](https://docs.rs/concision)
+
+[![clippy](https://github.com/FL03/concision/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/clippy.yml)
+[![rust](https://github.com/FL03/concision/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/rust.yml)
+[![crates.io](https://github.com/FL03/concision/actions/workflows/crates.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/crates.yml)
+
 
 ***
 

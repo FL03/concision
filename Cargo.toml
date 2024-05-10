@@ -1,6 +1,6 @@
 [workspace.package]
 authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems (https://github.com/scattered-systems)"]
-categories = []
+categories = [ "science" ]
 description = "Concision is a complete data-science toolkit written in Rust"
 edition = "2021"
 homepage = "https://github.com/FL03/concision/wiki"
@@ -8,7 +8,7 @@ keywords = ["data-science", "scsys", "toolkit"]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
-version = "0.1.12" # TODO - Update the cargo package version
+version = "0.1.13"
 
 [workspace.dependencies]
 # acme = { features = ["full"], branch = "v0.3.2", git = "https://github.com/FL03/acme", version = "0.3.2" }
@@ -43,7 +43,8 @@ members = [
     "derive",
     "macros",
     "models/linear",
-    "models/gnn"
+    "models/gnn",
+    "models/kan",
 ]
 
 resolver = "2"

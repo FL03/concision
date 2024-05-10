@@ -4,12 +4,14 @@
 */
 use crate::error::PredictError;
 
-pub trait Activate<T> {
-    type Output;
-
-    fn activate<F>(&self, f: F) -> Self::Output
-    where
-        F: for<'a> Fn(&'a T) -> T;
+#[doc(hidden)]
+pub trait Activate<T, F>: Forward<T>
+where
+    F: Fn(&Self::Output) -> Self::Output,
+{
+    fn activate(&self, args: &T, f: F) -> Self::Output {
+        f(&self.forward(args))
+    }
 }
 
 /// [Forward] describes an object capable of forward propagation.
@@ -19,6 +21,9 @@ pub trait Forward<T> {
     fn forward(&self, args: &T) -> Self::Output;
 }
 
+/// [ForwardIter] describes any iterators whose elements implement [Forward].
+/// This trait is typically used in deep neural networks who need to forward propagate
+/// across a number of layers.
 pub trait ForwardIter<T> {
     type Item: Forward<T, Output = T>;
 
@@ -49,6 +54,20 @@ where
     }
 }
 
+impl<I, M, T> ForwardIter<T> for I
+where
+    I: IntoIterator<Item = M>,
+    M: Forward<T, Output = T>,
+    T: Clone,
+{
+    type Item = M;
+
+    fn forward_iter(self, args: &T) -> M::Output {
+        self.into_iter()
+            .fold(args.clone(), |acc, m| m.forward(&acc))
+    }
+}
+
 impl<S, T> Predict<T> for Option<S>
 where
     S: Predict<T, Output = T>,
@@ -61,31 +80,5 @@ where
             Some(s) => s.predict(args),
             None => Ok(args.clone()),
         }
-    }
-}
-
-impl<S, T> Predict<T> for S
-where
-    S: AsRef<dyn Predict<T, Output = T>>,
-    T: Clone,
-{
-    type Output = T;
-
-    fn predict(&self, args: &T) -> Result<Self::Output, PredictError> {
-        self.as_ref().predict(args)
-    }
-}
-
-impl<I, M, T> ForwardIter<T> for I
-where
-    I: IntoIterator<Item = M>,
-    M: Forward<T, Output = T>,
-    T: Clone,
-{
-    type Item = M;
-
-    fn forward_iter(self, args: &T) -> M::Output {
-        self.into_iter()
-            .fold(args.clone(), |acc, m| m.forward(&acc))
     }
 }

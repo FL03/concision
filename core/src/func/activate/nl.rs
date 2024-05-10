@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::*;
-use num::complex::ComplexFloat;
+use num::complex::{Complex, ComplexFloat};
 use num::{Float, Zero};
 
 pub fn relu<T>(args: &T) -> T
@@ -60,19 +60,19 @@ build_unary_trait!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
  ********** Implementations **********
 */
 macro_rules! nonlinear {
-    ($($rho:ident<$($T:ty),* $(,)?>::$call:ident),* $(,)? ) => {
+    ($($rho:ident::$call:ident<[$($T:ty),* $(,)?]>),* $(,)? ) => {
         $(
-            nonlinear!(@loop $rho<$($T),*>::$call);
+            nonlinear!(@loop $rho::$call<[$($T),*]>);
         )*
     };
-    (@loop $rho:ident<$($T:ty),* $(,)?>::$call:ident ) => {
+    (@loop $rho:ident::$call:ident<[$($T:ty),* $(,)?]> ) => {
         $(
-            nonlinear!(@impl $rho<$T>::$call);
+            nonlinear!(@impl $rho::$call<$T>);
         )*
 
         nonlinear!(@arr $rho::$call);
     };
-    (@impl $rho:ident<$T:ty>::$call:ident) => {
+    (@impl $rho:ident::$call:ident<$T:ty>) => {
         impl $rho for $T {
             type Output = $T;
 
@@ -108,26 +108,32 @@ macro_rules! nonlinear {
 }
 
 nonlinear!(
-    ReLU < f32,
-    f64,
-    i8,
-    i16,
-    i32,
-    i64,
-    i128,
-    isize,
-    u8,
-    u16,
-    u32,
-    u64,
-    u128,
-    usize > ::relu,
-    Sigmoid < f32,
-    f64,
-    num::Complex<f32>,
-    num::Complex < f64 >> ::sigmoid,
-    Tanh < f32,
-    f64,
-    num::Complex<f32>,
-    num::Complex < f64 >> ::tanh,
+    ReLU::relu<[
+        f32,
+        f64,
+        i8,
+        i16,
+        i32,
+        i64,
+        i128,
+        isize,
+        u8,
+        u16,
+        u32,
+        u64,
+        u128,
+        usize
+    ]>,
+    Sigmoid::sigmoid<[
+        f32,
+        f64,
+        Complex<f32>,
+        Complex<f64>
+    ]>,
+    Tanh::tanh<[
+        f32,
+        f64,
+        Complex<f32>,
+        Complex < f64 >
+    ]>,
 );

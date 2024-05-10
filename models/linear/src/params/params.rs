@@ -2,81 +2,75 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::mode::*;
+use super::Node;
 use crate::{build_bias, Features};
-use core::ops;
-use nd::linalg::Dot;
+use core::marker::PhantomData;
 use nd::*;
 use num::{One, Zero};
 
-#[cfg(no_std)]
-use alloc::vec;
-#[cfg(feature = "std")]
-use std::vec;
-
-pub(crate) type Node<T> = (Array<T, Ix1>, Option<Array<T, Ix0>>);
-
-macro_rules! constructor {
-    ($call:ident where $($rest:tt)*) => {
-        constructor!(@impl $call where $($rest)*);
-    };
-    (@impl $call:ident where $($rest:tt)*) => {
-        pub fn $call<Sh>(biased: bool, shape: Sh) -> LinearParamsBase<S, D>
-        where
-            Sh: ndarray::ShapeBuilder<Dim = D>,
-            $($rest)*
-        {
-            let shape = shape.into_shape();
-            let dim = shape.raw_dim().clone();
-            Self {
-                bias: build_bias(biased, dim.clone(), |dim| ArrayBase::$call(dim)),
-                weights: ArrayBase::$call(dim),
-            }
-        }
-    };
-}
-
-pub struct LinearParamsBase<S, D = Ix2>
+///
+pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2, K = Unbiased>
 where
-    D: RemoveAxis,
+    D: Dimension,
     S: RawData,
 {
     pub(crate) bias: Option<ArrayBase<S, D::Smaller>>,
     pub(crate) weights: ArrayBase<S, D>,
+    pub(crate) _mode: PhantomData<K>,
 }
 
-impl<A, S, D> LinearParamsBase<S, D>
+impl<A, S, D, K> ParamsBase<S, D, K>
 where
     D: RemoveAxis,
+    K: ParamMode,
     S: RawData<Elem = A>,
 {
-    constructor!(default where A: Default, S: DataOwned);
-    constructor!(ones where A: Clone + One, S: DataOwned);
-    constructor!(zeros where A: Clone + Zero, S: DataOwned);
+    impl_param_builder!(default where A: Default, S: DataOwned);
+    impl_param_builder!(ones where A: Clone + One, S: DataOwned);
+    impl_param_builder!(zeros where A: Clone + Zero, S: DataOwned);
 
     pub fn new<Sh>(shape: Sh) -> Self
     where
-        A: Clone + Default,
+        A: Default,
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
         Self {
             bias: None,
             weights: ArrayBase::default(shape),
+            _mode: PhantomData,
         }
     }
 
-    pub fn biased<F>(self, builder: F) -> Self
+    pub fn build<F, Sh>(shape: Sh, builder: F) -> Self
     where
-        F: Fn(D::Smaller) -> ArrayBase<S, D::Smaller>,
+        F: Fn(Sh) -> ArrayBase<S, D>,
+        Sh: ShapeBuilder<Dim = D>,
     {
-        Self {
-            bias: build_bias(true, self.raw_dim(), builder),
-            ..self
+        let _weights = builder(shape);
+        unimplemented!()
+    }
+
+    pub fn into_biased(self) -> ParamsBase<S, D, Biased>
+    where
+        A: Default,
+        S: DataOwned,
+    {
+        let sm = crate::bias_dim(self.raw_dim());
+        ParamsBase {
+            bias: Some(ArrayBase::default(sm)),
+            weights: self.weights,
+            _mode: PhantomData,
         }
     }
 
-    pub fn unbiased(self) -> Self {
-        Self { bias: None, ..self }
+    pub fn into_unbiased(self) -> ParamsBase<S, D, Unbiased> {
+        ParamsBase {
+            bias: None,
+            weights: self.weights,
+            _mode: PhantomData,
+        }
     }
 
     pub fn bias(&self) -> Option<&ArrayBase<S, D::Smaller>> {
@@ -87,7 +81,7 @@ where
         self.bias.as_mut()
     }
 
-    pub fn weights(&self) -> &ArrayBase<S, D> {
+    pub const fn weights(&self) -> &ArrayBase<S, D> {
         &self.weights
     }
 
@@ -99,7 +93,7 @@ where
         Features::from_shape(self.shape())
     }
 
-    pub fn inputs(&self) -> usize {
+    pub fn in_features(&self) -> usize {
         self.features().dmodel()
     }
 
@@ -107,42 +101,66 @@ where
         self.bias().is_some()
     }
 
-    pub fn linear<T, B>(&self, data: &T) -> B
-    where
-        A: NdFloat,
-        B: for<'a> ops::Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
-        S: Data<Elem = A>,
-        T: Dot<Array<A, D>, Output = B>,
-    {
-        let dot = data.dot(&self.weights().t().to_owned());
-        if let Some(bias) = self.bias() {
-            return dot + bias;
-        }
-        dot
-    }
-
     pub fn ndim(&self) -> usize {
         self.weights().ndim()
     }
 
-    pub fn outputs(&self) -> usize {
+    pub fn out_features(&self) -> usize {
         if self.ndim() == 1 {
             return 1;
         }
         self.shape()[1]
     }
-
+    /// Returns the raw dimension of the weights.
     pub fn raw_dim(&self) -> D {
         self.weights().raw_dim()
     }
-
+    /// Returns the shape of the weights.
     pub fn shape(&self) -> &[usize] {
         self.weights().shape()
     }
 }
 
-impl<A, S> LinearParamsBase<S>
+impl<A, S, D> ParamsBase<S, D, Biased>
 where
+    D: RemoveAxis,
+    S: RawData<Elem = A>,
+{
+    pub fn biased<Sh>(shape: Sh) -> Self
+    where
+        A: Default,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        let dim = shape.into_shape().raw_dim().clone();
+        Self {
+            bias: build_bias(true, dim.clone(), ArrayBase::default),
+            weights: ArrayBase::default(dim),
+            _mode: PhantomData,
+        }
+    }
+}
+
+impl<A, S, D> ParamsBase<S, D, Unbiased>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
+    pub fn unbiased() -> Self
+    where
+        A: Default,
+        S: DataOwned,
+    {
+        Self {
+            bias: None,
+            weights: Default::default(),
+            _mode: PhantomData,
+        }
+    }
+}
+impl<A, S, K> ParamsBase<S, Ix2, K>
+where
+    K: ParamMode,
     S: RawData<Elem = A>,
 {
     pub fn set_node(&mut self, idx: usize, node: Node<A>)
@@ -153,7 +171,7 @@ where
         let (weight, bias) = node;
         if let Some(bias) = bias {
             if !self.is_biased() {
-                let mut tmp = ArrayBase::default(self.outputs());
+                let mut tmp = ArrayBase::default(self.out_features());
                 tmp.index_axis_mut(Axis(0), idx).assign(&bias);
                 self.bias = Some(tmp);
             }
@@ -170,111 +188,17 @@ where
     }
 }
 
-impl<A, S> IntoIterator for LinearParamsBase<S>
+impl<A, S, D> Default for ParamsBase<S, D, Unbiased>
 where
-    A: Clone,
-    S: Data<Elem = A>,
+    A: Default,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
 {
-    type Item = Node<A>;
-    type IntoIter = vec::IntoIter<Self::Item>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        if let Some(bias) = self.bias() {
-            return self
-                .weights()
-                .axis_iter(Axis(0))
-                .zip(bias.axis_iter(Axis(0)))
-                .map(|(w, b)| (w.to_owned(), Some(b.to_owned())))
-                .collect::<Vec<_>>()
-                .into_iter();
+    fn default() -> Self {
+        Self {
+            bias: None,
+            weights: Default::default(),
+            _mode: PhantomData,
         }
-        self.weights()
-            .axis_iter(Axis(0))
-            .map(|w| (w.to_owned(), None).into())
-            .collect::<Vec<_>>()
-            .into_iter()
     }
 }
-
-impl<A, S> FromIterator<(Array1<A>, Option<Array0<A>>)> for LinearParamsBase<S, Ix2>
-where
-    A: Clone + Default,
-    S: DataOwned<Elem = A> + DataMut,
-{
-    fn from_iter<I: IntoIterator<Item = (Array1<A>, Option<Array0<A>>)>>(nodes: I) -> Self {
-        let nodes = nodes.into_iter().collect::<Vec<_>>();
-        let mut iter = nodes.iter();
-        let node = iter.next().unwrap();
-        let shape = Features::new(node.0.shape()[0], nodes.len());
-        let mut params = LinearParamsBase::default(true, shape);
-        params.set_node(0, node.clone());
-        for (i, node) in iter.into_iter().enumerate() {
-            params.set_node(i + 1, node.clone());
-        }
-        params
-    }
-}
-
-macro_rules! impl_from {
-
-
-    (A) => {
-        impl<A> From<(Array1<A>, A)> for LinearParamsBase<OwnedRepr<A>, Ix1>
-        where
-            A: Clone,
-        {
-            fn from((weight, bias): (Array1<A>, A)) -> Self {
-                let bias = ArrayBase::from_elem((), bias);
-                Self {
-                    bias: Some(bias),
-                    weights: weight,
-                }
-            }
-        }
-        impl<A> From<(Array1<A>, Option<A>)> for LinearParamsBase<OwnedRepr<A>, Ix1>
-        where
-            A: Clone,
-        {
-            fn from((weights, bias): (Array1<A>, Option<A>)) -> Self {
-                Self {
-                    bias: bias.map(|b| ArrayBase::from_elem((), b)),
-                    weights,
-                }
-            }
-        }
-    };
-    ($($bias:ty),*) => {
-        $(impl_from!(@impl $bias);)*
-
-    };
-    (@impl $b:ty) => {
-        impl<A, S, D> From<(ArrayBase<S, D>, Option<$b>)> for LinearParamsBase<S, D>
-        where
-            D: RemoveAxis,
-            S: RawData<Elem = A>,
-        {
-            fn from((weights, bias): (ArrayBase<S, D>, Option<$b>)) -> Self {
-                Self {
-                    bias,
-                    weights,
-                }
-            }
-        }
-
-        impl<A, S, D> From<(ArrayBase<S, D>, $b)> for LinearParamsBase<S, D>
-        where
-            D: RemoveAxis,
-            S: RawData<Elem = A>,
-        {
-            fn from((weights, bias): (ArrayBase<S, D>, $b)) -> Self {
-                Self {
-                    bias: Some(bias),
-                    weights,
-                }
-            }
-        }
-    };
-}
-
-impl_from!(A);
-impl_from!(ArrayBase<S, D::Smaller>);

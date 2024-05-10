@@ -4,6 +4,7 @@
 */
 use nd::*;
 
+/// A utilitarian funciton for building bias tensors.
 pub(crate) fn build_bias<S, D, E, F>(biased: bool, dim: D, builder: F) -> Option<ArrayBase<S, E>>
 where
     D: RemoveAxis<Smaller = E>,
@@ -11,10 +12,8 @@ where
     F: Fn(E) -> ArrayBase<S, E>,
     S: RawData,
 {
-    let dim = bias_dim(dim);
     if biased {
-        println!("Bias dimension: {:?}", &dim);
-        Some(builder(dim))
+        Some(builder(bias_dim::<D, E>(dim)))
     } else {
         None
     }

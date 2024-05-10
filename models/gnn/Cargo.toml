@@ -1,5 +1,6 @@
 [package]
 authors.workspace = true
+build = "build.rs"
 categories.workspace = true
 description.workspace = true
 edition.workspace = true
@@ -68,6 +69,14 @@ tracing = [
     "dep:tracing",
 ]
 
+wasm = [
+    "concision-core/wasm",
+]
+
+wasi = [    
+    "concision-core/wasi",
+]
+
 [lib]
 bench = false
 crate-type = ["lib"]
@@ -88,8 +97,9 @@ strum.workspace = true
 tracing = { optional = true, version = "0.1" }
 
 [dependencies.concision-core]
+default-features = false
 path = "../../core"
-version = "0.1.12"
+version = "0.1.13"
 
 [dev-dependencies]
 lazy_static.workspace = true

@@ -3,37 +3,19 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use nd::Axis;
+use nd::{ArrayBase, Dimension, RawData};
 
 pub trait IntoAxis {
     fn into_axis(self) -> Axis;
 }
 
-pub trait NdArray<T> {
-    type Dim;
-
-    fn as_slice(&self) -> &[T];
-
-    fn dim(&self) -> Self::Dim;
-
-    fn shape(&self) -> &[usize];
-
-    fn len(&self) -> usize {
-        self.as_slice().len()
-    }
-
-    fn is_empty(&self) -> bool {
-        self.as_slice().is_empty()
-    }
-
-    fn is_scalar(&self) -> bool {
-        self.shape().is_empty()
-    }
+pub trait IsSquare {
+    fn is_square(&self) -> bool;
 }
 
 /*
  ******** implementations ********
 */
-
 impl<S> IntoAxis for S
 where
     S: AsRef<usize>,
@@ -43,24 +25,12 @@ where
     }
 }
 
-use nd::{ArrayBase, Dimension};
-
-impl<A, S, D> NdArray<A> for ArrayBase<S, D>
+impl<S, D> IsSquare for ArrayBase<S, D>
 where
-    S: nd::Data<Elem = A>,
     D: Dimension,
+    S: RawData,
 {
-    type Dim = D;
-
-    fn as_slice(&self) -> &[A] {
-        ArrayBase::as_slice(self).unwrap()
-    }
-
-    fn dim(&self) -> D {
-        self.raw_dim()
-    }
-
-    fn shape(&self) -> &[usize] {
-        self.shape()
+    fn is_square(&self) -> bool {
+        self.shape().iter().all(|&x| x == self.shape()[0])
     }
 }

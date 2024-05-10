@@ -120,10 +120,14 @@ pub struct Padding<T> {
 
 mod utils {
     use super::{PadAction, PadMode};
-    use crate::prelude::array_like;
-    use crate::rust::Cow;
-    use ndarray::{Array, ArrayBase, AxisDescription, Data, Dimension, Slice};
+    use crate::traits::ArrayLike;
+    use ndarray::{Array, ArrayBase, AxisDescription, Data, DataOwned, Dimension, Slice};
     use num::{FromPrimitive, Num};
+
+    #[cfg(no_std)]
+    use alloc::borrow::Cow;
+    #[cfg(feature = "std")]
+    use std::borrow::Cow;
 
     fn read_pad(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
         if pad.len() == 1 && pad.len() < nb_dim {
@@ -136,11 +140,11 @@ mod utils {
         }
     }
 
-    pub fn pad<S, A, D>(data: &ArrayBase<S, D>, pad: &[[usize; 2]], mode: PadMode<A>) -> Array<A, D>
+    pub fn pad<A, S, D>(data: &ArrayBase<S, D>, pad: &[[usize; 2]], mode: PadMode<A>) -> Array<A, D>
     where
-        S: Data<Elem = A>,
         A: Copy + FromPrimitive + Num,
         D: Dimension,
+        S: DataOwned<Elem = A>,
     {
         let pad = read_pad(data.ndim(), pad);
         let mut new_dim = data.raw_dim();
@@ -148,20 +152,21 @@ mod utils {
             new_dim[ax] = ax_len + pad[0] + pad[1];
         }
 
-        let mut padded = array_like(&data, new_dim, mode.init());
+        // let mut padded = array_like(&data, new_dim, mode.init());
+        let mut padded = data.array_like(new_dim, mode.init()).to_owned();
         pad_to(data, &pad, mode, &mut padded);
         padded
     }
 
-    pub fn pad_to<S, A, D>(
+    pub fn pad_to<A, S, D>(
         data: &ArrayBase<S, D>,
         pad: &[[usize; 2]],
         mode: PadMode<A>,
         output: &mut Array<A, D>,
     ) where
-        S: Data<Elem = A>,
         A: Copy + FromPrimitive + Num,
         D: Dimension,
+        S: Data<Elem = A>,
     {
         let pad = read_pad(data.ndim(), pad);
 

@@ -7,7 +7,6 @@ use ndarray::linalg::Dot;
 use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
 use num::Float;
-use uuid::Uuid;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -15,7 +14,6 @@ pub struct Parameter<T = f64, D = Ix2>
 where
     D: Dimension,
 {
-    pub(crate) id: String,
     pub(crate) features: D,
     pub(crate) kind: ParamKind,
     pub(crate) name: String,
@@ -32,16 +30,11 @@ where
     {
         let features = features.into_dimension();
         Self {
-            id: Uuid::new_v4().to_string(),
             features: features.clone(),
             kind,
             name: name.to_string(),
             value: Array::default(features),
         }
-    }
-
-    pub fn id(&self) -> &str {
-        &self.id
     }
 
     pub fn kind(&self) -> &ParamKind {

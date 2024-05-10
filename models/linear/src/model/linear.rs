@@ -2,72 +2,49 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::model::Config;
-use crate::params::LinearParams;
+use super::{Config, Layout};
+use crate::{Biased, LinearParams, ParamMode};
 use concision::prelude::{Predict, Result};
-use nd::{Array, Ix2, RemoveAxis};
+use nd::{Array, Dimension, Ix2, RemoveAxis};
 
 /// Linear model
-pub struct Linear<T = f64, D = Ix2>
+pub struct Linear<K = Biased, A = f64, D = Ix2>
 where
-    D: RemoveAxis,
+    D: Dimension,
 {
-    pub(crate) config: Config,
-    pub(crate) params: LinearParams<T, D>,
+    pub(crate) config: Config<D, K>,
+    pub(crate) params: LinearParams<K, A, D>,
 }
 
-impl<T, D> Linear<T, D>
+impl<A, D, K> Linear<K, A, D>
 where
     D: RemoveAxis,
+    K: ParamMode,
 {
-    // pub fn new(biased: bool, dim: impl IntoDimension<Dim = D>) -> Self
-    // where
-    //     T: Clone + Default,
-    // {
-    //     let config = Config::from_dimension(dim);
-    //     let params = LinearParams::new(config.biased, config.shape);
-    //     Self { config, params }
-    // }
-    pub fn with_params<D2>(self, params: LinearParams<T, D2>) -> Linear<T, D2>
+    pub fn from_config(config: Config<D, K>) -> Self
     where
-        D2: RemoveAxis,
+        A: Clone + Default,
+        K: 'static,
     {
-        Linear {
-            config: self.config,
-            params,
-        }
+        let params = LinearParams::default(config.dim());
+        Self { config, params }
     }
 
-    pub fn config(&self) -> &Config {
-        &self.config
+    pub fn from_layout(layout: Layout<D>) -> Self
+    where
+        A: Clone + Default,
+    {
+        let config = Config::<D, K>::new().with_layout(layout);
+        let params = LinearParams::default(config.dim());
+        Self { config, params }
     }
 
-    pub fn bias(&self) -> Option<&Array<T, D::Smaller>> {
-        self.params.bias()
-    }
-
-    pub fn bias_mut(&mut self) -> Option<&mut Array<T, D::Smaller>> {
-        self.params.bias_mut()
-    }
-
-    pub fn weights(&self) -> &Array<T, D> {
-        self.params.weights()
-    }
-
-    pub fn weights_mut(&mut self) -> &mut Array<T, D> {
-        self.params.weights_mut()
-    }
-
-    pub fn params(&self) -> &LinearParams<T, D> {
-        &self.params
-    }
-
-    pub fn params_mut(&mut self) -> &mut LinearParams<T, D> {
-        &mut self.params
-    }
-
-    pub fn is_biased(&self) -> bool {
-        self.config().is_biased() || self.params().is_biased()
+    pub fn with_params<E>(self, params: LinearParams<K, A, E>) -> Linear<K, A, E>
+    where
+        E: RemoveAxis,
+    {
+        let config = self.config.into_dimensionality(params.raw_dim()).unwrap();
+        Linear { config, params }
     }
 
     pub fn activate<X, Y, F>(&self, args: &X, func: F) -> Result<Y>
@@ -76,5 +53,59 @@ where
         Self: Predict<X, Output = Y>,
     {
         Ok(func(&self.predict(args)?))
+    }
+
+    pub const fn config(&self) -> &Config<D, K> {
+        &self.config
+    }
+
+    pub fn weights(&self) -> &Array<A, D> {
+        self.params.weights()
+    }
+
+    pub fn weights_mut(&mut self) -> &mut Array<A, D> {
+        self.params.weights_mut()
+    }
+
+    pub const fn params(&self) -> &LinearParams<K, A, D> {
+        &self.params
+    }
+
+    pub fn params_mut(&mut self) -> &mut LinearParams<K, A, D> {
+        &mut self.params
+    }
+
+    pub fn into_biased(self) -> Linear<Biased, A, D>
+    where
+        A: Default,
+    {
+        Linear {
+            config: self.config.into_biased(),
+            params: self.params.into_biased(),
+        }
+    }
+
+    pub fn is_biased(&self) -> bool {
+        K::BIASED || self.config().is_biased()
+    }
+
+    pub fn with_name(self, name: impl ToString) -> Self {
+        Self {
+            config: self.config.with_name(name),
+            ..self
+        }
+    }
+}
+
+impl<A, D> Linear<Biased, A, D>
+where
+    D: RemoveAxis,
+{
+    pub fn bias(&self) -> &Array<A, D::Smaller> {
+        self.params.bias().unwrap()
+    }
+
+    pub fn bias_mut(&mut self) -> &mut Array<A, D::Smaller> {
+        self.params.bias_mut().unwrap()
     }
 }
