@@ -4,10 +4,9 @@
 */
 extern crate concision as cnc;
 
-use cnc::func::Sigmoid;
-use cnc::linear::{Config, Features, Linear};
-use cnc::{linarr, Predict, Result};
-use ndarray::{IntoDimension, Ix2};
+use cnc::linear::Linear;
+use cnc::prelude::{linarr, Result, Sigmoid};
+use ndarray::Ix2;
 
 fn tracing() {
     use tracing::Level;
@@ -26,16 +25,14 @@ fn main() -> Result<()> {
     tracing();
     tracing::info!("Starting linear model example");
 
-    let (samples, dmodel, features) = (20, 5, 3);
-    let shape = Features::new(features, dmodel);
-    let config = Config::from_dim(shape.into_dimension()).biased();
-    let data = linarr::<f64, Ix2>((samples, dmodel)).unwrap();
+    let (samples, d_in, d_out) = (20, 5, 3);
+    let data = linarr::<f64, Ix2>((samples, d_in)).unwrap();
 
-    let model: Linear<f64> = Linear::std(config).uniform();
+    let model: Linear<f64> = Linear::from_features(true, d_in, d_out).uniform();
 
     let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
-    assert_eq!(y.dim(), (samples, features));
-    println!("Predictions: {:?}", y);
+    assert_eq!(y.dim(), (samples, d_out));
+    println!("Predictions:\n{:?}", &y);
 
     Ok(())
 }

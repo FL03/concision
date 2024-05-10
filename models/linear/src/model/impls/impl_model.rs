@@ -35,7 +35,7 @@ where
 
     #[cfg_attr(
         feature = "tracing",
-        tracing::instrument(skip_all, fields(name=%self.config.name), level = "debug", name = "predict", target = "linear")
+        tracing::instrument(skip_all, level = "debug", name = "predict", target = "linear")
     )]
     fn predict(&self, input: &X) -> Result<Self::Output, PredictError> {
         #[cfg(feature = "tracing")]

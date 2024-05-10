@@ -6,20 +6,15 @@ use crate::{Config, Linear, LinearParams};
 use core::borrow::{Borrow, BorrowMut};
 use nd::RemoveAxis;
 
-impl<T> Linear<T> {
-    // pub fn from_features(biased: bool, inputs: usize, outputs: usize) -> Self {
-
-    // }
-    pub fn std(config: Config) -> Self
-    where
-        T: Clone + Default,
-    {
-        let params = LinearParams::default(config.is_biased(), config.dim());
+impl<A> Linear<A> {
+    pub fn from_features(biased: bool, inputs: usize, outputs: usize) -> Self where A: Default {
+        let config = Config::from_features(biased, inputs, outputs);
+        let params = LinearParams::default(biased, config.dim());
         Self { config, params }
     }
 }
 
-impl<T, D> Borrow<Config<D>> for Linear<T, D>
+impl<A, D> Borrow<Config<D>> for Linear<A, D>
 where
     D: RemoveAxis,
 {
@@ -28,20 +23,20 @@ where
     }
 }
 
-impl<T, D> Borrow<LinearParams<T, D>> for Linear<T, D>
+impl<A, D> Borrow<LinearParams<A, D>> for Linear<A, D>
 where
     D: RemoveAxis,
 {
-    fn borrow(&self) -> &LinearParams<T, D> {
+    fn borrow(&self) -> &LinearParams<A, D> {
         &self.params
     }
 }
 
-impl<T, D> BorrowMut<LinearParams<T, D>> for Linear<T, D>
+impl<A, D> BorrowMut<LinearParams<A, D>> for Linear<A, D>
 where
     D: RemoveAxis,
 {
-    fn borrow_mut(&mut self) -> &mut LinearParams<T, D> {
+    fn borrow_mut(&mut self) -> &mut LinearParams<A, D> {
         &mut self.params
     }
 }

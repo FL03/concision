@@ -4,7 +4,7 @@
 */
 use super::Features;
 use crate::model::Layout;
-use nd::{Dimension, Ix2, RemoveAxis};
+use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -102,5 +102,16 @@ where
 
     pub fn ndim(&self) -> usize {
         self.layout.ndim()
+    }
+}
+
+
+impl Config {
+    pub fn from_features(biased: bool, inputs: usize, outputs: usize) -> Self {
+        Self {
+            biased,
+            layout: Layout::new((outputs, inputs).into_dimension()),
+            name: String::new(),
+        }
     }
 }
