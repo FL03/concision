@@ -99,7 +99,7 @@ tracing = { optional = true, version = "0.1" }
 [dependencies.concision-core]
 default-features = false
 path = "../../core"
-version = "0.1.13"
+version = "0.1.14"
 
 [dev-dependencies]
 lazy_static.workspace = true
