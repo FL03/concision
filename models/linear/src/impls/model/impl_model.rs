@@ -6,13 +6,13 @@ use crate::{Config, Linear, LinearParams, ParamMode};
 use concision::prelude::{Module, Predict, PredictError};
 use nd::RemoveAxis;
 
-impl<A, D, K> Module for Linear<A, D, K>
+impl<A, D, K> Module for Linear<K, A, D>
 where
     D: RemoveAxis,
     K: ParamMode,
 {
     type Config = Config<D, K>;
-    type Params = LinearParams<A, D>;
+    type Params = LinearParams<K, A, D>;
 
     fn config(&self) -> &Self::Config {
         &self.config
@@ -27,20 +27,21 @@ where
     }
 }
 
-impl<X, Y, A, D> Predict<X> for Linear<A, D>
+impl<U, V, K, A, D> Predict<U> for Linear<K, A, D>
 where
     D: RemoveAxis,
-    LinearParams<A, D>: Predict<X, Output = Y>,
+    K: ParamMode,
+    LinearParams<K, A, D>: Predict<U, Output = V>,
 {
-    type Output = Y;
+    type Output = V;
 
     #[cfg_attr(
         feature = "tracing",
         tracing::instrument(skip_all, level = "debug", name = "predict", target = "linear")
     )]
-    fn predict(&self, input: &X) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &U) -> Result<Self::Output, PredictError> {
         #[cfg(feature = "tracing")]
         tracing::debug!("Predicting with linear model");
-        self.params.predict(input)
+        self.params().predict(input)
     }
 }

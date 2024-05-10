@@ -13,15 +13,14 @@ extern crate ndarray_rand as ndrand;
 
 pub use self::error::{Error, ErrorKind, PredictError};
 pub use self::nn::Module;
-pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::*};
+pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::prelude::*};
 
 #[cfg(feature = "rand")]
-pub use self::rand::prelude::*;
+pub use self::rand::{GenerateRandom, RandomExt};
 
 #[macro_use]
 pub(crate) mod macros;
 pub(crate) mod primitives;
-pub(crate) mod utils;
 
 pub mod error;
 pub mod func;
@@ -32,6 +31,7 @@ pub mod params;
 pub mod rand;
 pub mod traits;
 pub mod types;
+pub mod utils;
 
 pub mod prelude {
     pub(crate) use super::primitives::rust::*;

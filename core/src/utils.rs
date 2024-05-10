@@ -4,12 +4,14 @@
 */
 pub use self::prelude::*;
 
-// pub(crate) mod checks;
+pub(crate) mod id;
 pub(crate) mod math;
 pub(crate) mod tensor;
 
 pub(crate) mod prelude {
-    // pub use super::checks::*;
+    #[doc(hidden)]
+    pub use super::id::*;
     pub use super::math::*;
     pub use super::tensor::*;
 }
+

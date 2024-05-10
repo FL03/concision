@@ -1,5 +1,5 @@
 /*
-   Appellation: like <mod>
+   Appellation: create <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use nd::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};

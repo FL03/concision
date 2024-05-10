@@ -3,17 +3,21 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::{entry::*, params::*};
+pub use self::entry::{Entry, Param};
+pub use self::mode::{Biased, ParamMode, Unbiased};
+pub use self::params::ParamsBase;
+
+mod params;
 
 pub mod entry;
-mod params;
+pub mod mode;
 
 macro_rules! params_ty {
     ($($name:ident<$repr:ident>),* $(,)?) => {
         $(params_ty!(@impl $name<$repr>);)*
     };
     (@impl $name:ident<$repr:ident>) => {
-        pub type $name<T = f64, D = nd::Ix2> = ParamsBase<ndarray::$repr<T>, D>;
+        pub type $name<K = Biased, T = f64, D = nd::Ix2> = ParamsBase<ndarray::$repr<T>, D, K>;
     };
 }
 
@@ -27,7 +31,6 @@ pub(crate) mod prelude {
 mod tests {
     use super::*;
     use core::str::FromStr;
-    use nd::Array1;
 
     #[test]
     fn test_param_kind() {
@@ -39,7 +42,7 @@ mod tests {
 
     #[test]
     fn test_ones() {
-        let a = LinearParams::<f64>::ones(false, (1, 300)).biased(Array1::ones);
+        let a = LinearParams::<Biased, f64>::ones((1, 300));
         assert!(a.is_biased());
     }
 }

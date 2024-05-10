@@ -14,6 +14,7 @@ pub(crate) mod parameter;
 pub mod store;
 
 mod impls {
+    #[cfg(feature = "rand")]
     mod impl_rand;
 }
 

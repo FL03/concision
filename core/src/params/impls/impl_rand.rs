@@ -2,8 +2,6 @@
     Appellation: impl_rand <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![cfg(feature = "rand")]
-
 use crate::params::Parameter;
 use crate::rand::GenerateRandom;
 use ndarray::{Array, Dimension};

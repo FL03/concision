@@ -3,12 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::ErrorKind;
-use uuid::Uuid;
+use crate::uuid;
+
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize,))]
 pub struct Error {
-    id: Uuid,
+    id: String,
     kind: ErrorKind,
     message: String,
 }
@@ -16,7 +17,7 @@ pub struct Error {
 impl Error {
     pub fn new(kind: ErrorKind, message: impl ToString) -> Self {
         Self {
-            id: Uuid::new_v4(),
+            id: uuid().to_string(),
             kind,
             message: message.to_string(),
         }
@@ -29,8 +30,8 @@ impl Error {
         Self::new(kind.into(), "")
     }
 
-    pub fn id(&self) -> Uuid {
-        self.id
+    pub fn id(&self) -> &str {
+        &self.id
     }
 
     pub fn kind(&self) -> &ErrorKind {

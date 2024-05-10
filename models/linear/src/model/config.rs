@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::layout::{Features, Layout};
-use crate::{Biased, ParamMode, Unbiased};
+use crate::params::mode::*;
 use core::marker::PhantomData;
 use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
 

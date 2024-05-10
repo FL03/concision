@@ -5,18 +5,18 @@
 use super::{Config, Layout};
 use crate::{Biased, LinearParams, ParamMode};
 use concision::prelude::{Predict, Result};
-use nd::{Array, Ix2, RemoveAxis};
+use nd::{Array, Dimension, Ix2, RemoveAxis};
 
 /// Linear model
-pub struct Linear<A = f64, D = Ix2, K = Biased>
+pub struct Linear<K = Biased, A = f64, D = Ix2>
 where
-    D: RemoveAxis,
+    D: Dimension,
 {
     pub(crate) config: Config<D, K>,
-    pub(crate) params: LinearParams<A, D>,
+    pub(crate) params: LinearParams<K, A, D>,
 }
 
-impl<A, D, K> Linear<A, D, K>
+impl<A, D, K> Linear<K, A, D>
 where
     D: RemoveAxis,
     K: ParamMode,
@@ -26,20 +26,20 @@ where
         A: Clone + Default,
         K: 'static,
     {
-        let params = LinearParams::default(config.is_biased(), config.dim());
+        let params = LinearParams::default(config.dim());
         Self { config, params }
     }
 
-    pub fn from_layout(biased: bool, layout: Layout<D>, name: impl ToString) -> Self
+    pub fn from_layout(layout: Layout<D>) -> Self
     where
         A: Clone + Default,
     {
-        let config = Config::<D, K>::new().with_layout(layout).with_name(name);
-        let params = LinearParams::default(biased, config.dim());
+        let config = Config::<D, K>::new().with_layout(layout);
+        let params = LinearParams::default(config.dim());
         Self { config, params }
     }
 
-    pub fn with_params<E>(self, params: LinearParams<A, E>) -> Linear<A, E, K>
+    pub fn with_params<E>(self, params: LinearParams<K, A, E>) -> Linear<K, A, E>
     where
         E: RemoveAxis,
     {
@@ -67,16 +67,16 @@ where
         self.params.weights_mut()
     }
 
-    pub const fn params(&self) -> &LinearParams<A, D> {
+    pub const fn params(&self) -> &LinearParams<K, A, D> {
         &self.params
     }
 
-    pub fn params_mut(&mut self) -> &mut LinearParams<A, D> {
+    pub fn params_mut(&mut self) -> &mut LinearParams<K, A, D> {
         &mut self.params
     }
 
     pub fn is_biased(&self) -> bool {
-        self.config().is_biased() || self.params().is_biased()
+        K::BIASED
     }
 
     pub fn with_name(self, name: impl ToString) -> Self {
@@ -87,7 +87,7 @@ where
     }
 }
 
-impl<A, D> Linear<A, D, Biased>
+impl<A, D> Linear<Biased, A, D>
 where
     D: RemoveAxis,
 {

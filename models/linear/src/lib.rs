@@ -13,15 +13,15 @@ extern crate alloc;
 
 extern crate concision_core as concision;
 extern crate ndarray as nd;
-#[cfg(feature = "rand")]
-extern crate ndarray_rand as ndrand;
 extern crate ndarray_stats as stats;
 
 pub use self::model::{Config, Features, Layout, Linear};
-pub use self::params::LinearParams;
+pub use self::params::{mode::*, LinearParams};
 #[allow(unused_imports)]
 pub use self::{traits::prelude::*, utils::*};
 
+#[macro_use]
+pub(crate) mod macros;
 #[macro_use]
 pub(crate) mod seal;
 pub(crate) mod utils;
@@ -37,15 +37,16 @@ pub mod params;
 pub mod traits;
 
 mod impls {
+    pub mod impl_rand;
+
     pub mod model {
-        pub mod impl_init;
         pub mod impl_linear;
         pub mod impl_model;
     }
 
     pub mod params {
         pub mod impl_params;
-        pub mod impl_rand;
+        
         pub mod impl_serde;
     }
 }

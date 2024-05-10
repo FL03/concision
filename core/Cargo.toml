@@ -25,7 +25,13 @@ full = [
     "tracing",
 ]
 
-alloc = []
+# [FF] Dependencies
+alloc = [
+    "num/alloc",
+    "rand?/alloc",
+    "rand_distr?/alloc",
+    "serde?/alloc",
+]
 
 approx = [
     "dep:approx",
@@ -38,6 +44,7 @@ blas = [
 
 rand = [
     "dep:rand",
+    "dep:rand_distr",
     "dep:ndarray-rand",
     "rand-ext",
 ]
@@ -48,30 +55,37 @@ rand-ext = [
     "uuid/v4",
 ]
 
-serde = [
-    "dep:serde",
-    "serde-ext"
+rng_std = [
+    "rand?/std",
+    "rand?/std_rng",
 ]
 
-serde-ext = [
+serde = [
+    "serde-1",
     "ndarray/serde-1",
     "num/serde",
+    "rand?/serde1",
+    "rand_distr?/serde1",
     "uuid/serde"
 ]
 
-std = [
-    "alloc",
-    "ndarray/std",
-    "num/std",
-    "rand/std",
-    "rand/std_rng",
-    "serde/std",
-    "strum/std",
-    "uuid/std"
+serde-1 = [
+    "dep:serde"
 ]
 
 tracing = [
     "dep:tracing"
+]
+
+# ********* [FF] Environments *********
+std = [
+    "alloc",
+    "ndarray/std",
+    "num/std",
+    "rng_std",
+    "serde/std",
+    "strum/std",
+    "uuid/std"
 ]
 
 wasm = []
@@ -91,22 +105,45 @@ required-features = ["approx"]
 [build-dependencies]
 
 [dependencies]
-approx = { optional = true, version = "0.5" }
 ndarray.workspace = true
-ndarray-rand = { optional = true, version = "0.14" }
 num.workspace = true
-rand = { default-features = false, optional = true, version = "0.8" }
-rand_distr = { default-features = false, optional = true, version = "0.4" }
-serde = { default-features = false, features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
-tracing = { optional = true, version = "0.1" }
-uuid = { default-features = false, features = ["v4"], version = "1" }
 
+[dependencies.approx]
+optional = true
+version = "0.5"
 
+[dependencies.ndarray-rand]
+optional = true
+version = "0.14"
+
+[dependencies.rand]
+default-features = false
+optional = true
+version = "0.8"
+
+[dependencies.rand_distr]
+default-features = false
+optional = true
+version = "0.4"
+
+[dependencies.serde]
+default-features = false
+features = ["derive"]
+optional = true
+version = "1"
+
+[dependencies.tracing]
+optional = true
+version = "0.1"
+
+[dependencies.uuid]
+default-features = false
+features = ["v5", "v8"]
+version = "1"
 
 [dev-dependencies]
-approx = "0.5"
 lazy_static = "1"
 
 [package.metadata.docs.rs]

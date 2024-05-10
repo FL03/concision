@@ -1,15 +1,31 @@
 /*
-    Appellation: rand <impls>
+    Appellation: impl_rand <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #![cfg(feature = "rand")]
 
-use crate::bias_dim;
-use crate::params::ParamsBase;
+use crate::{bias_dim, Linear};
+use crate::params::{ParamsBase, ParamMode};
+use concision::rand::rand_distr::{uniform, Distribution, StandardNormal};
 use concision::prelude::GenerateRandom;
 use nd::*;
-use ndrand::rand_distr::{uniform, Distribution, StandardNormal};
 use num::Float;
+
+impl<A, D, K> Linear<A, D, K>
+where
+    A: Float + uniform::SampleUniform,
+    D: RemoveAxis,
+    K: ParamMode,
+    StandardNormal: Distribution<A>,
+{
+    pub fn uniform(self) -> Self {
+        let biased = self.is_biased();
+        Self {
+            params: self.params.init_uniform(biased),
+            ..self
+        }
+    }
+}
 
 impl<A, D> ParamsBase<OwnedRepr<A>, D>
 where
@@ -48,6 +64,10 @@ where
             None
         };
         let weights = Array::uniform_between(dk, self.raw_dim());
-        Self { bias, weights }
+        Self { 
+            bias, 
+            weights,
+            _mode: self._mode,
+        }
     }
 }
