@@ -4,7 +4,7 @@
 */
 use crate::params::{Biased, NodeBase, Pair, ParamMode, ParamsBase, Unbiased};
 use crate::Features;
-#[cfg(feature = "alloc")]
+#[cfg(all(feature = "alloc", no_std))]
 use alloc::vec;
 use core::marker::PhantomData;
 use nd::prelude::*;
