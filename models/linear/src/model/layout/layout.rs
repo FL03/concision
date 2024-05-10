@@ -3,7 +3,8 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::model::layout::{features, Features};
-use nd::{Dimension, RemoveAxis, ShapeBuilder};
+use core::borrow::Borrow;
+use nd::{Dimension, RemoveAxis, ShapeBuilder, ShapeError};
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -20,9 +21,16 @@ impl<D> Layout<D>
 where
     D: Dimension,
 {
-    pub fn new(dim: D) -> Self {
-        let features = features(dim.clone()).expect("Invalid dimension");
-        Self { dim, features }
+    pub fn new(dim: D) -> Self
+    where
+        D: RemoveAxis,
+    {
+        Self::from_dim(dim).expect("Invalid dimension")
+    }
+
+    pub fn from_dim(dim: D) -> Result<Self, ShapeError> {
+        let features = features(dim.clone())?;
+        Ok(Self { dim, features })
     }
 
     pub fn from_shape<Sh>(shape: Sh) -> Self
@@ -44,8 +52,19 @@ where
         self.dim.slice_mut()
     }
 
+    pub fn dim(&self) -> &D {
+        &self.dim
+    }
+
     pub fn features(&self) -> Features {
         self.features
+    }
+
+    pub fn into_dimensionality<E>(self, dim: E) -> Result<Layout<E>, ShapeError>
+    where
+        E: Dimension,
+    {
+        Layout::from_dim(dim)
     }
 
     pub fn ndim(&self) -> usize {
@@ -58,8 +77,40 @@ where
     {
         self.dim.into_pattern()
     }
+}
 
-    pub fn raw_dim(&self) -> D {
-        self.dim.clone()
+impl<D> Borrow<D> for Layout<D>
+where
+    D: Dimension,
+{
+    fn borrow(&self) -> &D {
+        &self.dim
+    }
+}
+
+impl<D> Borrow<Features> for Layout<D>
+where
+    D: Dimension,
+{
+    fn borrow(&self) -> &Features {
+        &self.features
+    }
+}
+
+impl<D> PartialEq<D> for Layout<D>
+where
+    D: Dimension,
+{
+    fn eq(&self, other: &D) -> bool {
+        self.dim.eq(other)
+    }
+}
+
+impl<D> PartialEq<Features> for Layout<D>
+where
+    D: Dimension,
+{
+    fn eq(&self, other: &Features) -> bool {
+        self.features.eq(other)
     }
 }

@@ -1,17 +1,45 @@
 /*
-   Appellation: like <mod>
+   Appellation: create <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use nd::{ArrayBase, DataOwned, Dimension};
+use nd::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};
 use num::traits::Num;
 
-pub trait ArrayLike<T, O = Self>
+pub trait TensorConstructor<T, O = Self>
 where
     Self: DefaultLike<Output = O>
         + FillLike<T, Output = O>
         + OnesLike<Output = O>
         + ZerosLike<Output = O>,
 {
+}
+
+pub trait ArrayLike<A, S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
+    fn array_like<Sh>(&self, shape: Sh, elem: A) -> ArrayBase<S, D>
+    where
+        Sh: ShapeBuilder<Dim = D>;
+}
+
+impl<A, S, D> ArrayLike<A, S, D> for ArrayBase<S, D>
+where
+    A: Clone,
+    D: Dimension,
+    S: nd::DataOwned<Elem = A>,
+{
+    fn array_like<Sh>(&self, shape: Sh, elem: A) -> ArrayBase<S, D>
+    where
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        if self.is_standard_layout() {
+            ArrayBase::from_elem(shape, elem)
+        } else {
+            ArrayBase::from_elem(shape.f(), elem)
+        }
+    }
 }
 
 pub trait DefaultLike {
@@ -42,7 +70,7 @@ pub trait ZerosLike {
  ******** implementations ********
 */
 
-impl<A, S, D> ArrayLike<A, ArrayBase<S, D>> for ArrayBase<S, D>
+impl<A, S, D> TensorConstructor<A, ArrayBase<S, D>> for ArrayBase<S, D>
 where
     A: Clone + Default + Num,
     D: Dimension,

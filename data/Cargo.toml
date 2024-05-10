@@ -1,5 +1,6 @@
 [package]
 authors.workspace = true
+build = "build.rs"
 categories.workspace = true
 description.workspace = true
 edition.workspace = true
@@ -64,6 +65,14 @@ std = [
 tracing = [
     "dep:tracing",
     "concision-core/tracing",
+]
+
+wasm = [
+    "concision-core/wasm",
+]
+
+wasi = [    
+    "concision-core/wasi",
 ]
 
 [lib]

@@ -1,7 +1,9 @@
 /*
-    Appellation: kinds <mod>
+    Appellation: entry <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::params::ParamsBase;
+use core::marker::PhantomData;
 use ndarray::*;
 use strum::{AsRefStr, EnumDiscriminants, EnumIs, VariantNames};
 
@@ -63,4 +65,14 @@ impl Param {
     pub fn weight() -> Self {
         Self::Weight
     }
+}
+
+pub struct Item<S, D, E>
+where
+    D: Dimension<Smaller = E>,
+    E: RemoveAxis,
+    S: RawData,
+{
+    pub data: ParamsBase<S, E>,
+    _parent: PhantomData<D>,
 }

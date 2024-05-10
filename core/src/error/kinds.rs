@@ -1,5 +1,5 @@
 /*
-   Appellation: kinds <mod>
+   Appellation: kinds <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 pub use self::{external::*, predict::*};
@@ -30,45 +30,31 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, VariantNames};
     serde(rename_all = "lowercase", tag = "kind")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum Error {
-    IO(String),
+pub enum ErrorKind {
+    IO,
     External(ExternalError),
     Predict(PredictError),
     Model(ModelError),
     Shape(String),
 }
 
-// impl core::fmt::Display for Error {
-//     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-//         let msg = match self {
-//             Error::IO(ref err) => err.to_string(),
-//             Error::Error(ref err) => err.to_string(),
-//             Error::Shape(ref err) => err.to_string(),
-//         };
-//         write!(f, "{}", msg)
-//     }
-// }
-
-#[cfg(feature = "std")]
-error_from!(Error::IO<std::io::Error>);
-
 macro_rules! from_err {
-    ($($variant:ident<$err:ty>),* $(,)*) => {
+    ($S:ty: $($($p:ident)::*($err:ty)),* $(,)*) => {
         $(
-            from_err!(@impl $variant<$err>);
+            from_err!(@impl $S: $($p)::*($err));
         )*
     };
-    (@impl $variant:ident<$err:ty>) => {
-        impl From<$err> for Error {
+    (@impl $S:ty: $($p:ident)::*($err:ty)) => {
+        impl From<$err> for $S {
             fn from(err: $err) -> Self {
-                Error::$variant(err)
+                $($p)::*(err)
             }
         }
     };
 }
 
-from_err!(
-    External<ExternalError>,
-    Model<ModelError>,
-    Predict<PredictError>,
+from_err!(ErrorKind:
+    ErrorKind::External(ExternalError),
+    ErrorKind::Model(ModelError),
+    ErrorKind::Predict(PredictError),
 );

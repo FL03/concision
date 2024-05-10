@@ -2,7 +2,9 @@
    Appellation: params <test>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision_core::prelude::{linarr, ParamKind, Parameter};
+extern crate concision_core as cnc;
+
+use cnc::prelude::{linarr, ParamKind, Parameter};
 use ndarray::linalg::Dot;
 use ndarray::*;
 

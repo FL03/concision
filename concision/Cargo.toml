@@ -52,6 +52,10 @@ gnn = [
     "dep:concision-gnn",
 ]
 
+kan = [
+    "dep:concision-kan",
+]
+
 linear = [
     "dep:concision-linear"
 ]
@@ -60,46 +64,67 @@ macros = [
     "dep:concision-macros"
 ]
 
-
-
 models = [
-    "linear",
     "gnn",
+    "kan",
+    "linear",
 ]
 
 rand = [
     "concision-core/rand",
     "concision-data/rand",
-    "concision-linear/rand",
+
     "concision-gnn/rand",
+    "concision-kan/rand",
+    "concision-linear/rand",
 ]
 
 serde = [
     "concision-core/serde",
     "concision-data/serde",
-    "concision-linear/serde",
     "concision-gnn/serde",
+    "concision-kan/serde",
+    "concision-linear/serde",
 ]
 
 std = [
     "concision-core/std",
     "concision-data/std",
-    "concision-linear/std",
     "concision-gnn/std",
+    "concision-kan/std",
+    "concision-linear/std",
 ]
 
 tracing = [
     "concision-core/tracing",
     "concision-data/tracing",
-    "concision-linear/tracing",
     "concision-gnn/tracing",
+    "concision-kan/tracing",
+    "concision-linear/tracing",
+]
+
+wasm = [
+    "concision-core/wasm",
+    "concision-data/wasm",
+    "concision-gnn/wasm",
+    "concision-kan/wasm",
+    "concision-linear/wasm",
+]
+
+wasi = [    
+    "concision-core/wasi",
+    "concision-data/wasi",
+    "concision-gnn/wasi",
+    "concision-kan/wasi",
+    "concision-linear/wasi",
 ]
 
 blas = [
     "concision-core/blas",
     "concision-data/blas",
-    "concision-linear/blas",
     "concision-gnn/blas",
+    "concision-kan/blas",
+    "concision-linear/blas",
 ]
 
 intel-mkl-system = [
@@ -162,6 +187,11 @@ version = "0.1.13"
 [dependencies.concision-gnn]
 optional = true
 path = "../models/gnn"
+version = "0.1.13"
+
+[dependencies.concision-kan]
+optional = true
+path = "../models/kan"
 version = "0.1.13"
 
 [dependencies.concision-linear]

@@ -2,32 +2,36 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{entry::*, params::*};
+#[doc(inline)]
+pub use self::entry::{Entry, Param};
+pub use self::mode::{Biased, ParamMode, Unbiased};
+pub use self::params::ParamsBase;
 
-pub mod entry;
 mod params;
 
-mod impls {
-    mod impl_params;
-    #[cfg(feature = "rand")]
-    mod impl_rand;
-    mod impl_serde;
-}
+pub mod entry;
+pub mod mode;
+
+use nd::{ArrayBase, Ix0, Ix1};
+
+pub(crate) type Pair<A, B = A> = (A, B);
+pub(crate) type MaybePair<A, B = A> = Pair<A, Option<B>>;
+pub(crate) type NodeBase<S, D = Ix1, E = Ix0> = MaybePair<ArrayBase<S, D>, ArrayBase<S, E>>;
+pub(crate) type Node<A = f64, D = Ix1, E = Ix0> = NodeBase<nd::OwnedRepr<A>, D, E>;
 
 macro_rules! params_ty {
     ($($name:ident<$repr:ident>),* $(,)?) => {
         $(params_ty!(@impl $name<$repr>);)*
     };
     (@impl $name:ident<$repr:ident>) => {
-        pub type $name<T = f64, D = nd::Ix2> = LinearParamsBase<ndarray::$repr<T>, D>;
+        pub type $name<K = Biased, T = f64, D = ndarray::Ix2> = $crate::params::ParamsBase<ndarray::$repr<T>, D, K>;
     };
 }
 
 params_ty!(LinearParams<OwnedRepr>, LinearParamsShared<OwnedArcRepr>,);
 
 pub(crate) mod prelude {
-    pub use super::entry::{Entry as LinearEntry, Param as LinearParam};
-    pub use super::LinearParams;
+    pub use super::{LinearParams, LinearParamsShared};
 }
 
 #[cfg(test)]
@@ -45,8 +49,7 @@ mod tests {
 
     #[test]
     fn test_ones() {
-        let a = LinearParams::<f64>::ones(false, (1, 300)).biased(nd::Array1::ones);
-
+        let a = LinearParams::<Biased, f64>::ones((1, 300));
         assert!(a.is_biased());
     }
 }

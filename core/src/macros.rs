@@ -98,3 +98,19 @@ macro_rules! build_unary_trait {
         }
     };
 }
+
+macro_rules! linspace {
+    (start: $start:expr, end: $end:expr, n: $n:expr, dtype: $T:ty) => {
+        ndarray::Array1::<$T>::linspace($start, $end, $n)
+    };
+    (end: $end:expr, dtype: $T:ty) => {
+        let n = ($end - $T::one()).to_usize().unwrap();
+        ndarray::Array1::<$T>::linspace($T::zero(), $end, $end.to_usize().unwrap())
+    };
+    (dim: $dim:expr, dtype: $T:ty) => {{
+        let dim = $dim.into_dimension();
+        let n = dim.size();
+        ndarray::Array1::<$T>::linspace(<$T>::zero(), <$T>::from(n - 1).unwrap(), n)
+            .into_shape($dim)
+    }};
+}
