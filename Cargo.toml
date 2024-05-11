@@ -41,7 +41,8 @@ members = [
     "macros",
     "models/linear",
     "models/gnn",
-    "models/kan",
+    "models/kan", 
+    "models/transformers",
 ]
 
 resolver = "2"
