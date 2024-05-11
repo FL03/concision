@@ -12,11 +12,20 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = [
+    "std"
+]
+
+alloc = []
+
+std = []
+
+wasi = []
+
+wasm = []
 
 [lib]
 bench = false
-doctest = false
 proc-macro = true
 test = false
 

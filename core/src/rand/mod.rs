@@ -7,21 +7,26 @@
 pub use self::prelude::*;
 
 pub(crate) mod generate;
+pub(crate) mod initialize;
 pub(crate) mod utils;
+
+#[doc(hidden)]
+pub mod gen {
+    pub mod lecun;
+}
 
 #[doc(no_inline)]
 pub use ndarray_rand as ndrand;
 #[doc(no_inline)]
-pub use ndarray_rand::{RandomExt, SamplingStrategy};
+pub use ndrand::{RandomExt, SamplingStrategy};
 #[doc(no_inline)]
 pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
 pub(crate) mod prelude {
-    #[doc(no_inline)]
-    pub use ndarray_rand::RandomExt;
-
-    pub use super::generate::*;
+    #[doc(hidden)]
+    pub use super::generate::GenerateRandom;
+    pub use super::initialize::{Initialize, InitializeExt};
     pub use super::utils::*;
 }

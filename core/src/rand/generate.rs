@@ -53,13 +53,13 @@ where
             &mut StdRng::seed_from_u64(key),
         )
     }
-
+    /// Generate a random array with values between u(-a, a) where a is the reciprocal of the value at the given axis
     fn uniform(axis: usize, dim: impl IntoDimension<Dim = D>) -> Self
     where
         T: Real + SampleUniform,
     {
         let dim = dim.into_dimension();
-        let dk = T::from(dim[axis]).unwrap().recip().sqrt();
+        let dk = T::from(dim[axis]).unwrap().recip();
         Self::uniform_between(dk, dim)
     }
 
@@ -71,15 +71,18 @@ where
     }
 }
 
-impl<T, D> GenerateRandom<T, D> for Array<T, D>
+/*
+ ************ Implementations ************
+*/
+impl<A, D> GenerateRandom<A, D> for Array<A, D>
 where
-    T: Float + SampleUniform,
+    A: Float + SampleUniform,
     D: Dimension,
-    StandardNormal: Distribution<T>,
+    StandardNormal: Distribution<A>,
 {
     fn rand<Sh, Dtr>(dim: Sh, distr: Dtr) -> Self
     where
-        Dtr: Distribution<T>,
+        Dtr: Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
     {
         Self::random(dim, distr)
@@ -87,7 +90,7 @@ where
 
     fn rand_using<Sh, Dtr, R>(dim: Sh, distr: Dtr, rng: &mut R) -> Self
     where
-        Dtr: Distribution<T>,
+        Dtr: Distribution<A>,
         R: Rng + ?Sized,
         Sh: ShapeBuilder<Dim = D>,
     {

@@ -6,7 +6,7 @@ extern crate concision_core as cnc;
 
 use cnc::prelude::{linarr, ParamKind, Parameter};
 use ndarray::linalg::Dot;
-use ndarray::*;
+use ndarray::prelude::*;
 
 #[test]
 fn test_parameter() {

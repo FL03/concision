@@ -18,7 +18,7 @@ extern crate ndarray as nd;
 pub use self::model::{Config, Features, Layout, Linear};
 pub use self::params::{mode::*, LinearParams};
 #[allow(unused_imports)]
-pub use self::{traits::prelude::*, utils::*};
+pub use self::{traits::*, utils::*};
 
 #[macro_use]
 pub(crate) mod macros;
@@ -54,5 +54,5 @@ mod impls {
 pub mod prelude {
     pub use crate::model::prelude::*;
     pub use crate::params::prelude::*;
-    pub use crate::traits::prelude::*;
+    pub use crate::traits::*;
 }

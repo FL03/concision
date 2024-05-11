@@ -16,7 +16,7 @@ pub use concision_optim as optim;
 #[cfg(feature = "s4")]
 pub use concision_s4 as s4;
 #[cfg(feature = "transformers")]
-pub use concision_transformers as transformers;
+pub use transformers as transformers;
 
 pub mod prelude {
     pub use concision_neural::prelude::*;

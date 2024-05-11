@@ -2,27 +2,33 @@
    Appellation: plan <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-#[cfg(no_std)]
+#[cfg(all(feature = "alloc", no_std))]
 use alloc::vec::{self, Vec};
 use core::slice;
-#[cfg(not(no_std))]
+#[cfg(feature = "std")]
 use std::vec;
 
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct FftPlan {
+    n: usize,
     plan: Vec<usize>,
 }
 
 impl FftPlan {
     pub fn new(n: usize) -> Self {
-        let mut plan = Vec::with_capacity(n);
-        plan.extend(0..n);
+        let plan = Vec::with_capacity(n);
+        Self { n, plan }
+    }
+
+    pub fn build(self) -> Self {
+        let mut plan = Vec::with_capacity(self.n);
+        plan.extend(0..self.n);
 
         let mut rev = 0; // reverse
         let mut pos = 1; // position
-        while pos < n {
-            let mut bit = n >> 1;
+        while pos < self.n {
+            let mut bit = self.n >> 1;
             while bit & rev != 0 {
                 rev ^= bit;
                 bit >>= 1;
@@ -35,7 +41,12 @@ impl FftPlan {
             }
             pos += 1;
         }
-        Self { plan }
+        Self { plan, ..self }
+    }
+
+    pub fn clear(&mut self) {
+        self.n = 0;
+        self.plan.clear();
     }
 
     pub fn plan(&self) -> &[usize] {
@@ -63,8 +74,10 @@ impl Extend<usize> for FftPlan {
 
 impl FromIterator<usize> for FftPlan {
     fn from_iter<T: IntoIterator<Item = usize>>(iter: T) -> Self {
+        let plan = Vec::from_iter(iter);
         Self {
-            plan: Vec::from_iter(iter),
+            n: plan.len(),
+            plan,
         }
     }
 }

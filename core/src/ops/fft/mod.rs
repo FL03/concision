@@ -14,8 +14,9 @@ pub mod cmp;
 pub mod plan;
 
 pub trait Fft<T> {
-    fn fft(&self) -> Vec<T>;
-    fn ifft(&self) -> Vec<T>;
+    type Data;
+
+    fn rfft(&self) -> Self;
 }
 
 pub(crate) mod prelude {

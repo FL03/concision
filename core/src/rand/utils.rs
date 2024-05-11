@@ -4,7 +4,7 @@
 */
 use ndarray::*;
 use ndrand::rand::rngs::StdRng;
-use ndrand::rand::SeedableRng;
+use ndrand::rand::{rngs, Rng, SeedableRng};
 use ndrand::rand_distr::{Distribution, StandardNormal};
 use ndrand::RandomExt;
 use num::complex::{Complex, ComplexDistribution};
@@ -33,7 +33,7 @@ where
     let dim = shape.into_dimension();
     let n = dim.size();
     let scale = T::from(n).unwrap().recip().sqrt();
-    Array::random_using(dim, StandardNormal, &mut StdRng::seed_from_u64(seed)) * scale
+    Array::random_using(dim, StandardNormal, &mut rngs::StdRng::seed_from_u64(seed)) * scale
 }
 
 /// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
@@ -76,16 +76,16 @@ where
     Array::random_using(
         shape,
         Uniform::new(start, stop),
-        &mut StdRng::seed_from_u64(key),
+        &mut rngs::StdRng::seed_from_u64(key),
     )
 }
 ///
-pub fn seeded_stdnorm<T, D>(key: u64, shape: impl IntoDimension<Dim = D>) -> Array<T, D>
+pub fn seeded_stdnorm<T, D>(shape: impl IntoDimension<Dim = D>, key: u64) -> Array<T, D>
 where
     D: Dimension,
     StandardNormal: Distribution<T>,
 {
-    Array::random_using(shape, StandardNormal, &mut StdRng::seed_from_u64(key))
+    Array::random_using(shape, StandardNormal, &mut rngs::StdRng::seed_from_u64(key))
 }
 ///
 pub fn randc_normal<T, D>(key: u64, shape: impl IntoDimension<Dim = D>) -> Array<Complex<T>, D>
@@ -95,10 +95,10 @@ where
     StandardNormal: Distribution<T>,
 {
     let dim = shape.into_dimension();
-    let re = seeded_stdnorm(key, dim.clone());
-    let im = seeded_stdnorm(key, dim.clone());
+    let re = seeded_stdnorm(dim.clone(), key);
+    let im = seeded_stdnorm(dim.clone(), key);
     let mut res = Array::zeros(dim);
-    ndarray::azip!((re in &re, im in &im, res in &mut res) {
+    azip!((re in &re, im in &im, res in &mut res) {
         *res = Complex::new(*re, *im);
     });
     res
@@ -110,4 +110,16 @@ where
     StandardNormal: Distribution<T>,
 {
     Array::random(shape, StandardNormal)
+}
+
+pub fn stdnorm_from_seed<S, D, Sh, R>(shape: Sh, seed: u64) -> ArrayBase<S, D>
+where
+    D: Dimension,
+    R: Rng + ?Sized,
+    S: DataOwned,
+    Sh: ShapeBuilder<Dim = D>,
+    StandardNormal: Distribution<S::Elem>,
+    ArrayBase<S, D>: RandomExt<S, S::Elem, D>,
+{
+    ArrayBase::random_using(shape, StandardNormal, &mut StdRng::seed_from_u64(seed))
 }

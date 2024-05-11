@@ -52,7 +52,7 @@ blas = [
     "concision-nlp/blas",
     "concision-optim/blas",
     "concision-s4/blas",
-    "concision-transformers/blas",
+    "transformers?/blas",
 ]
 
 intel-mkl-system = [
@@ -100,11 +100,11 @@ test = false
 [build-dependencies]
 
 [dependencies]
-concision-neural = { path = "../neural", version = "0.1.12" }
-concision-nlp = { optional = true, path = "../nlp", version = "0.1.12" }
-concision-optim = { optional = true, path = "../optim", version = "0.1.12" }
-concision-s4 = { optional = true, path = "../s4", version = "0.1.12" }
-concision-transformers = { optional = true, path = "../transformers", version = "0.1.12" }
+concision-neural = { path = "./neural", version = "0.1.12" }
+concision-nlp = { optional = true, path = "./nlp", version = "0.1.12" }
+concision-optim = { optional = true, path = "./optim", version = "0.1.12" }
+concision-s4 = { optional = true, path = "./s4", version = "0.1.12" }
+transformers = { optional = true, path = "./transformers", version = "0.1.12" }
 
 
 [dev-dependencies]
