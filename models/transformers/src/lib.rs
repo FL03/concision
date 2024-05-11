@@ -16,10 +16,25 @@ extern crate alloc;
 extern crate concision_core as concision;
 extern crate ndarray as nd;
 
+pub use self::attention::AttentionHead;
+pub use self::params::QKV;
 pub use self::transformer::Transformer;
 
+#[macro_use]
+pub(crate) mod macros;
 pub(crate) mod transformer;
 
 pub mod attention;
+pub mod params;
 
-pub mod prelude {}
+pub(crate) mod impls {
+   pub mod impl_head;
+   pub mod impl_linalg;
+   pub mod impl_params;
+}
+
+pub mod prelude {
+   pub use super::attention::prelude::*;
+   pub use super::params::prelude::*;
+   pub use super::Transformer;
+}

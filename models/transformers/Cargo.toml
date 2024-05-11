@@ -89,6 +89,7 @@ test = true
 [dependencies]
 ndarray.workspace = true
 num.workspace = true
+paste.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 

@@ -100,17 +100,17 @@ test = false
 [build-dependencies]
 
 [dependencies]
-concision-neural = { path = "./neural", version = "0.1.12" }
-concision-nlp = { optional = true, path = "./nlp", version = "0.1.12" }
-concision-optim = { optional = true, path = "./optim", version = "0.1.12" }
-concision-s4 = { optional = true, path = "./s4", version = "0.1.12" }
-transformers = { optional = true, path = "./transformers", version = "0.1.12" }
+concision-neural = { path = "../neural", version = "0.1.12" }
+concision-nlp = { optional = true, path = "../nlp", version = "0.1.12" }
+concision-optim = { optional = true, path = "../optim", version = "0.1.12" }
+concision-s4 = { optional = true, path = "../s4", version = "0.1.12" }
+transformers = { optional = true, path = "../transformers", version = "0.1.12" }
 
 
 [dev-dependencies]
 anyhow = "1"
 approx = "0.5"
-concision = { path = "../../concision" }
+concision = { path = "../../../concision" }
 ndarray = { features = ["approx-0_5", "serde-1"], version = "0.15" }
 
 [package.metadata.docs.rs]
