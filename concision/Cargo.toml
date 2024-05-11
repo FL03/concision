@@ -21,13 +21,10 @@ full = [
     "default",
     "approx",
     "derive",
+    "models",
     "rand",
     "serde",
     "tracing",
-    "gnn",
-    "kan",
-    "linear",
-    "transformers",
 ]
 
 data = [
@@ -44,6 +41,13 @@ macros = [
 ]
 
 # ********* [FF] Models(s) *********
+models = [
+    "gnn",
+    "kan",
+    "linear",
+    "transformers",
+]
+
 gnn = [
     "dep:concision-gnn",
 ]
@@ -98,8 +102,6 @@ serde = [
     "concision-transformers?/serde",
 ]
 
-
-
 tracing = [
     "concision-core/tracing",
     "concision-data?/tracing",
@@ -107,7 +109,6 @@ tracing = [
     "concision-kan?/tracing",
     "concision-linear?/tracing",
     "concision-transformers?/tracing",
-
 ]
 
 # ********* [FF] Environment(s) *********
@@ -118,6 +119,7 @@ std = [
     "concision-gnn?/std",
     "concision-kan?/std",
     "concision-linear?/std",
+    "concision-transformers?/std",
 ]
 
 wasm = [

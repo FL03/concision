@@ -8,9 +8,9 @@
 //! These models have already demonstrated that they are viable alternatives to traditional multi-layer perceptrons (MLPs) and convolutional neural networks (CNNs).
 //!
 //! ### Resources
-//! 
+//!
 //! - [Kolmogorov-Arnold Representation](https://arxiv.org/abs/2404.19756)
-//! 
+//!
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "alloc")]

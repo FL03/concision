@@ -25,11 +25,11 @@ pub use concision_kan as kan;
 #[cfg(feature = "linear")]
 #[doc(inline)]
 pub use concision_linear as linear;
+#[cfg(feature = "macros")]
+pub use concision_macros::*;
 #[cfg(feature = "transformers")]
 #[doc(inline)]
 pub use concision_transformers as transformers;
-#[cfg(feature = "macros")]
-pub use concision_macros::*;
 
 pub mod prelude {
     pub use concision_core::prelude::*;
