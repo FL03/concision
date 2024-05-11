@@ -66,7 +66,7 @@ std = [
     "concision-core/std",
     "ndarray/std",
     "num/std",
-    "serde/std",
+    "serde?/std",
     "strum/std",
 ]
 
