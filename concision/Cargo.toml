@@ -37,6 +37,10 @@ alloc = [
 
 approx = [
     "concision-core/approx",
+    "concision-data?/approx",
+    "concision-gnn?/approx",
+    "concision-kan?/approx",
+    "concision-linear?/approx",
 ]
 
 data = [
@@ -64,67 +68,60 @@ macros = [
     "dep:concision-macros"
 ]
 
-models = [
-    "gnn",
-    "kan",
-    "linear",
-]
-
 rand = [
     "concision-core/rand",
-    "concision-data/rand",
-
-    "concision-gnn/rand",
-    "concision-kan/rand",
-    "concision-linear/rand",
+    "concision-data?/rand",
+    "concision-gnn?/rand",
+    "concision-kan?/rand",
+    "concision-linear?/rand",
 ]
 
 serde = [
     "concision-core/serde",
-    "concision-data/serde",
-    "concision-gnn/serde",
-    "concision-kan/serde",
-    "concision-linear/serde",
+    "concision-data?/serde",
+    "concision-gnn?/serde",
+    "concision-kan?/serde",
+    "concision-linear?/serde",
 ]
 
 std = [
     "concision-core/std",
-    "concision-data/std",
-    "concision-gnn/std",
-    "concision-kan/std",
-    "concision-linear/std",
+    "concision-data?/std",
+    "concision-gnn?/std",
+    "concision-kan?/std",
+    "concision-linear?/std",
 ]
 
 tracing = [
     "concision-core/tracing",
-    "concision-data/tracing",
-    "concision-gnn/tracing",
-    "concision-kan/tracing",
-    "concision-linear/tracing",
+    "concision-data?/tracing",
+    "concision-gnn?/tracing",
+    "concision-kan?/tracing",
+    "concision-linear?/tracing",
 ]
 
 wasm = [
     "concision-core/wasm",
-    "concision-data/wasm",
-    "concision-gnn/wasm",
-    "concision-kan/wasm",
-    "concision-linear/wasm",
+    "concision-data?/wasm",
+    "concision-gnn?/wasm",
+    "concision-kan?/wasm",
+    "concision-linear?/wasm",
 ]
 
 wasi = [    
     "concision-core/wasi",
-    "concision-data/wasi",
-    "concision-gnn/wasi",
-    "concision-kan/wasi",
-    "concision-linear/wasi",
+    "concision-data?/wasi",
+    "concision-gnn?/wasi",
+    "concision-kan?/wasi",
+    "concision-linear?/wasi",
 ]
 
 blas = [
     "concision-core/blas",
-    "concision-data/blas",
-    "concision-gnn/blas",
-    "concision-kan/blas",
-    "concision-linear/blas",
+    "concision-data?/blas",
+    "concision-gnn?/blas",
+    "concision-kan?/blas",
+    "concision-linear?/blas",
 ]
 
 intel-mkl-system = [

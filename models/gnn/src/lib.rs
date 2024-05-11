@@ -13,8 +13,5 @@
 extern crate alloc;
 extern crate concision_core as concision;
 extern crate ndarray as nd;
-#[cfg(feature = "rand")]
-extern crate ndarray_rand as ndrand;
-extern crate ndarray_stats as stats;
 
 pub mod prelude {}

@@ -4,8 +4,9 @@
 */
 //! # Linear Models
 //!
-//! This library implements the framework for building linear models.
-//!
+//! This library works to provide the necessary tools for creating and training linear models.
+//! The primary focus is on the [Linear] model, which is a simple linear model that can be used
+//! for regression or classification tasks.
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "alloc")]
@@ -13,7 +14,6 @@ extern crate alloc;
 
 extern crate concision_core as concision;
 extern crate ndarray as nd;
-extern crate ndarray_stats as stats;
 
 pub use self::model::{Config, Features, Layout, Linear};
 pub use self::params::{mode::*, LinearParams};

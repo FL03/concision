@@ -24,6 +24,8 @@ full = [
     "serde",
 ]
 
+# ********* [FF] Dependencies *********
+
 alloc = [
     "concision-core/alloc",
 ]
@@ -44,28 +46,28 @@ rand = [
     "num/rand"
 ]
 
-
 serde = [
-    "dep:serde",
-    "serde-ext",
-]
-
-serde-ext = [
+    "serde-1",
     "concision-core/serde",
     "ndarray/serde-1",
     "num/serde"
 ]
 
+serde-1 = [
+    "dep:serde",
+]
+
+tracing = [
+    "dep:tracing",
+]
+
+# ********* [FF] Environments *********
 std = [
     "concision-core/std",
     "ndarray/std",
     "num/std",
     "serde/std",
     "strum/std",
-]
-
-tracing = [
-    "dep:tracing",
 ]
 
 wasm = [
@@ -85,18 +87,29 @@ test = true
 [build-dependencies]
 
 [dependencies]
-approx = { optional = true, version = "0.5"}
 ndarray.workspace = true
 num.workspace = true
-serde = { default-features = false, features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
-tracing = { optional = true, version = "0.1" }
+
+[dependencies.approx]
+optional = true
+version = "0.5"
 
 [dependencies.concision-core]
 default-features = false
 path = "../../core"
 version = "0.1.14"
+
+[dependencies.serde]
+default-features = false
+features = ["derive"]
+optional = true
+version = "1"
+
+[dependencies.tracing]
+optional = true
+version = "0.1"
 
 [dev-dependencies]
 lazy_static.workspace = true

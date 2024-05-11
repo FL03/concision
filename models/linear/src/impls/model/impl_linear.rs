@@ -6,7 +6,7 @@ use crate::{Config, Linear, LinearParams, ParamMode};
 use core::borrow::{Borrow, BorrowMut};
 use nd::RemoveAxis;
 
-impl<K, A> Linear<K, A>
+impl<A, K> Linear<A, K>
 where
     K: ParamMode,
 {
@@ -20,17 +20,17 @@ where
     }
 }
 
-impl<K, A, D> Borrow<Config<D, K>> for Linear<K, A, D>
+impl<A, K, D> Borrow<Config<K, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
     K: ParamMode,
 {
-    fn borrow(&self) -> &Config<D, K> {
+    fn borrow(&self) -> &Config<K, D> {
         &self.config
     }
 }
 
-impl<K, A, D> Borrow<LinearParams<K, A, D>> for Linear<K, A, D>
+impl<A, K, D> Borrow<LinearParams<K, A, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
     K: ParamMode,
@@ -40,7 +40,7 @@ where
     }
 }
 
-impl<K, A, D> BorrowMut<LinearParams<K, A, D>> for Linear<K, A, D>
+impl<A, K, D> BorrowMut<LinearParams<K, A, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
     K: ParamMode,

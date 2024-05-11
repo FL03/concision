@@ -6,12 +6,12 @@ use crate::{Config, Linear, LinearParams, ParamMode};
 use concision::prelude::{Module, Predict, PredictError};
 use nd::RemoveAxis;
 
-impl<A, D, K> Module for Linear<K, A, D>
+impl<A, K, D> Module for Linear<A, K, D>
 where
     D: RemoveAxis,
     K: ParamMode,
 {
-    type Config = Config<D, K>;
+    type Config = Config<K, D>;
     type Params = LinearParams<K, A, D>;
 
     fn config(&self) -> &Self::Config {
@@ -27,7 +27,7 @@ where
     }
 }
 
-impl<U, V, K, A, D> Predict<U> for Linear<K, A, D>
+impl<U, V, A, K, D> Predict<U> for Linear<A, K, D>
 where
     D: RemoveAxis,
     K: ParamMode,

@@ -33,7 +33,7 @@ fn test_config() {
 fn test_linear() {
     let (samples, (outputs, inputs)) = SHAPE;
 
-    let model: Linear<Biased, f64> = Linear::from_features(inputs, outputs).uniform();
+    let model = Linear::<f64, Biased>::from_features(inputs, outputs).uniform();
 
     let data = linarr::<f64, Ix2>((samples, inputs)).unwrap();
     let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
@@ -42,13 +42,12 @@ fn test_linear() {
 }
 
 #[test]
-fn test_bias_ty() {
-    use linear::{Biased, Unbiased};
+fn test_model_modes() {
     let (_samples, (outputs, inputs)) = SHAPE;
 
-    let model: Linear<Biased, f64> = Linear::from_features(inputs, outputs).uniform();
+    let model = Linear::<f64>::from_features(inputs, outputs).uniform();
     assert!(model.is_biased());
 
-    let model: Linear<Unbiased, f64> = Linear::from_features(inputs, outputs).uniform();
+    let model = Linear::<f64, Unbiased>::from_features(inputs, outputs).uniform();
     assert!(!model.is_biased());
 }

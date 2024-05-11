@@ -98,7 +98,6 @@ required-features = ["rand"]
 
 [dependencies]
 ndarray.workspace = true
-ndarray-stats.workspace = true
 num.workspace = true
 smart-default.workspace = true
 strum.workspace = true

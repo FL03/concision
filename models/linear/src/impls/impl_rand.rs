@@ -11,7 +11,7 @@ use concision::rand::rand_distr::{uniform, Distribution, StandardNormal};
 use nd::*;
 use num::Float;
 
-impl<A, D, K> Linear<K, A, D>
+impl<A, D, K> Linear<A, K, D>
 where
     A: Float + uniform::SampleUniform,
     D: RemoveAxis,

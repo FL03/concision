@@ -9,7 +9,7 @@ use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Config<D = Ix2, B = Biased>
+pub struct Config<B = Biased, D = Ix2>
 where
     D: Dimension,
 {
@@ -18,7 +18,7 @@ where
     _biased: PhantomData<B>,
 }
 
-impl<D, K> Config<D, K>
+impl<K, D> Config<K, D>
 where
     D: Dimension,
     K: ParamMode,
@@ -31,7 +31,7 @@ where
         }
     }
 
-    pub fn into_biased(self) -> Config<D, Biased> {
+    pub fn into_biased(self) -> Config<Biased, D> {
         Config {
             _biased: PhantomData,
             layout: self.layout,
@@ -39,7 +39,7 @@ where
         }
     }
 
-    pub fn into_unbiased(self) -> Config<D, Unbiased> {
+    pub fn into_unbiased(self) -> Config<Unbiased, D> {
         Config {
             _biased: PhantomData,
             layout: self.layout,
@@ -54,7 +54,7 @@ where
         }
     }
 
-    pub fn with_layout<E>(self, layout: Layout<E>) -> Config<E, K>
+    pub fn with_layout<E>(self, layout: Layout<E>) -> Config<K, E>
     where
         E: Dimension,
     {
@@ -73,7 +73,7 @@ where
         self.dim().into_pattern()
     }
 
-    pub fn into_dimensionality<E>(self, dim: E) -> Result<Config<E, K>, nd::ShapeError>
+    pub fn into_dimensionality<E>(self, dim: E) -> Result<Config<K, E>, nd::ShapeError>
     where
         E: Dimension,
     {
@@ -111,7 +111,7 @@ where
     }
 }
 
-impl<K> Config<Ix2, K> {
+impl<K> Config<K, Ix2> {
     pub fn std(inputs: usize, outputs: usize) -> Self {
         Self {
             layout: Layout::new((outputs, inputs).into_dimension()),
@@ -121,7 +121,7 @@ impl<K> Config<Ix2, K> {
     }
 }
 
-impl<D> Config<D, Biased>
+impl<D> Config<Biased, D>
 where
     D: Dimension,
 {
@@ -138,7 +138,7 @@ where
     }
 }
 
-impl<D> Config<D, Unbiased>
+impl<D> Config<Unbiased, D>
 where
     D: Dimension,
 {
@@ -146,15 +146,15 @@ where
         Self::new()
     }
 
-    pub fn from_dim(dim: D) -> Config<D, Unbiased>
+    pub fn from_dim(dim: D) -> Config<Unbiased, D>
     where
         D: RemoveAxis,
     {
-        Config::<D, Unbiased>::new().with_layout(Layout::from_dim(dim).unwrap())
+        Config::<Unbiased, D>::new().with_layout(Layout::from_dim(dim).unwrap())
     }
 }
 
-impl<D> Default for Config<D, Biased>
+impl<D> Default for Config<Biased, D>
 where
     D: Dimension,
 {

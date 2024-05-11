@@ -7,7 +7,12 @@
 
 ***
 
-Concision is designed to be a complete toolkit for building machine learning models in Rust. 
+### _The library is currently in the early stages of development and is not yet ready for production use._
+
+Concision is designed to be a complete toolkit for building machine learning models in Rust.
+
+Concision is a machine learning library for building powerful models in Rust prioritizing ease-of-use, efficiency, and flexability. The library is built to make use of the 
+both the upcoming `autodiff` experimental feature and increased support for generics in the 2024 edition of Rust.
 
 ## Getting Started
 
@@ -26,28 +31,29 @@ cargo build --features full -r --workspace
 
 ## Usage
 
+### Example: Linear Model (biased)
+
 ```rust
     extern crate concision as cnc;
 
-    use cnc::func::Sigmoid;
-    use cnc::linear::{Config, Features, Linear};
-    use cnc::{linarr, Predict, Result};
+    use cnc::prelude::{linarr, Linear, Result, Sigmoid};
     use ndarray::Ix2;
 
     fn main() -> Result<()> {
         tracing_subscriber::fmt::init();
         tracing::info!("Starting linear model example");
 
-        let (samples, dmodel, features) = (20, 5, 3);
-        let features = Features::new(3, 5);
-        let config = Config::new("example", features).biased();
-        let data = linarr::<f64, Ix2>((samples, dmodel)).unwrap();
+        let (samples, d_in, d_out) = (20, 5, 3);
+        let data = linarr::<f64, Ix2>((samples, d_in)).unwrap();
 
-        let model: Linear<f64> = Linear::std(config).uniform();
-        // `.activate(*data, *activation)` runs the forward pass and applies the activation function to the result
+        let model = Linear::<f64>::from_features(d_in, d_out).uniform();
+        // let model = Linear::<f64, cnc::linear::Unbiased>::from_features(d_in, d_out).uniform();
+
+        assert!(model.is_biased());
+
         let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
-        assert_eq!(y.dim(), (samples, features));
-        println!("Predictions: {:?}", y);
+        assert_eq!(y.dim(), (samples, d_out));
+        println!("Predictions:\n{:?}", &y);
 
         Ok(())
     }

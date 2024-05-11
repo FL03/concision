@@ -83,19 +83,30 @@ test = true
 [build-dependencies]
 
 [dependencies]
-approx = { optional = true, version = "0.5" }
 itertools.workspace = true
 ndarray.workspace = true
 num.workspace = true
-serde = { default-features = false, features = ["derive"], optional = true, version = "1" }
 smart-default.workspace = true
 strum.workspace = true
-tracing = { optional = true, version = "0.1" }
+
+[dependencies.approx]
+optional = true
+version = "0.5"
 
 [dependencies.concision-core]
 default-features = false
 path = "../core"
 version = "0.1.14"
+
+[dependencies.serde]
+default-features = false
+features = ["derive"]
+optional = true
+version = "1"
+
+[dependencies.tracing]
+optional = true
+version = "0.1"
 
 [dev-dependencies]
 

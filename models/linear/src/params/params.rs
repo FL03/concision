@@ -30,19 +30,7 @@ where
     impl_param_builder!(ones where A: Clone + One, S: DataOwned);
     impl_param_builder!(zeros where A: Clone + Zero, S: DataOwned);
 
-    pub fn new<Sh>(shape: Sh) -> Self
-    where
-        A: Default,
-        S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
-    {
-        Self {
-            bias: None,
-            weights: ArrayBase::default(shape),
-            _mode: PhantomData,
-        }
-    }
-
+    #[doc(hidden)]
     pub fn build<F, Sh>(shape: Sh, builder: F) -> Self
     where
         F: Fn(Sh) -> ArrayBase<S, D>,
@@ -126,6 +114,7 @@ where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
+    /// Create a new biased parameter store from the given shape.
     pub fn biased<Sh>(shape: Sh) -> Self
     where
         A: Default,
@@ -136,7 +125,7 @@ where
         Self {
             bias: build_bias(true, dim.clone(), ArrayBase::default),
             weights: ArrayBase::default(dim),
-            _mode: PhantomData,
+            _mode: PhantomData::<Biased>,
         }
     }
 }
@@ -146,15 +135,17 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn unbiased() -> Self
+    /// Create a new unbiased parameter store from the given shape.
+    pub fn unbiased<Sh>(shape: Sh) -> Self
     where
         A: Default,
         S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
     {
         Self {
             bias: None,
-            weights: Default::default(),
-            _mode: PhantomData,
+            weights: ArrayBase::default(shape),
+            _mode: PhantomData::<Unbiased>,
         }
     }
 }

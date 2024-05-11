@@ -78,7 +78,7 @@ macro_rules! impl_from {
 
     };
     (@impl $b:ty) => {
-        
+
     };
 }
 
@@ -112,30 +112,30 @@ where
 }
 
 impl<A, S, D, K> From<NodeBase<S, D, D::Smaller>> for ParamsBase<S, D, K>
-    where
-        D: RemoveAxis,
-        K: ParamMode,
-        S: RawData<Elem = A>,
-    {
-        fn from((weights, bias): NodeBase<S, D, D::Smaller>) -> Self {
-            Self {
-                bias,
-                weights,
-                _mode: PhantomData::<K>,
-            }
+where
+    D: RemoveAxis,
+    K: ParamMode,
+    S: RawData<Elem = A>,
+{
+    fn from((weights, bias): NodeBase<S, D, D::Smaller>) -> Self {
+        Self {
+            bias,
+            weights,
+            _mode: PhantomData::<K>,
         }
     }
+}
 
-    impl<A, S, D> From<Pair<ArrayBase<S, D>, ArrayBase<S, D::Smaller>>> for ParamsBase<S, D, Biased>
-    where
-        D: RemoveAxis,
-        S: RawData<Elem = A>,
-    {
-        fn from((weights, bias): Pair<ArrayBase<S, D>, ArrayBase<S, D::Smaller>>) -> Self {
-            Self {
-                bias: Some(bias),
-                weights,
-                _mode: PhantomData::<Biased>,
-            }
+impl<A, S, D> From<Pair<ArrayBase<S, D>, ArrayBase<S, D::Smaller>>> for ParamsBase<S, D, Biased>
+where
+    D: RemoveAxis,
+    S: RawData<Elem = A>,
+{
+    fn from((weights, bias): Pair<ArrayBase<S, D>, ArrayBase<S, D::Smaller>>) -> Self {
+        Self {
+            bias: Some(bias),
+            weights,
+            _mode: PhantomData::<Biased>,
         }
     }
+}
