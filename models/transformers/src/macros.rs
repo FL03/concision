@@ -44,6 +44,46 @@ macro_rules! fwd_builder {
     };
 }
 
+macro_rules! param_views {
+    ($method:ident::$($rest:tt)*) => {
+        param_views!(@impl $method.$method::$($rest)*);
+    };
+    ($method:ident.$call:ident::$($rest:tt)*) => {
+        param_views!(@impl $method.$call::$($rest)*);
+    };
+    (@impl $method:ident.$call:ident::<$view:ident>(self) where $($rest:tt)*) => {
+        pub fn $method(self) -> QKVBase<$view<A>, D>
+        where
+            $($rest)*
+        {
+            param_views!(@apply $call(self))
+        }
+    };
+    (@impl $method:ident.$call:ident::<$view:ident>(&self) where $($rest:tt)*) => {
+        pub fn $method(&self) -> QKVBase<$view<A>, D>
+        where
+            $($rest)*
+        {
+            param_views!(@apply $call(self))
+        }
+    };
+    (@impl $method:ident.$call:ident::<'a, $view:ident>(&self) where $($rest:tt)*) => {
+        pub fn $method(&self) -> QKVBase<$view<&'_ A>, D>
+        where
+            $($rest)*
+        {
+            param_views!(@apply $call(self))
+        }
+    };
+    (@apply $call:ident($self:expr)) => {
+        $crate::params::QKVBase {
+            q: $self.q.$call(),
+            k: $self.k.$call(),
+            v: $self.v.$call(),
+        }
+    };
+}
+
 macro_rules! qkv_builder {
 
     ($method:ident.$call:ident where $($rest:tt)*) => {

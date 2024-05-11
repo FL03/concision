@@ -11,22 +11,33 @@ use transformers::{AttentionHead, QKV};
 use ndarray::prelude::*;
 
 #[test]
-fn test_attention_params() {
+fn test_qkv() {
     let shape = (2048, 10);
     let params = QKV::<f64>::new(shape);
     assert_eq!(params.q(), &Array::default(shape));
+}
 
-    let data: Array2<f64> = linarr(shape).unwrap();
-    let exp = data.dot(&Array2::<f64>::ones(shape));
+#[test]
+fn test_qkv_matmul() {
+    let shape = (2048, 10);
+    // generate some sample data
+    let data = linarr(shape).unwrap();
+    // initialize the parameters
     let params = QKV::<f64>::ones(shape);
-    let res = params.matmul(&data);
+    // calculate the expected result
+    let exp = Array2::<f64>::ones(shape).dot(&data.t());
+    // calculate the result
+    let res = params.matmul(&data.t());
+    // compare the results
     assert_eq!(res.q(), &exp);
+    assert_eq!(res.k(), &exp);
+    assert_eq!(res.v(), &exp);
 }
 
 #[test]
 fn test_attention_head() {
     let shape = (30, 3);
-    
+
     let head = AttentionHead::<f64>::ones(shape);
     assert_eq!(head.q(), &Array::ones(shape));
 }

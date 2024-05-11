@@ -6,8 +6,6 @@ use nd::*;
 
 use num::traits::{One, Zero};
 
-
-
 pub struct QKVBase<S = OwnedRepr<f64>, D = Ix2>
 where
     D: Dimension,
@@ -42,6 +40,13 @@ where
     qkv_builder!(ones.ones where A: Clone + One, S: DataOwned);
     qkv_builder!(zeros.zeros where A: Clone + Zero, S: DataOwned);
 
+    pub fn as_views(&self) -> (ArrayView<A, D>, ArrayView<A, D>, ArrayView<A, D>)
+    where
+        S: Data,
+    {
+        (self.q.view(), self.k.view(), self.v.view())
+    }
+
     /// Return the [pattern](ndarray::Dimension::Pattern) of the dimension
     pub fn dim(&self) -> D::Pattern {
         self.q.dim()
@@ -58,6 +63,8 @@ where
     pub fn shape(&self) -> &[usize] {
         self.q.shape()
     }
+
+    param_views!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
+    param_views!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataShared);
+    param_views!(view::<'a, ViewRepr>(&self) where S: Data);
 }
-
-

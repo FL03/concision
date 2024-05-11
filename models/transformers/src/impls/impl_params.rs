@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::QKVBase;
-use nd::{Data, DataOwned, RawDataClone};
 use nd::prelude::*;
+use nd::{Data, DataOwned, RawDataClone};
 
 impl<S, D> Clone for QKVBase<S, D>
 where
@@ -61,7 +61,7 @@ where
     S: Data<Elem = A>,
     S2: Data<Elem = B>,
     D2: Dimension,
-    ArrayBase<S, D>: PartialEq<ArrayBase<S2, D2>>
+    ArrayBase<S, D>: PartialEq<ArrayBase<S2, D2>>,
 {
     fn eq(&self, other: &ArrayBase<S2, D2>) -> bool {
         self.q == *other && self.k == *other && self.v == *other

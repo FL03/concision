@@ -43,5 +43,3 @@ where
     fwd_builder!(ones.ones where A: Clone + num::One, S: DataOwned);
     fwd_builder!(zeros.zeros where A: Clone + num::Zero, S: DataOwned);
 }
-
-

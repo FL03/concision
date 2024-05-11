@@ -28,13 +28,13 @@ pub mod attention;
 pub mod params;
 
 pub(crate) mod impls {
-   pub mod impl_head;
-   pub mod impl_linalg;
-   pub mod impl_params;
+    pub mod impl_head;
+    pub mod impl_linalg;
+    pub mod impl_params;
 }
 
 pub mod prelude {
-   pub use super::attention::prelude::*;
-   pub use super::params::prelude::*;
-   pub use super::Transformer;
+    pub use super::attention::prelude::*;
+    pub use super::params::prelude::*;
+    pub use super::Transformer;
 }

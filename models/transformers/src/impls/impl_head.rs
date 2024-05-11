@@ -4,8 +4,8 @@
 */
 use crate::attention::AttentionHead;
 use crate::params::QKVBase;
-use nd::DataOwned;
 use nd::prelude::*;
+use nd::DataOwned;
 
 impl<A, S, D> Default for AttentionHead<A, S, D>
 where
