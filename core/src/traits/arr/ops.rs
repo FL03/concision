@@ -21,7 +21,7 @@ pub trait Inverse {
 pub trait Matmul<Rhs = Self> {
     type Output;
 
-    fn matmul(&self, rhs: Rhs) -> Self::Output;
+    fn matmul(&self, rhs: &Rhs) -> Self::Output;
 }
 
 pub trait Matpow<Rhs = Self> {
@@ -56,14 +56,14 @@ where
     }
 }
 
-impl<X, Y, S> Matmul<X> for S
+impl<S, X, Y> Matmul<X> for S
 where
     S: Dot<X, Output = Y>,
 {
     type Output = Y;
 
-    fn matmul(&self, rhs: X) -> Self::Output {
-        self.dot(&rhs)
+    fn matmul(&self, rhs: &X) -> Self::Output {
+        self.dot(rhs)
     }
 }
 
