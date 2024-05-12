@@ -2,8 +2,7 @@
     Appellation: impl_from <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::{Biased, NodeBase, Pair, ParamMode, ParamsBase, Unbiased};
-use crate::Features;
+use crate::{Biased, Features, NodeBase, Pair, ParamsBase, Unbiased};
 #[cfg(all(feature = "alloc", no_std))]
 use alloc::vec;
 use core::marker::PhantomData;
@@ -100,7 +99,6 @@ where
 impl<A, K> From<(Array1<A>, Option<A>)> for ParamsBase<OwnedRepr<A>, Ix1, K>
 where
     A: Clone,
-    K: ParamMode,
 {
     fn from((weights, bias): (Array1<A>, Option<A>)) -> Self {
         Self {
@@ -114,7 +112,6 @@ where
 impl<A, S, D, K> From<NodeBase<S, D, D::Smaller>> for ParamsBase<S, D, K>
 where
     D: RemoveAxis,
-    K: ParamMode,
     S: RawData<Elem = A>,
 {
     fn from((weights, bias): NodeBase<S, D, D::Smaller>) -> Self {

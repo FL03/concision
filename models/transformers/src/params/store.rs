@@ -34,9 +34,9 @@ where
         }
     }
 
-    ndbuilder!(new.default where A: Default, S: DataOwned);
-    ndbuilder!(ones where A: Clone + One, S: DataOwned);
-    ndbuilder!(zeros where A: Clone + Zero, S: DataOwned);
+    ndbuilder!(new::default() where A: Default, S: DataOwned);
+    ndbuilder!(ones() where A: Clone + One, S: DataOwned);
+    ndbuilder!(zeros() where A: Clone + Zero, S: DataOwned);
 
     access!(q, k, v);
 
@@ -84,12 +84,12 @@ where
     pub fn shape(&self) -> &[usize] {
         self.q.shape()
     }
-    param_views!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
-    param_views!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
+    ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
+    ndview!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
 
-    param_views!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
-    param_views!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataShared);
+    ndview!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
+    ndview!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataShared);
 
-    param_views!(view::<'a, ViewRepr>(&self) where S: Data);
-    param_views!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
+    ndview!(view::<'a, ViewRepr>(&self) where S: Data);
+    ndview!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
 }

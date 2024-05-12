@@ -17,18 +17,17 @@ where
     D: Dimension,
 {
     pub(crate) config: Config<K, D>,
-    pub(crate) params: LinearParams<K, A, D>,
+    pub(crate) params: LinearParams<A, K, D>,
 }
 
 impl<A, K, D> Linear<A, K, D>
 where
     D: RemoveAxis,
-    K: ParamMode,
 {
     pub fn from_config(config: Config<K, D>) -> Self
     where
         A: Clone + Default,
-        K: 'static,
+        K: ParamMode,
     {
         let params = LinearParams::default(config.dim());
         Self { config, params }
@@ -37,13 +36,14 @@ where
     pub fn from_layout(layout: Layout<D>) -> Self
     where
         A: Clone + Default,
+        K: ParamMode,
     {
         let config = Config::<K, D>::new().with_layout(layout);
         let params = LinearParams::default(config.dim());
         Self { config, params }
     }
 
-    pub fn with_params<E>(self, params: LinearParams<K, A, E>) -> Linear<A, K, E>
+    pub fn with_params<E>(self, params: LinearParams<A, K, E>) -> Linear<A, K, E>
     where
         E: RemoveAxis,
     {
@@ -71,11 +71,11 @@ where
         self.params.weights_mut()
     }
 
-    pub const fn params(&self) -> &LinearParams<K, A, D> {
+    pub const fn params(&self) -> &LinearParams<A, K, D> {
         &self.params
     }
 
-    pub fn params_mut(&mut self) -> &mut LinearParams<K, A, D> {
+    pub fn params_mut(&mut self) -> &mut LinearParams<A, K, D> {
         &mut self.params
     }
 
@@ -89,8 +89,8 @@ where
         }
     }
 
-    pub fn is_biased(&self) -> bool {
-        K::BIASED || self.config().is_biased()
+    pub fn is_biased(&self) -> bool where K: 'static {
+        self.config().is_biased()
     }
 
     pub fn with_name(self, name: impl ToString) -> Self {

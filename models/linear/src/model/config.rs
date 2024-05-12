@@ -3,16 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::layout::{Features, Layout};
-use crate::params::mode::*;
+use crate::params::{Biased, Unbiased};
 use core::marker::PhantomData;
 use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Config<B = Biased, D = Ix2>
-where
-    D: Dimension,
-{
+pub struct Config<B = Biased, D = Ix2>{
     pub layout: Layout<D>,
     pub name: String,
     _biased: PhantomData<B>,
@@ -21,7 +18,6 @@ where
 impl<K, D> Config<K, D>
 where
     D: Dimension,
-    K: ParamMode,
 {
     pub fn new() -> Self {
         Self {
@@ -157,7 +153,6 @@ where
 impl<K, D> concision::Config for Config<K, D>
 where
     D: Dimension,
-    K: ParamMode,
 {
 }
 

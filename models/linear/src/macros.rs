@@ -10,6 +10,7 @@ macro_rules! impl_param_builder {
     (@impl $call:ident where $($rest:tt)*) => {
         pub fn $call<Sh>(shape: Sh) -> Self
         where
+            K: $crate::params::mode::ParamMode,
             Sh: ndarray::ShapeBuilder<Dim = D>,
             $($rest)*
         {

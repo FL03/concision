@@ -9,10 +9,7 @@ use nd::{Dimension, RemoveAxis, ShapeBuilder, ShapeError};
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 
-pub struct Layout<D = nd::Ix2>
-where
-    D: Dimension,
-{
+pub struct Layout<D = nd::Ix2> {
     pub(crate) dim: D,
     pub(crate) features: Features,
 }

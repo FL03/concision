@@ -4,7 +4,7 @@
 */
 #![cfg(feature = "serde")]
 
-use crate::params::{Entry, ParamMode, ParamsBase};
+use crate::params::{Entry, ParamsBase};
 use core::marker::PhantomData;
 use nd::*;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -33,7 +33,6 @@ impl<A, S, D, K> Serialize for ParamsBase<S, D, K>
 where
     A: Serialize,
     D: RemoveAxis + Serialize,
-    K: ParamMode,
     S: Data<Elem = A>,
     <D as Dimension>::Smaller: Dimension + Serialize,
 {

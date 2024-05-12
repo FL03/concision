@@ -18,6 +18,11 @@ pub trait MultiLayerPerceptron {
     type Output;
 }
 
-pub trait Neuron {
-    type Rho;
+pub trait Neuron<T, F> {
+}
+
+pub trait Rho<T> {
+    type Output;
+
+    fn activate(&self, args: T) -> Self::Output;
 }

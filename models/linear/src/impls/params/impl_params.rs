@@ -2,7 +2,6 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::mode::*;
 use crate::params::ParamsBase;
 use concision::prelude::{Predict, PredictError};
 use core::ops::Add;
@@ -13,7 +12,6 @@ use num::complex::ComplexFloat;
 impl<A, K, S, D> ParamsBase<S, D, K>
 where
     D: RemoveAxis,
-    K: ParamMode,
     S: RawData<Elem = A>,
 {
     pub fn activate<F, X, Y>(&mut self, args: &X, f: F) -> Y
@@ -31,7 +29,6 @@ where
     A: Dot<Array<T, D>, Output = B>,
     B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
     D: RemoveAxis,
-    K: ParamMode,
     S: Data<Elem = T>,
     T: NdFloat,
 {
@@ -118,7 +115,6 @@ macro_rules! impl_predict {
             A: Dot<Array<T, D>, Output = B>,
             B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
             D: RemoveAxis,
-            K: ParamMode,
             S: Data<Elem = T>,
             T: ComplexFloat,
         {
@@ -134,13 +130,12 @@ macro_rules! impl_predict {
             }
         }
     };
-    (@impl $lt:lifetime $name:ident) => {
-        impl<'a, A, B, T, S, D, K> Predict<A> for $name<S, D, K>
+    (@impl $name:ident<&'a $rhs:ident>) => {
+        impl<'a, A, B, T, S, D, K> Predict<&'a $rhs> for $name<S, D, K>
         where
             A: Dot<Array<T, D>, Output = B>,
-            B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
+            B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
             D: RemoveAxis,
-            K: ParamMode,
             S: Data<Elem = T>,
             T: ComplexFloat,
         {

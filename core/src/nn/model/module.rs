@@ -4,7 +4,7 @@
 */
 use crate::{Config, Predict};
 
-pub type DynModule<C, P> = Box<dyn Module<Config = C, Params = P>>;
+pub type ModuleDyn<C, P> = Box<dyn Module<Config = C, Params = P>>;
 pub type DynModuleExt<X, Y, C, P> = Box<dyn ModuleExt<X, Config = C, Output = Y, Params = P>>;
 pub type Stack<X, Y, C, P> = Vec<Box<dyn ModuleExt<X, Config = C, Output = Y, Params = P>>>;
 

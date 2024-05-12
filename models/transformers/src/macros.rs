@@ -33,42 +33,33 @@ macro_rules! access {
 }
 
 macro_rules! ndbuilder {
-    ($method:ident $($rest:tt)*) => {
-        ndbuilder!(@impl $method $($rest)*);
+    ($method:ident$(::$call:ident)?() where $($rest:tt)*) => {
+        ndbuilder!(@impl $method$(::$call)?() where $($rest)*);
     };
-    (@impl $method:ident where $($rest:tt)*) => {
-        pub fn $method<Sh>(shape: Sh) -> Self
-        where
-            Sh: ndarray::ShapeBuilder<Dim = D>,
-            $($rest)*
-        {
-            Self::builder(shape, ArrayBase::$method)
-        }
+    (@impl $method:ident() where $($rest:tt)*) => {
+        ndbuilder!(@impl $method::$method() where $($rest)*);
     };
-    (@impl $method:ident.$call:ident where $($rest:tt)*) => {
-        pub fn $method<Sh>(shape: Sh) -> Self
-        where
-            Sh: ndarray::ShapeBuilder<Dim = D>,
-            $($rest)*
-        {
+    (@impl $method:ident::$call:ident() where $($rest:tt)*) => {
+        pub fn $method<Sh: ndarray::ShapeBuilder<Dim = D>>(shape: Sh) -> Self where $($rest)* {
             Self::builder(shape, ArrayBase::$call)
         }
     };
 }
 
-macro_rules! param_views {
+// # TODO:
+macro_rules! ndview {
     ($method:ident::$($rest:tt)*) => {
-        param_views!(@impl $method.$method::$($rest)*);
+        ndview!(@impl $method.$method::$($rest)*);
     };
     ($method:ident.$call:ident::$($rest:tt)*) => {
-        param_views!(@impl $method.$call::$($rest)*);
+        ndview!(@impl $method.$call::$($rest)*);
     };
     (@impl $method:ident.$call:ident::<$view:ident>(self) where $($rest:tt)*) => {
         pub fn $method(self) -> $crate::params::ParamsBase<$view<A>, D>
         where
             $($rest)*
         {
-            param_views!(@apply $call(self))
+            ndview!(@apply $call(self))
         }
     };
     (@impl $method:ident.$call:ident::<$view:ident>(mut self) where $($rest:tt)*) => {
@@ -76,7 +67,7 @@ macro_rules! param_views {
         where
             $($rest)*
         {
-            param_views!(@apply $call(self))
+            ndview!(@apply $call(self))
         }
     };
     (@impl $method:ident.$call:ident::<$view:ident>(&self) where $($rest:tt)*) => {
@@ -84,7 +75,7 @@ macro_rules! param_views {
         where
             $($rest)*
         {
-            param_views!(@apply $call(self))
+            ndview!(@apply $call(self))
         }
     };
     (@impl $method:ident.$call:ident::<$view:ident>(&mut self) where $($rest:tt)*) => {
@@ -92,7 +83,7 @@ macro_rules! param_views {
         where
             $($rest)*
         {
-            param_views!(@apply $call(self))
+            ndview!(@apply $call(self))
         }
     };
     (@impl $method:ident.$call:ident::<'a, $view:ident>(&self) where $($rest:tt)*) => {
@@ -100,7 +91,7 @@ macro_rules! param_views {
         where
             $($rest)*
         {
-            param_views!(@apply $call(self))
+            ndview!(@apply $call(self))
         }
     };
     (@impl $method:ident.$call:ident::<'a, $view:ident>(&mut self) where $($rest:tt)*) => {
@@ -108,7 +99,7 @@ macro_rules! param_views {
         where
             $($rest)*
         {
-            param_views!(@apply $call(self))
+            ndview!(@apply $call(self))
         }
     };
     (@apply $call:ident($self:expr)) => {

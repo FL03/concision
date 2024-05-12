@@ -2,14 +2,14 @@
    Appellation: nn <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{error::ModelError, models::Module};
+pub use self::{error::ModelError, model::prelude::*};
 
 pub mod error;
-pub mod models;
+pub mod model;
 
 pub(crate) mod prelude {
     pub use super::error::ModelError;
-    pub use super::models::prelude::*;
+    pub use super::model::prelude::*;
 }
 
 #[cfg(test)]

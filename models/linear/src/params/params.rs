@@ -2,9 +2,7 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::mode::*;
-use super::Node;
-use crate::{build_bias, Features};
+use crate::{build_bias, Biased, Features, Node, Unbiased};
 use core::marker::PhantomData;
 use nd::*;
 use num::{One, Zero};
@@ -23,7 +21,6 @@ where
 impl<A, S, D, K> ParamsBase<S, D, K>
 where
     D: RemoveAxis,
-    K: ParamMode,
     S: RawData<Elem = A>,
 {
     impl_param_builder!(default where A: Default, S: DataOwned);
@@ -152,7 +149,6 @@ where
 }
 impl<A, S, K> ParamsBase<S, Ix2, K>
 where
-    K: ParamMode,
     S: RawData<Elem = A>,
 {
     pub fn set_node(&mut self, idx: usize, node: Node<A>)

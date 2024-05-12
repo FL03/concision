@@ -6,10 +6,7 @@ use crate::{Config, Linear, LinearParams, ParamMode};
 use core::borrow::{Borrow, BorrowMut};
 use nd::RemoveAxis;
 
-impl<A, K> Linear<A, K>
-where
-    K: ParamMode,
-{
+impl<A, K> Linear<A, K> where K: ParamMode {
     pub fn from_features(inputs: usize, outputs: usize) -> Self
     where
         A: Clone + Default,
@@ -23,29 +20,26 @@ where
 impl<A, K, D> Borrow<Config<K, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
-    K: ParamMode,
 {
     fn borrow(&self) -> &Config<K, D> {
         &self.config
     }
 }
 
-impl<A, K, D> Borrow<LinearParams<K, A, D>> for Linear<A, K, D>
+impl<A, K, D> Borrow<LinearParams<A, K, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
-    K: ParamMode,
 {
-    fn borrow(&self) -> &LinearParams<K, A, D> {
+    fn borrow(&self) -> &LinearParams<A, K, D> {
         &self.params
     }
 }
 
-impl<A, K, D> BorrowMut<LinearParams<K, A, D>> for Linear<A, K, D>
+impl<A, K, D> BorrowMut<LinearParams<A, K, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
-    K: ParamMode,
 {
-    fn borrow_mut(&mut self) -> &mut LinearParams<K, A, D> {
+    fn borrow_mut(&mut self) -> &mut LinearParams<A, K, D> {
         &mut self.params
     }
 }

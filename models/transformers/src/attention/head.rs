@@ -48,7 +48,7 @@ where
     }
 
     access!(params::<q, k, v>);
-    ndbuilder!(new.default where A: Default, S: DataOwned);
-    ndbuilder!(ones where A: Clone + num::One, S: DataOwned);
-    ndbuilder!(zeros where A: Clone + num::Zero, S: DataOwned);
+    ndbuilder!(new::default() where A: Default, S: DataOwned);
+    ndbuilder!(ones() where A: Clone + num::One, S: DataOwned);
+    ndbuilder!(zeros() where A: Clone + num::Zero, S: DataOwned);
 }

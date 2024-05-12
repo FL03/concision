@@ -3,9 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-pub trait State {
-    type Mode: ParamMode;
-}
 
 pub trait ParamMode: 'static {
     const BIASED: bool = false;
@@ -16,6 +13,10 @@ pub trait ParamMode: 'static {
 
     private!();
 }
+
+/*
+    ************* Implementations *************
+*/
 
 impl<T> ParamMode for Option<T>
 where
@@ -30,9 +31,9 @@ where
     seal!();
 }
 
-macro_rules! param_mode {
+macro_rules! mode {
     {$($T:ident: $opt:expr),* $(,)?} => {
-        $(param_mode!(@impl $T: $opt);)*
+        $(mode!(@impl $T: $opt);)*
     };
     (@impl $T:ident: $opt:expr) => {
         #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -52,7 +53,7 @@ macro_rules! param_mode {
 
 }
 
-param_mode! {
+mode! {
     Biased: true,
     Unbiased: false,
 }

@@ -4,7 +4,7 @@
 */
 #![cfg(feature = "rand")]
 
-use crate::params::{ParamMode, ParamsBase};
+use crate::params::ParamsBase;
 use crate::{bias_dim, Linear};
 use concision::prelude::GenerateRandom;
 use concision::rand::rand_distr::{uniform, Distribution, StandardNormal};
@@ -15,10 +15,9 @@ impl<A, D, K> Linear<A, K, D>
 where
     A: Float + uniform::SampleUniform,
     D: RemoveAxis,
-    K: ParamMode,
     StandardNormal: Distribution<A>,
 {
-    pub fn uniform(self) -> Self {
+    pub fn uniform(self) -> Self where K: 'static {
         let biased = self.is_biased();
         Self {
             params: self.params.init_uniform(biased),
@@ -31,7 +30,6 @@ impl<A, D, K> ParamsBase<OwnedRepr<A>, D, K>
 where
     A: Float + uniform::SampleUniform,
     D: RemoveAxis,
-    K: ParamMode,
     StandardNormal: Distribution<A>,
 {
     pub(crate) fn dk(&self) -> A {
