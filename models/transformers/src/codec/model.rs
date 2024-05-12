@@ -3,6 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Decoder, Encoder};
+use concision::{builder, getters};
 
 #[derive(Default)]
 pub struct Codec {
@@ -16,20 +17,14 @@ impl Codec {
         CodecBuilder::new()
     }
 
-    pub fn context(&self) -> &Context {
-        &self.ctx
-    }
-
-    pub fn decoder(&self) -> &Decoder {
-        &self.decoder
-    }
-
-    pub fn encoder(&self) -> &Encoder {
-        &self.encoder
-    }
+    getters!(
+        context.ctx<Context>,
+        decoder<Decoder>,
+        encoder<Encoder>,
+    );
 }
 
-concision::builder!(
+builder!(
     #[derive(Default)]
     CodecBuilder::<Codec> {
         ctx: Context,

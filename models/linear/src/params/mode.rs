@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-
 pub trait ParamMode: 'static {
     const BIASED: bool = false;
 
@@ -15,7 +14,7 @@ pub trait ParamMode: 'static {
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 
 impl<T> ParamMode for Option<T>

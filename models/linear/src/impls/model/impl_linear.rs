@@ -6,7 +6,10 @@ use crate::{Config, Linear, LinearParams, ParamMode};
 use core::borrow::{Borrow, BorrowMut};
 use nd::RemoveAxis;
 
-impl<A, K> Linear<A, K> where K: ParamMode {
+impl<A, K> Linear<A, K>
+where
+    K: ParamMode,
+{
     pub fn from_features(inputs: usize, outputs: usize) -> Self
     where
         A: Clone + Default,

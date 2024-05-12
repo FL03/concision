@@ -15,8 +15,6 @@ pub mod mode;
 #[doc(inline)]
 pub use crate::primitives::params::*;
 
-
 pub(crate) mod prelude {
     pub use super::mode::*;
 }
-

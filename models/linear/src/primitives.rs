@@ -14,7 +14,7 @@ pub(crate) type NodeBase<S, D = Ix1, E = Ix0> = MaybePair<ArrayBase<S, D>, Array
 pub(crate) type Node<A = f64, D = Ix1, E = Ix0> = NodeBase<nd::OwnedRepr<A>, D, E>;
 
 pub(crate) mod params {
-    
+
     macro_rules! params_ty {
         ($($name:ident<$repr:ident>),* $(,)?) => {
             $(params_ty!(@impl $name<$repr>);)*

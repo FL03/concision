@@ -17,7 +17,10 @@ where
     D: RemoveAxis,
     StandardNormal: Distribution<A>,
 {
-    pub fn uniform(self) -> Self where K: 'static {
+    pub fn uniform(self) -> Self
+    where
+        K: 'static,
+    {
         let biased = self.is_biased();
         Self {
             params: self.params.init_uniform(biased),

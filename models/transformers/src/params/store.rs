@@ -38,7 +38,7 @@ where
     ndbuilder!(ones() where A: Clone + One, S: DataOwned);
     ndbuilder!(zeros() where A: Clone + Zero, S: DataOwned);
 
-    access!(q, k, v);
+    concision::getters!(q, k, v => ArrayBase<S, D>);
 
     pub fn from_elem<Sh>(shape: Sh, value: A) -> Self
     where

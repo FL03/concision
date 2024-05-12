@@ -9,7 +9,7 @@ use nd::{Dimension, IntoDimension, Ix2, RemoveAxis};
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Config<B = Biased, D = Ix2>{
+pub struct Config<B = Biased, D = Ix2> {
     pub layout: Layout<D>,
     pub name: String,
     _biased: PhantomData<B>,
@@ -150,11 +150,7 @@ where
     }
 }
 
-impl<K, D> concision::Config for Config<K, D>
-where
-    D: Dimension,
-{
-}
+impl<K, D> concision::Config for Config<K, D> where D: Dimension {}
 
 impl<D> Default for Config<Biased, D>
 where

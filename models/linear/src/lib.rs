@@ -18,7 +18,7 @@ extern crate ndarray as nd;
 pub use self::model::{Config, Features, Layout, Linear};
 pub use self::params::{mode::*, ParamsBase};
 #[allow(unused_imports)]
-pub use self::{traits::*, primitives::*, utils::*};
+pub use self::{primitives::*, traits::*, utils::*};
 
 #[macro_use]
 pub(crate) mod macros;

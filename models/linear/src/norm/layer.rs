@@ -3,10 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::{LinearParams, ParamMode};
-use nd::RemoveAxis;
 use nd::prelude::*;
+use nd::RemoveAxis;
 
-pub struct LayerNorm<A = f64, K = crate::Biased, D = Ix2> where D: Dimension, {
+pub struct LayerNorm<A = f64, K = crate::Biased, D = Ix2>
+where
+    D: Dimension,
+{
     config: LayerNormConfig<D>,
     params: LinearParams<A, K, D>,
 }
@@ -17,21 +20,32 @@ pub struct LayerNormConfig<D = Ix2> {
 }
 
 impl<D> LayerNormConfig<D> {
-    pub fn new() -> Self where D: Default {
-        Self { dim: D::default(), eps: 1e-5 }
+    pub fn new() -> Self
+    where
+        D: Default,
+    {
+        Self {
+            dim: D::default(),
+            eps: 1e-5,
+        }
     }
 
-    pub fn create(dim: D, eps: f64) -> Self where D: Default {
+    pub fn create(dim: D, eps: f64) -> Self
+    where
+        D: Default,
+    {
         Self { dim, eps }
     }
 
     pub fn with_dim(dim: D) -> Self {
         Self { dim, eps: 1e-5 }
     }
-
 }
 
-impl<D> Default for LayerNormConfig<D> where D: Default {
+impl<D> Default for LayerNormConfig<D>
+where
+    D: Default,
+{
     fn default() -> Self {
         Self {
             dim: D::default(),
@@ -40,10 +54,16 @@ impl<D> Default for LayerNormConfig<D> where D: Default {
     }
 }
 
-
-
-impl<A, K, D> LayerNorm<A, K, D> where D: RemoveAxis, K: ParamMode, {
-    pub fn from_shape<Sh>(shape: Sh) -> Self where A: Default, Sh: ShapeBuilder<Dim = D> {
+impl<A, K, D> LayerNorm<A, K, D>
+where
+    D: RemoveAxis,
+    K: ParamMode,
+{
+    pub fn from_shape<Sh>(shape: Sh) -> Self
+    where
+        A: Default,
+        Sh: ShapeBuilder<Dim = D>,
+    {
         let dim = shape.into_shape().raw_dim().clone();
         let config = LayerNormConfig::with_dim(dim.clone());
         let params = LinearParams::<A, K, D>::default(dim);

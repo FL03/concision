@@ -17,14 +17,22 @@ fn fibonacci(b: &mut Bencher) {
 
 #[bench]
 fn iter_fibonacci(b: &mut Bencher) {
-    b.iter(|| fib::Fibonacci::new().take(BENCH_SIZE as usize).collect::<Vec<u32>>())
+    b.iter(|| {
+        fib::Fibonacci::new()
+            .take(BENCH_SIZE as usize)
+            .collect::<Vec<u32>>()
+    })
 }
 
 #[bench]
 fn recursive_fibonacci(b: &mut Bencher) {
     // exact code to benchmark must be passed as a closure to the iter
     // method of Bencher
-    b.iter(|| (0..BENCH_SIZE).map(fib::recursive_fibonacci).collect::<Vec<u128>>())
+    b.iter(|| {
+        (0..BENCH_SIZE)
+            .map(fib::recursive_fibonacci)
+            .collect::<Vec<u128>>()
+    })
 }
 
 mod fib {
@@ -65,7 +73,7 @@ mod fib {
             _recursive_fibonacci(n - 1, current, current + previous)
         }
     }
-    
+
     pub struct Fibonacci {
         curr: u32,
         next: u32,

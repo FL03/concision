@@ -3,6 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::ParamsBase;
+use concision::getters;
 use nd::*;
 
 pub struct AttentionHead<A = f64, S = OwnedRepr<A>, D = Ix2>
@@ -47,7 +48,7 @@ where
         &mut self.params
     }
 
-    access!(params::<q, k, v>);
+    getters!(params::<[q, k, v]> => ArrayBase<S, D>);
     ndbuilder!(new::default() where A: Default, S: DataOwned);
     ndbuilder!(ones() where A: Clone + num::One, S: DataOwned);
     ndbuilder!(zeros() where A: Clone + num::Zero, S: DataOwned);

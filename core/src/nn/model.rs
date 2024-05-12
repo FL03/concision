@@ -26,4 +26,3 @@ where
 
     fn context(&self) -> Self::Ctx;
 }
-

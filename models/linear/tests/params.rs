@@ -6,8 +6,8 @@ extern crate concision_core as concision;
 extern crate concision_linear as linear;
 
 use concision::Predict;
-use linear::Features;
 use linear::params::{LinearParams, Param, Unbiased};
+use linear::Features;
 
 use core::str::FromStr;
 use ndarray::prelude::*;
@@ -41,5 +41,4 @@ fn test_ndbuilders() {
     assert!(params.is_biased());
     let params = LinearParams::<usize, Unbiased>::zeros(shape);
     assert!(!params.is_biased());
-
 }

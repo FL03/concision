@@ -18,8 +18,7 @@ pub trait MultiLayerPerceptron {
     type Output;
 }
 
-pub trait Neuron<T, F> {
-}
+pub trait Neuron<T, F> {}
 
 pub trait Rho<T> {
     type Output;

@@ -89,7 +89,10 @@ where
         }
     }
 
-    pub fn is_biased(&self) -> bool where K: 'static {
+    pub fn is_biased(&self) -> bool
+    where
+        K: 'static,
+    {
         self.config().is_biased()
     }
 
