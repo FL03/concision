@@ -6,7 +6,7 @@ use nd::*;
 
 use num::traits::{One, Zero};
 
-pub struct QKVBase<S = OwnedRepr<f64>, D = Ix2>
+pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2>
 where
     D: Dimension,
     S: RawData,
@@ -16,7 +16,7 @@ where
     pub(crate) v: ArrayBase<S, D>,
 }
 
-impl<A, S, D> QKVBase<S, D>
+impl<A, S, D> ParamsBase<S, D>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -34,17 +34,38 @@ where
         }
     }
 
+    ndbuilder!(new.default where A: Default, S: DataOwned);
+    ndbuilder!(ones where A: Clone + One, S: DataOwned);
+    ndbuilder!(zeros where A: Clone + Zero, S: DataOwned);
+
     access!(q, k, v);
 
-    qkv_builder!(new.default where A: Default, S: DataOwned);
-    qkv_builder!(ones.ones where A: Clone + One, S: DataOwned);
-    qkv_builder!(zeros.zeros where A: Clone + Zero, S: DataOwned);
+    pub fn from_elem<Sh>(shape: Sh, value: A) -> Self
+    where
+        Sh: ShapeBuilder<Dim = D>,
+        A: Clone,
+        S: DataOwned,
+    {
+        let dim = shape.into_shape().raw_dim().clone();
+        Self {
+            q: ArrayBase::from_elem(dim.clone(), value.clone()),
+            k: ArrayBase::from_elem(dim.clone(), value.clone()),
+            v: ArrayBase::from_elem(dim, value),
+        }
+    }
 
-    pub fn as_views(&self) -> (ArrayView<A, D>, ArrayView<A, D>, ArrayView<A, D>)
+    pub fn as_qkv(&self) -> (ArrayView<A, D>, ArrayView<A, D>, ArrayView<A, D>)
     where
         S: Data,
     {
         (self.q.view(), self.k.view(), self.v.view())
+    }
+
+    pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>)
+    where
+        S: DataOwned,
+    {
+        (self.q, self.k, self.v)
     }
 
     /// Return the [pattern](ndarray::Dimension::Pattern) of the dimension
@@ -59,12 +80,16 @@ where
     pub fn raw_dim(&self) -> D {
         self.q.raw_dim()
     }
-
+    /// Returns a slice of the current shape of the parameters.
     pub fn shape(&self) -> &[usize] {
         self.q.shape()
     }
-
+    param_views!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
     param_views!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
+
+    param_views!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
     param_views!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataShared);
+
     param_views!(view::<'a, ViewRepr>(&self) where S: Data);
+    param_views!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
 }

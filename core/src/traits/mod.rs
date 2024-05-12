@@ -4,7 +4,9 @@
 */
 pub use self::prelude::*;
 
+pub mod generator;
 pub mod math;
+pub mod ops;
 pub mod predict;
 pub mod train;
 
@@ -39,22 +41,12 @@ pub(crate) mod misc {
     }
 }
 
-pub trait Transform<T> {
-    type Output;
-
-    fn transform(&self, args: &T) -> Self::Output;
-}
-
 pub(crate) mod prelude {
-    pub use super::Transform;
-
+    pub use super::arr::prelude::*;
+    pub use super::generator::*;
     pub use super::math::*;
+    pub use super::misc::prelude::*;
+    pub use super::ops::*;
     pub use super::predict::*;
     pub use super::train::*;
-
-    pub use super::arr::prelude::*;
-    pub use super::misc::prelude::*;
 }
-
-#[cfg(test)]
-mod tests {}

@@ -32,8 +32,20 @@ macro_rules! access {
     };
 }
 
-macro_rules! fwd_builder {
-    ($method:ident.$call:ident where $($rest:tt)*) => {
+macro_rules! ndbuilder {
+    ($method:ident $($rest:tt)*) => {
+        ndbuilder!(@impl $method $($rest)*);
+    };
+    (@impl $method:ident where $($rest:tt)*) => {
+        pub fn $method<Sh>(shape: Sh) -> Self
+        where
+            Sh: ndarray::ShapeBuilder<Dim = D>,
+            $($rest)*
+        {
+            Self::builder(shape, ArrayBase::$method)
+        }
+    };
+    (@impl $method:ident.$call:ident where $($rest:tt)*) => {
         pub fn $method<Sh>(shape: Sh) -> Self
         where
             Sh: ndarray::ShapeBuilder<Dim = D>,
@@ -52,7 +64,15 @@ macro_rules! param_views {
         param_views!(@impl $method.$call::$($rest)*);
     };
     (@impl $method:ident.$call:ident::<$view:ident>(self) where $($rest:tt)*) => {
-        pub fn $method(self) -> QKVBase<$view<A>, D>
+        pub fn $method(self) -> $crate::params::ParamsBase<$view<A>, D>
+        where
+            $($rest)*
+        {
+            param_views!(@apply $call(self))
+        }
+    };
+    (@impl $method:ident.$call:ident::<$view:ident>(mut self) where $($rest:tt)*) => {
+        pub fn $method(mut self) -> $crate::params::ParamsBase<$view<A>, D>
         where
             $($rest)*
         {
@@ -60,7 +80,15 @@ macro_rules! param_views {
         }
     };
     (@impl $method:ident.$call:ident::<$view:ident>(&self) where $($rest:tt)*) => {
-        pub fn $method(&self) -> QKVBase<$view<A>, D>
+        pub fn $method(&self) -> $crate::params::ParamsBase<$view<A>, D>
+        where
+            $($rest)*
+        {
+            param_views!(@apply $call(self))
+        }
+    };
+    (@impl $method:ident.$call:ident::<$view:ident>(&mut self) where $($rest:tt)*) => {
+        pub fn $method(&mut self) -> $crate::params::ParamsBase<$view<A>, D>
         where
             $($rest)*
         {
@@ -68,7 +96,15 @@ macro_rules! param_views {
         }
     };
     (@impl $method:ident.$call:ident::<'a, $view:ident>(&self) where $($rest:tt)*) => {
-        pub fn $method(&self) -> QKVBase<$view<&'_ A>, D>
+        pub fn $method(&self) -> $crate::params::ParamsBase<$view<&'_ A>, D>
+        where
+            $($rest)*
+        {
+            param_views!(@apply $call(self))
+        }
+    };
+    (@impl $method:ident.$call:ident::<'a, $view:ident>(&mut self) where $($rest:tt)*) => {
+        pub fn $method(&mut self) -> $crate::params::ParamsBase<$view<&'_ mut A>, D>
         where
             $($rest)*
         {
@@ -76,23 +112,10 @@ macro_rules! param_views {
         }
     };
     (@apply $call:ident($self:expr)) => {
-        $crate::params::QKVBase {
+        $crate::params::ParamsBase {
             q: $self.q.$call(),
             k: $self.k.$call(),
             v: $self.v.$call(),
-        }
-    };
-}
-
-macro_rules! qkv_builder {
-
-    ($method:ident.$call:ident where $($rest:tt)*) => {
-        pub fn $method<Sh>(shape: Sh) -> Self
-        where
-            Sh: ndarray::ShapeBuilder<Dim = D>,
-            $($rest)*
-        {
-            Self::builder(shape, ArrayBase::$call)
         }
     };
 }

@@ -2,7 +2,7 @@
     Appellation: head <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::QKVBase;
+use crate::params::ParamsBase;
 use nd::*;
 
 pub struct AttentionHead<A = f64, S = OwnedRepr<A>, D = Ix2>
@@ -10,7 +10,7 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    params: QKVBase<S, D>,
+    params: ParamsBase<S, D>,
 }
 
 impl<A, S, D> AttentionHead<A, S, D>
@@ -18,7 +18,7 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn from_params(params: QKVBase<S, D>) -> Self {
+    pub fn from_params(params: ParamsBase<S, D>) -> Self {
         Self { params }
     }
 
@@ -27,19 +27,28 @@ where
         F: Fn(D) -> ArrayBase<S, D>,
         Sh: ShapeBuilder<Dim = D>,
     {
-        Self::from_params(QKVBase::builder(shape, builder))
+        Self::from_params(ParamsBase::builder(shape, builder))
     }
 
-    pub fn params(&self) -> &QKVBase<S, D> {
+    pub fn from_elem<Sh>(shape: Sh, value: A) -> Self
+    where
+        Sh: ShapeBuilder<Dim = D>,
+        A: Clone,
+        S: DataOwned,
+    {
+        Self::from_params(ParamsBase::from_elem(shape, value))
+    }
+    /// Returns a reference to the underlying parameters.
+    pub fn params(&self) -> &ParamsBase<S, D> {
         &self.params
     }
-
-    pub fn params_mut(&mut self) -> &mut QKVBase<S, D> {
+    /// Returns a mutable reference to the underlying parameters.
+    pub fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
         &mut self.params
     }
 
     access!(params::<q, k, v>);
-    fwd_builder!(new.default where A: Default, S: DataOwned);
-    fwd_builder!(ones.ones where A: Clone + num::One, S: DataOwned);
-    fwd_builder!(zeros.zeros where A: Clone + num::Zero, S: DataOwned);
+    ndbuilder!(new.default where A: Default, S: DataOwned);
+    ndbuilder!(ones where A: Clone + num::One, S: DataOwned);
+    ndbuilder!(zeros where A: Clone + num::Zero, S: DataOwned);
 }

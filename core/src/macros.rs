@@ -99,18 +99,59 @@ macro_rules! build_unary_trait {
     };
 }
 
-macro_rules! linspace {
-    (start: $start:expr, end: $end:expr, n: $n:expr, dtype: $T:ty) => {
-        ndarray::Array1::<$T>::linspace($start, $end, $n)
+#[macro_export]
+macro_rules! builder {
+    ($(#[derive($($d:ident),*)])?$name:ident::<$inner:ty> {$($k:ident: $v:ty),* $(,)?}) => {
+        $crate::builder!(@loop $(#[derive($($d),*)])?$name::<$inner> {$($k: $v),*});
     };
-    (end: $end:expr, dtype: $T:ty) => {
-        let n = ($end - $T::one()).to_usize().unwrap();
-        ndarray::Array1::<$T>::linspace($T::zero(), $end, $end.to_usize().unwrap())
+    (@loop #[derive($($d:ident),*)] $name:ident::<$inner:ty> {$($k:ident: $v:ty),* $(,)?}) => {
+        pub struct $name {
+            inner: $inner,
+        }
+
+        impl $name {
+            pub fn new() -> Self {
+                Self { inner: Default::default() }
+            }
+
+            pub fn build(self) -> $inner {
+                self.inner
+            }
+
+            $(
+                pub fn $k(mut self, $k: $v) -> Self {
+                    self.inner.$k = $k;
+                    self
+                }
+            )*
+        }
     };
-    (dim: $dim:expr, dtype: $T:ty) => {{
-        let dim = $dim.into_dimension();
-        let n = dim.size();
-        ndarray::Array1::<$T>::linspace(<$T>::zero(), <$T>::from(n - 1).unwrap(), n)
-            .into_shape($dim)
-    }};
+    (@loop $name:ident::<$inner:ty> {$($k:ident: $v:ty),* $(,)?}) => {
+        pub struct $name {
+            inner: $inner,
+        }
+
+        impl $name {
+            pub fn new() -> Self {
+                Self {
+                    inner: Default::default()
+                }
+            }
+
+            pub fn from_inner(inner: $inner) -> Self {
+                Self { inner }
+            }
+
+            pub fn build(self) -> $inner {
+                self.inner
+            }
+
+            $(
+                pub fn $k(mut self, $k: $v) -> Self {
+                    self.inner.$k = $k;
+                    self
+                }
+            )*
+        }
+    };
 }

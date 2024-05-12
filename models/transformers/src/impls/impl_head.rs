@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::attention::AttentionHead;
-use crate::params::QKVBase;
+use crate::params::ParamsBase;
 use nd::prelude::*;
 use nd::DataOwned;
 
@@ -14,6 +14,6 @@ where
     S: DataOwned<Elem = A>,
 {
     fn default() -> Self {
-        Self::from_params(QKVBase::default())
+        Self::from_params(ParamsBase::default())
     }
 }

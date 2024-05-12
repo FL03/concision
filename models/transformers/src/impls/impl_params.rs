@@ -2,11 +2,11 @@
     Appellation: impl_params <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::QKVBase;
+use crate::params::ParamsBase;
 use nd::prelude::*;
 use nd::{Data, DataOwned, RawDataClone};
 
-impl<S, D> Clone for QKVBase<S, D>
+impl<S, D> Clone for ParamsBase<S, D>
 where
     D: Dimension,
     S: RawDataClone,
@@ -20,14 +20,14 @@ where
     }
 }
 
-impl<S, D> Copy for QKVBase<S, D>
+impl<S, D> Copy for ParamsBase<S, D>
 where
     D: Copy + Dimension,
     S: Copy + RawDataClone,
 {
 }
 
-impl<S, D> Default for QKVBase<S, D>
+impl<S, D> Default for ParamsBase<S, D>
 where
     D: Dimension,
     S: DataOwned,
@@ -42,7 +42,7 @@ where
     }
 }
 
-impl<A, S, D> PartialEq for QKVBase<S, D>
+impl<A, S, D> PartialEq for ParamsBase<S, D>
 where
     A: PartialEq,
     D: Dimension,
@@ -53,7 +53,7 @@ where
     }
 }
 
-impl<A, B, S, D, S2, D2> PartialEq<ArrayBase<S2, D2>> for QKVBase<S, D>
+impl<A, B, S, D, S2, D2> PartialEq<ArrayBase<S2, D2>> for ParamsBase<S, D>
 where
     A: PartialEq,
     B: PartialEq,

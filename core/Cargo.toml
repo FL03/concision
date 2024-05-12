@@ -30,6 +30,7 @@ alloc = [
     "num/alloc",
     "rand?/alloc",
     "rand_distr?/alloc",
+    "scsys/alloc",
     "serde?/alloc",
 ]
 
@@ -66,6 +67,7 @@ serde = [
     "num/serde",
     "rand?/serde1",
     "rand_distr?/serde1",
+    "scsys/serde",
     "uuid/serde"
 ]
 
@@ -83,6 +85,7 @@ std = [
     "ndarray/std",
     "num/std",
     "rng_std",
+    "scsys/std",
     "serde/std",
     "strum/std",
     "uuid/std"
@@ -111,6 +114,7 @@ required-features = ["approx"]
 [dependencies]
 ndarray.workspace = true
 num.workspace = true
+scsys.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 

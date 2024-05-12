@@ -17,7 +17,7 @@ extern crate concision_core as concision;
 extern crate ndarray as nd;
 
 pub use self::attention::AttentionHead;
-pub use self::params::QKV;
+pub use self::params::*;
 pub use self::transformer::Transformer;
 
 #[macro_use]
@@ -25,6 +25,7 @@ pub(crate) mod macros;
 pub(crate) mod transformer;
 
 pub mod attention;
+pub mod codec;
 pub mod params;
 
 pub(crate) mod impls {
@@ -35,6 +36,5 @@ pub(crate) mod impls {
 
 pub mod prelude {
     pub use super::attention::prelude::*;
-    pub use super::params::prelude::*;
     pub use super::Transformer;
 }

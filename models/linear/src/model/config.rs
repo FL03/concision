@@ -154,6 +154,13 @@ where
     }
 }
 
+impl<K, D> concision::Config for Config<K, D>
+where
+    D: Dimension,
+    K: ParamMode,
+{
+}
+
 impl<D> Default for Config<Biased, D>
 where
     D: Dimension,
