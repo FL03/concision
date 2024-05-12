@@ -78,6 +78,12 @@ where
         &self.config
     }
 
-    concision::getters!(params => LinearParams<A, K, D>);
+    pub fn params(&self) -> &LinearParams<A, K, D> {
+        &self.params
+    }
+
+    pub fn params_mut(&mut self) -> &mut LinearParams<A, K, D> {
+        &mut self.params
+    }
     
 }
