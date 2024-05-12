@@ -52,10 +52,6 @@ pub trait RoundTo {
     fn round_to(&self, places: usize) -> Self;
 }
 
-pub trait SquareRoot {
-    fn sqrt(self) -> Self;
-}
-
 /*
  ********* Implementations *********
 */
@@ -149,36 +145,5 @@ where
 {
     fn round_to(&self, places: usize) -> Self {
         crate::round_to(*self, places)
-    }
-}
-
-impl SquareRoot for f32 {
-    fn sqrt(self) -> Self {
-        f32::sqrt(self)
-    }
-}
-
-impl SquareRoot for f64 {
-    fn sqrt(self) -> Self {
-        f64::sqrt(self)
-    }
-}
-
-impl<T> SquareRoot for Complex<T>
-where
-    T: Float,
-{
-    fn sqrt(self) -> Self {
-        Complex::<T>::sqrt(self)
-    }
-}
-
-impl<T, D> SquareRoot for Array<T, D>
-where
-    D: Dimension,
-    T: Float,
-{
-    fn sqrt(self) -> Self {
-        self.mapv(|x| x.sqrt())
     }
 }

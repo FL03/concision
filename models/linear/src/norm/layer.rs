@@ -6,6 +6,10 @@ use crate::{LinearParams, ParamMode};
 use nd::prelude::*;
 use nd::RemoveAxis;
 
+// #62
+/// [LayerNorm] adhears to the [Layer Normalization](https://arxiv.org/abs/1607.06450) algorithm.
+///
+/// ### Resources
 pub struct LayerNorm<A = f64, K = crate::Biased, D = Ix2>
 where
     D: Dimension,
@@ -19,11 +23,11 @@ pub struct LayerNormConfig<D = Ix2> {
     pub eps: f64,
 }
 
-impl<D> LayerNormConfig<D> {
-    pub fn new() -> Self
-    where
-        D: Default,
-    {
+impl<D> LayerNormConfig<D>
+where
+    D: Dimension,
+{
+    pub fn new() -> Self {
         Self {
             dim: D::default(),
             eps: 1e-5,
@@ -69,4 +73,11 @@ where
         let params = LinearParams::<A, K, D>::default(dim);
         Self { config, params }
     }
+
+    pub fn config(&self) -> &LayerNormConfig<D> {
+        &self.config
+    }
+
+    concision::getters!(params => LinearParams<A, K, D>);
+    
 }

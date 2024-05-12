@@ -5,7 +5,7 @@
 pub use self::prelude::*;
 
 pub mod generator;
-pub mod math;
+pub mod num;
 pub mod ops;
 pub mod predict;
 pub mod train;
@@ -44,8 +44,8 @@ pub(crate) mod misc {
 pub(crate) mod prelude {
     pub use super::arr::prelude::*;
     pub use super::generator::*;
-    pub use super::math::*;
     pub use super::misc::prelude::*;
+    pub use super::num::*;
     pub use super::ops::*;
     pub use super::predict::*;
     pub use super::train::*;

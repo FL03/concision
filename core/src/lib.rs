@@ -24,6 +24,7 @@ pub(crate) mod primitives;
 
 pub mod error;
 pub mod func;
+pub mod math;
 pub mod nn;
 pub mod ops;
 pub mod params;
@@ -38,6 +39,7 @@ pub mod prelude {
 
     pub use super::error::prelude::*;
     pub use super::func::prelude::*;
+    pub use super::math::prelude::*;
     pub use super::nn::prelude::*;
     pub use super::ops::prelude::*;
     pub use super::params::prelude::*;

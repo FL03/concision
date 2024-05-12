@@ -116,6 +116,7 @@ required-features = ["approx"]
 [dependencies]
 ndarray.workspace = true
 num.workspace = true
+paste.workspace = true
 scsys.workspace = true
 smart-default.workspace = true
 strum.workspace = true
