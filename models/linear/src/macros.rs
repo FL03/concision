@@ -3,29 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-#[allow(unused_macros)]
-macro_rules! params {
-    {$($k:ident: $v:expr),* $(,)?} => {
-        params!(@new $($k: $v),*);
-    };
-    (@new bias: $b:expr, weights: $w:expr, mode: $mode:ty) => {
-        $crate::params::ParamsBase {
-            bias: $b,
-            weights: $w,
-            _mode: core::marker::PhantomData::<$mode>,
-        }
-    };
-    (@new bias: $b:expr, weights: $w:expr) => {
-        params!(@new bias: $b, weights: $w, mode: $crate::params::mode::Biased);
-    };
-    (@new bias: $b:expr, weights: $w:expr) => {
-        params!(@new bias: Some($b), weights: $w, mode: $crate::params::mode::Biased);
-    };
-    (@new weights: $w:expr) => {
-        params!(@new bias: None, weights: $w, mode: $crate::params::mode::Unbiased);
-    };
-}
-
 macro_rules! impl_param_builder {
     ($call:ident where $($rest:tt)*) => {
         impl_param_builder!(@impl $call where $($rest)*);
@@ -43,6 +20,70 @@ macro_rules! impl_param_builder {
                 weights: ndarray::ArrayBase::$call(dim),
                 _mode: core::marker::PhantomData,
             }
+        }
+    };
+}
+
+macro_rules! ndview {
+    ($method:ident::$($rest:tt)*) => {
+        ndview!(@impl $method.$method::$($rest)*);
+    };
+    ($method:ident.$call:ident::$($rest:tt)*) => {
+        ndview!(@impl $method.$call::$($rest)*);
+    };
+    (@impl $method:ident.$call:ident::<$view:ident>(self) where $($rest:tt)*) => {
+        pub fn $method(self) -> $crate::params::ParamsBase<$view<A>, D, K>
+        where
+            $($rest)*
+        {
+            ndview!(@apply $call(self))
+        }
+    };
+    (@impl $method:ident.$call:ident::<$view:ident>(mut self) where $($rest:tt)*) => {
+        pub fn $method(mut self) -> $crate::params::ParamsBase<$view<A>, D, K>
+        where
+            $($rest)*
+        {
+            ndview!(@apply $call(self).as_mut())
+        }
+    };
+    (@impl $method:ident.$call:ident::<$view:ident>(&self) where $($rest:tt)*) => {
+        pub fn $method(&self) -> $crate::params::ParamsBase<$view<A>, D, K>
+        where
+            $($rest)*
+        {
+            ndview!(@apply $call(self).as_ref())
+        }
+    };
+    (@impl $method:ident.$call:ident::<$view:ident>(&mut self) where $($rest:tt)*) => {
+        pub fn $method(&mut self) -> $crate::params::ParamsBase<$view<A>, D, K>
+        where
+            $($rest)*
+        {
+            ndview!(@apply $call(self).as_mut())
+        }
+    };
+    (@impl $method:ident.$call:ident::<'a, $view:ident>(&self) where $($rest:tt)*) => {
+        pub fn $method(&self) -> $crate::params::ParamsBase<$view<&'_ A>, D, K>
+        where
+            $($rest)*
+        {
+            ndview!(@apply $call(&self).as_ref())
+        }
+    };
+    (@impl $method:ident.$call:ident::<'a, $view:ident>(&mut self) where $($rest:tt)*) => {
+        pub fn $method(&mut self) -> $crate::params::ParamsBase<$view<&'_ mut A>, D, K>
+        where
+            $($rest)*
+        {
+            ndview!(@apply $call(self).as_mut())
+        }
+    };
+    (@apply $call:ident($self:expr)$(.$as:ident())?) => {
+        $crate::params::ParamsBase {
+            bias: $self.bias$(.$as())?.map(|arr| arr.$call()),
+            weights: $self.weights.$call(),
+            _mode: $self._mode,
         }
     };
 }

@@ -30,16 +30,6 @@ where
     impl_param_builder!(ones where A: Clone + One, S: DataOwned);
     impl_param_builder!(zeros where A: Clone + Zero, S: DataOwned);
 
-    #[doc(hidden)]
-    pub fn build<F, Sh>(shape: Sh, builder: F) -> Self
-    where
-        F: Fn(Sh) -> ArrayBase<S, D>,
-        Sh: ShapeBuilder<Dim = D>,
-    {
-        let _weights = builder(shape);
-        unimplemented!()
-    }
-
     pub fn into_biased(self) -> ParamsBase<S, D, Biased>
     where
         A: Default,
@@ -107,6 +97,17 @@ where
     pub fn shape(&self) -> &[usize] {
         self.weights().shape()
     }
+    ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
+
+    ndview!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
+
+    ndview!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
+
+    ndview!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataOwned);
+
+    ndview!(view::<'a, ViewRepr>(&self) where A: Clone, S: Data);
+
+    ndview!(view_mut::<'a, ViewRepr>(&mut self) where A: Clone, S: DataMut);
 }
 
 impl<A, S, D> ParamsBase<S, D, Biased>
