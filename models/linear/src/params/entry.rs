@@ -48,11 +48,11 @@ where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
-    pub fn bias(data: ArrayBase<S, D::Smaller>) -> Self {
+    pub fn from_bias(data: ArrayBase<S, D::Smaller>) -> Self {
         Self::Bias(data)
     }
 
-    pub fn weight(data: ArrayBase<S, D>) -> Self {
+    pub fn from_weight(data: ArrayBase<S, D>) -> Self {
         Self::Weight(data)
     }
 }

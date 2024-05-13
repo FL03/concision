@@ -23,13 +23,14 @@ lazy_static! {
 #[test]
 fn test_config() {
     let dim = FEATURES.clone().into_dimension();
-    let config = Config::from_dim_biased(dim);
+    let config = Config::<Biased>::from_shape(dim);
     assert!(config.is_biased());
-    let config = Config::from_dim(dim);
+    let config = Config::<Unbiased>::from_shape(dim);
     assert!(!config.is_biased());
 }
 
 #[test]
+#[cfg(feature = "rand")]
 fn test_linear() {
     let (samples, (outputs, inputs)) = SHAPE;
 
@@ -42,6 +43,7 @@ fn test_linear() {
 }
 
 #[test]
+#[cfg(feature = "rand")]
 fn test_model_modes() {
     let (_samples, (outputs, inputs)) = SHAPE;
 

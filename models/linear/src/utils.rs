@@ -2,7 +2,9 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use nd::*;
+use crate::params::Biased;
+use core::any::TypeId;
+use nd::{ArrayBase, Axis, Dimension, RawData, RemoveAxis};
 
 /// A utilitarian funciton for building bias tensors.
 pub(crate) fn build_bias<S, D, E, F>(biased: bool, dim: D, builder: F) -> Option<ArrayBase<S, E>>
@@ -29,4 +31,8 @@ where
     } else {
         dim.remove_axis(Axis(1))
     }
+}
+
+pub fn is_biased<K: 'static>() -> bool {
+    TypeId::of::<K>() == TypeId::of::<Biased>()
 }

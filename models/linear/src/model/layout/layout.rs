@@ -49,8 +49,8 @@ where
         self.dim.slice_mut()
     }
 
-    pub fn dim(&self) -> &D {
-        &self.dim
+    pub fn dim(&self) -> D {
+        self.dim.clone()
     }
 
     pub fn features(&self) -> Features {

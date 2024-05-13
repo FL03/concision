@@ -3,14 +3,14 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{Config, Layout};
-use crate::{Biased, LinearParams, ParamMode};
+use crate::{Biased, LinearParams, ParamMode, Unbiased};
 use concision::prelude::{Predict, Result};
 use nd::{Array, Dimension, Ix2, RemoveAxis};
 
 /// An implementation of a linear model.
 ///
 /// In an effort to streamline the api, the [Linear] model relies upon a [ParamMode] type ([Biased] or [Unbiased](crate::params::mode::Unbiased))
-/// which enables the model to automatically determine whether or not to include a bias term. Doing so enables us to forward many methods
+/// which enables the model to automatically determine whether or not to include a bias term. Doing so allows the model to inherit several methods
 /// familar to the underlying [ndarray](https://docs.rs/ndarray) crate.
 pub struct Linear<A = f64, K = Biased, D = Ix2>
 where
@@ -82,10 +82,22 @@ where
     pub fn into_biased(self) -> Linear<A, Biased, D>
     where
         A: Default,
+        K: 'static,
     {
         Linear {
             config: self.config.into_biased(),
             params: self.params.into_biased(),
+        }
+    }
+
+    pub fn into_unbiased(self) -> Linear<A, Unbiased, D>
+    where
+        A: Default,
+        K: 'static,
+    {
+        Linear {
+            config: self.config.into_unbiased(),
+            params: self.params.into_unbiased(),
         }
     }
 

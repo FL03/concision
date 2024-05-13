@@ -2,6 +2,7 @@
     Appellation: layer <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::EPSILON;
 use crate::{LinearParams, ParamMode};
 use nd::prelude::*;
 use nd::RemoveAxis;
@@ -53,7 +54,7 @@ where
     fn default() -> Self {
         Self {
             dim: D::default(),
-            eps: 1e-5,
+            eps: EPSILON,
         }
     }
 }
@@ -85,5 +86,4 @@ where
     pub fn params_mut(&mut self) -> &mut LinearParams<A, K, D> {
         &mut self.params
     }
-    
 }

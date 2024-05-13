@@ -30,13 +30,21 @@ where
     pub fn into_biased(self) -> ParamsBase<S, D, Biased>
     where
         A: Default,
+        K: 'static,
         S: DataOwned,
     {
+        if self.is_biased() {
+            return ParamsBase {
+                bias: self.bias,
+                weights: self.weights,
+                _mode: PhantomData::<Biased>,
+            };
+        }
         let sm = crate::bias_dim(self.raw_dim());
         ParamsBase {
             bias: Some(ArrayBase::default(sm)),
             weights: self.weights,
-            _mode: PhantomData,
+            _mode: PhantomData::<Biased>,
         }
     }
 
@@ -44,7 +52,7 @@ where
         ParamsBase {
             bias: None,
             weights: self.weights,
-            _mode: PhantomData,
+            _mode: PhantomData::<Unbiased>,
         }
     }
 
@@ -71,9 +79,14 @@ where
     pub fn in_features(&self) -> usize {
         self.features().dmodel()
     }
-
-    pub fn is_biased(&self) -> bool {
-        self.bias().is_some()
+    /// Returns true if the parameter store is biased;
+    /// Compares the [TypeId](core::any::TypeId) of the store with the [Biased](crate::Biased) type.
+    pub fn is_biased(&self) -> bool
+    where
+        K: 'static,
+    {
+        use core::any::TypeId;
+        TypeId::of::<Biased>() == TypeId::of::<K>()
     }
 
     pub fn ndim(&self) -> usize {
@@ -149,6 +162,7 @@ where
 }
 impl<A, S, K> ParamsBase<S, Ix2, K>
 where
+    K: 'static,
     S: RawData<Elem = A>,
 {
     pub fn set_node(&mut self, idx: usize, node: Node<A>)

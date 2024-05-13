@@ -2,6 +2,7 @@
     Appellation: initialize <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use core::ops::Neg;
 use nd::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};
 use ndrand::RandomExt;
 use num::traits::Float;
@@ -69,6 +70,16 @@ where
             &mut rngs::StdRng::seed_from_u64(seed),
         )
     }
+
+    /// A [uniform](rand_distr::uniform::Uniform) generator with values between u(-dk, dk)
+    fn uniform<Sh>(shape: Sh, dk: A) -> ArrayBase<S, D>
+    where
+        A: Clone + Neg<Output = A> + SampleUniform,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        Self::genrand(shape, Uniform::new(dk.clone().neg(), dk))
+    }
     /// Generate a random array with values between u(-a, a) where a is the reciprocal of the value at the given axis
     fn uniform_along<Sh>(shape: Sh, axis: usize) -> ArrayBase<S, D>
     where
@@ -78,10 +89,10 @@ where
     {
         let dim = shape.into_shape().raw_dim().clone();
         let dk = A::from(dim[axis]).unwrap().recip();
-        Self::uniform(dim, -dk, dk)
+        Self::uniform(dim, dk)
     }
     /// A [uniform](rand_distr::uniform::Uniform) generator with values between u(-dk, dk)
-    fn uniform<Sh>(shape: Sh, a: A, b: A) -> ArrayBase<S, D>
+    fn uniform_between<Sh>(shape: Sh, a: A, b: A) -> ArrayBase<S, D>
     where
         A: SampleUniform,
         S: DataOwned,

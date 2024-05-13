@@ -88,11 +88,11 @@ test = true
 
 [[test]]
 name = "model"
-required-features = ["rand"]
+required-features = ["std"]
 
 [[test]]
 name = "params"
-required-features = ["rand"]
+required-features = ["std"]
 
 [build-dependencies]
 
