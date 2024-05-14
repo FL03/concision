@@ -26,18 +26,20 @@ pub mod arr {
     }
 }
 
-pub(crate) mod misc {
+pub mod misc {
     pub mod adjust;
     #[doc(hidden)]
     pub mod container;
     pub mod setup;
     pub mod store;
+    pub mod toggle;
 
     pub(crate) mod prelude {
         pub use super::adjust::*;
         pub use super::container::*;
         pub use super::setup::*;
         pub use super::store::*;
+        pub use super::toggle::*;
     }
 }
 

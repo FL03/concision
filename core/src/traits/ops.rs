@@ -15,7 +15,7 @@ pub trait Apply<T, F> {
         F: FnMut(T) -> U;
 }
 
-pub trait ApplyOnce<T, F> {
+pub trait ApplyOn<T, F> {
     type Output;
 
     fn apply<U>(self, f: F) -> Self::Output
@@ -32,7 +32,7 @@ pub trait Transform<T> {
 /*
  ************* Implementations *************
 */
-impl<T, F, S> ApplyOnce<T, F> for S
+impl<T, F, S> ApplyOn<T, F> for S
 where
     S: Iterator<Item = T>,
 {

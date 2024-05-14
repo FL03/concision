@@ -202,24 +202,7 @@ macro_rules! getters {
 /// AS
 #[macro_export]
 macro_rules! dimensional {
-
-    ($name:ident$(())?) => {
-        pub fn dim(&self) -> D::Pattern {
-            self.$name$(())?.dim()
-        }
-
-        pub fn ndim(&self) -> usize {
-            self.$name$(())?.ndim()
-        }
-
-        pub fn raw_dim(&self) -> D {
-            self.$name$(())?.dim()
-        }
-        /// Returns a reference to the current dimension, as a slice.
-        pub fn shape(&self) -> &[usize] {
-            self.$name$(())?.shape()
-        }
-    };
+    
     (dim: $name:ident$(())?) => {
         /// Returns a reference to the current dimension, as a slice.
         pub fn as_slice(&self) -> &[usize] {
@@ -236,6 +219,45 @@ macro_rules! dimensional {
 
         pub fn raw_dim(&self) -> D {
             self.$name$(())?.dim().clone()
+        }
+    };
+
+    
+    ($name:ident) => {
+        /// Return the [pattern](ndarray::Dimension::Pattern) of the dimension
+        pub fn dim(&self) -> D::Pattern {
+            self.$name.dim()
+        }
+        /// Returns rank (ndim) of the dimension
+        pub fn ndim(&self) -> usize {
+            self.$name.ndim()
+        }
+        /// Returns the raw dimension [D](ndarray::Dimension)
+        pub fn raw_dim(&self) -> D {
+            self.$name.dim()
+        }
+        /// Returns a reference to the current dimension, as a slice.
+        pub fn shape(&self) -> &[usize] {
+            self.$name.shape()
+        }
+    };
+
+    ($name:ident()) => {
+        /// Return the [pattern](ndarray::Dimension::Pattern) of the dimension
+        pub fn dim(&self) -> D::Pattern {
+            self.$name().dim()
+        }
+        /// Returns rank (ndim) of the dimension
+        pub fn ndim(&self) -> usize {
+            self.$name().ndim()
+        }
+        /// Returns the raw dimension [D](ndarray::Dimension)
+        pub fn raw_dim(&self) -> D {
+            self.$name().raw_dim()
+        }
+        /// Returns a reference to the current dimension, as a slice.
+        pub fn shape(&self) -> &[usize] {
+            self.$name().shape()
         }
     };
 }

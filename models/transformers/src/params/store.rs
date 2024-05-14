@@ -60,6 +60,7 @@ where
     {
         (self.q.view(), self.k.view(), self.v.view())
     }
+    
     /// Consumes the current parameters, returning a three-tuple the Q, K, and V matrices respectivley.
     pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>)
     where
@@ -67,22 +68,9 @@ where
     {
         (self.q, self.k, self.v)
     }
-    /// Return the [pattern](ndarray::Dimension::Pattern) of the dimension
-    pub fn dim(&self) -> D::Pattern {
-        self.q().dim()
-    }
-    /// Get the rank of the parameters; i.e. the number of dimensions.
-    pub fn rank(&self) -> usize {
-        self.q().ndim()
-    }
-    /// Returns the raw dimension ([D](ndarray::Dimension)) of the parameters.
-    pub fn raw_dim(&self) -> D {
-        self.q().raw_dim()
-    }
-    /// Returns a slice of the current shape of the parameters.
-    pub fn shape(&self) -> &[usize] {
-        self.q().shape()
-    }
+    
+    concision::dimensional!(q());
+
     ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
     ndview!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
 
