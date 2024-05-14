@@ -56,14 +56,6 @@ where
         }
     }
 
-    pub fn bias(&self) -> Option<&ArrayBase<S, D::Smaller>> {
-        self.bias.as_ref()
-    }
-
-    pub fn bias_mut(&mut self) -> Option<&mut ArrayBase<S, D::Smaller>> {
-        self.bias.as_mut()
-    }
-
     pub const fn weights(&self) -> &ArrayBase<S, D> {
         &self.weights
     }
@@ -138,6 +130,14 @@ where
             weights: ArrayBase::default(dim),
             _mode: PhantomData::<Biased>,
         }
+    }
+
+    pub fn bias(&self) -> &ArrayBase<S, D::Smaller> {
+        self.bias.as_ref().unwrap()
+    }
+
+    pub fn bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller> {
+        self.bias.as_mut().unwrap()
     }
 }
 

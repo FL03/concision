@@ -198,3 +198,44 @@ macro_rules! getters {
         }
     };
 }
+
+/// AS
+#[macro_export]
+macro_rules! dimensional {
+
+    ($name:ident$(())?) => {
+        pub fn dim(&self) -> D::Pattern {
+            self.$name$(())?.dim()
+        }
+
+        pub fn ndim(&self) -> usize {
+            self.$name$(())?.ndim()
+        }
+
+        pub fn raw_dim(&self) -> D {
+            self.$name$(())?.dim()
+        }
+        /// Returns a reference to the current dimension, as a slice.
+        pub fn shape(&self) -> &[usize] {
+            self.$name$(())?.shape()
+        }
+    };
+    (dim: $name:ident$(())?) => {
+        /// Returns a reference to the current dimension, as a slice.
+        pub fn as_slice(&self) -> &[usize] {
+            self.$name$(())?.shape()
+        }
+
+        pub fn into_pattern(self) -> D::Pattern {
+            self.$name$(())?.into_pattern()
+        }
+
+        pub fn ndim(&self) -> usize {
+            self.$name$(())?.ndim()
+        }
+
+        pub fn raw_dim(&self) -> D {
+            self.$name$(())?.dim().clone()
+        }
+    };
+}

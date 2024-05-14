@@ -4,7 +4,7 @@
 */
 #![cfg(feature = "serde")]
 
-use crate::params::{Entry, ParamsBase};
+use crate::params::{Parameter, ParamsBase};
 use core::marker::PhantomData;
 use nd::*;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -40,11 +40,11 @@ where
     where
         Ser: Serializer,
     {
-        (self.bias(), self.weights()).serialize(serializer)
+        (self.bias.as_ref(), self.weights()).serialize(serializer)
     }
 }
 
-impl<A, S, D> Serialize for Entry<S, D>
+impl<A, S, D> Serialize for Parameter<S, D>
 where
     A: Serialize,
     S: Data<Elem = A>,

@@ -34,7 +34,7 @@ use strum::{AsRefStr, EnumDiscriminants, EnumIs, VariantNames};
     ),
     strum(serialize_all = "lowercase")
 )]
-pub enum Entry<S, D>
+pub enum Parameter<S, D>
 where
     S: RawData,
     D: RemoveAxis,
@@ -43,7 +43,7 @@ where
     Weight(ArrayBase<S, D>),
 }
 
-impl<A, S, D> Entry<S, D>
+impl<A, S, D> Parameter<S, D>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,

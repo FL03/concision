@@ -121,10 +121,10 @@ where
     D: RemoveAxis,
 {
     pub fn bias(&self) -> &Array<A, D::Smaller> {
-        self.params.bias().unwrap()
+        self.params().bias()
     }
 
     pub fn bias_mut(&mut self) -> &mut Array<A, D::Smaller> {
-        self.params.bias_mut().unwrap()
+        self.params_mut().bias_mut()
     }
 }

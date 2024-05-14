@@ -3,13 +3,13 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #[doc(inline)]
-pub use self::entry::{Entry, Param};
+pub use self::item::{Param, Parameter};
 pub use self::mode::*;
-pub use self::params::ParamsBase;
+pub use self::store::*;
 
-mod params;
+mod store;
 
-pub mod entry;
+pub mod item;
 pub mod mode;
 
 #[doc(inline)]

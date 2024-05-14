@@ -30,7 +30,7 @@ fn test_builders() {
     let params = LinearParams::<f64>::ones(shape);
     assert!(params.is_biased());
     assert_eq!(params.weights(), &Array2::ones(shape));
-    assert_eq!(params.bias().unwrap(), &Array1::ones(D_MODEL));
+    assert_eq!(params.bias(), &Array1::ones(D_MODEL));
     let params = LinearParams::<usize, Unbiased>::zeros(shape);
     assert!(!params.is_biased());
     assert_eq!(params.weights(), &Array2::zeros(shape));

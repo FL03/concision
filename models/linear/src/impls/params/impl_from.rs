@@ -23,10 +23,9 @@ where
 
     fn into_iter(self) -> Self::IntoIter {
         let axis = Axis(0);
-        let bias = self.bias().unwrap();
         self.weights()
             .axis_iter(axis)
-            .zip(bias.axis_iter(axis))
+            .zip(self.bias().axis_iter(axis))
             .map(|(w, b)| (w.to_owned(), b.to_owned()))
             .collect::<Vec<_>>()
             .into_iter()

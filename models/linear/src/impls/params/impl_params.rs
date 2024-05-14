@@ -24,26 +24,6 @@ where
     }
 }
 
-impl<'a, A, B, T, S, D, K> Predict<A> for &'a ParamsBase<S, D, K>
-where
-    A: Dot<Array<T, D>, Output = B>,
-    B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
-    D: RemoveAxis,
-    S: Data<Elem = T>,
-    T: NdFloat,
-{
-    type Output = B;
-
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-        let wt = self.weights().t().to_owned();
-        let mut res = input.dot(&wt);
-        if let Some(bias) = self.bias() {
-            res = res + bias;
-        }
-        Ok(res)
-    }
-}
-
 impl<A, S, D> Clone for ParamsBase<S, D>
 where
     A: Clone,
@@ -75,7 +55,7 @@ where
     S: Data<Elem = A>,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.weights == other.weights && self.bias == other.bias
+        self.weights() == other.weights && self.bias == other.bias
     }
 }
 
@@ -87,7 +67,7 @@ where
     S: Data<Elem = A>,
 {
     fn eq(&self, (weights, bias): &(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)) -> bool {
-        self.weights() == weights && self.bias() == bias.as_ref()
+        self.weights() == weights && self.bias.as_ref() == bias.as_ref()
     }
 }
 
@@ -98,13 +78,13 @@ where
     S: Data<Elem = A>,
 {
     fn eq(&self, (weights, bias): &(ArrayBase<S, D>, ArrayBase<S, D::Smaller>)) -> bool {
-        self.weights() == weights && self.bias() == Some(bias)
+        self.weights() == weights && self.bias.as_ref() == Some(bias)
     }
 }
 
 macro_rules! impl_predict {
-    ($( $($lt:lifetime)? $name:ident),* $(,)?) => {
-        $(impl_predict!(@impl $($lt)? $name);)*
+    ($($name:ident),* $(,)?) => {
+        $(impl_predict!(@impl $name);)*
     };
     (@impl $name:ident) => {
         impl<A, B, T, S, D, K> Predict<A> for $name<S, D, K>
@@ -120,15 +100,14 @@ macro_rules! impl_predict {
             fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
                 let wt = self.weights().t().to_owned();
                 let mut res = input.dot(&wt);
-                if let Some(bias) = self.bias() {
+                if let Some(bias) = self.bias.as_ref() {
                     res = res + bias;
                 }
                 Ok(res)
             }
         }
-    };
-    (@impl $name:ident<&'a $rhs:ident>) => {
-        impl<'a, A, B, T, S, D, K> Predict<&'a $rhs> for $name<S, D, K>
+
+        impl<'a, A, B, T, S, D, K> Predict<A> for &'a $name<S, D, K>
         where
             A: Dot<Array<T, D>, Output = B>,
             B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
@@ -141,7 +120,7 @@ macro_rules! impl_predict {
             fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
                 let wt = self.weights().t().to_owned();
                 let mut res = input.dot(&wt);
-                if let Some(bias) = self.bias() {
+                if let Some(bias) = self.bias.as_ref() {
                     res = res + bias;
                 }
                 Ok(res)
