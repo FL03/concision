@@ -5,7 +5,8 @@
 use super::{Config, Layout};
 use crate::{Biased, LinearParams, ParamMode, Unbiased};
 use concision::prelude::{Predict, Result};
-use nd::{Array, Dimension, Ix2, RemoveAxis};
+use nd::prelude::*;
+use nd::RemoveAxis;
 
 /// An implementation of a linear model.
 ///
@@ -24,6 +25,10 @@ impl<A, K, D> Linear<A, K, D>
 where
     D: RemoveAxis,
 {
+    impl_model_builder!(default where A: Default);
+    impl_model_builder!(ones where A: Clone + num::One);
+    impl_model_builder!(zeros where A: Clone + num::Zero);
+
     pub fn from_config(config: Config<K, D>) -> Self
     where
         A: Clone + Default,
@@ -43,14 +48,7 @@ where
         Self { config, params }
     }
 
-    pub fn with_params<E>(self, params: LinearParams<A, K, E>) -> Linear<A, K, E>
-    where
-        E: RemoveAxis,
-    {
-        let config = self.config.into_dimensionality(params.raw_dim()).unwrap();
-        Linear { config, params }
-    }
-
+    /// Applies an activcation function onto the prediction of the model.
     pub fn activate<X, Y, F>(&self, args: &X, func: F) -> Result<Y>
     where
         F: for<'a> Fn(&'a Y) -> Y,
@@ -108,6 +106,14 @@ where
         self.config().is_biased()
     }
 
+    pub fn with_params<E>(self, params: LinearParams<A, K, E>) -> Linear<A, K, E>
+    where
+        E: RemoveAxis,
+    {
+        let config = self.config.into_dimensionality(params.raw_dim()).unwrap();
+        Linear { config, params }
+    }
+
     pub fn with_name(self, name: impl ToString) -> Self {
         Self {
             config: self.config.with_name(name),
@@ -120,11 +126,36 @@ impl<A, D> Linear<A, Biased, D>
 where
     D: RemoveAxis,
 {
+    pub fn biased<Sh>(shape: Sh) -> Self
+    where
+        A: Default,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        let config = Config::<Biased, D>::new().with_shape(shape);
+        let params = LinearParams::biased(config.dim());
+        Linear { config, params }
+    }
+
     pub fn bias(&self) -> &Array<A, D::Smaller> {
         self.params().bias()
     }
 
     pub fn bias_mut(&mut self) -> &mut Array<A, D::Smaller> {
         self.params_mut().bias_mut()
+    }
+}
+
+impl<A, D> Linear<A, Unbiased, D>
+where
+    D: RemoveAxis,
+{
+    pub fn unbiased<Sh>(shape: Sh) -> Self
+    where
+        A: Default,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        let config = Config::<Unbiased, D>::new().with_shape(shape);
+        let params = LinearParams::unbiased(config.dim());
+        Linear { config, params }
     }
 }

@@ -17,7 +17,7 @@ where
     }
 }
 
-build_unary_trait!(Heavyside.heavyside,);
+unary!(Heavyside::heavyside(&self),);
 
 macro_rules! impl_heavyside {
     ($($ty:ty),* $(,)*) => {

@@ -54,7 +54,12 @@ where
     args.tanh()
 }
 
-build_unary_trait!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
+unary!(
+    ReLU::relu(&self),
+    Sigmoid::sigmoid(&self),
+    Softmax::softmax(&self),
+    Tanh::tanh(&self),
+);
 
 /*
  ********** Implementations **********

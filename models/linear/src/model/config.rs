@@ -79,14 +79,19 @@ where
             _biased: self._biased,
         }
     }
-    /// Returns a cloned reference to the [dimension](ndarray::Dimension) of the [layout](Layout)
-    pub fn dim(&self) -> D {
-        self.layout().dim()
+
+    pub fn with_shape<E, Sh>(self, shape: Sh) -> Config<K, E>
+    where
+        E: RemoveAxis,
+        Sh: ShapeBuilder<Dim = E>,
+    {
+        Config {
+            layout: self.layout.with_shape(shape),
+            name: self.name,
+            _biased: self._biased,
+        }
     }
 
-    pub fn into_pattern(self) -> D::Pattern {
-        self.dim().into_pattern()
-    }
     /// This function attempts to convert the [layout](Layout) of the [Config] into a new [dimension](ndarray::Dimension)
     pub fn into_dimensionality<E>(self, dim: E) -> Result<Config<K, E>, nd::ShapeError>
     where
@@ -120,6 +125,15 @@ where
     /// Returns an immutable reference to the `name` of the model.
     pub fn name(&self) -> &str {
         &self.name
+    }
+
+    /// Returns a cloned reference to the [dimension](ndarray::Dimension) of the [layout](Layout)
+    pub fn dim(&self) -> D {
+        self.layout().dim()
+    }
+
+    pub fn into_pattern(self) -> D::Pattern {
+        self.dim().into_pattern()
     }
 
     pub fn ndim(&self) -> usize {

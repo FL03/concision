@@ -54,7 +54,7 @@ where
     {
         (self.q.view(), self.k.view(), self.v.view())
     }
-    
+
     /// Consumes the current parameters, returning a three-tuple the Q, K, and V matrices respectivley.
     pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>)
     where
@@ -62,13 +62,13 @@ where
     {
         (self.q, self.k, self.v)
     }
-    
+
     ndbuilder!(new::default() where A: Default, S: DataOwned);
     ndbuilder!(ones() where A: Clone + One, S: DataOwned);
     ndbuilder!(zeros() where A: Clone + Zero, S: DataOwned);
 
     getters!(q, k, v => ArrayBase<S, D>);
-    
+
     dimensional!(q());
 
     ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);

@@ -9,7 +9,7 @@ pub trait ParamMode: Toggle {
     const BIASED: bool = false;
 
     fn is_biased(&self) -> bool {
-        core::any::type_name::<Self>() == core::any::type_name::<Biased>()
+        core::any::TypeId::of::<Self>() == core::any::TypeId::of::<Biased>()
     }
 
     private!();
@@ -60,4 +60,3 @@ mode! {
     Biased: true,
     Unbiased: false,
 }
-

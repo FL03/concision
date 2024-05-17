@@ -14,7 +14,7 @@ where
     x.clone()
 }
 
-build_unary_trait!(LinearActivation.linear);
+unary!(LinearActivation::linear(&self));
 
 impl<T> LinearActivation for T
 where
@@ -33,6 +33,9 @@ pub(crate) mod prelude {
     pub use super::{linear, LinearActivation};
 }
 
-pub trait Activator {
+#[doc(hidden)]
+pub trait Evaluate<T> {
     type Output;
+
+    fn eval(&self, args: T) -> Self::Output;
 }

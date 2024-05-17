@@ -87,7 +87,11 @@ doctest = true
 test = true
 
 [[test]]
-name = "model"
+name = "linear"
+required-features = ["std"]
+
+[[test]]
+name = "norm"
 required-features = ["std"]
 
 [[test]]
@@ -106,6 +110,11 @@ strum.workspace = true
 optional = true
 version = "0.5"
 
+[dependencies.concision-core]
+default-features = false
+path = "../../core"
+version = "0.1.14"
+
 [dependencies.serde]
 default-features = false
 features = ["derive"]
@@ -115,12 +124,6 @@ version = "1"
 [dependencies.tracing]
 optional = true
 version = "0.1"
-
-
-[dependencies.concision-core]
-default-features = false
-path = "../../core"
-version = "0.1.14"
 
 [dev-dependencies]
 lazy_static.workspace = true

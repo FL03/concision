@@ -9,8 +9,6 @@ pub use self::layer::LayerNorm;
 
 pub mod layer;
 
-pub const EPSILON: f64 = 1e-5;
-
 pub(crate) mod prelude {
-    pub use super::layer::LayerNorm;
+    pub use super::layer::prelude::*;
 }

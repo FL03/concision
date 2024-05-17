@@ -5,52 +5,60 @@
 use nd::{Array, ArrayBase, Data, Dimension};
 use num::complex::{Complex, ComplexFloat};
 
-macro_rules! unary {
-    ($($name:ident::$method:ident),*) => {
-        $(unary!(@impl $name::$method);)*
-    };
-    (@impl $name:ident::$method:ident) => {
-        pub trait $name {
-            type Output;
-
-            fn $method(self) -> Self::Output;
-        }
-    };
-    (@fn $($method:ident),* $(,)?) => {
-        $(fn $method(self) -> Self::Output;)*
-    };
-}
-
-unary!(Abs::abs, SquareRoot::sqrt);
+unary!(
+    Abs::abs(self),
+    Cos::cos(self),
+    Cosh::cosh(self),
+    Sine::sin(self),
+    Sinh::sinh(self),
+    SquareRoot::sqrt(self)
+);
 
 /*
  ********* Implementations *********
 */
-macro_rules! fwd_unop {
+
+macro_rules! unary_impl {
     ($name:ident::$method:ident<[$($T:ty),* $(,)?]>) => {
-        fwd_unop!($name::$method.$method<[$($T: $T),*]>);
+        unary_impl!(@loop $name::$method<[$($T),*]>);
     };
-    ($name:ident::$method:ident.$call:ident<[$($T:ty: $O:ty),* $(,)?]>) => {
-        $(fwd_unop!(@impl $name::$method.$call<$T> -> $O);)*
+    ($($name:ident::$method:ident<$T:ty$(, Output = $O:ty)?>),* $(,)?) => {
+        $(unary_impl!(@impl $name::$method<$T$(, Output = $O>)?);)*
     };
-    (@impl $name:ident::$method:ident$(.$call:ident)?<$T:ty>) => {
-        fwd_unop!(@impl $name::$method$(.$call)?<$T> -> $T);
+    ($($name:ident::$method:ident<$T:ty, Output = $O:ty>),* $(,)?) => {
+        $(unary_impl!(@impl $name::$method<$T, Output = $O>);)*
     };
-    (@impl $name:ident::$method:ident<$T:ty> -> $O:ty) => {
-        fwd_unop!(@impl $name::$method.$method<$T> -> $O);
+    (@loop $name:ident::$method:ident<[$($T:ty),* $(,)?]>) => {
+        $(unary_impl!(@impl $name::$method<$T>);)*
     };
-    (@impl $name:ident::$method:ident.$call:ident<$T:ty> -> $O:ty) => {
+    (@impl $name:ident::$method:ident<$T:ty>) => {
+        unary_impl!(@impl $name::$method<$T, Output = $T>);
+    };
+    (@impl $name:ident::$method:ident<$T:ty, Output = $O:ty>) => {
         impl $name for $T {
             type Output = $O;
 
             fn $method(self) -> Self::Output {
-                <$T>::$call(self)
+                <$T>::$method(self)
             }
         }
     };
 }
 
-fwd_unop!(SquareRoot::sqrt<[f32, f64]>);
+macro_rules! unary_impls {
+    ($($name:ident::$method:ident<[$($T:ty),* $(,)?]>),* $(,)?) => {
+        $(unary_impl!(@loop $name::$method<[$($T),*]>);)*
+    };
+}
+
+unary_impls!(
+    Abs::abs<[f32, f64]>,
+    Cosh::cosh<[f32, f64]>,
+    Cos::cos<[f32, f64]>,
+    Sinh::sinh<[f32, f64]>,
+    Sine::sin<[f32, f64]>,
+    SquareRoot::sqrt<[f32, f64]>
+);
 
 impl<A> SquareRoot for Complex<A>
 where

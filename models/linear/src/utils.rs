@@ -3,7 +3,6 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::Biased;
-use core::any::TypeId;
 use nd::{ArrayBase, Axis, Dimension, RawData, RemoveAxis};
 
 /// A utilitarian funciton for building bias tensors.
@@ -33,6 +32,9 @@ where
     }
 }
 
+/// A utilitarian function for checking if a type is [Biased]; returns false otherwise.
+/// Compares the [TypeId](core::any::TypeId) of `K` to the [TypeId](core::any::TypeId) of [Biased].
 pub fn is_biased<K: 'static>() -> bool {
+    use core::any::TypeId;
     TypeId::of::<K>() == TypeId::of::<Biased>()
 }

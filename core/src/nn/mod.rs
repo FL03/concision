@@ -12,5 +12,9 @@ pub(crate) mod prelude {
     pub use super::model::prelude::*;
 }
 
+#[cfg(any(feature = "alloc", feature = "std"))]
+pub type ForwardDyn<T = nd::Array2<f64>, O = T> =
+    crate::rust::Box<dyn crate::Forward<T, Output = O>>;
+
 #[cfg(test)]
 mod tests {}

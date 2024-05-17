@@ -70,10 +70,10 @@ macro_rules! variant_constructor {
 }
 
 macro_rules! impl_unary {
-    ($name:ident.$call:ident<$T:ty>($f:expr) $($rest:tt)*) => {
-        impl_unary!(@impl $name.$call<$T>($f) $($rest)*);
+    ($name:ident::$call:ident<$T:ty>($f:expr) $($rest:tt)*) => {
+        impl_unary!(@impl $name::$call<$T>($f) $($rest)*);
     };
-    (@impl $name:ident.$call:ident<$T:ty>($f:expr)) => {
+    (@impl $name:ident::$call:ident<$T:ty>($f:expr)) => {
         impl $name for $T {
             type Output = $T;
 
@@ -84,13 +84,30 @@ macro_rules! impl_unary {
     };
 }
 
-macro_rules! build_unary_trait {
-    ($($name:ident.$call:ident),* $(,)?) => {
+macro_rules! unary {
+    ($($name:ident::$call:ident),* $(,)?) => {
         $(
-            build_unary_trait!(@impl $name.$call);
+            unary!(@impl $name::$call(self));
         )*
     };
-    (@impl $name:ident.$call:ident) => {
+    ($($name:ident::$call:ident(self)),* $(,)?) => {
+        $(
+            unary!(@impl $name::$call(self));
+        )*
+    };
+    ($($name:ident::$call:ident(&self)),* $(,)?) => {
+        $(
+            unary!(@impl $name::$call(&self));
+        )*
+    };
+    (@impl $name:ident::$call:ident(self)) => {
+        pub trait $name {
+            type Output;
+
+            fn $call(self) -> Self::Output;
+        }
+    };
+    (@impl $name:ident::$call:ident(&self)) => {
         pub trait $name {
             type Output;
 
@@ -202,7 +219,7 @@ macro_rules! getters {
 /// AS
 #[macro_export]
 macro_rules! dimensional {
-    
+
     (dim: $name:ident$(())?) => {
         /// Returns a reference to the current dimension, as a slice.
         pub fn as_slice(&self) -> &[usize] {
@@ -222,7 +239,7 @@ macro_rules! dimensional {
         }
     };
 
-    
+
     ($name:ident) => {
         /// Return the [pattern](ndarray::Dimension::Pattern) of the dimension
         pub fn dim(&self) -> D::Pattern {

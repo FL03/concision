@@ -25,6 +25,30 @@ macro_rules! impl_param_builder {
     };
 }
 
+macro_rules! impl_model_builder {
+    ($method:ident$(.$call:ident)? where $($rest:tt)*) => {
+        impl_model_builder!(@impl $method$(.$call)? where $($rest)*);
+    };
+    (@impl $method:ident where $($rest:tt)*) => {
+        impl_model_builder!(@impl $method.$method where $($rest)*);
+    };
+    (@impl $method:ident.$call:ident where $($rest:tt)*) => {
+        pub fn $method<Sh>(shape: Sh) -> Self
+        where
+            K: $crate::params::mode::ParamMode,
+            Sh: ndarray::ShapeBuilder<Dim = D>,
+            $($rest)*
+        {
+            let config = $crate::model::Config::<K, D>::new().with_shape(shape);
+            let params = $crate::params::ParamsBase::$call(config.dim());
+            $crate::model::Linear {
+                config,
+                params,
+            }
+        }
+    };
+}
+
 macro_rules! ndview {
     ($method:ident::$($rest:tt)*) => {
         ndview!(@impl $method.$method::$($rest)*);

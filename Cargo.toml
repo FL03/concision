@@ -16,9 +16,10 @@ version = "0.1.14"
 scsys = { default-features = false, branch = "v0.2.3", git = "https://github.com/scattered-systems/scsys.git", version = "0.2" }
 
 approx = "0.5"
-itertools = "0.12"
+itertools = "0.13"
 lazy_static = "1"
 ndarray = { default-features = false, version = "0.15" }
+ndarray-stats = "0.5"
 num = { default-features = false, version = "0.4" }
 paste = "1"
 smart-default = "0.7"

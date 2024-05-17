@@ -41,6 +41,17 @@ where
         Self { dim, features }
     }
 
+    pub fn with_shape<E, Sh>(self, shape: Sh) -> Layout<E>
+    where
+        E: RemoveAxis,
+        Sh: ShapeBuilder<Dim = E>,
+    {
+        let shape = shape.into_shape();
+        let dim = shape.raw_dim().clone();
+        let features = Features::from_shape(dim.clone());
+        Layout { dim, features }
+    }
+
     pub fn as_slice(&self) -> &[usize] {
         self.dim.slice()
     }

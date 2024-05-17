@@ -7,6 +7,10 @@ use core::marker::PhantomData;
 use nd::*;
 use num::{One, Zero};
 
+/// The base paramter store for a linear model.
+///
+/// [ParamsBase] works to store the weights and biases of a linear model.
+/// The structure is parameterized over the type and dimension of the data as well as the current mode of the store.
 ///
 pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2, K = Unbiased>
 where
@@ -71,19 +75,6 @@ where
     pub fn in_features(&self) -> usize {
         self.features().dmodel()
     }
-    /// Returns true if the parameter store is biased;
-    /// Compares the [TypeId](core::any::TypeId) of the store with the [Biased](crate::Biased) type.
-    pub fn is_biased(&self) -> bool
-    where
-        K: 'static,
-    {
-        use core::any::TypeId;
-        TypeId::of::<Biased>() == TypeId::of::<K>()
-    }
-
-    pub fn ndim(&self) -> usize {
-        self.weights().ndim()
-    }
 
     pub fn out_features(&self) -> usize {
         if self.ndim() == 1 {
@@ -91,14 +82,17 @@ where
         }
         self.shape()[1]
     }
-    /// Returns the raw dimension of the weights.
-    pub fn raw_dim(&self) -> D {
-        self.weights().raw_dim()
+    /// Returns true if the parameter store is biased;
+    /// Compares the [TypeId](core::any::TypeId) of the store with the [Biased](crate::Biased) type.
+    pub fn is_biased(&self) -> bool
+    where
+        K: 'static,
+    {
+        crate::is_biased::<K>()
     }
-    /// Returns the shape of the weights.
-    pub fn shape(&self) -> &[usize] {
-        self.weights().shape()
-    }
+
+    concision::dimensional!(weights());
+
     ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
 
     ndview!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
@@ -131,11 +125,11 @@ where
             _mode: PhantomData::<Biased>,
         }
     }
-
+    /// Return an unwraped, immutable reference to the bias array.
     pub fn bias(&self) -> &ArrayBase<S, D::Smaller> {
         self.bias.as_ref().unwrap()
     }
-
+    /// Return an unwraped, mutable reference to the bias array.
     pub fn bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller> {
         self.bias.as_mut().unwrap()
     }
@@ -190,6 +184,21 @@ where
     }
 }
 
+impl<A, S, D> Default for ParamsBase<S, D, Biased>
+where
+    A: Default,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+{
+    fn default() -> Self {
+        Self {
+            bias: Some(Default::default()),
+            weights: Default::default(),
+            _mode: PhantomData::<Biased>,
+        }
+    }
+}
+
 impl<A, S, D> Default for ParamsBase<S, D, Unbiased>
 where
     A: Default,
@@ -200,7 +209,7 @@ where
         Self {
             bias: None,
             weights: Default::default(),
-            _mode: PhantomData,
+            _mode: PhantomData::<Unbiased>,
         }
     }
 }
