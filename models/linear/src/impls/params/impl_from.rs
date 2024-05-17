@@ -90,7 +90,7 @@ where
         let bias = ArrayBase::from_elem((), bias);
         Self {
             bias: Some(bias),
-            weights,
+            weight: weights,
             _mode: PhantomData,
         }
     }
@@ -102,7 +102,7 @@ where
     fn from((weights, bias): (Array1<A>, Option<A>)) -> Self {
         Self {
             bias: bias.map(|b| ArrayBase::from_elem((), b)),
-            weights,
+            weight: weights,
             _mode: PhantomData,
         }
     }
@@ -116,7 +116,7 @@ where
     fn from((weights, bias): NodeBase<S, D, D::Smaller>) -> Self {
         Self {
             bias,
-            weights,
+            weight: weights,
             _mode: PhantomData::<K>,
         }
     }
@@ -130,7 +130,7 @@ where
     fn from((weights, bias): Pair<ArrayBase<S, D>, ArrayBase<S, D::Smaller>>) -> Self {
         Self {
             bias: Some(bias),
-            weights,
+            weight: weights,
             _mode: PhantomData::<Biased>,
         }
     }

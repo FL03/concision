@@ -23,7 +23,7 @@ where
         let (bias, weights) = Deserialize::deserialize(deserializer)?;
         Ok(Self {
             bias,
-            weights,
+            weight: weights,
             _mode: PhantomData,
         })
     }

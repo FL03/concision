@@ -118,36 +118,22 @@ macro_rules! unary {
 
 #[macro_export]
 macro_rules! builder {
-    ($(#[derive($($d:ident),*)])?$name:ident::<$inner:ty> {$($k:ident: $v:ty),* $(,)?}) => {
-        $crate::builder!(@loop $(#[derive($($d),*)])?$name::<$inner> {$($k: $v),*});
+    ($(#[derive($($d:ident),+)])?$name:ident::<$inner:ty> {$($k:ident: $v:ty),* $(,)?}) => {
+        $crate::builder!(@loop builder: $name, derive: [$($($d),+)?], inner: $inner {$($k: $v),*});
     };
-    (@loop #[derive($($d:ident),*)] $name:ident::<$inner:ty> {$($k:ident: $v:ty),* $(,)?}) => {
+    ($(#[derive($($d:ident),+)])? $name:ident($inner:ty) {$($k:ident: $v:ty),* $(,)?}) => {
+        $crate::builder!(@loop builder: $name, derive: [$($($d),+)?], inner: $inner {$($k: $v),*});
+    };
+    (@loop builder: $name:ident, derive: [$($d:ident),* $(,)?], inner: $inner:ty {$($k:ident: $v:ty),* $(,)?}) => {
+
+        #[derive(Default, $($d),*)]
         pub struct $name {
             inner: $inner,
         }
 
-        impl $name {
-            pub fn new() -> Self {
-                Self { inner: Default::default() }
-            }
-
-            pub fn build(self) -> $inner {
-                self.inner
-            }
-
-            $(
-                pub fn $k(mut self, $k: $v) -> Self {
-                    self.inner.$k = $k;
-                    self
-                }
-            )*
-        }
+        $crate::builder!(@impl builder: $name, inner: $inner {$($k: $v),*});
     };
-    (@loop $name:ident::<$inner:ty> {$($k:ident: $v:ty),* $(,)?}) => {
-        pub struct $name {
-            inner: $inner,
-        }
-
+    (@impl builder: $name:ident, inner: $inner:ty {$($k:ident: $v:ty),* $(,)?}) => {
         impl $name {
             pub fn new() -> Self {
                 Self {

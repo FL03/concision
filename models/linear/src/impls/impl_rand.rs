@@ -59,13 +59,13 @@ where
             let b_dim = bias_dim(self.raw_dim());
             Self {
                 bias: Some(Array::uniform_between(b_dim, low, high)),
-                weights: Array::uniform_between(self.raw_dim(), low, high),
+                weight: Array::uniform_between(self.raw_dim(), low, high),
                 _mode: self._mode,
             }
         } else if !self.is_biased() && self.bias.is_some() {
             Self {
                 bias: None,
-                weights: Array::uniform_between(self.raw_dim(), low, high),
+                weight: Array::uniform_between(self.raw_dim(), low, high),
                 _mode: self._mode,
             }
         } else {
@@ -74,7 +74,7 @@ where
                     .bias
                     .as_ref()
                     .map(|b| Array::uniform_between(b.raw_dim(), low, high)),
-                weights: Array::uniform_between(self.raw_dim(), low, high),
+                weight: Array::uniform_between(self.raw_dim(), low, high),
                 _mode: self._mode,
             }
         }

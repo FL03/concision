@@ -92,7 +92,7 @@ required-features = ["std"]
 
 [[test]]
 name = "norm"
-required-features = ["std"]
+required-features = ["approx", "std"]
 
 [[test]]
 name = "params"

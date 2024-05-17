@@ -2,23 +2,22 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{build_bias, Biased, Features, Node, Unbiased};
+use crate::{build_bias, Biased, Features, Node, ParamMode, Unbiased};
 use core::marker::PhantomData;
 use nd::*;
 use num::{One, Zero};
 
-/// The base paramter store for a linear model.
-///
-/// [ParamsBase] works to store the weights and biases of a linear model.
-/// The structure is parameterized over the type and dimension of the data as well as the current mode of the store.
-///
-pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2, K = Unbiased>
+/// The [ParamsBase] struct is a generic store for linear parameters. The store mimics
+/// the underlying [ArrayBase](ndarray::ArrayBase), enabling developers to specify
+/// the data repr and dimension. Additionally, the store is parameterized to
+/// accept a `K` type, used to designate the store as either [Biased](crate::Biased) or [Unbiased](crate::Unbiased).
+pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2, K = Biased>
 where
     D: Dimension,
     S: RawData,
 {
     pub(crate) bias: Option<ArrayBase<S, D::Smaller>>,
-    pub(crate) weights: ArrayBase<S, D>,
+    pub(crate) weight: ArrayBase<S, D>,
     pub(crate) _mode: PhantomData<K>,
 }
 
@@ -27,9 +26,32 @@ where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
-    impl_param_builder!(default where A: Default, S: DataOwned);
-    impl_param_builder!(ones where A: Clone + One, S: DataOwned);
-    impl_param_builder!(zeros where A: Clone + Zero, S: DataOwned);
+    pub fn from_elem<Sh>(shape: Sh, elem: A) -> Self
+    where
+        A: Clone,
+        K: ParamMode,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        let dim = shape.into_shape().raw_dim().clone();
+        let bias = if K::BIASED {
+            Some(ArrayBase::from_elem(
+                crate::bias_dim(dim.clone()),
+                elem.clone(),
+            ))
+        } else {
+            None
+        };
+        Self {
+            bias,
+            weight: ArrayBase::from_elem(dim, elem),
+            _mode: PhantomData::<K>,
+        }
+    }
+
+    impl_params_builder!(default where A: Default, S: DataOwned);
+    impl_params_builder!(ones where A: Clone + One, S: DataOwned);
+    impl_params_builder!(zeros where A: Clone + Zero, S: DataOwned);
 
     pub fn into_biased(self) -> ParamsBase<S, D, Biased>
     where
@@ -40,14 +62,14 @@ where
         if self.is_biased() {
             return ParamsBase {
                 bias: self.bias,
-                weights: self.weights,
+                weight: self.weight,
                 _mode: PhantomData::<Biased>,
             };
         }
         let sm = crate::bias_dim(self.raw_dim());
         ParamsBase {
             bias: Some(ArrayBase::default(sm)),
-            weights: self.weights,
+            weight: self.weight,
             _mode: PhantomData::<Biased>,
         }
     }
@@ -55,17 +77,17 @@ where
     pub fn into_unbiased(self) -> ParamsBase<S, D, Unbiased> {
         ParamsBase {
             bias: None,
-            weights: self.weights,
+            weight: self.weight,
             _mode: PhantomData::<Unbiased>,
         }
     }
 
     pub const fn weights(&self) -> &ArrayBase<S, D> {
-        &self.weights
+        &self.weight
     }
 
     pub fn weights_mut(&mut self) -> &mut ArrayBase<S, D> {
-        &mut self.weights
+        &mut self.weight
     }
 
     pub fn features(&self) -> Features {
@@ -121,7 +143,7 @@ where
         let dim = shape.into_shape().raw_dim().clone();
         Self {
             bias: build_bias(true, dim.clone(), ArrayBase::default),
-            weights: ArrayBase::default(dim),
+            weight: ArrayBase::default(dim),
             _mode: PhantomData::<Biased>,
         }
     }
@@ -149,7 +171,7 @@ where
     {
         Self {
             bias: None,
-            weights: ArrayBase::default(shape),
+            weight: ArrayBase::default(shape),
             _mode: PhantomData::<Unbiased>,
         }
     }
@@ -193,7 +215,7 @@ where
     fn default() -> Self {
         Self {
             bias: Some(Default::default()),
-            weights: Default::default(),
+            weight: Default::default(),
             _mode: PhantomData::<Biased>,
         }
     }
@@ -208,7 +230,7 @@ where
     fn default() -> Self {
         Self {
             bias: None,
-            weights: Default::default(),
+            weight: Default::default(),
             _mode: PhantomData::<Unbiased>,
         }
     }

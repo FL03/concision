@@ -32,7 +32,7 @@ where
 {
     fn clone(&self) -> Self {
         Self {
-            weights: self.weights.clone(),
+            weight: self.weight.clone(),
             bias: self.bias.clone(),
             _mode: self._mode,
         }
@@ -55,7 +55,7 @@ where
     S: Data<Elem = A>,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.weights() == other.weights && self.bias == other.bias
+        self.weights() == other.weight && self.bias == other.bias
     }
 }
 

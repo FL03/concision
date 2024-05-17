@@ -3,23 +3,25 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-macro_rules! impl_param_builder {
-    ($call:ident where $($rest:tt)*) => {
-        impl_param_builder!(@impl $call where $($rest)*);
+macro_rules! impl_params_builder {
+    ($method:ident$(.$call:ident)? where $($rest:tt)*) => {
+        impl_params_builder!(@impl $method$(.$call)? where $($rest)*);
     };
-    (@impl $call:ident where $($rest:tt)*) => {
-        pub fn $call<Sh>(shape: Sh) -> Self
+    (@impl $method:ident where $($rest:tt)*) => {
+        impl_params_builder!(@impl $method.$method where $($rest)*);
+    };
+    (@impl $method:ident.$call:ident where $($rest:tt)*) => {
+        pub fn $method<Sh>(shape: Sh) -> Self
         where
             K: $crate::params::mode::ParamMode,
             Sh: ndarray::ShapeBuilder<Dim = D>,
             $($rest)*
         {
-            let shape = shape.into_shape();
-            let dim = shape.raw_dim().clone();
+            let dim = shape.into_shape().raw_dim().clone();
             ParamsBase {
                 bias: build_bias(K::BIASED, dim.clone(), |dim| ndarray::ArrayBase::$call(dim)),
-                weights: ndarray::ArrayBase::$call(dim),
-                _mode: core::marker::PhantomData,
+                weight: ndarray::ArrayBase::$call(dim),
+                _mode: ::core::marker::PhantomData::<K>,
             }
         }
     };
@@ -39,11 +41,10 @@ macro_rules! impl_model_builder {
             Sh: ndarray::ShapeBuilder<Dim = D>,
             $($rest)*
         {
-            let config = $crate::model::Config::<K, D>::new().with_shape(shape);
-            let params = $crate::params::ParamsBase::$call(config.dim());
+            let dim = shape.into_shape().raw_dim().clone();
             $crate::model::Linear {
-                config,
-                params,
+                config: $crate::model::Config::<K, D>::new().with_shape(dim.clone()),
+                params: $crate::params::ParamsBase::$call(dim),
             }
         }
     };
@@ -107,7 +108,7 @@ macro_rules! ndview {
     (@apply $call:ident($self:expr)$(.$as:ident())?) => {
         $crate::params::ParamsBase {
             bias: $self.bias$(.$as())?.map(|arr| arr.$call()),
-            weights: $self.weights.$call(),
+            weight: $self.weight.$call(),
             _mode: $self._mode,
         }
     };

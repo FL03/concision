@@ -1,0 +1,98 @@
+/*
+    Appellation: dropout <module>
+    Contrib: FL03 <jo3mccain@icloud.com>
+*/
+#![cfg(feature = "rand")]
+use crate::Forward;
+use nd::prelude::*;
+use nd::{DataOwned, RemoveAxis, ScalarOperand};
+use ndrand::rand_distr::Bernoulli;
+use ndrand::RandomExt;
+use num::traits::Num;
+
+pub fn dropout<A, S, D>(array: &ArrayBase<S, D>, p: f64) -> Array<A, D>
+where
+    A: Num + ScalarOperand,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+{
+    // Create a Bernoulli distribution for dropout
+    let distribution = Bernoulli::new(p).unwrap();
+
+    // Create a mask of the same shape as the input array
+    let mask: Array<bool, D> = Array::random(array.dim(), distribution);
+    let mask = mask.mapv(|x| if x { A::zero() } else { A::one() });
+
+    // Element-wise multiplication to apply dropout
+    array * mask
+}
+
+pub fn dropout_axis<A, S, D>(array: &ArrayBase<S, D>, _axis: Axis, p: f64) -> Array<A, D>
+where
+    A: Num + ScalarOperand,
+    D: RemoveAxis,
+    S: DataOwned<Elem = A>,
+{
+    // Create a Bernoulli distribution for dropout
+    let distribution = Bernoulli::new(p).unwrap();
+
+    // Create a mask of the same shape as the input array
+    let _mask: Array<bool, D> = Array::random(array.dim(), distribution);
+
+    unimplemented!()
+}
+
+pub struct Dropout {
+    axis: Option<Axis>,
+    p: f64,
+}
+
+impl Dropout {
+    pub fn new(p: f64) -> Self {
+        Self { axis: None, p }
+    }
+
+    pub fn with_axis(self, axis: Axis) -> Self {
+        Self {
+            axis: Some(axis),
+            ..self
+        }
+    }
+
+    pub fn dropout<A, S, D>(&self, array: &ArrayBase<S, D>) -> Array<A, D>
+    where
+        A: Num + ScalarOperand,
+        D: Dimension,
+        S: DataOwned<Elem = A>,
+    {
+        dropout(array, self.p)
+    }
+
+    pub fn dropout_axis<A, S, D>(&self, array: &ArrayBase<S, D>) -> Array<A, D>
+    where
+        A: Num + ScalarOperand,
+        D: RemoveAxis,
+        S: DataOwned<Elem = A>,
+    {
+        dropout_axis(array, self.axis.unwrap(), self.p)
+    }
+}
+
+impl Default for Dropout {
+    fn default() -> Self {
+        Self::new(0.5)
+    }
+}
+
+impl<A, S, D> Forward<ArrayBase<S, D>> for Dropout
+where
+    A: Num + ScalarOperand,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
+        dropout(input, self.p)
+    }
+}
