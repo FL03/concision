@@ -2,8 +2,8 @@
     Appellation: params <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use concision::{dimensional, getters};
 use nd::*;
-
 use num::traits::{One, Zero};
 
 pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2>
@@ -34,12 +34,6 @@ where
         }
     }
 
-    ndbuilder!(new::default() where A: Default, S: DataOwned);
-    ndbuilder!(ones() where A: Clone + One, S: DataOwned);
-    ndbuilder!(zeros() where A: Clone + Zero, S: DataOwned);
-
-    concision::getters!(q, k, v => ArrayBase<S, D>);
-
     pub fn from_elem<Sh>(shape: Sh, value: A) -> Self
     where
         Sh: ShapeBuilder<Dim = D>,
@@ -69,7 +63,13 @@ where
         (self.q, self.k, self.v)
     }
     
-    concision::dimensional!(q());
+    ndbuilder!(new::default() where A: Default, S: DataOwned);
+    ndbuilder!(ones() where A: Clone + One, S: DataOwned);
+    ndbuilder!(zeros() where A: Clone + Zero, S: DataOwned);
+
+    getters!(q, k, v => ArrayBase<S, D>);
+    
+    dimensional!(q());
 
     ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
     ndview!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);

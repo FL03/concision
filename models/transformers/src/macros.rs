@@ -12,7 +12,7 @@ macro_rules! ndbuilder {
     };
     (@impl $method:ident::$call:ident() where $($rest:tt)*) => {
         pub fn $method<Sh: ndarray::ShapeBuilder<Dim = D>>(shape: Sh) -> Self where $($rest)* {
-            Self::builder(shape, ArrayBase::$call)
+            Self::builder(shape, ndarray::ArrayBase::$call)
         }
     };
 }
