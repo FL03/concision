@@ -4,7 +4,10 @@
 */
 use crate::params::ParamsBase;
 use concision::getters;
+use nd::linalg::Dot;
 use nd::*;
+use num::complex::ComplexFloat;
+use num::traits::FromPrimitive;
 
 pub struct AttentionHead<A = f64, S = OwnedRepr<A>, D = Ix2>
 where
@@ -39,8 +42,16 @@ where
     {
         Self::from_params(ParamsBase::from_elem(shape, value))
     }
-    /// Returns a reference to the underlying parameters.
-    pub fn params(&self) -> &ParamsBase<S, D> {
+    #[allow(dead_code)]
+    pub(crate) fn dk(&self) -> A
+    where
+        A: FromPrimitive,
+    {
+        A::from_usize(self.k().len_of(Axis(1))).unwrap()
+    }
+
+    /// Returns an immuable reference to the underlying parameters.
+    pub const fn params(&self) -> &ParamsBase<S, D> {
         &self.params
     }
     /// Returns a mutable reference to the underlying parameters.
@@ -52,4 +63,17 @@ where
     ndbuilder!(new::default() where A: Default, S: DataOwned);
     ndbuilder!(ones() where A: Clone + num::One, S: DataOwned);
     ndbuilder!(zeros() where A: Clone + num::Zero, S: DataOwned);
+}
+
+impl<A, D> AttentionHead<A, OwnedRepr<A>, D>
+where
+    D: Dimension,
+{
+    pub fn attention(&self) -> Array<A, D>
+    where
+        A: ComplexFloat + ScalarOperand,
+        Array<A, D>: Dot<Array<A, D>, Output = Array<A, D>>,
+    {
+        crate::attention::scaled_dot_product(self.q(), self.k(), self.v())
+    }
 }

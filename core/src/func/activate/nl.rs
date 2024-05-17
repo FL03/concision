@@ -4,7 +4,7 @@
 */
 use ndarray::*;
 use num::complex::{Complex, ComplexFloat};
-use num::{Float, Zero};
+use num::traits::Zero;
 
 pub fn relu<T>(args: &T) -> T
 where
@@ -23,10 +23,11 @@ where
     (T::one() + (*args).neg().exp()).recip()
 }
 
-pub fn softmax<T, D>(args: &Array<T, D>) -> Array<T, D>
+pub fn softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
 where
+    A: ComplexFloat,
     D: Dimension,
-    T: Float,
+    S: Data<Elem = A>,
 {
     let denom = args.mapv(|x| x.exp()).sum();
     args.mapv(|x| x.exp() / denom)
