@@ -12,31 +12,6 @@ use num::traits::Float;
 
 const EPSILON: f64 = 1e-6;
 
-fn fft_permutation(length: usize) -> Vec<usize> {
-    let mut result = Vec::new();
-    result.reserve_exact(length);
-    for i in 0..length {
-        result.push(i);
-    }
-    let mut reverse = 0_usize;
-    let mut position = 1_usize;
-    while position < length {
-        let mut bit = length >> 1;
-        while bit & reverse != 0 {
-            reverse ^= bit;
-            bit >>= 1;
-        }
-        reverse ^= bit;
-        // This is equivalent to adding 1 to a reversed number
-        if position < reverse {
-            // Only swap each element once
-            result.swap(position, reverse);
-        }
-        position += 1;
-    }
-    result
-}
-
 lazy_static! {
     static ref EXPECTED_RFFT: Vec<Complex<f64>> = vec![
         Complex { re: 28.0, im: 0.0 },

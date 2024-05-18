@@ -1,7 +1,8 @@
 /*
-   Appellation: cmp <mod>
-   Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: direction <fft>
+    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use scsys::VariantConstructors;
 use strum::{
     AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames,
 };
@@ -81,6 +82,7 @@ impl From<FftDirection> for usize {
     PartialEq,
     PartialOrd,
     VariantArray,
+    VariantConstructors,
     VariantNames,
 )]
 #[cfg_attr(

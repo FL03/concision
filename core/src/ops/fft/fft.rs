@@ -4,21 +4,21 @@
 */
 use super::{FftDirection, FftPlan};
 
-pub struct FastFourierTransform {
+pub struct Fft {
     direction: FftDirection,
     plan: FftPlan,
 }
 
-impl FastFourierTransform {
+impl Fft {
     pub fn new(direction: FftDirection, plan: FftPlan) -> Self {
         Self { direction, plan }
     }
 
-    pub fn direction(&self) -> FftDirection {
+    pub const fn direction(&self) -> FftDirection {
         self.direction
     }
 
-    pub fn plan(&self) -> &FftPlan {
+    pub const fn plan(&self) -> &FftPlan {
         &self.plan
     }
 }

@@ -5,18 +5,21 @@
 
 pub trait Toggle: 'static {}
 
-pub trait Mode: Toggle {
-    fn of<K>() -> bool
+pub trait OfType {
+    fn of<T>() -> bool
     where
-        K: Toggle,
+        T: 'static,
+        Self: 'static,
     {
-        core::any::TypeId::of::<Self>() == core::any::TypeId::of::<K>()
+        core::any::TypeId::of::<T>() == core::any::TypeId::of::<Self>()
     }
 }
 
 /*
  ************* Implementations *************
 */
+impl<T> OfType for T {}
+
 macro_rules! impl_toggle {
     ($($scope:ident$(<$T:ident>)?),* $(,)?) => {
         $(impl_toggle!(@impl $scope$(<$T>)?);)*

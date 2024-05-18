@@ -2,55 +2,61 @@
    Appellation: plan <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-#[cfg(all(feature = "alloc", no_std))]
-use alloc::vec::{self, Vec};
 use core::slice;
-#[cfg(feature = "std")]
-use std::vec;
+
+use crate::ops::prelude::fft_permutation;
 
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct FftPlan {
-    n: usize,
+    len: usize,
     plan: Vec<usize>,
 }
 
 impl FftPlan {
-    pub fn new(n: usize) -> Self {
-        let plan = Vec::with_capacity(n);
-        Self { n, plan }
+    pub fn new(len: usize) -> Self {
+        Self {
+            len,
+            plan: Vec::with_capacity(len),
+        }
     }
 
     pub fn build(self) -> Self {
-        let mut plan = Vec::with_capacity(self.n);
-        plan.extend(0..self.n);
-
-        let mut rev = 0; // reverse
-        let mut pos = 1; // position
-        while pos < self.n {
-            let mut bit = self.n >> 1;
-            while bit & rev != 0 {
-                rev ^= bit;
-                bit >>= 1;
-            }
-            rev ^= bit;
-            // This is equivalent to adding 1 to a reversed number
-            if pos < rev {
-                // Only swap each element once
-                plan.swap(pos, rev);
-            }
-            pos += 1;
-        }
+        let plan = fft_permutation(self.len);
         Self { plan, ..self }
     }
 
     pub fn clear(&mut self) {
-        self.n = 0;
+        self.len = 0;
         self.plan.clear();
+    }
+
+    pub fn get(&self, index: usize) -> Option<&usize> {
+        self.plan().get(index)
+    }
+
+    pub fn iter(&self) -> slice::Iter<usize> {
+        self.plan().iter()
+    }
+
+    pub fn len(&self) -> usize {
+        self.len
     }
 
     pub fn plan(&self) -> &[usize] {
         &self.plan
+    }
+
+    pub fn set(&mut self, len: usize) {
+        self.len = len;
+        self.plan = Vec::with_capacity(len);
+    }
+
+    pub fn with(self, len: usize) -> Self {
+        Self {
+            len,
+            plan: Vec::with_capacity(len),
+        }
     }
 }
 
@@ -76,15 +82,16 @@ impl FromIterator<usize> for FftPlan {
     fn from_iter<T: IntoIterator<Item = usize>>(iter: T) -> Self {
         let plan = Vec::from_iter(iter);
         Self {
-            n: plan.len(),
+            len: plan.len(),
             plan,
         }
     }
 }
 
+#[cfg(any(feature = "alloc", feature = "std"))]
 impl IntoIterator for FftPlan {
     type Item = usize;
-    type IntoIter = vec::IntoIter<Self::Item>;
+    type IntoIter = crate::rust::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.plan.into_iter()

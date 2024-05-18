@@ -17,8 +17,6 @@ pub mod gen {
 #[doc(no_inline)]
 pub use ndarray_rand as ndrand;
 #[doc(no_inline)]
-pub use ndrand::{RandomExt, SamplingStrategy};
-#[doc(no_inline)]
 pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;

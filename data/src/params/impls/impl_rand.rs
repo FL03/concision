@@ -12,10 +12,14 @@ use num::Float;
 impl<T, D> Parameter<T, D>
 where
     D: Dimension,
-    T: Float + SampleUniform,
+    T: Float,
     StandardNormal: Distribution<T>,
 {
-    pub fn init_uniform(mut self, dk: T) -> Self {
+    pub fn init_uniform(mut self, dk: T) -> Self
+    where
+        T: SampleUniform,
+        <T as SampleUniform>::Sampler: Clone,
+    {
         let dim = self.value.dim();
         self.value = Array::uniform(dim, dk);
         self

@@ -48,6 +48,11 @@ where
         Self { config, params }
     }
 
+    pub(crate) fn from_params(params: LinearParams<A, K, D>) -> Self {
+        let config = Config::<K, D>::new().with_shape(params.raw_dim());
+        Self { config, params }
+    }
+
     /// Applies an activcation function onto the prediction of the model.
     pub fn activate<X, Y, F>(&self, args: &X, func: F) -> Result<Y>
     where
@@ -120,6 +125,8 @@ where
             ..self
         }
     }
+
+    concision::dimensional!(params());
 }
 
 impl<A, D> Linear<A, Biased, D>

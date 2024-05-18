@@ -22,6 +22,7 @@ pub use self::rand::{Initialize, InitializeExt};
 pub(crate) mod macros;
 pub(crate) mod primitives;
 
+#[macro_use]
 pub mod error;
 pub mod func;
 pub mod math;
