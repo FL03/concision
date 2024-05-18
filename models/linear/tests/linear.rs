@@ -38,11 +38,10 @@ fn test_model_toggle() {
 
     let model = Linear::<f64, Unbiased>::from_features(inputs, outputs);
     assert!(!model.is_biased());
-    
+
     let model = Linear::<f64>::from_features(inputs, outputs).into_unbiased();
     assert!(!model.is_biased());
 }
-
 
 #[test]
 #[cfg(feature = "rand")]
@@ -56,4 +55,3 @@ fn test_linear() {
 
     assert_eq!(y.shape(), &[samples, outputs]);
 }
-
