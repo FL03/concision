@@ -4,7 +4,7 @@
 */
 extern crate concision_core as cnc;
 
-use cnc::rand::InitializeExt;
+use cnc::init::InitializeExt;
 use ndarray::prelude::*;
 
 #[test]

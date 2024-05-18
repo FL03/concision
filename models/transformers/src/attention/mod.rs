@@ -17,7 +17,7 @@ pub(crate) mod prelude {
 pub(crate) mod utils {
     use concision::func::activate::Softmax;
     use nd::linalg::Dot;
-    use nd::prelude::{Array, ArrayBase, Axis, Dimension};
+    use nd::prelude::{Array, ArrayBase, ArrayView, Axis, Dimension};
     use nd::{Data, ScalarOperand};
     use num::complex::ComplexFloat;
 
@@ -28,6 +28,7 @@ pub(crate) mod utils {
         A::from(dk).unwrap().sqrt().recip()
     }
 
+    /// Scaled dot-product attention;
     pub fn scaled_dot_product_attention<A, S, D>(
         q: &ArrayBase<S, D>,
         k: &ArrayBase<S, D>,
@@ -37,10 +38,10 @@ pub(crate) mod utils {
         A: ComplexFloat + ScalarOperand,
         S: Data<Elem = A>,
         D: Dimension,
-        ArrayBase<S, D>: Dot<Array<A, D>, Output = Array<A, D>>,
+        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
         let dk = scale::<A>(k.len_of(Axis(1)));
-        (q.dot(&k.t().to_owned()) * dk).softmax().dot(&v)
+        (q.dot(&k.t()) * dk).softmax().dot(&v)
     }
 }

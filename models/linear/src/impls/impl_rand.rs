@@ -6,8 +6,8 @@
 
 use crate::params::{ParamMode, ParamsBase};
 use crate::{bias_dim, Linear};
-use concision::rand::rand::Rng;
-use concision::rand::rand_distr::{uniform::SampleUniform, Distribution, StandardNormal};
+use concision::init::rand::Rng;
+use concision::init::rand_distr::{uniform::SampleUniform, Distribution, StandardNormal};
 use concision::{Initialize, InitializeExt};
 use nd::*;
 use num::Float;

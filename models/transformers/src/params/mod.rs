@@ -2,7 +2,7 @@
     Appellation: params <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{item::*, store::ParamsBase};
+pub use self::{item::*, store::QkvBase};
 
 pub(crate) mod item;
 pub(crate) mod store;
@@ -20,7 +20,7 @@ macro_rules! params_ty {
 }
 
 params_ty!(
-    ParamsBase: [
+    QkvBase: [
         Params<OwnedRepr>,
         ArcParams<OwnedArcRepr>,
         ParamsView<&'a ViewRepr>,
@@ -30,6 +30,6 @@ params_ty!(
 #[allow(unused_imports)]
 pub(crate) mod prelude {
     pub use super::item::{Entry, QKV};
-    pub use super::store::ParamsBase;
+    pub use super::store::QkvBase;
     pub use super::{ArcParams, Params};
 }

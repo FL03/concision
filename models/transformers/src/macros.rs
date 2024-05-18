@@ -26,7 +26,7 @@ macro_rules! ndview {
         ndview!(@impl $method.$call::$($rest)*);
     };
     (@impl $method:ident.$call:ident::<$view:ident>(self) where $($rest:tt)*) => {
-        pub fn $method(self) -> $crate::params::ParamsBase<$view<A>, D>
+        pub fn $method(self) -> $crate::params::QkvBase<$view<A>, D>
         where
             $($rest)*
         {
@@ -34,7 +34,7 @@ macro_rules! ndview {
         }
     };
     (@impl $method:ident.$call:ident::<$view:ident>(mut self) where $($rest:tt)*) => {
-        pub fn $method(mut self) -> $crate::params::ParamsBase<$view<A>, D>
+        pub fn $method(mut self) -> $crate::params::QkvBase<$view<A>, D>
         where
             $($rest)*
         {
@@ -42,7 +42,7 @@ macro_rules! ndview {
         }
     };
     (@impl $method:ident.$call:ident::<$view:ident>(&self) where $($rest:tt)*) => {
-        pub fn $method(&self) -> $crate::params::ParamsBase<$view<A>, D>
+        pub fn $method(&self) -> $crate::params::QkvBase<$view<A>, D>
         where
             $($rest)*
         {
@@ -50,7 +50,7 @@ macro_rules! ndview {
         }
     };
     (@impl $method:ident.$call:ident::<$view:ident>(&mut self) where $($rest:tt)*) => {
-        pub fn $method(&mut self) -> $crate::params::ParamsBase<$view<A>, D>
+        pub fn $method(&mut self) -> $crate::params::QkvBase<$view<A>, D>
         where
             $($rest)*
         {
@@ -58,7 +58,7 @@ macro_rules! ndview {
         }
     };
     (@impl $method:ident.$call:ident::<'a, $view:ident>(&self) where $($rest:tt)*) => {
-        pub fn $method(&self) -> $crate::params::ParamsBase<$view<&'_ A>, D>
+        pub fn $method(&self) -> $crate::params::QkvBase<$view<&'_ A>, D>
         where
             $($rest)*
         {
@@ -66,7 +66,7 @@ macro_rules! ndview {
         }
     };
     (@impl $method:ident.$call:ident::<'a, $view:ident>(&mut self) where $($rest:tt)*) => {
-        pub fn $method(&mut self) -> $crate::params::ParamsBase<$view<&'_ mut A>, D>
+        pub fn $method(&mut self) -> $crate::params::QkvBase<$view<&'_ mut A>, D>
         where
             $($rest)*
         {
@@ -74,7 +74,7 @@ macro_rules! ndview {
         }
     };
     (@apply $call:ident($self:expr)) => {
-        $crate::params::ParamsBase {
+        $crate::params::QkvBase {
             q: $self.q.$call(),
             k: $self.k.$call(),
             v: $self.v.$call(),

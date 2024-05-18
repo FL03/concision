@@ -1,4 +1,4 @@
-name: Rust
+name: rust
 
 concurrency: 
   cancel-in-progress: false

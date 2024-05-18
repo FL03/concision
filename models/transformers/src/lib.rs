@@ -26,6 +26,7 @@ pub(crate) mod transformer;
 
 pub mod attention;
 pub mod codec;
+pub mod ops;
 pub mod params;
 
 pub(crate) mod impls {

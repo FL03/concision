@@ -30,6 +30,21 @@ fn test_config() {
 }
 
 #[test]
+fn test_model_toggle() {
+    let (_samples, (outputs, inputs)) = SHAPE;
+
+    let model = Linear::<f64>::from_features(inputs, outputs);
+    assert!(model.is_biased());
+
+    let model = Linear::<f64, Unbiased>::from_features(inputs, outputs);
+    assert!(!model.is_biased());
+    
+    let model = Linear::<f64>::from_features(inputs, outputs).into_unbiased();
+    assert!(!model.is_biased());
+}
+
+
+#[test]
 #[cfg(feature = "rand")]
 fn test_linear() {
     let (samples, (outputs, inputs)) = SHAPE;
@@ -42,14 +57,3 @@ fn test_linear() {
     assert_eq!(y.shape(), &[samples, outputs]);
 }
 
-#[test]
-#[cfg(feature = "rand")]
-fn test_model_modes() {
-    let (_samples, (outputs, inputs)) = SHAPE;
-
-    let model = Linear::<f64>::from_features(inputs, outputs).uniform();
-    assert!(model.is_biased());
-
-    let model = Linear::<f64, Unbiased>::from_features(inputs, outputs).uniform();
-    assert!(!model.is_biased());
-}

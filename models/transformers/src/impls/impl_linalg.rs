@@ -2,12 +2,12 @@
     Appellation: impl_linalg <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::{Params, ParamsBase};
+use crate::params::{Params, QkvBase};
 use concision::Matmul;
 use nd::linalg::Dot;
 use nd::*;
 
-impl<A, S, T, D, E, F> Matmul<ParamsBase<T, E>> for ParamsBase<S, D>
+impl<A, S, T, D, E, F> Matmul<QkvBase<T, E>> for QkvBase<S, D>
 where
     A: LinalgScalar,
     D: Dimension,
@@ -19,8 +19,8 @@ where
 {
     type Output = Params<A, F>;
 
-    fn matmul(&self, rhs: &ParamsBase<T, E>) -> Self::Output {
-        ParamsBase {
+    fn matmul(&self, rhs: &QkvBase<T, E>) -> Self::Output {
+        QkvBase {
             q: self.q().dot(rhs.q()),
             k: self.k().dot(rhs.k()),
             v: self.v().dot(rhs.v()),
@@ -28,7 +28,7 @@ where
     }
 }
 
-impl<A, S, T, D, E, F> Matmul<ArrayBase<T, E>> for ParamsBase<S, D>
+impl<A, S, T, D, E, F> Matmul<ArrayBase<T, E>> for QkvBase<S, D>
 where
     A: LinalgScalar,
     D: Dimension,
@@ -41,7 +41,7 @@ where
     type Output = Params<A, F>;
 
     fn matmul(&self, rhs: &ArrayBase<T, E>) -> Self::Output {
-        ParamsBase {
+        QkvBase {
             q: self.q().dot(rhs),
             k: self.k().dot(rhs),
             v: self.v().dot(rhs),

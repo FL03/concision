@@ -8,6 +8,7 @@ pub use self::std_types::*;
 
 pub mod propagate;
 
+pub type NdResult<T> = core::result::Result<T, nd::ShapeError>;
 /// A type alias for a [Result](core::result::Result) with the crate's [Error](crate::error::Error) type.
 /// Defaults to `Result<(), Error>`
 pub type Result<T = ()> = core::result::Result<T, crate::error::ErrorKind>;
@@ -24,7 +25,7 @@ pub(crate) mod prelude {
     pub use super::propagate::Propagate;
     #[cfg(feature = "std")]
     pub use super::std_types::*;
-    pub use super::Result;
+    pub use super::{NdResult, Result};
 }
 
 #[cfg(test)]

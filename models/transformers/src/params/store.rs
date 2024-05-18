@@ -6,7 +6,7 @@ use concision::{dimensional, getters};
 use nd::*;
 use num::traits::{One, Zero};
 
-pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2>
+pub struct QkvBase<S = OwnedRepr<f64>, D = Ix2>
 where
     D: Dimension,
     S: RawData,
@@ -16,7 +16,7 @@ where
     pub(crate) v: ArrayBase<S, D>,
 }
 
-impl<A, S, D> ParamsBase<S, D>
+impl<A, S, D> QkvBase<S, D>
 where
     D: Dimension,
     S: RawData<Elem = A>,
