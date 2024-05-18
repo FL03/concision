@@ -42,9 +42,11 @@ where
     unimplemented!()
 }
 
+/// The [Dropout] layer is randomly zeroizes inputs with a given probability (`p`).
+/// This regularization technique is often used to prevent overfitting.
 ///
 ///
-/// ### Parameters
+/// ### Config
 ///
 /// - (p) Probability of dropping an element
 pub struct Dropout {

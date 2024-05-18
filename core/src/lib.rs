@@ -16,7 +16,7 @@ pub use self::nn::Module;
 pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::prelude::*};
 
 #[cfg(feature = "rand")]
-pub use self::rand::{GenerateRandom, RandomExt};
+pub use self::rand::{Initialize, InitializeExt};
 
 #[macro_use]
 pub(crate) mod macros;

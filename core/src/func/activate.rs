@@ -7,23 +7,20 @@ pub use self::{binary::*, nl::*};
 pub mod binary;
 pub mod nl;
 
-pub fn linear<T>(x: &T) -> T
-where
-    T: Clone,
-{
-    x.clone()
+pub fn linear<T>(x: T) -> T {
+    x
 }
 
-unary!(LinearActivation::linear(&self));
+unary!(LinearActivation::linear(self));
 
-impl<T> LinearActivation for T
+impl<'a, T> LinearActivation for &'a T
 where
     T: Clone,
 {
     type Output = T;
 
-    fn linear(&self) -> Self::Output {
-        linear(self)
+    fn linear(self) -> Self::Output {
+        self.clone()
     }
 }
 

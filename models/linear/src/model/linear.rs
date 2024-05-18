@@ -51,10 +51,10 @@ where
     /// Applies an activcation function onto the prediction of the model.
     pub fn activate<X, Y, F>(&self, args: &X, func: F) -> Result<Y>
     where
-        F: for<'a> Fn(&'a Y) -> Y,
+        F: Fn(Y) -> Y,
         Self: Predict<X, Output = Y>,
     {
-        Ok(func(&self.predict(args)?))
+        Ok(func(self.predict(args)?))
     }
 
     pub const fn config(&self) -> &Config<K, D> {

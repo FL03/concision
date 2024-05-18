@@ -82,51 +82,42 @@ where
     }
 }
 
-macro_rules! impl_predict {
-    ($($name:ident),* $(,)?) => {
-        $(impl_predict!(@impl $name);)*
-    };
-    (@impl $name:ident) => {
-        impl<A, B, T, S, D, K> Predict<A> for $name<S, D, K>
-        where
-            A: Dot<Array<T, D>, Output = B>,
-            B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
-            D: RemoveAxis,
-            S: Data<Elem = T>,
-            T: ComplexFloat,
-        {
-            type Output = B;
+impl<A, B, T, S, D, K> Predict<A> for ParamsBase<S, D, K>
+where
+    A: Dot<Array<T, D>, Output = B>,
+    B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
+    D: RemoveAxis,
+    S: Data<Elem = T>,
+    T: ComplexFloat,
+{
+    type Output = B;
 
-            fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-                let wt = self.weights().t().to_owned();
-                let mut res = input.dot(&wt);
-                if let Some(bias) = self.bias.as_ref() {
-                    res = res + bias;
-                }
-                Ok(res)
-            }
+    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+        let wt = self.weights().t().to_owned();
+        let mut res = input.dot(&wt);
+        if let Some(bias) = self.bias.as_ref() {
+            res = res + bias;
         }
-
-        impl<'a, A, B, T, S, D, K> Predict<A> for &'a $name<S, D, K>
-        where
-            A: Dot<Array<T, D>, Output = B>,
-            B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
-            D: RemoveAxis,
-            S: Data<Elem = T>,
-            T: ComplexFloat,
-        {
-            type Output = B;
-
-            fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-                let wt = self.weights().t().to_owned();
-                let mut res = input.dot(&wt);
-                if let Some(bias) = self.bias.as_ref() {
-                    res = res + bias;
-                }
-                Ok(res)
-            }
-        }
-    };
+        Ok(res)
+    }
 }
 
-impl_predict!(ParamsBase);
+impl<'a, A, B, T, S, D, K> Predict<A> for &'a ParamsBase<S, D, K>
+where
+    A: Dot<Array<T, D>, Output = B>,
+    B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
+    D: RemoveAxis,
+    S: Data<Elem = T>,
+    T: ComplexFloat,
+{
+    type Output = B;
+
+    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+        let wt = self.weights().t().to_owned();
+        let mut res = input.dot(&wt);
+        if let Some(bias) = self.bias.as_ref() {
+            res = res + bias;
+        }
+        Ok(res)
+    }
+}

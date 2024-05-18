@@ -85,3 +85,29 @@ where
         self.mapv(|x| x.sqrt())
     }
 }
+
+impl<A, B, S, D> Exp for ArrayBase<S, D>
+where
+    A: Clone + Exp<Output = B>,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<B, D>;
+
+    fn exp(self) -> Self::Output {
+        self.mapv(|x| x.exp())
+    }
+}
+
+impl<'a, A, S, D> Exp for &'a ArrayBase<S, D>
+where
+    A: Clone + ComplexFloat,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn exp(self) -> Self::Output {
+        self.mapv(|x| x.exp())
+    }
+}

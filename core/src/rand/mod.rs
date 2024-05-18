@@ -6,7 +6,6 @@
 
 pub use self::prelude::*;
 
-pub(crate) mod generate;
 pub(crate) mod initialize;
 pub(crate) mod utils;
 
@@ -26,7 +25,6 @@ pub use rand_distr;
 
 pub(crate) mod prelude {
     #[doc(hidden)]
-    pub use super::generate::GenerateRandom;
     pub use super::initialize::{Initialize, InitializeExt};
     pub use super::utils::*;
 }
