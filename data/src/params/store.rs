@@ -2,10 +2,15 @@
     Appellation: store <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#![cfg(any(feature = "alloc", feature = "std"))]
 use super::{ParamKind, Parameter};
-use crate::prelude::Map;
 use ndarray::prelude::{Dimension, Ix2};
 use num::Float;
+
+#[cfg(all(feature = "alloc", no_std))]
+use alloc::collections::BTreeMap as Map;
+#[cfg(feature = "std")]
+use std::collections::HashMap as Map;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]

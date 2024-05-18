@@ -15,7 +15,7 @@ where
         A: Clone + Default,
     {
         let config = Config::std(inputs, outputs);
-        let params = LinearParams::default(config.dim());
+        let params = LinearParams::new(config.dim());
         Self { config, params }
     }
 }

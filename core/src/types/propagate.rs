@@ -29,13 +29,13 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantN
     serde(rename_all = "lowercase")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum Direction {
+pub enum Propagate {
     Backward = 0,
     #[default]
     Forward = 1,
 }
 
-impl Direction {
+impl Propagate {
     /// A functional alias for [Direction::Backward].
     pub fn backward() -> Self {
         Self::Backward
@@ -46,13 +46,13 @@ impl Direction {
     }
 }
 
-impl From<Direction> for usize {
-    fn from(direction: Direction) -> Self {
+impl From<Propagate> for usize {
+    fn from(direction: Propagate) -> Self {
         direction as usize
     }
 }
 
-impl From<usize> for Direction {
+impl From<usize> for Propagate {
     fn from(index: usize) -> Self {
         match index % Self::COUNT {
             0 => Self::Backward,

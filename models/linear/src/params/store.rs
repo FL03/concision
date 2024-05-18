@@ -3,6 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::{build_bias, Biased, Features, Node, ParamMode, Unbiased};
+use concision::dimensional;
 use core::marker::PhantomData;
 use nd::*;
 use num::{One, Zero};
@@ -48,10 +49,6 @@ where
             _mode: PhantomData::<K>,
         }
     }
-
-    impl_params_builder!(default where A: Default, S: DataOwned);
-    impl_params_builder!(ones where A: Clone + One, S: DataOwned);
-    impl_params_builder!(zeros where A: Clone + Zero, S: DataOwned);
 
     pub fn into_biased(self) -> ParamsBase<S, D, Biased>
     where
@@ -113,7 +110,13 @@ where
         crate::is_biased::<K>()
     }
 
-    concision::dimensional!(weights());
+    impl_params_builder!(new.default where A: Default, S: DataOwned);
+
+    impl_params_builder!(ones where A: Clone + One, S: DataOwned);
+
+    impl_params_builder!(zeros where A: Clone + Zero, S: DataOwned);
+
+    dimensional!(weights());
 
     ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
 

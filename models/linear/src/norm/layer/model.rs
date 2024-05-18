@@ -34,7 +34,7 @@ where
     where
         A: Default,
     {
-        let params = LinearParams::<A, K, D>::default(config.dim());
+        let params = LinearParams::<A, K, D>::new(config.dim());
         Self { config, params }
     }
 
@@ -45,7 +45,7 @@ where
     {
         let dim = shape.into_shape().raw_dim().clone();
         let config = Config::new().dim(dim.clone()).build();
-        let params = LinearParams::<A, K, D>::default(dim);
+        let params = LinearParams::<A, K, D>::new(dim);
         Self { config, params }
     }
 

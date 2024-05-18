@@ -17,29 +17,30 @@ pub(crate) mod prelude {
 pub(crate) mod utils {
     use concision::func::activate::Softmax;
     use nd::linalg::Dot;
-    use nd::{Array, Axis, Dimension, ScalarOperand};
+    use nd::{Data, ScalarOperand};
+    use nd::prelude::{Array, ArrayBase, Axis, Dimension};
     use num::complex::ComplexFloat;
 
-    pub(crate) fn scale_dk<A>(dk: A) -> A
+    pub(crate) fn scale<A>(dk: usize) -> A
     where
-        A: ComplexFloat + ScalarOperand,
+        A: ComplexFloat,
     {
-        dk.sqrt().recip()
+        A::from(dk).unwrap().sqrt().recip()
     }
 
-    pub fn scaled_dot_product<A, D>(
-        q: &Array<A, D>,
-        k: &Array<A, D>,
-        v: &Array<A, D>,
+    pub fn scaled_dot_product_attention<A, S, D>(
+        q: &ArrayBase<S, D>,
+        k: &ArrayBase<S, D>,
+        v: &ArrayBase<S, D>,
     ) -> Array<A, D>
     where
         A: ComplexFloat + ScalarOperand,
+        S: Data<Elem = A>,
         D: Dimension,
-        Array<A, D>: Dot<Array<A, D>, Output = Array<A, D>>,
+        ArrayBase<S, D>: Dot<Array<A, D>, Output = Array<A, D>>,
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>
     {
-        let qk = q.dot(&k.t().to_owned());
-        let scale = scale_dk(A::from(k.len_of(Axis(1))).unwrap());
-        let scaled = qk * scale.recip();
-        scaled.softmax().dot(&v)
+        let dk = scale::<A>(k.len_of(Axis(1)));
+        (q.dot(&k.t().to_owned()) * dk).softmax().dot(&v)
     }
 }

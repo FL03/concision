@@ -56,13 +56,13 @@ macro_rules! variant_constructor {
             variant_constructor!(@loop $($rest),*);
         )*
     };
-    ($($variant:ident.$method:ident$(($call:expr))?),* $(,)?) => {
+    ($($variant:ident::$method:ident$(($call:expr))?),* $(,)?) => {
         $(
-            variant_constructor!(@loop $variant.$method$(($call))?);
+            variant_constructor!(@loop $variant::$method$(($call))?);
         )*
     };
 
-    (@loop $variant:ident.$method:ident$(($call:expr))?) => {
+    (@loop $variant:ident::$method:ident$(($call:expr))?) => {
         pub fn $method() -> Self {
             Self::$variant$(($call))?
         }

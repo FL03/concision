@@ -3,10 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::Parameter;
-use crate::rand::InitializeExt;
+use concision::InitializeExt;
 use ndarray::{Array, Dimension};
-use ndrand::rand_distr::uniform::SampleUniform;
-use ndrand::rand_distr::{Distribution, StandardNormal};
+use concision::rand::rand_distr::uniform::SampleUniform;
+use concision::rand::rand_distr::{Distribution, StandardNormal};
 use num::Float;
 
 impl<T, D> Parameter<T, D>

@@ -27,7 +27,6 @@ pub mod func;
 pub mod math;
 pub mod nn;
 pub mod ops;
-pub mod params;
 #[cfg(feature = "rand")]
 pub mod rand;
 pub mod traits;
@@ -42,7 +41,6 @@ pub mod prelude {
     pub use super::math::prelude::*;
     pub use super::nn::prelude::*;
     pub use super::ops::prelude::*;
-    pub use super::params::prelude::*;
     pub use super::primitives::*;
     #[cfg(feature = "rand")]
     pub use super::rand::prelude::*;

@@ -27,10 +27,9 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantN
 )]
 #[strum(serialize_all = "snake_case")]
 pub enum ShapeError {
-    LayoutError,
+    IncompatibleLayout,
+    IncompatibleRank,
     ShapeMismatch,
-    RankMismatch,
     SizeMismatch,
-    Unknown,
 }
 

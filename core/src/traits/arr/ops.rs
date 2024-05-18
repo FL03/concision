@@ -1,6 +1,6 @@
 /*
-   Appellation: arr <mod>
-   Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: ops <module>
+    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use nd::linalg::Dot;
 use nd::*;
@@ -31,7 +31,7 @@ pub trait Matpow<Rhs = Self> {
 }
 
 /*
- ********* Implementations *********
+    ********* Implementations *********
 */
 impl<A, D> Affine<A> for Array<A, D>
 where

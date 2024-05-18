@@ -61,7 +61,7 @@ where
         let mut iter = nodes.iter();
         let node = iter.next().unwrap();
         let shape = Features::new(node.0.len(), nodes.len());
-        let mut params = ParamsBase::default(shape);
+        let mut params = ParamsBase::new(shape);
         params.set_node(0, node.clone());
         for (i, node) in iter.into_iter().enumerate() {
             params.set_node(i + 1, node.clone());

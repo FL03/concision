@@ -80,6 +80,10 @@ crate-type = ["lib"]
 doctest = false
 test = true
 
+[[test]]
+name = "params"
+required-features = ["std"]
+
 [build-dependencies]
 
 [dependencies]

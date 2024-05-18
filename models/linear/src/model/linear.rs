@@ -25,7 +25,7 @@ impl<A, K, D> Linear<A, K, D>
 where
     D: RemoveAxis,
 {
-    impl_model_builder!(default where A: Default);
+    impl_model_builder!(new where A: Default);
     impl_model_builder!(ones where A: Clone + num::One);
     impl_model_builder!(zeros where A: Clone + num::Zero);
 
@@ -34,7 +34,7 @@ where
         A: Clone + Default,
         K: ParamMode,
     {
-        let params = LinearParams::default(config.dim());
+        let params = LinearParams::new(config.dim());
         Self { config, params }
     }
 
@@ -44,7 +44,7 @@ where
         K: ParamMode,
     {
         let config = Config::<K, D>::new().with_layout(layout);
-        let params = LinearParams::default(config.dim());
+        let params = LinearParams::new(config.dim());
         Self { config, params }
     }
 

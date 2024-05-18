@@ -4,18 +4,6 @@
 */
 use strum::{AsRefStr, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
-pub trait ParamType: ToString {
-    fn kind(&self) -> String;
-}
-
-impl<T> ParamType for T
-where
-    T: ToString,
-{
-    fn kind(&self) -> String {
-        self.to_string()
-    }
-}
 
 #[derive(
     AsRefStr,

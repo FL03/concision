@@ -83,6 +83,6 @@ where
         Array<A, D>: Dot<Array<A, D>, Output = Array<A, D>>,
     {
         let (q, k, v) = self.qkv();
-        crate::attention::scaled_dot_product(q, k, v)
+        crate::attention::scaled_dot_product_attention(q, k, v)
     }
 }

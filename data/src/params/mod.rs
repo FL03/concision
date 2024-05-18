@@ -37,9 +37,9 @@ pub(crate) mod prelude {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::linarr;
-    use ndarray::linalg::Dot;
-    use ndarray::prelude::{Ix1, Ix2};
+    use concision::linarr;
+    use nd::linalg::Dot;
+    use nd::prelude::*;
 
     #[test]
     fn test_parameter() {
