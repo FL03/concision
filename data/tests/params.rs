@@ -6,7 +6,7 @@ extern crate concision_core as concision;
 extern crate concision_data as data;
 
 use concision::linarr;
-use data::params::{Parameter, ParamKind};
+use data::params::{ParamKind, Parameter};
 use ndarray::linalg::Dot;
 use ndarray::prelude::*;
 

@@ -36,4 +36,3 @@ pub enum PredictError {
     ShapeMismatch,
     TypeError,
 }
-

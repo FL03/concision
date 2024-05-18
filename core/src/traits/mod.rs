@@ -11,7 +11,7 @@ pub mod train;
 
 pub mod arr {
     pub use self::prelude::*;
-    
+
     pub(crate) mod create;
     pub(crate) mod misc;
     pub(crate) mod ops;

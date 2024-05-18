@@ -4,9 +4,6 @@
 */
 pub use consts::*;
 
-
-
-
 pub mod consts {
     /// The default model size for any given model
     pub const D_MODEL: usize = 512;
@@ -16,11 +13,11 @@ pub mod consts {
 
 #[allow(unused)]
 pub(crate) mod rust {
-    pub(crate) use core::*;
     #[cfg(all(feature = "alloc", no_std))]
     pub(crate) use self::no_std::*;
     #[cfg(feature = "std")]
     pub(crate) use self::with_std::*;
+    pub(crate) use core::*;
     #[cfg(all(feature = "alloc", no_std))]
     mod no_std {
         pub use alloc::borrow::Cow;
@@ -35,8 +32,6 @@ pub(crate) mod rust {
         pub use std::collections::{self, BTreeMap, BTreeSet, BinaryHeap, VecDeque};
         pub use std::sync::Arc;
         pub use std::vec::{self, Vec};
-
-        
     }
 
     #[cfg(all(feature = "alloc", no_std))]

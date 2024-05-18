@@ -39,4 +39,3 @@ pub enum PadAction {
     StopAfterCopy,
     Wrapping,
 }
-

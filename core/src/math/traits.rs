@@ -4,6 +4,7 @@
 */
 use nd::{Array, ArrayBase, Data, Dimension};
 use num::complex::{Complex, ComplexFloat};
+use num::traits::Signed;
 
 unary!(
     Abs::abs(self),
@@ -12,6 +13,7 @@ unary!(
     Exp::exp(self),
     Sine::sin(self),
     Sinh::sinh(self),
+    Squared::sqrd(self),
     SquareRoot::sqrt(self)
 );
 
@@ -61,6 +63,43 @@ unary_impls!(
     Sine::sin<[f32, f64, Complex<f32>, Complex<f64>]>,
     SquareRoot::sqrt<[f32, f64]>
 );
+
+impl<A, S, D> Abs for ArrayBase<S, D>
+where
+    A: Clone + Signed,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn abs(self) -> Self::Output {
+        self.mapv(|x| x.abs())
+    }
+}
+
+impl<'a, A, S, D> Abs for &'a ArrayBase<S, D>
+where
+    A: Clone + Signed,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn abs(self) -> Self::Output {
+        self.mapv(|x| x.abs())
+    }
+}
+
+impl<A> Squared for A
+where
+    A: Clone + core::ops::Mul<Output = A>,
+{
+    type Output = A;
+
+    fn sqrd(self) -> Self::Output {
+        self.clone() * self
+    }
+}
 
 impl<A> SquareRoot for Complex<A>
 where

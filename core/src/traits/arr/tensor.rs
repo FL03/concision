@@ -50,7 +50,7 @@ where
     where
         A: Default,
         Sh: ShapeBuilder<Dim = D>,
-        Self::Data: DataOwned 
+        Self::Data: DataOwned,
     {
         Self::default(self.dim())
     }
@@ -59,7 +59,7 @@ where
     where
         A: Clone,
         Sh: ShapeBuilder<Dim = D>,
-        Self::Data: DataOwned 
+        Self::Data: DataOwned,
     {
         Self::fill(self.dim(), elem)
     }
@@ -68,7 +68,7 @@ where
     where
         A: Clone + One,
         Sh: ShapeBuilder<Dim = D>,
-        Self::Data: DataOwned 
+        Self::Data: DataOwned,
     {
         Self::ones(self.dim())
     }
@@ -77,7 +77,7 @@ where
     where
         A: Clone + Zero,
         Sh: ShapeBuilder<Dim = D>,
-        Self::Data: DataOwned
+        Self::Data: DataOwned,
     {
         Self::zeros(self.dim())
     }
@@ -86,7 +86,7 @@ where
 pub trait AsOwned<S, D = Ix2>
 where
     D: Dimension,
-    S: RawData
+    S: RawData,
 {
     type Output;
 
@@ -104,7 +104,7 @@ where
 pub trait AsShared<S, D = Ix2>
 where
     D: Dimension,
-    S: RawData
+    S: RawData,
 {
     type Output;
 
@@ -124,7 +124,6 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-
     fn view(&self) -> ArrayView<'_, A, D>
     where
         A: Clone,
@@ -137,7 +136,7 @@ where
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 impl<A, S, D> NdBuilder<A, D> for ArrayBase<S, D>
 where

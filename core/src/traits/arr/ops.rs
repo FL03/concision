@@ -31,7 +31,7 @@ pub trait Matpow<Rhs = Self> {
 }
 
 /*
-    ********* Implementations *********
+ ********* Implementations *********
 */
 impl<A, D> Affine<A> for Array<A, D>
 where

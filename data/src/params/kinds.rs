@@ -4,7 +4,6 @@
 */
 use strum::{AsRefStr, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
-
 #[derive(
     AsRefStr,
     Clone,

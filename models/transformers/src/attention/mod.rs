@@ -17,8 +17,8 @@ pub(crate) mod prelude {
 pub(crate) mod utils {
     use concision::func::activate::Softmax;
     use nd::linalg::Dot;
-    use nd::{Data, ScalarOperand};
     use nd::prelude::{Array, ArrayBase, Axis, Dimension};
+    use nd::{Data, ScalarOperand};
     use num::complex::ComplexFloat;
 
     pub(crate) fn scale<A>(dk: usize) -> A
@@ -38,7 +38,7 @@ pub(crate) mod utils {
         S: Data<Elem = A>,
         D: Dimension,
         ArrayBase<S, D>: Dot<Array<A, D>, Output = Array<A, D>>,
-        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
         let dk = scale::<A>(k.len_of(Axis(1)));
         (q.dot(&k.t().to_owned()) * dk).softmax().dot(&v)
