@@ -59,6 +59,14 @@ where
         &mut self.params
     }
 
+    pub fn qkv(&self) -> (&ArrayBase<S, D>, &ArrayBase<S, D>, &ArrayBase<S, D>) {
+        self.params().qkv()
+    }
+
+    pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>) {
+        self.params.into_qkv()
+    }
+
     getters!(params::<[q, k, v]> => ArrayBase<S, D>);
     ndbuilder!(new::default() where A: Default, S: DataOwned);
     ndbuilder!(ones() where A: Clone + num::One, S: DataOwned);
@@ -74,6 +82,7 @@ where
         A: ComplexFloat + ScalarOperand,
         Array<A, D>: Dot<Array<A, D>, Output = Array<A, D>>,
     {
-        crate::attention::scaled_dot_product(self.q(), self.k(), self.v())
+        let (q, k, v) = self.qkv();
+        crate::attention::scaled_dot_product(q, k, v)
     }
 }

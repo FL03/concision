@@ -143,3 +143,16 @@ nonlinear!(
         Complex < f64 >
     ]>,
 );
+
+impl<A, S, D> Softmax for ArrayBase<S, D>
+where
+    A: ComplexFloat,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn softmax(&self) -> Self::Output {
+        softmax(self)
+    }
+}

@@ -42,21 +42,18 @@ where
     unimplemented!()
 }
 
+///
+///
+/// ### Parameters
+///
+/// - (p) Probability of dropping an element
 pub struct Dropout {
-    axis: Option<Axis>,
     p: f64,
 }
 
 impl Dropout {
     pub fn new(p: f64) -> Self {
-        Self { axis: None, p }
-    }
-
-    pub fn with_axis(self, axis: Axis) -> Self {
-        Self {
-            axis: Some(axis),
-            ..self
-        }
+        Self { p }
     }
 
     pub fn dropout<A, S, D>(&self, array: &ArrayBase<S, D>) -> Array<A, D>
@@ -68,13 +65,8 @@ impl Dropout {
         dropout(array, self.p)
     }
 
-    pub fn dropout_axis<A, S, D>(&self, array: &ArrayBase<S, D>) -> Array<A, D>
-    where
-        A: Num + ScalarOperand,
-        D: RemoveAxis,
-        S: DataOwned<Elem = A>,
-    {
-        dropout_axis(array, self.axis.unwrap(), self.p)
+    pub fn scale(&self) -> f64 {
+        (1f64 - self.p).recip()
     }
 }
 

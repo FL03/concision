@@ -55,12 +55,13 @@ where
         (self.q.view(), self.k.view(), self.v.view())
     }
 
-    /// Consumes the current parameters, returning a three-tuple the Q, K, and V matrices respectivley.
-    pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>)
-    where
-        S: DataOwned,
-    {
+    /// Consumes the store and returns a three-tuple consisting of the query, key, and value arrays respectively.
+    pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>) {
         (self.q, self.k, self.v)
+    }
+
+    pub fn qkv(&self) -> (&ArrayBase<S, D>, &ArrayBase<S, D>, &ArrayBase<S, D>) {
+        (&self.q, &self.k, &self.v)
     }
 
     ndbuilder!(new::default() where A: Default, S: DataOwned);

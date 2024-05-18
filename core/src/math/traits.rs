@@ -9,6 +9,7 @@ unary!(
     Abs::abs(self),
     Cos::cos(self),
     Cosh::cosh(self),
+    Exp::exp(self),
     Sine::sin(self),
     Sinh::sinh(self),
     SquareRoot::sqrt(self)
@@ -53,10 +54,11 @@ macro_rules! unary_impls {
 
 unary_impls!(
     Abs::abs<[f32, f64]>,
-    Cosh::cosh<[f32, f64]>,
-    Cos::cos<[f32, f64]>,
-    Sinh::sinh<[f32, f64]>,
-    Sine::sin<[f32, f64]>,
+    Cosh::cosh<[f32, f64, Complex<f32>, Complex<f64>]>,
+    Cos::cos<[f32, f64, Complex<f32>, Complex<f64>]>,
+    Exp::exp<[f32, f64, Complex<f32>, Complex<f64>]>,
+    Sinh::sinh<[f32, f64, Complex<f32>, Complex<f64>]>,
+    Sine::sin<[f32, f64, Complex<f32>, Complex<f64>]>,
     SquareRoot::sqrt<[f32, f64]>
 );
 

@@ -15,10 +15,17 @@ pub(crate) mod prelude {
 }
 
 pub(crate) mod utils {
-    use concision::func::activate::softmax;
+    use concision::func::activate::Softmax;
     use nd::linalg::Dot;
     use nd::{Array, Axis, Dimension, ScalarOperand};
     use num::complex::ComplexFloat;
+
+    pub(crate) fn scale_dk<A>(dk: A) -> A
+    where
+        A: ComplexFloat + ScalarOperand,
+    {
+        dk.sqrt().recip()
+    }
 
     pub fn scaled_dot_product<A, D>(
         q: &Array<A, D>,
@@ -31,11 +38,8 @@ pub(crate) mod utils {
         Array<A, D>: Dot<Array<A, D>, Output = Array<A, D>>,
     {
         let qk = q.dot(&k.t().to_owned());
-        let scale = {
-            let dk = A::from(k.len_of(Axis(1))).unwrap();
-            dk.sqrt()
-        };
+        let scale = scale_dk(A::from(k.len_of(Axis(1))).unwrap());
         let scaled = qk * scale.recip();
-        softmax(&scaled).dot(&v)
+        scaled.softmax().dot(&v)
     }
 }
