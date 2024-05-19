@@ -4,16 +4,6 @@
 */
 use crate::error::PredictError;
 
-#[doc(hidden)]
-pub trait Activate<T, F>: Forward<T>
-where
-    F: for<'a> Fn(&'a Self::Output) -> Self::Output,
-{
-    fn activate(&self, args: &T, f: F) -> Self::Output {
-        f(&self.forward(args))
-    }
-}
-
 /// [Forward] describes an object capable of forward propagation.
 pub trait Forward<T> {
     type Output;

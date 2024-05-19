@@ -5,10 +5,11 @@
 use core::ops::Neg;
 use nd::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};
 use ndrand::RandomExt;
+use num::complex::ComplexDistribution;
 use num::traits::Float;
 use rand::{rngs, Rng, SeedableRng};
 use rand_distr::uniform::{SampleUniform, Uniform};
-use rand_distr::{Bernoulli, BernoulliError, Distribution, StandardNormal};
+use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, StandardNormal};
 
 /// This trait provides the base methods required for initializing an [ndarray](ndarray::ArrayBase) with random values.
 /// [Initialize] is similar to [RandomExt](ndarray_rand::RandomExt), however, it focuses on flexibility while implementing additional
@@ -52,14 +53,49 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    fn bernoulli<Sh>(shape: Sh, p: Option<f64>) -> Result<Self, BernoulliError>
+    fn bernoulli<Sh>(shape: Sh, p: f64) -> Result<Self, BernoulliError>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
         Bernoulli: Distribution<A>,
     {
-        let dist = Bernoulli::new(p.unwrap_or(0.5))?;
+        let dist = Bernoulli::new(p)?;
         Ok(Self::rand(shape, dist))
+    }
+    /// Initialize the object according to the Lecun Initialization scheme.
+    /// LecunNormal distributions are truncated [Normal](rand_distr::Normal)
+    /// distributions centered at 0 with a standard deviation equal to the
+    /// square root of the reciprocal of the number of inputs.
+    fn lecun_normal<Sh>(shape: Sh, n: usize) -> Result<Self, rand_distr::NormalError>
+    where
+        A: Float,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+        StandardNormal: Distribution<A>,
+    {
+        let std = A::from(n).unwrap().recip().sqrt();
+        Self::normal(shape, A::zero(), std)
+    }
+    /// Given a shape, mean, and standard deviation generate a new object using the [Normal](rand_distr::Normal) distribution
+    fn normal<Sh>(shape: Sh, mean: A, std: A) -> Result<Self, rand_distr::NormalError>
+    where
+        A: Float,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+        StandardNormal: Distribution<A>,
+    {
+        let distr = Normal::new(mean, std)?;
+        Ok(Self::rand(shape, distr))
+    }
+
+    fn randc<Sh>(shape: Sh, re: A, im: A) -> Self
+    where
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+        ComplexDistribution<A, A>: Distribution<A>,
+    {
+        let distr = ComplexDistribution::new(re, im);
+        Self::rand(shape, distr)
     }
     /// Generate a random array using the [StandardNormal](rand_distr::StandardNormal) distribution
     fn stdnorm<Sh>(shape: Sh) -> Self
@@ -126,6 +162,7 @@ where
     ArrayBase<S, D>: RandomExt<S, A, D>,
 {
     type Data = S;
+
     fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> ArrayBase<S, D>
     where
         S: DataOwned,

@@ -2,7 +2,8 @@
    Appellation: macros <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-
+#[macro_use]
+mod activate;
 #[macro_use]
 mod builder;
 #[macro_use]

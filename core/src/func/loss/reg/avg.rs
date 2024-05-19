@@ -37,6 +37,25 @@ pub trait MeanSquaredError<Rhs = Self> {
     fn mse(&self, target: &Rhs) -> Self::Output;
 }
 
+losses! {
+    impl<A, S, D> MSE::<ArrayBase<S, D>, ArrayBase<S, D>, Output = Option<A>>(mse)
+    where
+        A: FromPrimitive + Num + Pow<i32, Output = A> + ScalarOperand,
+        D: Dimension,
+        S: Data<Elem = A>,
+}
+
+losses! {
+    impl<A, S, D> MAE::<ArrayBase<S, D>, ArrayBase<S, D>, Output = Option<A>>(mae)
+    where
+        A: FromPrimitive + Num + ScalarOperand + Signed,
+        D: Dimension,
+        S: Data<Elem = A>,
+}
+
+/*
+ ************* Implementations *************
+*/
 impl<A, S, D> MeanAbsoluteError<ArrayBase<S, D>> for ArrayBase<S, D>
 where
     A: FromPrimitive + Num + ScalarOperand + Signed,
@@ -46,7 +65,7 @@ where
     type Output = Option<A>;
 
     fn mae(&self, target: &ArrayBase<S, D>) -> Self::Output {
-        (self - target).abs().mean()
+        mae(self, target)
     }
 }
 
@@ -59,6 +78,6 @@ where
     type Output = Option<A>;
 
     fn mse(&self, target: &ArrayBase<S, D>) -> Self::Output {
-        (self - target).sqrd().mean()
+        mse(self, target)
     }
 }

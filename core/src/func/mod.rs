@@ -5,6 +5,7 @@
 //! Functional
 pub use self::prelude::*;
 
+#[macro_use]
 pub mod activate;
 pub mod dropout;
 pub mod loss;

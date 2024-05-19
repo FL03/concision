@@ -137,7 +137,7 @@ nonlinear!(
         f32,
         f64,
         Complex<f32>,
-        Complex < f64 >
+        Complex<f64>
     ]>,
 );
 

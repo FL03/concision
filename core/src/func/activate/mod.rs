@@ -2,32 +2,24 @@
     Appellation: activate <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{binary::*, nl::*};
+pub use self::{binary::*, linear::*, nl::*};
 
 pub mod binary;
+pub mod linear;
 pub mod nl;
-
-pub fn linear<T>(x: T) -> T {
-    x
-}
-
-unary!(LinearActivation::linear(self));
-
-impl<'a, T> LinearActivation for &'a T
-where
-    T: Clone,
-{
-    type Output = T;
-
-    fn linear(self) -> Self::Output {
-        self.clone()
-    }
-}
 
 pub(crate) mod prelude {
     pub use super::binary::*;
+    pub use super::linear::*;
     pub use super::nl::*;
-    pub use super::{linear, LinearActivation};
+    pub use super::{Activate, Evaluate};
+}
+
+#[doc(hidden)]
+pub trait Activate<T> {
+    type Output;
+
+    fn activate(&self, args: &T) -> Self::Output;
 }
 
 #[doc(hidden)]
@@ -36,3 +28,5 @@ pub trait Evaluate<T> {
 
     fn eval(&self, args: T) -> Self::Output;
 }
+
+activator!(LinearActor::<T>(T::clone) where T: Clone);

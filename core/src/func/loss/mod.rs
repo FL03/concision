@@ -11,8 +11,8 @@ pub(crate) mod prelude {
     pub use super::Loss;
 }
 
-pub trait Loss<T> {
+pub trait Loss<A, B = A> {
     type Output;
 
-    fn loss(&self, cmp: &T) -> Self::Output;
+    fn loss(&self, a: &A, cmp: &B) -> Self::Output;
 }

@@ -22,10 +22,8 @@ pub use self::init::{Initialize, InitializeExt};
 pub(crate) mod macros;
 pub(crate) mod primitives;
 
-#[macro_use]
 pub mod error;
 pub mod func;
-#[cfg(feature = "rand")]
 pub mod init;
 pub mod math;
 pub mod nn;
