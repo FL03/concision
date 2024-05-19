@@ -4,23 +4,14 @@
 */
 use ndarray::{Array, ArrayBase, Data, Dimension, RemoveAxis, ShapeError};
 
-// pub fn split<D: Dimension, T: Clone>(param: &Array<T, D>, heads: usize) -> Result<Array3<T>, ShapeError> {
-//     let mut dim = param.dim()
-//     let query = param.shape().last().unwrap() / heads;
-//     // reshape the qkv matrix into a 3d array
-//     let mut res = param.clone().into_shape((param.shape()[0], heads, query))?;
-//     // swap the sequence and head axes
-//     res.swap_axes(0, 1);
-//     Ok(res)
-// }
-
+/// Split a dimension into two parts
 pub trait DimSplit {
     type Output;
 
     fn split(&self, h: usize) -> Self::Output;
 }
 
-pub trait Split {
+pub trait SplitHead {
     type Output;
 
     fn split(&self, heads: usize) -> Result<Self::Output, ShapeError>;
@@ -42,7 +33,7 @@ where
     }
 }
 
-impl<A, S, D, E> Split for ArrayBase<S, D>
+impl<A, S, D, E> SplitHead for ArrayBase<S, D>
 where
     A: Clone,
     D: Dimension<Larger = E>,
@@ -53,7 +44,7 @@ where
     type Output = Array<A, E>;
 
     fn split(&self, h: usize) -> Result<Self::Output, ShapeError> {
-        super::_split(self, h, false)
+        super::_split(self, h, super::ORDER)
     }
 }
 

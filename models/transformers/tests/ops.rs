@@ -4,45 +4,14 @@
 */
 extern crate concision_core as concision;
 extern crate concision_transformers as transformers;
+extern crate ndarray as nd;
 
-use concision::prelude::{linarr, NdResult};
-use ndarray::prelude::*;
-use ndarray::Order;
+use concision::linarr;
+use nd::prelude::*;
 use transformers::ops::*;
 
-fn order(row_major: bool) -> Order {
-    if row_major {
-        Order::RowMajor
-    } else {
-        Order::ColumnMajor
-    }
-}
-
-fn merge3<T>(heads: &Array3<T>, row_major: bool) -> NdResult<Array2<T>>
-where
-    T: Clone,
-{
-    let (n, seq, query) = heads.dim();
-    let mut tmp = heads.clone();
-    // swap the head and sequence axes
-    tmp.swap_axes(0, 1);
-    // reshape the qkv matrix into a 2d array
-    tmp.to_shape(((seq, n * query), order(row_major)))
-        .map(|x| x.to_owned())
-}
-
-fn merge4<T>(heads: &Array4<T>, row_major: bool) -> NdResult<Array3<T>>
-where
-    T: Clone,
-{
-    let (batch, n, seq, query) = heads.dim();
-    let mut tmp = heads.clone();
-    // swap the head and sequence axes
-    tmp.swap_axes(1, 2);
-    // reshape the qkv matrix into a 2d array
-    tmp.to_shape(((batch, seq, n * query), order(row_major)))
-        .map(|x| x.to_owned())
-}
+pub const HEADS: usize = 2;
+pub const ORDER: nd::Order = nd::Order::RowMajor;
 
 #[test]
 fn test_merge() {
@@ -52,7 +21,7 @@ fn test_merge() {
     let a = arr.clone().merge().unwrap();
 
     assert_eq!(a.dim(), dout);
-    assert_eq!(a, merge3(&arr, false).unwrap());
+    assert_eq!(a, utils::merge3(&arr).unwrap());
 }
 
 #[test]
@@ -63,38 +32,98 @@ fn test_merge_batch() {
     let a = arr.merge().unwrap();
 
     assert_eq!(a.dim(), dout);
-    assert_eq!(a, merge4(&arr, false).unwrap());
+    assert_eq!(a, utils::merge4(&arr).unwrap());
 }
 
 #[test]
 fn test_split() {
     let heads = 2;
-    let shape = (3, 4, 6);
-    let dout = (3, heads, 4, 3);
-    let arr = linarr::<f64, Ix3>(shape).unwrap();
+    let shape = (4, 6);
+    let arr = linarr::<f64, Ix2>(shape).unwrap();
     let a = arr.split(heads).unwrap();
 
-    assert_eq!(a.dim(), dout);
+    assert_eq!(a.dim(), (heads, 4, 3));
+    assert_eq!(a, utils::split_heads(&arr, heads).unwrap());
 }
 
 #[test]
-#[ignore = "Needs to be fixed; currently fails when trying to recreate the original data."]
-fn reshape_ops() {
+fn test_split_batch() {
     let heads = 2;
-    let dim_input = (2, 4, 6); // (batch, seq, model)
-    let dim_split = (2, heads, 4, 3); // (batch, heads, seq, model)
-    let data = linarr::<f64, Ix3>(dim_input).unwrap();
+    let shape = (3, 4, 6);
+    let arr = linarr::<f64, Ix3>(shape).unwrap();
+    let a = arr.split(heads).unwrap();
 
-    let a = data.split(heads).unwrap(); // split_batch(&data, heads).unwrap();
-    let b = a.merge().unwrap(); // merge_batch(&a).unwrap();
+    assert_eq!(a.dim(), (3, heads, 4, 3));
+    assert_eq!(a, utils::split_batch(&arr, heads).unwrap());
+}
 
-    assert_eq!(a.dim(), dim_split);
-    assert_eq!(b.dim(), dim_input);
+#[test]
+fn reshape_ops() {
+    let shape = (2, 4, 6);
+    let data = linarr::<f64, Ix3>(shape).unwrap();
+
+    let a = data.split(HEADS).unwrap();
+    assert_eq!(a.dim(), (2, HEADS, 4, 3));
+    let b = a.merge().unwrap();
+    assert_eq!(b.dim(), shape);
+    // verify that doing the ops consecutively is the identity
     assert_eq!(b, data);
-    // for (i, &j) in data.split(heads).unwrap().indexed_iter() {
-    //     assert_eq!(j, a[i]);
-    // }
-    // for (i, &j) in b.indexed_iter() {
-    //     assert_eq!(j, data[i]);
-    // }
+}
+
+#[allow(dead_code)]
+pub(crate) mod utils {
+    use concision::NdResult;
+    use ndarray::*;
+
+    pub fn merge3<T>(heads: &Array3<T>) -> NdResult<Array2<T>>
+    where
+        T: Clone,
+    {
+        let (n, seq, query) = heads.dim();
+        let shape = (seq, n * query);
+        let mut tmp = heads.clone();
+        // swap the head and sequence axes
+        tmp.swap_axes(0, 1);
+        // reshape the qkv matrix into a 2d array
+        tmp.to_shape((shape, super::ORDER)).map(|x| x.to_owned())
+    }
+
+    pub fn merge4<T>(heads: &Array4<T>) -> NdResult<Array3<T>>
+    where
+        T: Clone,
+    {
+        let (batch, n, seq, query) = heads.dim();
+        let shape = (batch, seq, n * query);
+        let mut tmp = heads.clone();
+        // swap the head and sequence axes
+        tmp.swap_axes(1, 2);
+        // reshape the qkv matrix into a 2d array
+        tmp.to_shape((shape, super::ORDER)).map(|x| x.to_owned())
+    }
+
+    pub fn split_heads<T>(param: &Array2<T>, h: usize) -> NdResult<Array3<T>>
+    where
+        T: Clone,
+    {
+        let dim = param.shape().last().unwrap() / h;
+        // reshape the qkv matrix into a 3d array
+        let mut res = param.clone().into_shape((param.shape()[0], h, dim))?;
+        // swap the sequence and head axes
+        res.swap_axes(0, 1);
+        Ok(res)
+    }
+
+    pub fn split_batch<T>(param: &Array3<T>, h: usize) -> NdResult<Array4<T>>
+    where
+        T: Clone,
+    {
+        let dim = param.shape().last().unwrap() / h;
+        // reshape the qkv matrix into a 3d array
+        let mut res = param
+            .clone()
+            .into_shape((param.shape()[0], param.shape()[1], h, dim))?;
+        // swap the sequence and head axes
+        res.swap_axes(1, 2);
+        Ok(res)
+    }
 }

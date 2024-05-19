@@ -55,6 +55,6 @@ where
     }
 
     fn merge_along(&self, swap: usize) -> NdResult<Self::Output> {
-        super::_merge(self, swap, swap + 1, false)
+        super::_merge(self, swap, swap + 1, super::ORDER)
     }
 }
