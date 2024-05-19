@@ -2,6 +2,7 @@
     Appellation: generator <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::Dimensional;
 use nd::prelude::*;
 use nd::{Data, DataMut, DataOwned, OwnedRepr, RawData};
 use num::{One, Zero};
@@ -40,12 +41,10 @@ where
         Self::Data: DataOwned;
 }
 
-pub trait NdBuilderExt<A = f64, D = Ix2>: NdBuilder<A, D>
+pub trait NdBuilderExt<A = f64, D = Ix2>: Dimensional<D, Pattern = D::Pattern> + NdBuilder<A, D>
 where
     D: Dimension,
 {
-    fn dim(&self) -> D::Pattern;
-
     fn default_like<Sh>(&self) -> Self::Store
     where
         A: Default,
@@ -183,14 +182,11 @@ where
     }
 }
 
-impl<A, S, D> NdBuilderExt<A, D> for ArrayBase<S, D>
+impl<U, A, D> NdBuilderExt<A, D> for U
 where
+    U: Dimensional<D, Pattern = D::Pattern> + NdBuilder<A, D>,
     D: Dimension,
-    S: RawData<Elem = A>,
 {
-    fn dim(&self) -> D::Pattern {
-        ArrayBase::dim(self)
-    }
 }
 
 impl<A, S, D> AsOwned<S, D> for ArrayBase<S, D>
