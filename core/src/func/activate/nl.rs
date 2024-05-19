@@ -2,59 +2,50 @@
     Appellation: sigmoid <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::math::Exp;
 use ndarray::*;
 use num::complex::{Complex, ComplexFloat};
-use num::{Float, Zero};
+use num::traits::Zero;
 
-pub fn relu<T>(args: &T) -> T
+pub fn relu<T>(args: T) -> T
 where
-    T: Clone + PartialOrd + Zero,
+    T: PartialOrd + Zero,
 {
-    if args > &T::zero() {
-        return args.clone();
+    if args > T::zero() {
+        return args;
     }
     T::zero()
 }
 
-pub fn sigmoid<T>(args: &T) -> T
+pub fn sigmoid<T>(args: T) -> T
 where
     T: ComplexFloat,
 {
-    (T::one() + (*args).neg().exp()).recip()
+    (T::one() + args.neg().exp()).recip()
 }
 
-pub fn softmax<T, D>(args: &Array<T, D>) -> Array<T, D>
+pub fn softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
 where
+    A: ComplexFloat + ScalarOperand,
     D: Dimension,
-    T: Float,
+    S: Data<Elem = A>,
 {
-    let denom = args.mapv(|x| x.exp()).sum();
-    args.mapv(|x| x.exp() / denom)
+    args.exp() / args.exp().sum()
 }
 
-pub fn softmax_axis<T, D>(args: &Array<T, D>, axis: Option<usize>) -> Array<T, D>
-where
-    D: Dimension + RemoveAxis,
-    T: NdFloat,
-{
-    let exp = args.mapv(|x| x.exp());
-    if let Some(axis) = axis {
-        let denom = exp.sum_axis(Axis(axis));
-        exp / denom
-    } else {
-        let denom = exp.sum();
-        exp / denom
-    }
-}
-
-pub fn tanh<T>(args: &T) -> T
+pub fn tanh<T>(args: T) -> T
 where
     T: ComplexFloat,
 {
     args.tanh()
 }
 
-build_unary_trait!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
+unary!(
+    ReLU::relu(self),
+    Sigmoid::sigmoid(self),
+    Softmax::softmax(self),
+    Tanh::tanh(self),
+);
 
 /*
  ********** Implementations **********
@@ -76,7 +67,7 @@ macro_rules! nonlinear {
         impl $rho for $T {
             type Output = $T;
 
-            fn $call(&self) -> Self::Output {
+            fn $call(self) -> Self::Output {
                 $call(self)
             }
         }
@@ -84,7 +75,7 @@ macro_rules! nonlinear {
         impl<'a> $rho for &'a $T {
             type Output = $T;
 
-            fn $call(&self) -> Self::Output {
+            fn $call(self) -> Self::Output {
                 $call(*self)
             }
         }
@@ -99,12 +90,24 @@ macro_rules! nonlinear {
         {
             type Output = Array<<A as $name>::Output, D>;
 
-            fn $call(&self) -> Self::Output {
-                self.map($name::$call)
+            fn $call(self) -> Self::Output {
+                self.mapv($name::$call)
+            }
+        }
+
+        impl<'a, A, S, D> $name for &'a ArrayBase<S, D>
+        where
+            A: Clone + $name,
+            D: Dimension,
+            S: Data<Elem = A>
+        {
+            type Output = Array<<A as $name>::Output, D>;
+
+            fn $call(self) -> Self::Output {
+                self.mapv($name::$call)
             }
         }
     };
-
 }
 
 nonlinear!(
@@ -134,6 +137,32 @@ nonlinear!(
         f32,
         f64,
         Complex<f32>,
-        Complex < f64 >
+        Complex<f64>
     ]>,
 );
+
+impl<A, S, D> Softmax for ArrayBase<S, D>
+where
+    A: ComplexFloat + ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn softmax(self) -> Self::Output {
+        softmax(&self)
+    }
+}
+
+impl<'a, A, S, D> Softmax for &'a ArrayBase<S, D>
+where
+    A: ComplexFloat + ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn softmax(self) -> Self::Output {
+        softmax(self)
+    }
+}

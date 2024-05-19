@@ -9,10 +9,7 @@ use nd::{Dimension, RemoveAxis, ShapeBuilder, ShapeError};
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 
-pub struct Layout<D = nd::Ix2>
-where
-    D: Dimension,
-{
+pub struct Layout<D = nd::Ix2> {
     pub(crate) dim: D,
     pub(crate) features: Features,
 }
@@ -44,6 +41,17 @@ where
         Self { dim, features }
     }
 
+    pub fn with_shape<E, Sh>(self, shape: Sh) -> Layout<E>
+    where
+        E: RemoveAxis,
+        Sh: ShapeBuilder<Dim = E>,
+    {
+        let shape = shape.into_shape();
+        let dim = shape.raw_dim().clone();
+        let features = Features::from_shape(dim.clone());
+        Layout { dim, features }
+    }
+
     pub fn as_slice(&self) -> &[usize] {
         self.dim.slice()
     }
@@ -52,8 +60,8 @@ where
         self.dim.slice_mut()
     }
 
-    pub fn dim(&self) -> &D {
-        &self.dim
+    pub fn dim(&self) -> D {
+        self.dim.clone()
     }
 
     pub fn features(&self) -> Features {

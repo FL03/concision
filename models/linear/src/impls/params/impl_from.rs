@@ -2,8 +2,7 @@
     Appellation: impl_from <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::{Biased, NodeBase, Pair, ParamMode, ParamsBase, Unbiased};
-use crate::Features;
+use crate::{Biased, Features, NodeBase, Pair, ParamsBase, Unbiased};
 #[cfg(all(feature = "alloc", no_std))]
 use alloc::vec;
 use core::marker::PhantomData;
@@ -24,10 +23,9 @@ where
 
     fn into_iter(self) -> Self::IntoIter {
         let axis = Axis(0);
-        let bias = self.bias().unwrap();
         self.weights()
             .axis_iter(axis)
-            .zip(bias.axis_iter(axis))
+            .zip(self.bias().axis_iter(axis))
             .map(|(w, b)| (w.to_owned(), b.to_owned()))
             .collect::<Vec<_>>()
             .into_iter()
@@ -63,7 +61,7 @@ where
         let mut iter = nodes.iter();
         let node = iter.next().unwrap();
         let shape = Features::new(node.0.len(), nodes.len());
-        let mut params = ParamsBase::default(shape);
+        let mut params = ParamsBase::new(shape);
         params.set_node(0, node.clone());
         for (i, node) in iter.into_iter().enumerate() {
             params.set_node(i + 1, node.clone());
@@ -92,7 +90,7 @@ where
         let bias = ArrayBase::from_elem((), bias);
         Self {
             bias: Some(bias),
-            weights,
+            weight: weights,
             _mode: PhantomData,
         }
     }
@@ -100,12 +98,11 @@ where
 impl<A, K> From<(Array1<A>, Option<A>)> for ParamsBase<OwnedRepr<A>, Ix1, K>
 where
     A: Clone,
-    K: ParamMode,
 {
     fn from((weights, bias): (Array1<A>, Option<A>)) -> Self {
         Self {
             bias: bias.map(|b| ArrayBase::from_elem((), b)),
-            weights,
+            weight: weights,
             _mode: PhantomData,
         }
     }
@@ -114,13 +111,12 @@ where
 impl<A, S, D, K> From<NodeBase<S, D, D::Smaller>> for ParamsBase<S, D, K>
 where
     D: RemoveAxis,
-    K: ParamMode,
     S: RawData<Elem = A>,
 {
     fn from((weights, bias): NodeBase<S, D, D::Smaller>) -> Self {
         Self {
             bias,
-            weights,
+            weight: weights,
             _mode: PhantomData::<K>,
         }
     }
@@ -134,7 +130,7 @@ where
     fn from((weights, bias): Pair<ArrayBase<S, D>, ArrayBase<S, D::Smaller>>) -> Self {
         Self {
             bias: Some(bias),
-            weights,
+            weight: weights,
             _mode: PhantomData::<Biased>,
         }
     }

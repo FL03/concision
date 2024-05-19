@@ -2,6 +2,7 @@
     Appellation: action <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use scsys::VariantConstructors;
 use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
 
 #[derive(
@@ -20,6 +21,7 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantN
     Ord,
     PartialEq,
     PartialOrd,
+    VariantConstructors,
     VariantNames,
 )]
 #[cfg_attr(

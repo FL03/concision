@@ -169,3 +169,30 @@ where
     let scale = T::from(n).unwrap().recip();
     result.iter().map(|x| x.re() * scale).collect()
 }
+
+#[doc(hidden)]
+/// Generates a permutation for the Fast Fourier Transform.
+pub fn fft_permutation(length: usize) -> Vec<usize> {
+    let mut result = Vec::new();
+    result.reserve_exact(length);
+    for i in 0..length {
+        result.push(i);
+    }
+    let mut reverse = 0_usize;
+    let mut position = 1_usize;
+    while position < length {
+        let mut bit = length >> 1;
+        while bit & reverse != 0 {
+            reverse ^= bit;
+            bit >>= 1;
+        }
+        reverse ^= bit;
+        // This is equivalent to adding 1 to a reversed number
+        if position < reverse {
+            // Only swap each element once
+            result.swap(position, reverse);
+        }
+        position += 1;
+    }
+    result
+}

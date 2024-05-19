@@ -14,14 +14,17 @@ extern crate alloc;
 
 extern crate concision_core as concision;
 extern crate ndarray as nd;
+// extern crate ndarray_stats as ndstats;
 
 pub use self::model::{Config, Features, Layout, Linear};
-pub use self::params::{mode::*, LinearParams};
+pub use self::norm::LayerNorm;
+pub use self::params::{mode::*, ParamsBase};
 #[allow(unused_imports)]
-pub use self::{traits::*, utils::*};
+pub use self::{primitives::*, traits::*, utils::*};
 
 #[macro_use]
 pub(crate) mod macros;
+pub(crate) mod primitives;
 #[macro_use]
 pub(crate) mod seal;
 pub(crate) mod utils;
@@ -33,6 +36,7 @@ pub mod dense;
 #[doc(hidden)]
 pub mod mlp;
 pub mod model;
+pub mod norm;
 pub mod params;
 pub mod traits;
 
@@ -53,6 +57,7 @@ mod impls {
 
 pub mod prelude {
     pub use crate::model::prelude::*;
+    pub use crate::norm::prelude::*;
     pub use crate::params::prelude::*;
     pub use crate::traits::*;
 }

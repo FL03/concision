@@ -15,7 +15,7 @@ where
         A: Clone + Default,
     {
         let config = Config::std(inputs, outputs);
-        let params = LinearParams::default(config.dim());
+        let params = LinearParams::new(config.dim());
         Self { config, params }
     }
 }
@@ -23,29 +23,26 @@ where
 impl<A, K, D> Borrow<Config<K, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
-    K: ParamMode,
 {
     fn borrow(&self) -> &Config<K, D> {
         &self.config
     }
 }
 
-impl<A, K, D> Borrow<LinearParams<K, A, D>> for Linear<A, K, D>
+impl<A, K, D> Borrow<LinearParams<A, K, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
-    K: ParamMode,
 {
-    fn borrow(&self) -> &LinearParams<K, A, D> {
+    fn borrow(&self) -> &LinearParams<A, K, D> {
         &self.params
     }
 }
 
-impl<A, K, D> BorrowMut<LinearParams<K, A, D>> for Linear<A, K, D>
+impl<A, K, D> BorrowMut<LinearParams<A, K, D>> for Linear<A, K, D>
 where
     D: RemoveAxis,
-    K: ParamMode,
 {
-    fn borrow_mut(&mut self) -> &mut LinearParams<K, A, D> {
+    fn borrow_mut(&mut self) -> &mut LinearParams<A, K, D> {
         &mut self.params
     }
 }

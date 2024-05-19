@@ -67,6 +67,7 @@ impl<T> Padding<T> {
 }
 
 mod utils {
+    #![cfg(any(feature = "std", feature = "alloc"))]
     use super::{PadAction, PadMode};
     use crate::traits::ArrayLike;
     use nd::{Array, ArrayBase, AxisDescription, Data, DataOwned, Dimension, Slice};
@@ -77,7 +78,7 @@ mod utils {
     #[cfg(feature = "std")]
     use std::borrow::Cow;
 
-    fn read_pad(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
+    fn reader(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
         if pad.len() == 1 && pad.len() < nb_dim {
             // The user provided a single padding for all dimensions
             Cow::from(vec![pad[0]; nb_dim])
@@ -94,7 +95,7 @@ mod utils {
         D: Dimension,
         S: DataOwned<Elem = A>,
     {
-        let pad = read_pad(data.ndim(), pad);
+        let pad = reader(data.ndim(), pad);
         let mut new_dim = data.raw_dim();
         for (ax, (&ax_len, pad)) in data.shape().iter().zip(pad.iter()).enumerate() {
             new_dim[ax] = ax_len + pad[0] + pad[1];
@@ -116,7 +117,7 @@ mod utils {
         D: Dimension,
         S: Data<Elem = A>,
     {
-        let pad = read_pad(data.ndim(), pad);
+        let pad = reader(data.ndim(), pad);
 
         // Select portion of padded array that needs to be copied from the original array.
         output

@@ -1,6 +1,6 @@
 /*
-   Appellation: arr <mod>
-   Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: ops <module>
+    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use nd::linalg::Dot;
 use nd::*;

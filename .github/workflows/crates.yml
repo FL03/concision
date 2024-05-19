@@ -1,4 +1,4 @@
-name: crates.io
+name: crates
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

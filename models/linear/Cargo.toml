@@ -87,12 +87,16 @@ doctest = true
 test = true
 
 [[test]]
-name = "model"
-required-features = ["rand"]
+name = "linear"
+required-features = ["std"]
+
+[[test]]
+name = "norm"
+required-features = ["approx", "std"]
 
 [[test]]
 name = "params"
-required-features = ["rand"]
+required-features = ["std"]
 
 [build-dependencies]
 
@@ -106,6 +110,11 @@ strum.workspace = true
 optional = true
 version = "0.5"
 
+[dependencies.concision-core]
+default-features = false
+path = "../../core"
+version = "0.1.14"
+
 [dependencies.serde]
 default-features = false
 features = ["derive"]
@@ -115,12 +124,6 @@ version = "1"
 [dependencies.tracing]
 optional = true
 version = "0.1"
-
-
-[dependencies.concision-core]
-default-features = false
-path = "../../core"
-version = "0.1.14"
 
 [dev-dependencies]
 lazy_static.workspace = true

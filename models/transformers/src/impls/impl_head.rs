@@ -3,17 +3,39 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::attention::AttentionHead;
-use crate::params::QKVBase;
+use crate::params::QkvBase;
 use nd::prelude::*;
-use nd::DataOwned;
+use nd::{DataOwned, RawDataClone};
 
-impl<A, S, D> Default for AttentionHead<A, S, D>
+impl<A, S, D> Clone for AttentionHead<A, D, S>
+where
+    A: Copy,
+    D: Dimension,
+    S: RawDataClone<Elem = A>,
+{
+    fn clone(&self) -> Self {
+        Self {
+            mask: self.mask.clone(),
+            params: self.params.clone(),
+        }
+    }
+}
+
+impl<A, S, D> Copy for AttentionHead<A, D, S>
+where
+    A: Copy,
+    D: Copy + Dimension,
+    S: Copy + RawDataClone<Elem = A>,
+{
+}
+
+impl<A, S, D> Default for AttentionHead<A, D, S>
 where
     A: Default,
     D: Dimension,
     S: DataOwned<Elem = A>,
 {
     fn default() -> Self {
-        Self::from_params(QKVBase::default())
+        Self::from_params(QkvBase::default())
     }
 }

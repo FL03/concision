@@ -2,9 +2,10 @@
     Appellation: params <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::qkv::QKVBase;
+pub use self::{item::*, store::QkvBase};
 
-mod qkv;
+pub(crate) mod item;
+pub(crate) mod store;
 
 macro_rules! params_ty {
     ($target:ident: [$($name:ident<$(&$lt:lifetime)?$repr:ident>),* $(,)?]) => {
@@ -19,14 +20,16 @@ macro_rules! params_ty {
 }
 
 params_ty!(
-    QKVBase: [
-        QKV<OwnedRepr>,
-        ArcQKV<OwnedArcRepr>,
-        ViewQKV<&'a ViewRepr>,
+    QkvBase: [
+        Params<OwnedRepr>,
+        ArcParams<OwnedArcRepr>,
+        ParamsView<&'a ViewRepr>,
     ]
 );
 
+#[allow(unused_imports)]
 pub(crate) mod prelude {
-    pub use super::QKVBase;
-    pub use super::{ArcQKV, QKV};
+    pub use super::item::{Entry, QKV};
+    pub use super::store::QkvBase;
+    pub use super::{ArcParams, Params};
 }

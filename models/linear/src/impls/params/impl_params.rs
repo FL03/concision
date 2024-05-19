@@ -2,7 +2,6 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::mode::*;
 use crate::params::ParamsBase;
 use concision::prelude::{Predict, PredictError};
 use core::ops::Add;
@@ -13,7 +12,6 @@ use num::complex::ComplexFloat;
 impl<A, K, S, D> ParamsBase<S, D, K>
 where
     D: RemoveAxis,
-    K: ParamMode,
     S: RawData<Elem = A>,
 {
     pub fn activate<F, X, Y>(&mut self, args: &X, f: F) -> Y
@@ -26,27 +24,6 @@ where
     }
 }
 
-impl<'a, A, B, T, S, D, K> Predict<A> for &'a ParamsBase<S, D, K>
-where
-    A: Dot<Array<T, D>, Output = B>,
-    B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
-    D: RemoveAxis,
-    K: ParamMode,
-    S: Data<Elem = T>,
-    T: NdFloat,
-{
-    type Output = B;
-
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-        let wt = self.weights().t().to_owned();
-        let mut res = input.dot(&wt);
-        if let Some(bias) = self.bias() {
-            res = res + bias;
-        }
-        Ok(res)
-    }
-}
-
 impl<A, S, D> Clone for ParamsBase<S, D>
 where
     A: Clone,
@@ -55,7 +32,7 @@ where
 {
     fn clone(&self) -> Self {
         Self {
-            weights: self.weights.clone(),
+            weight: self.weight.clone(),
             bias: self.bias.clone(),
             _mode: self._mode,
         }
@@ -78,84 +55,69 @@ where
     S: Data<Elem = A>,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.weights == other.weights && self.bias == other.bias
+        self.weights() == other.weight && self.bias == other.bias
     }
 }
 
-impl<A, S, D> PartialEq<(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)> for ParamsBase<S, D>
+impl<A, S, D, K> PartialEq<(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)>
+    for ParamsBase<S, D, K>
 where
     A: PartialEq,
     D: RemoveAxis,
     S: Data<Elem = A>,
 {
     fn eq(&self, (weights, bias): &(ArrayBase<S, D>, Option<ArrayBase<S, D::Smaller>>)) -> bool {
-        self.weights == weights && self.bias == *bias
+        self.weights() == weights && self.bias.as_ref() == bias.as_ref()
     }
 }
 
-impl<A, S, D> PartialEq<(ArrayBase<S, D>, ArrayBase<S, D::Smaller>)> for ParamsBase<S, D>
+impl<A, S, D, K> PartialEq<(ArrayBase<S, D>, ArrayBase<S, D::Smaller>)> for ParamsBase<S, D, K>
 where
     A: PartialEq,
     D: RemoveAxis,
     S: Data<Elem = A>,
 {
     fn eq(&self, (weights, bias): &(ArrayBase<S, D>, ArrayBase<S, D::Smaller>)) -> bool {
-        let mut cmp = self.weights == weights;
-        if let Some(b) = &self.bias {
-            cmp &= b == bias;
-        }
-        cmp
+        self.weights() == weights && self.bias.as_ref() == Some(bias)
     }
 }
 
-macro_rules! impl_predict {
-    ($( $($lt:lifetime)? $name:ident),* $(,)?) => {
-        $(impl_predict!(@impl $($lt)? $name);)*
-    };
-    (@impl $name:ident) => {
-        impl<A, B, T, S, D, K> Predict<A> for $name<S, D, K>
-        where
-            A: Dot<Array<T, D>, Output = B>,
-            B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
-            D: RemoveAxis,
-            K: ParamMode,
-            S: Data<Elem = T>,
-            T: ComplexFloat,
-        {
-            type Output = B;
+impl<A, B, T, S, D, K> Predict<A> for ParamsBase<S, D, K>
+where
+    A: Dot<Array<T, D>, Output = B>,
+    B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
+    D: RemoveAxis,
+    S: Data<Elem = T>,
+    T: ComplexFloat,
+{
+    type Output = B;
 
-            fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-                let wt = self.weights().t().to_owned();
-                let mut res = input.dot(&wt);
-                if let Some(bias) = self.bias() {
-                    res = res + bias;
-                }
-                Ok(res)
-            }
+    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+        let wt = self.weights().t().to_owned();
+        let mut res = input.dot(&wt);
+        if let Some(bias) = self.bias.as_ref() {
+            res = res + bias;
         }
-    };
-    (@impl $lt:lifetime $name:ident) => {
-        impl<'a, A, B, T, S, D, K> Predict<A> for $name<S, D, K>
-        where
-            A: Dot<Array<T, D>, Output = B>,
-            B: for<'a> Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
-            D: RemoveAxis,
-            K: ParamMode,
-            S: Data<Elem = T>,
-            T: ComplexFloat,
-        {
-            type Output = B;
-
-            fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
-                let wt = self.weights().t().to_owned();
-                let mut res = input.dot(&wt);
-                if let Some(bias) = self.bias() {
-                    res = res + bias;
-                }
-                Ok(res)
-            }
-        }
-    };
+        Ok(res)
+    }
 }
 
-impl_predict!(ParamsBase);
+impl<'a, A, B, T, S, D, K> Predict<A> for &'a ParamsBase<S, D, K>
+where
+    A: Dot<Array<T, D>, Output = B>,
+    B: Add<&'a ArrayBase<S, D::Smaller>, Output = B>,
+    D: RemoveAxis,
+    S: Data<Elem = T>,
+    T: ComplexFloat,
+{
+    type Output = B;
+
+    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+        let wt = self.weights().t().to_owned();
+        let mut res = input.dot(&wt);
+        if let Some(bias) = self.bias.as_ref() {
+            res = res + bias;
+        }
+        Ok(res)
+    }
+}

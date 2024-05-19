@@ -2,20 +2,22 @@
     Appellation: mode <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use concision::Toggle;
+use core::option::Option;
 
-pub trait State {
-    type Mode: ParamMode;
-}
-
-pub trait ParamMode: 'static {
+pub trait ParamMode: Toggle {
     const BIASED: bool = false;
 
     fn is_biased(&self) -> bool {
-        Self::BIASED
+        core::any::TypeId::of::<Self>() == core::any::TypeId::of::<Biased>()
     }
 
     private!();
 }
+
+/*
+ ************* Implementations *************
+*/
 
 impl<T> ParamMode for Option<T>
 where
@@ -30,14 +32,16 @@ where
     seal!();
 }
 
-macro_rules! param_mode {
+macro_rules! mode {
     {$($T:ident: $opt:expr),* $(,)?} => {
-        $(param_mode!(@impl $T: $opt);)*
+        $(mode!(@impl $T: $opt);)*
     };
     (@impl $T:ident: $opt:expr) => {
         #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
         #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize,))]
         pub enum $T {}
+
+        impl Toggle for $T {}
 
         impl ParamMode for $T {
             const BIASED: bool = $opt;
@@ -52,7 +56,7 @@ macro_rules! param_mode {
 
 }
 
-param_mode! {
+mode! {
     Biased: true,
     Unbiased: false,
 }
