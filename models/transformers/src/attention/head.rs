@@ -78,6 +78,21 @@ where
     ndbuilder!(zeros() where A: Clone + num::Zero, S: DataOwned);
 }
 
+impl<A, S, D> super::Attention for AttentionHead<A, D, S>
+where
+    A: ComplexFloat + ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+    ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
+    Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
+{
+    type Output = Array<A, D>;
+
+    fn attention(&self) -> Self::Output {
+        self.attention()
+    }
+}
+
 impl<A, S, D> Borrow<QkvBase<S, D>> for AttentionHead<A, D, S>
 where
     D: Dimension,

@@ -19,7 +19,7 @@ pub(crate) mod utils {
     use concision::NdResult;
     use nd::prelude::*;
     use nd::{Data, Order, RemoveAxis};
-    
+
     pub(crate) fn _merge<A, S, D>(
         arr: &ArrayBase<S, D>,
         src: usize,

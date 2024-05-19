@@ -4,11 +4,12 @@
 */
 pub use self::{item::*, store::QkvBase};
 
-pub(crate) mod item;
-pub(crate) mod store;
+mod store;
+
+pub mod item;
 
 macro_rules! params_ty {
-    ($target:ident: [$($name:ident<$(&$lt:lifetime)?$repr:ident>),* $(,)?]) => {
+    ($target:ident {$($name:ident: $(&$lt:lifetime)? $repr:ident),* $(,)?}) => {
         $(params_ty!(@impl $target: $name<$(&$lt)? $repr>);)*
     };
     (@impl $target:ident: $name:ident<$repr:ident>) => {
@@ -20,16 +21,17 @@ macro_rules! params_ty {
 }
 
 params_ty!(
-    QkvBase: [
-        Params<OwnedRepr>,
-        ArcParams<OwnedArcRepr>,
-        ParamsView<&'a ViewRepr>,
-    ]
+    QkvBase {
+        Qkv: OwnedRepr,
+        ArcQkv: OwnedArcRepr,
+        ViewQkv: &'a ViewRepr,
+
+    }
 );
 
 #[allow(unused_imports)]
 pub(crate) mod prelude {
     pub use super::item::{Entry, QKV};
     pub use super::store::QkvBase;
-    pub use super::{ArcParams, Params};
+    pub use super::{ArcQkv, Qkv, ViewQkv};
 }

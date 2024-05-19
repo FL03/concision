@@ -6,14 +6,14 @@ extern crate concision_core as concision;
 extern crate concision_transformers as transformers;
 
 use concision::{linarr, Matmul};
-use transformers::{AttentionHead, Params};
+use transformers::{AttentionHead, Qkv};
 
 use ndarray::prelude::*;
 
 #[test]
 fn test_qkv() {
     let shape = (2048, 10);
-    let params = Params::<f64>::new(shape);
+    let params = Qkv::<f64>::new(shape);
     assert_eq!(params.q(), &Array::default(shape));
 }
 
@@ -23,7 +23,7 @@ fn test_qkv_matmul() {
     // generate some sample data
     let data = linarr(shape).unwrap();
     // initialize the parameters
-    let params = Params::<f64>::ones(shape);
+    let params = Qkv::<f64>::ones(shape);
     // calculate the expected result
     let exp = Array2::<f64>::ones(shape).dot(&data.t());
     // calculate the result

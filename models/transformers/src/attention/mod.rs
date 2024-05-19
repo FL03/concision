@@ -21,6 +21,12 @@ pub(crate) mod prelude {
     pub use super::utils::*;
 }
 
+pub trait Attention {
+    type Output;
+
+    fn attention(&self) -> Self::Output;
+}
+
 pub(crate) mod utils {
     use concision::func::activate::Softmax;
     use nd::linalg::Dot;
