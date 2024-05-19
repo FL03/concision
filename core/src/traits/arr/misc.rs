@@ -5,12 +5,27 @@
 use nd::prelude::*;
 use nd::{DataMut, RawData};
 
+/// [Dimensional] provides a common interface for containers to access their shape and dimension.
 pub trait Dimensional<D> {
+    const RANK: Option<usize> = None;
+
     type Pattern;
 
     fn dim(&self) -> Self::Pattern;
 
+    fn is_scalar(&self) -> bool {
+        self.rank() == 0 || self.shape().iter().all(|x| *x == 1)
+    }
+
+    fn rank(&self) -> usize {
+        Self::RANK.unwrap_or(self.shape().len())
+    }
+
     fn raw_dim(&self) -> D;
+
+    fn size(&self) -> usize {
+        self.shape().iter().product()
+    }
 
     fn shape(&self) -> &[usize];
 }
@@ -41,6 +56,7 @@ where
     D: Dimension,
     S: RawData,
 {
+    const RANK: Option<usize> = D::NDIM;
     type Pattern = D::Pattern;
 
     fn shape(&self) -> &[usize] {

@@ -7,6 +7,15 @@ use nd::prelude::*;
 use nd::{Data, DataMut, DataOwned, OwnedRepr, RawData};
 use num::{One, Zero};
 
+/// This trait describes the basic operations for any n-dimensional container.
+pub trait NdContainer<A = f64, D = Ix2>: Dimensional<D> {
+    type Data;
+
+    fn as_slice(&self) -> &[A];
+
+    fn as_mut_slice(&mut self) -> &mut [A];
+}
+
 /// [NdBuilder] describes common creation routines for [ArrayBase](ndarray::ArrayBase)
 pub trait NdBuilder<A = f64, D = Ix2>
 where
