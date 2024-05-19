@@ -22,7 +22,7 @@ where
 {
     type Output;
 
-    fn mask_fill(&self, mask: Array<bool, D>, value: A) -> Self::Output;
+    fn masked_fill(&self, mask: &Array<bool, D>, value: A) -> Self::Output;
 }
 
 pub trait IntoAxis {
@@ -65,7 +65,7 @@ where
 {
     type Output = ArrayBase<S, D>;
 
-    fn mask_fill(&self, mask: Array<bool, D>, value: A) -> Self::Output {
+    fn masked_fill(&self, mask: &Array<bool, D>, value: A) -> Self::Output {
         let mut arr = self.clone();
         arr.zip_mut_with(&mask, |x, &m| {
             if m {

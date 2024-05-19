@@ -4,8 +4,9 @@
 */
 extern crate concision_core as cnc;
 
-use cnc::traits::{Affine, AsComplex, Matpow};
-use ndarray::prelude::{array, Array2};
+use cnc::linarr;
+use cnc::traits::{Affine, AsComplex, MaskFill, Matpow};
+use ndarray::prelude::*;
 use num::Complex;
 
 #[test]
@@ -14,6 +15,15 @@ fn test_affine() {
 
     let y = x.affine(4.0, -2.0);
     assert_eq!(y, array![[-2.0, 2.0], [6.0, 10.0]]);
+}
+
+#[test]
+fn test_masked_fill() {
+    let shape = (2, 2);
+    let mask = array![[true, false], [false, true]];
+    let arr = linarr::<f64, Ix2>(shape).unwrap();
+    let a = arr.masked_fill(&mask, 0.0);
+    assert_eq!(a, array![[0.0, 1.0], [2.0, 0.0]]);
 }
 
 #[test]

@@ -86,11 +86,9 @@ where
     }
 }
 
-macro_rules! impl_like {
+macro_rules! impl_ndlike {
+
     ($name:ident::$method:ident.$call:ident: $($p:tt)*) => {
-        impl_like!(@impl $name::$method.$call: $($p)*);
-    };
-    (@impl $name:ident::$method:ident.$call:ident: $($p:tt)*) => {
         impl<A, S, D> $name for ArrayBase<S, D>
         where
             A: $($p)*,
@@ -106,6 +104,6 @@ macro_rules! impl_like {
     };
 }
 
-impl_like!(DefaultLike::default_like.default: Default);
-impl_like!(OnesLike::ones_like.ones: Clone + num::One);
-impl_like!(ZerosLike::zeros_like.zeros: Clone + num::Zero);
+impl_ndlike!(DefaultLike::default_like.default: Default);
+impl_ndlike!(OnesLike::ones_like.ones: Clone + num::One);
+impl_ndlike!(ZerosLike::zeros_like.zeros: Clone + num::Zero);

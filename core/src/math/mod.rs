@@ -4,8 +4,9 @@
 */
 //! # Mathematics
 //!
-//! This module focuses on implementing various mathematical objects and operations that are
-//! critical to the development of machine learning algorithms.
+//! This module focuses on providing the mathematical foundation for the library.
+//! Any defined operation is designed to extend the functionality of the basic primitives
+//! as well as the `ndarray` crate. 
 pub use self::traits::*;
 
 pub mod traits;
