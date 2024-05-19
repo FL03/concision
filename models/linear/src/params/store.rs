@@ -110,25 +110,25 @@ where
         crate::is_biased::<K>()
     }
 
-    impl_params_builder!(new.default where A: Default, S: DataOwned);
+    pbuilder!(new.default where A: Default, S: DataOwned);
 
-    impl_params_builder!(ones where A: Clone + One, S: DataOwned);
+    pbuilder!(ones where A: Clone + One, S: DataOwned);
 
-    impl_params_builder!(zeros where A: Clone + Zero, S: DataOwned);
+    pbuilder!(zeros where A: Clone + Zero, S: DataOwned);
 
     dimensional!(weights());
 
-    ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
+    wnbview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
 
-    ndview!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
+    wnbview!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
 
-    ndview!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
+    wnbview!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
 
-    ndview!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataOwned);
+    wnbview!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataOwned);
 
-    ndview!(view::<'a, ViewRepr>(&self) where A: Clone, S: Data);
+    wnbview!(view::<'a, ViewRepr>(&self) where A: Clone, S: Data);
 
-    ndview!(view_mut::<'a, ViewRepr>(&mut self) where A: Clone, S: DataMut);
+    wnbview!(view_mut::<'a, ViewRepr>(&mut self) where A: Clone, S: DataMut);
 }
 
 impl<A, S, D> ParamsBase<S, D, Biased>

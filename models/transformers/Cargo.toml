@@ -28,27 +28,33 @@ full = [
 
 alloc = [
     "concision-core/alloc",
+    "concision-linear/alloc",
+    "serde?/alloc",
 ]
 
 approx = [
     "dep:approx",
     "concision-core/approx",
+    "concision-linear/approx",
     "ndarray/approx-0_5",
 ]
 
 blas = [
     "concision-core/blas",
+    "concision-linear/blas",
     "ndarray/blas",
 ]
 
 rand = [
     "concision-core/rand",
+    "concision-linear/rand",
     "num/rand"
 ]
 
 serde = [
     "serde-1",
     "concision-core/serde",
+    "concision-linear/serde",
     "ndarray/serde-1",
     "num/serde"
 ]
@@ -59,11 +65,14 @@ serde-1 = [
 
 tracing = [
     "dep:tracing",
+    "concision-core/tracing",
+    "concision-linear/tracing",
 ]
 
 # ********* [FF] Environments *********
 std = [
     "concision-core/std",
+    "concision-linear/std",
     "ndarray/std",
     "num/std",
     "serde?/std",
@@ -72,10 +81,12 @@ std = [
 
 wasm = [
     "concision-core/wasm",
+    "concision-linear/wasm",
 ]
 
 wasi = [    
     "concision-core/wasi",
+    "concision-linear/wasi",
 ]
 
 [lib]
@@ -100,6 +111,11 @@ version = "0.5"
 [dependencies.concision-core]
 default-features = false
 path = "../../core"
+version = "0.1.14"
+
+[dependencies.concision-linear]
+default-features = false
+path = "../linear"
 version = "0.1.14"
 
 [dependencies.serde]

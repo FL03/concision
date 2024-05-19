@@ -15,16 +15,16 @@ use ndarray::ShapeError;
 //     Ok(res)
 // }
 
-pub trait Split<T> {
-    type Error;
+pub trait Split {
+    type Output;
 
-    fn split(&self, heads: usize) -> Result<T, Self::Error>;
+    fn split(&self, heads: usize) -> Result<Self::Output, ShapeError>;
 }
 
-impl<T: Clone> Split<Array3<T>> for Array2<T> {
-    type Error = ShapeError;
+impl<T: Clone> Split for Array2<T> {
+    type Output = Array3<T>;
 
-    fn split(&self, heads: usize) -> Result<Array3<T>, Self::Error> {
+    fn split(&self, heads: usize) -> Result<Self::Output, ShapeError> {
         let (seq, model) = self.dim();
         let query = model / heads;
         // reshape the qkv matrix into a 3d array
@@ -35,10 +35,10 @@ impl<T: Clone> Split<Array3<T>> for Array2<T> {
     }
 }
 
-impl<T: Clone> Split<Array4<T>> for Array3<T> {
-    type Error = ShapeError;
+impl<T: Clone> Split for Array3<T> {
+    type Output = Array4<T>;
 
-    fn split(&self, heads: usize) -> Result<Array4<T>, Self::Error> {
+    fn split(&self, heads: usize) -> Result<Self::Output, ShapeError> {
         let (batch, seq, model) = self.dim();
         let query = model / heads;
         // reshape the qkv matrix into a 3d array

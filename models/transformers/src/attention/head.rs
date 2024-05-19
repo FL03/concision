@@ -9,6 +9,7 @@ use nd::linalg::Dot;
 use nd::*;
 use num::complex::ComplexFloat;
 
+// #68
 pub struct AttentionHead<A = f64, D = Ix2, S = OwnedRepr<A>>
 where
     D: Dimension,

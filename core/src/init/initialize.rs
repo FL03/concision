@@ -11,6 +11,8 @@ use rand::{rngs, Rng, SeedableRng};
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, StandardNormal};
 
+use super::LecunNormal;
+
 /// This trait provides the base methods required for initializing an [ndarray](ndarray::ArrayBase) with random values.
 /// [Initialize] is similar to [RandomExt](ndarray_rand::RandomExt), however, it focuses on flexibility while implementing additional
 /// features geared towards machine-learning models; such as lecun_normal initialization.
@@ -66,15 +68,15 @@ where
     /// LecunNormal distributions are truncated [Normal](rand_distr::Normal)
     /// distributions centered at 0 with a standard deviation equal to the
     /// square root of the reciprocal of the number of inputs.
-    fn lecun_normal<Sh>(shape: Sh, n: usize) -> Result<Self, rand_distr::NormalError>
+    fn lecun_normal<Sh>(shape: Sh, n: usize) -> Self
     where
         A: Float,
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
         StandardNormal: Distribution<A>,
     {
-        let std = A::from(n).unwrap().recip().sqrt();
-        Self::normal(shape, A::zero(), std)
+        let distr = LecunNormal::new(n);
+        Self::rand(shape, distr)
     }
     /// Given a shape, mean, and standard deviation generate a new object using the [Normal](rand_distr::Normal) distribution
     fn normal<Sh>(shape: Sh, mean: A, std: A) -> Result<Self, rand_distr::NormalError>

@@ -3,19 +3,12 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use num::Float;
+use rand::Rng;
 use rand_distr::{Distribution, Normal, NormalError, StandardNormal};
 
-/// Create a [Normal](rand_distr::Normal) distribution with a standard deviation of sqrt(1/n)
-/// where n is the number of inputs.
-pub fn lecun_normal<F>(n: usize) -> Result<Normal<F>, NormalError>
-where
-    F: Float,
-    StandardNormal: Distribution<F>,
-{
-    let std_dev = F::from(n).unwrap().recip().sqrt();
-    Normal::new(F::zero(), std_dev)
-}
-
+/// [LecunNormal] is a truncated [normal](rand_distr::Normal) distribution centered at 0
+/// with a standard deviation that is calculated as `σ = sqrt(1/n_in)`
+/// where `n_in` is the number of input units.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LecunNormal {
     n: usize,
@@ -25,16 +18,20 @@ impl LecunNormal {
     pub fn new(n: usize) -> Self {
         Self { n }
     }
-
+    /// Create a [normal](rand_distr::Normal) [distribution](Distribution) centered at 0;
+    /// See [Self::std_dev] for the standard deviation calculations.
     pub fn distr<F>(&self) -> Result<Normal<F>, NormalError>
     where
         F: Float,
         StandardNormal: Distribution<F>,
     {
-        lecun_normal(self.n)
+        Normal::new(F::zero(), self.std_dev())
     }
-
-    pub fn std<F>(&self) -> F
+    /// Calculate the standard deviation (`σ`) of the distribution.
+    /// This is done by computing the root of the reciprocal of the number of inputs
+    ///
+    /// Symbolically: `σ = sqrt(1/n)`
+    pub fn std_dev<F>(&self) -> F
     where
         F: Float,
     {
@@ -47,7 +44,10 @@ where
     F: Float,
     StandardNormal: Distribution<F>,
 {
-    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> F {
+    fn sample<R>(&self, rng: &mut R) -> F
+    where
+        R: Rng + ?Sized,
+    {
         self.distr().unwrap().sample(rng)
     }
 }

@@ -14,14 +14,17 @@
 extern crate alloc;
 
 extern crate concision_core as concision;
+extern crate concision_linear as linear;
 extern crate ndarray as nd;
 
 pub use self::attention::AttentionHead;
 pub use self::params::*;
+pub use self::primitives::*;
 pub use self::transformer::Transformer;
 
 #[macro_use]
 pub(crate) mod macros;
+pub(crate) mod primitives;
 pub(crate) mod transformer;
 
 pub mod attention;
@@ -37,5 +40,6 @@ pub(crate) mod impls {
 
 pub mod prelude {
     pub use super::attention::prelude::*;
+    pub use super::primitives::*;
     pub use super::Transformer;
 }

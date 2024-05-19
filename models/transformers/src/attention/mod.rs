@@ -2,11 +2,18 @@
     Appellation: attention <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+//! # Attention
+//!
+//! Attention allows a model to focus on specific parts of the input sequence.
+//! Today, these mechanisms are found in several state-of-the-art models, such as
+//! the Transformer model, primarily due to its capabilities in natural language
+//! processing (NLP) domains
 pub use self::head::AttentionHead;
 pub use self::utils::*;
 
 pub(crate) mod head;
 
+// #69: Multi-Head Attention implementation
 pub mod multi;
 
 pub(crate) mod prelude {
@@ -28,7 +35,7 @@ pub(crate) mod utils {
         A::from(dk).unwrap().sqrt().recip()
     }
 
-    /// Scaled dot-product attention;
+    /// A functional implementation of the scaled dot-product attention mechanism;
     pub fn scaled_dot_product_attention<A, S, D>(
         q: &ArrayBase<S, D>,
         k: &ArrayBase<S, D>,

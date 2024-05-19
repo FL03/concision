@@ -24,10 +24,11 @@ where
 impl<A, K, D> Linear<A, K, D>
 where
     D: RemoveAxis,
+    K: ParamMode,
 {
-    impl_model_builder!(new where A: Default);
-    impl_model_builder!(ones where A: Clone + num::One);
-    impl_model_builder!(zeros where A: Clone + num::Zero);
+    mbuilder!(new where A: Default);
+    mbuilder!(ones where A: Clone + num::One);
+    mbuilder!(zeros where A: Clone + num::Zero);
 
     pub fn from_config(config: Config<K, D>) -> Self
     where
@@ -48,7 +49,7 @@ where
         Self { config, params }
     }
 
-    pub(crate) fn from_params(params: LinearParams<A, K, D>) -> Self {
+    pub fn from_params(params: LinearParams<A, K, D>) -> Self {
         let config = Config::<K, D>::new().with_shape(params.raw_dim());
         Self { config, params }
     }

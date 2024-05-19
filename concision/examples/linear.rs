@@ -24,16 +24,16 @@ fn tracing() {
 fn main() -> Result<()> {
     tracing();
     tracing::info!("Starting linear model example");
+    let samples = 20;
+    let (dm, dn) = (5, 3);
+    let features = Features::new(dn, dm);
+    let data = linarr::<f64, Ix2>((samples, dm)).unwrap();
 
-    let (samples, d_in, d_out) = (20, 5, 3);
-    let features = Features::new(d_out, d_in);
-    let data = linarr::<f64, Ix2>((samples, d_in)).unwrap();
-
-    let model = Linear::<f64>::lecun_normal(features, d_in).unwrap();
+    let model = Linear::<f64>::lecun_normal(features, dm);
     assert!(model.is_biased());
 
     let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
-    assert_eq!(y.dim(), (samples, d_out));
+    assert_eq!(y.dim(), (samples, dn));
     println!("Predictions:\n{:#?}", &y);
 
     Ok(())

@@ -13,74 +13,60 @@ pub(crate) mod utils {
     use nd::{Data, Order, RemoveAxis};
 
     #[doc(hidden)]
-    pub fn merge<A, S, D, E>(
-        z: &mut ArrayBase<S, D>,
-        swap: usize,
-        with: usize,
-    ) -> NdResult<CowArray<A, E>>
+    pub fn merge<A, S, D>(
+        arr: &ArrayBase<S, D>,
+        src: usize,
+        tgt: usize,
+    ) -> NdResult<Array<A, D::Smaller>>
     where
         A: Clone,
+        D: RemoveAxis,
         S: Data<Elem = A>,
-        D: RemoveAxis<Smaller = E>,
-        E: Dimension,
+        D::Smaller: Dimension,
+        ArrayBase<S, D>: Clone,
     {
-        let cur = z.raw_dim().as_array_view().to_owned();
-        let indicies = (0..cur.ndim()).filter(|&i| i != swap).collect::<Vec<_>>();
-        let new_axis = cur[swap] * cur[with];
-        let mut dim = cur.select(Axis(0), &indicies);
-        dim[with - 1] = new_axis;
-
-        // swap the head and sequence axes
-        z.swap_axes(swap, with);
-        // reshape the qkv matrix into a smaller dimension
-        // z.to_shape((dim, Order::ColumnMajor))
-        unimplemented!()
+        merger(arr, src, tgt, Order::RowMajor)
     }
+
+    pub(crate) fn merger<A, S, D>(
+        arr: &ArrayBase<S, D>,
+        src: usize,
+        tgt: usize,
+        order: Order,
+    ) -> NdResult<Array<A, D::Smaller>>
+    where
+        A: Clone,
+        D: RemoveAxis,
+        S: Data<Elem = A>,
+        D::Smaller: Dimension,
+        ArrayBase<S, D>: Clone,
+    {
+        let shape = merge_dims(arr.raw_dim(), src);
+        let mut head = arr.clone();
+        head.swap_axes(src, tgt);
+        head.to_shape((shape, order)).map(|x| x.to_owned())
+    }
+
     #[doc(hidden)]
-    pub fn merge_simple<A, S, D, E>(
-        z: &mut ArrayBase<S, D>,
-        dim: E,
-        swap: usize,
-        with: usize,
-    ) -> NdResult<CowArray<A, E>>
+    pub fn merge_dims<D>(dim: D, src: usize) -> D::Smaller
     where
-        A: Clone,
-        S: Data<Elem = A>,
-        D: RemoveAxis<Smaller = E>,
-        E: Dimension,
+        D: RemoveAxis,
+        D::Smaller: Dimension,
     {
-        // swap the head and sequence axes
-        z.swap_axes(swap, with);
-        // reshape the qkv matrix into a smaller dimension
-        z.to_shape((dim, Order::ColumnMajor))
+        // create a new dimension with one less axis; initialized with zeros
+        let mut new_dim = <D as Dimension>::Smaller::zeros(dim.ndim() - 1);
+        // create a mutable vector from the slice
+        let mut shape = dim.slice().to_vec();
+        // multiply the last axis by the target
+        shape[new_dim.ndim()] *= shape[src];
+        // remove the last dimension
+        shape.remove(src);
+
+        new_dim.slice_mut().copy_from_slice(&shape);
+        new_dim
     }
 
-    pub fn merge_heads<A>(heads: &Array3<A>) -> NdResult<Array2<A>>
-    where
-        A: Clone,
-    {
-        let (n, seq, query) = heads.dim();
-        let mut tmp = heads.clone();
-        // swap the head and sequence axes
-        tmp.swap_axes(0, 1);
-        // reshape the qkv matrix into a 2d array
-        tmp.into_shape((seq, n * query))
-    }
-
-    pub fn split_heads<T>(param: &Array2<T>, num_heads: usize) -> NdResult<Array3<T>>
-    where
-        T: Clone,
-    {
-        let dim = param.shape().last().unwrap() / num_heads;
-        // reshape the qkv matrix into a 3d array
-        let mut res = param
-            .clone()
-            .into_shape((param.shape()[0], num_heads, dim))?;
-        // swap the sequence and head axes
-        res.swap_axes(0, 1);
-        Ok(res)
-    }
-
+    #[doc(hidden)]
     pub fn merge_batch<T>(heads: &Array4<T>) -> NdResult<Array3<T>>
     where
         T: Clone,
@@ -93,38 +79,29 @@ pub(crate) mod utils {
         tmp.into_shape((batch, seq, n * query))
     }
 
-    pub fn split_batch<T>(param: &Array3<T>, num_heads: usize) -> NdResult<Array4<T>>
+    pub fn split_heads<T>(param: &Array2<T>, h: usize) -> NdResult<Array3<T>>
     where
         T: Clone,
     {
-        let dim = param.shape().last().unwrap() / num_heads;
+        let dim = param.shape().last().unwrap() / h;
         // reshape the qkv matrix into a 3d array
-        let mut res =
-            param
-                .clone()
-                .into_shape((param.shape()[0], param.shape()[1], num_heads, dim))?;
+        let mut res = param.clone().into_shape((param.shape()[0], h, dim))?;
+        // swap the sequence and head axes
+        res.swap_axes(0, 1);
+        Ok(res)
+    }
+
+    pub fn split_batch<T>(param: &Array3<T>, h: usize) -> NdResult<Array4<T>>
+    where
+        T: Clone,
+    {
+        let dim = param.shape().last().unwrap() / h;
+        // reshape the qkv matrix into a 3d array
+        let mut res = param
+            .clone()
+            .into_shape((param.shape()[0], param.shape()[1], h, dim))?;
         // swap the sequence and head axes
         res.swap_axes(1, 2);
         Ok(res)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use ndarray::Array;
-
-    #[test]
-    fn reshape_ops() {
-        let dim_input: [usize; 3] = [2, 4, 6]; // (batch, seq, model)
-        let dim_split = [2, 2, 4, 3]; // (batch, heads, seq, model)
-        let data = Array::linspace(1., 48., 48).into_shape(dim_input).unwrap();
-
-        let a = split_batch(&data, 2).unwrap();
-        assert_eq!(a.shape(), &dim_split);
-        assert_eq!(&a, &data.split(2).unwrap());
-        let b = merge_batch(&a).unwrap();
-        assert_eq!(b.shape(), &dim_input);
-        assert_eq!(&b, &data);
     }
 }

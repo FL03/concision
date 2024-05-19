@@ -25,6 +25,24 @@ where
     params: LinearParams<A, K, D>,
 }
 
+macro_rules! impl_norm_builder {
+    ($method:ident$(.$call:ident)? where $($rest:tt)*) => {
+        impl_norm_builder!(@impl $method$(.$call)? where $($rest)*);
+    };
+    (@impl $method:ident where $($rest:tt)*) => {
+        impl_norm_builder!(@impl $method.$method where $($rest)*);
+    };
+    (@impl $method:ident.$call:ident where $($rest:tt)*) => {
+        pub fn $method<Sh>(shape: Sh) -> Self
+        where
+            Sh: ShapeBuilder<Dim = D>,
+            $($rest)*
+        {
+            Self::from_params(LinearParams::<A, K, D>::$call(shape))
+        }
+    };
+}
+
 impl<A, K, D> LayerNorm<A, K, D>
 where
     D: RemoveAxis,
@@ -38,38 +56,25 @@ where
         Self { config, params }
     }
 
-    pub fn default<Sh>(shape: Sh) -> Self
+    pub fn from_elem<Sh>(shape: Sh, elem: A) -> Self
     where
-        A: Default,
+        A: Clone,
         Sh: ShapeBuilder<Dim = D>,
     {
         let dim = shape.into_shape().raw_dim().clone();
         let config = Config::new().dim(dim.clone()).build();
-        let params = LinearParams::<A, K, D>::new(dim);
+        let params = LinearParams::<A, K, D>::from_elem(dim, elem);
         Self { config, params }
     }
 
-    pub fn ones<Sh>(shape: Sh) -> Self
-    where
-        A: Clone + One,
-        Sh: ShapeBuilder<Dim = D>,
-    {
-        let dim = shape.into_shape().raw_dim().clone();
-        let config = Config::new().dim(dim.clone()).build();
-        let params = LinearParams::<A, K, D>::ones(dim);
+    pub fn from_params(params: LinearParams<A, K, D>) -> Self {
+        let config = Config::new().dim(params.raw_dim()).build();
         Self { config, params }
     }
 
-    pub fn zeros<Sh>(shape: Sh) -> Self
-    where
-        A: Clone + Zero,
-        Sh: ShapeBuilder<Dim = D>,
-    {
-        let dim = shape.into_shape().raw_dim().clone();
-        let config = Config::new().dim(dim.clone()).build();
-        let params = LinearParams::<A, K, D>::zeros(dim);
-        Self { config, params }
-    }
+    impl_norm_builder!(new where A: Default);
+    impl_norm_builder!(ones where A: Clone + One);
+    impl_norm_builder!(zeros where A: Clone + Zero);
 
     pub const fn config(&self) -> &Config<D> {
         &self.config
