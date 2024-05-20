@@ -2,7 +2,7 @@
     Appellation: head <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{_attention, Score};
+use super::{Score, _attention};
 use crate::params::QkvBase;
 use concision::getters;
 use concision::nn::DropoutLayer;
@@ -10,16 +10,14 @@ use nd::linalg::Dot;
 use nd::*;
 use num::complex::ComplexFloat;
 
-
-
 // #68
 /// [AttentionHead] implements the scaled dot-product attention mechanism formally defined in
 /// [Attention is all you need](https://arxiv.org/abs/1706.03762).
 ///
 /// ### Fields
-/// 
+///
 /// [dropout](DropoutLayer): requires the `rand` feature
-/// 
+///
 pub struct AttentionHead<A = f64, D = Ix2, S = OwnedRepr<A>>
 where
     D: Dimension,

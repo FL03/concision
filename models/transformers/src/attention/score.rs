@@ -6,11 +6,14 @@ use core::fmt;
 use nd::{Array, Dimension};
 
 /// [Score] is a created as a result of invoking an attention mechanism;
-/// 
+///
 /// - attention: the actual result; returns the dot product of the score with the value tensor
 /// - score: the attention score tensor
 #[derive(Clone, Eq, Hash, PartialEq)]
-pub struct Score<A, D> where D: Dimension {
+pub struct Score<A, D>
+where
+    D: Dimension,
+{
     pub(crate) attention: Array<A, D>,
     pub(crate) score: Array<A, D>,
 }
@@ -41,8 +44,12 @@ where
     }
 }
 
-impl<A, D> Copy for Score<A, D> where A: Copy, D: Copy + Dimension, Array<A, D>: Copy {
-
+impl<A, D> Copy for Score<A, D>
+where
+    A: Copy,
+    D: Copy + Dimension,
+    Array<A, D>: Copy,
+{
 }
 
 impl<A, D> fmt::Debug for Score<A, D>
@@ -67,8 +74,6 @@ where
         write!(f, "({}, {})", self.attention, self.score)
     }
 }
-
-
 
 impl<A, D> From<(Array<A, D>, Array<A, D>)> for Score<A, D>
 where

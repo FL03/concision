@@ -13,8 +13,6 @@ where
     type Data: RawData<Elem = bool>;
 }
 
-
-
 pub struct Mask<S, D>(ArrayBase<S, D>)
 where
     D: Dimension,
@@ -30,9 +28,8 @@ where
     }
 }
 
-
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 mod impls {
     use super::*;
@@ -120,5 +117,4 @@ mod impls {
             mask.0
         }
     }
-
 }

@@ -28,8 +28,6 @@ pub trait NdContainer<T> {
     fn shape(&self) -> &[usize];
 }
 
-
-
 /*
  ******** implementations ********
 */

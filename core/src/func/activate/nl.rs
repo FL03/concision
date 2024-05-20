@@ -7,7 +7,7 @@ use ndarray::*;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::Zero;
 
-pub fn relu<T>(args: T) -> T
+fn _relu<T>(args: T) -> T
 where
     T: PartialOrd + Zero,
 {
@@ -17,23 +17,33 @@ where
     T::zero()
 }
 
-pub fn sigmoid<T>(args: T) -> T
+fn _sigmoid<T>(args: T) -> T
 where
     T: ComplexFloat,
 {
     (T::one() + args.neg().exp()).recip()
 }
 
-pub fn softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
+fn _softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
 where
     A: ComplexFloat + ScalarOperand,
     D: Dimension,
     S: Data<Elem = A>,
 {
-    args.exp() / args.exp().sum()
+    let e = args.exp();
+    &e / e.sum()
 }
 
-pub fn tanh<T>(args: T) -> T
+// fn __softmax<T, I>(args: &I) -> I 
+// where 
+//     I: Clone + core::ops::Div<T, Output = I> + Exp<Output = I>, T: Exp<Output = T> + core::iter::Sum ,
+//     for<'a> I: IntoIterator<Item = &'a T>,
+// {
+//     let e = args.exp();
+//     e.clone() / e.into_iter().sum::<T>()
+// }
+
+fn _tanh<T>(args: T) -> T
 where
     T: ComplexFloat,
 {
@@ -64,21 +74,24 @@ macro_rules! nonlinear {
         nonlinear!(@arr $rho::$call);
     };
     (@impl $rho:ident::$call:ident<$T:ty>) => {
-        impl $rho for $T {
-            type Output = $T;
+        paste::paste! {
+            impl $rho for $T {
+                type Output = $T;
 
-            fn $call(self) -> Self::Output {
-                $call(self)
+                fn $call(self) -> Self::Output {
+                    [<_ $call>](self)
+                }
+            }
+
+            impl<'a> $rho for &'a $T {
+                type Output = $T;
+
+                fn $call(self) -> Self::Output {
+                    [<_ $call>](*self)
+                }
             }
         }
 
-        impl<'a> $rho for &'a $T {
-            type Output = $T;
-
-            fn $call(self) -> Self::Output {
-                $call(*self)
-            }
-        }
 
     };
     (@arr $name:ident::$call:ident) => {
@@ -150,7 +163,7 @@ where
     type Output = Array<A, D>;
 
     fn softmax(self) -> Self::Output {
-        softmax(&self)
+        _softmax(&self)
     }
 }
 
@@ -163,6 +176,6 @@ where
     type Output = Array<A, D>;
 
     fn softmax(self) -> Self::Output {
-        softmax(self)
+        _softmax(self)
     }
 }
