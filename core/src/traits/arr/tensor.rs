@@ -50,7 +50,8 @@ where
         Self::Data: DataOwned;
 }
 
-pub trait NdBuilderExt<A = f64, D = Ix2>: Dimensional<D, Pattern = D::Pattern> + NdBuilder<A, D>
+pub trait NdBuilderExt<A = f64, D = Ix2>:
+    Dimensional<D, Pattern = D::Pattern> + NdBuilder<A, D>
 where
     D: Dimension,
 {

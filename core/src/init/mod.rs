@@ -16,13 +16,17 @@ pub use self::prelude::*;
 pub(crate) mod initialize;
 pub(crate) mod utils;
 
-pub mod gen {
+pub mod distr {
     pub use self::prelude::*;
 
     pub mod lecun;
+    pub mod trunc;
+    pub mod xavier;
 
     pub(crate) mod prelude {
         pub use super::lecun::*;
+        pub use super::trunc::*;
+        pub use super::xavier::*;
     }
 }
 
@@ -34,7 +38,7 @@ pub use rand;
 pub use rand_distr;
 
 pub(crate) mod prelude {
-    pub use super::gen::prelude::*;
+    pub use super::distr::prelude::*;
     pub use super::initialize::{Initialize, InitializeExt};
     pub use super::utils::*;
 }

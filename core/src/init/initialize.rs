@@ -2,16 +2,17 @@
     Appellation: initialize <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::init::distr::*;
+
 use core::ops::Neg;
 use nd::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};
 use ndrand::RandomExt;
 use num::complex::ComplexDistribution;
 use num::traits::Float;
-use rand::{rngs, Rng, SeedableRng};
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
 use rand_distr::uniform::{SampleUniform, Uniform};
-use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, StandardNormal};
-
-use super::LecunNormal;
+use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, NormalError, StandardNormal};
 
 /// This trait provides the base methods required for initializing an [ndarray](ndarray::ArrayBase) with random values.
 /// [Initialize] is similar to [RandomExt](ndarray_rand::RandomExt), however, it focuses on flexibility while implementing additional
@@ -79,7 +80,7 @@ where
         Self::rand(shape, distr)
     }
     /// Given a shape, mean, and standard deviation generate a new object using the [Normal](rand_distr::Normal) distribution
-    fn normal<Sh>(shape: Sh, mean: A, std: A) -> Result<Self, rand_distr::NormalError>
+    fn normal<Sh>(shape: Sh, mean: A, std: A) -> Result<Self, NormalError>
     where
         A: Float,
         S: DataOwned,
@@ -115,11 +116,18 @@ where
         Sh: ShapeBuilder<Dim = D>,
         StandardNormal: Distribution<A>,
     {
-        Self::rand_with(
-            shape,
-            StandardNormal,
-            &mut rngs::StdRng::seed_from_u64(seed),
-        )
+        Self::rand_with(shape, StandardNormal, &mut StdRng::seed_from_u64(seed))
+    }
+    /// Initialize the object using the [TruncatedNormal](crate::init::distr::TruncatedNormal) distribution
+    fn truncnorm<Sh>(shape: Sh, mean: A, std: A) -> Result<Self, NormalError>
+    where
+        A: Float,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+        StandardNormal: Distribution<A>,
+    {
+        let distr = TruncatedNormal::new(mean, std)?;
+        Ok(Self::rand(shape, distr))
     }
     /// A [uniform](rand_distr::uniform::Uniform) generator with values between u(-dk, dk)
     fn uniform<Sh>(shape: Sh, dk: A) -> Self
