@@ -8,6 +8,7 @@
 //! These methods are designed to initialize the weights of a neural network in a way that
 //! prevents the vanishing and exploding gradient problems. The initialization technique
 //! manifests into two distributions: [XavierNormal] and [XavierUniform].
+// #76
 use num::Float;
 use rand::Rng;
 use rand_distr::uniform::{SampleUniform, Uniform};
