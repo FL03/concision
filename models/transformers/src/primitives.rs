@@ -5,6 +5,17 @@
 pub use self::consts::*;
 
 pub mod consts {
+    /// The default dimension of the model; i.e. the number of inputs
+    pub const D_MODEL: usize = 512;
+    /// The default size of the network; i.e. the number of neurons in the network
+    pub const D_NETWORK: usize = 2048;
+
+    /// The default number of attention heads
+    pub const H: usize = 8;
     /// The default number of layers used for the encoder / decoder.
     pub const N: usize = 6;
+}
+
+pub fn outputs_from_ratio(model: usize, network: usize) -> usize {
+    network / model
 }

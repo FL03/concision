@@ -5,18 +5,21 @@
 use crate::params::QkvBase;
 use concision::getters;
 use concision::nn::DropoutLayer;
-
-use core::borrow::{Borrow, BorrowMut};
 use nd::linalg::Dot;
 use nd::*;
 use num::complex::ComplexFloat;
 
 // #68
+/// [AttentionHead] implements the scaled dot-product attention mechanism formally defined in
+/// [Attention is all you need](https://arxiv.org/abs/1706.03762).
+///
+/// [DropoutLayer]: requires the `rand` feature
 pub struct AttentionHead<A = f64, D = Ix2, S = OwnedRepr<A>>
 where
     D: Dimension,
     S: RawData<Elem = A>,
 {
+    #[cfg(feature = "rand")]
     pub(crate) dropout: Option<DropoutLayer>,
     pub(crate) mask: Option<Array<bool, D>>,
     pub(crate) params: QkvBase<S, D>,
@@ -29,6 +32,7 @@ where
 {
     pub fn from_params(params: QkvBase<S, D>) -> Self {
         Self {
+            #[cfg(feature = "rand")]
             dropout: None,
             mask: None,
             params,
@@ -51,18 +55,7 @@ where
     {
         Self::from_params(QkvBase::from_elem(shape, value))
     }
-    #[cfg(not(feature = "rand"))]
-    pub fn attention(&self) -> Array<A, D>
-    where
-        A: ComplexFloat + ScalarOperand,
-        S: Data,
-        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
-        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
-    {
-        let (q, k, v) = self.qkv();
-        super::_attention_no_dropout(q, k, v, self.mask())
-    }
-    #[cfg(feature = "rand")]
+    /// Computes the score using scaled dot-product attention.
     pub fn attention(&self) -> Array<A, D>
     where
         A: ComplexFloat + ScalarOperand,
@@ -72,10 +65,6 @@ where
     {
         let (q, k, v) = self.qkv();
         super::_attention(q, k, v, self.mask(), self.dropout())
-    }
-
-    pub fn dropout(&self) -> Option<&DropoutLayer> {
-        self.dropout.as_ref()
     }
     /// Returns an immutable reference to the, optional, [Dropout] layer
     pub fn mask(&self) -> Option<&Array<bool, D>> {
@@ -104,37 +93,25 @@ where
     ndbuilder!(zeros() where A: Clone + num::Zero, S: DataOwned);
 }
 
-impl<A, S, D> super::Attention for AttentionHead<A, D, S>
-where
-    A: ComplexFloat + ScalarOperand,
-    D: Dimension,
-    S: Data<Elem = A>,
-    ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
-    Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
-{
-    type Output = Array<A, D>;
-
-    fn attention(&self) -> Self::Output {
-        self.attention()
-    }
-}
-
-impl<A, S, D> Borrow<QkvBase<S, D>> for AttentionHead<A, D, S>
+#[cfg(feature = "rand")]
+impl<A, S, D> AttentionHead<A, D, S>
 where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    fn borrow(&self) -> &QkvBase<S, D> {
-        self.params()
+    pub fn dropout(&self) -> Option<&DropoutLayer> {
+        self.dropout.as_ref()
     }
 }
 
-impl<A, S, D> BorrowMut<QkvBase<S, D>> for AttentionHead<A, D, S>
+#[cfg(not(feature = "rand"))]
+impl<A, S, D> AttentionHead<A, D, S>
 where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    fn borrow_mut(&mut self) -> &mut QkvBase<S, D> {
-        self.params_mut()
+    #[cfg(not(feature = "rand"))]
+    pub fn dropout(&self) -> Option<&DropoutLayer> {
+        None
     }
 }

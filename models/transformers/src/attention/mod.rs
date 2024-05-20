@@ -8,6 +8,7 @@
 //! Today, these mechanisms are found in several state-of-the-art models, such as
 //! the Transformer model, primarily due to its capabilities in natural language
 //! processing (NLP) domains
+pub(crate) use self::_impl_methods::*;
 pub use self::head::AttentionHead;
 pub use self::utils::*;
 
@@ -28,20 +29,10 @@ pub trait Attention {
 }
 
 pub(crate) mod utils {
-    use concision::func::Softmax;
     use concision::nn::DropoutLayer;
-    use concision::MaskFill;
     use nd::linalg::Dot;
-    use nd::prelude::{Array, ArrayBase, ArrayView, Axis, Dimension};
-    use nd::{Data, ScalarOperand};
+    use nd::prelude::*;
     use num::complex::ComplexFloat;
-
-    pub(crate) fn scale<A>(dk: usize) -> A
-    where
-        A: ComplexFloat,
-    {
-        A::from(dk).unwrap().sqrt().recip()
-    }
 
     /// A functional implementation of the scaled dot-product attention mechanism;
     pub fn scaled_dot_product_attention<A, S, D>(
@@ -49,38 +40,25 @@ pub(crate) mod utils {
         k: &ArrayBase<S, D>,
         v: &ArrayBase<S, D>,
         mask: Option<&Array<bool, D>>,
+        dropout: Option<&DropoutLayer>,
     ) -> Array<A, D>
     where
-        A: ComplexFloat + ScalarOperand,
-        S: Data<Elem = A>,
+        A: ComplexFloat + nd::ScalarOperand,
+        S: nd::Data<Elem = A>,
         D: Dimension,
         ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
-        _attention_no_dropout(q, k, v, mask)
+        super::_attention(q, k, v, mask, dropout)
     }
+}
 
-    pub(crate) fn _attention_no_dropout<A, S, D>(
-        q: &ArrayBase<S, D>,
-        k: &ArrayBase<S, D>,
-        v: &ArrayBase<S, D>,
-        mask: Option<&Array<bool, D>>,
-    ) -> Array<A, D>
-    where
-        A: ComplexFloat + ScalarOperand,
-        S: Data<Elem = A>,
-        D: Dimension,
-        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
-        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
-    {
-        let dk = scale::<A>(k.len_of(Axis(1)));
-        let mut z = q.dot(&k.t()) * dk;
-        if let Some(mask) = mask {
-            z = z.masked_fill(mask, A::zero());
-        }
-        z.softmax().dot(&v)
-    }
-    #[cfg(feature = "rand")]
+mod _impl_methods {
+    use concision::prelude::{DropoutLayer, MaskFill, Softmax};
+    use nd::linalg::Dot;
+    use nd::prelude::*;
+    use num::complex::ComplexFloat;
+
     pub(crate) fn _attention<A, S, D>(
         q: &ArrayBase<S, D>,
         k: &ArrayBase<S, D>,
@@ -89,22 +67,30 @@ pub(crate) mod utils {
         dropout: Option<&DropoutLayer>,
     ) -> Array<A, D>
     where
-        A: ComplexFloat + ScalarOperand,
-        S: Data<Elem = A>,
+        A: ComplexFloat + nd::ScalarOperand,
+        S: nd::Data<Elem = A>,
         D: Dimension,
         ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
         use concision::Forward;
-        let dk = scale::<A>(k.len_of(Axis(1)));
+        let dk = scale::<A>(k.len_of(nd::Axis(1)));
         let mut z = q.dot(&k.t()) * dk;
         if let Some(mask) = mask {
             z = z.masked_fill(mask, A::zero());
         }
         z = z.softmax();
+        #[cfg(feature = "rand")]
         if let Some(dropout) = dropout {
             z = dropout.forward(&z);
         }
         z.dot(&v)
+    }
+
+    pub(crate) fn scale<A>(dk: usize) -> A
+    where
+        A: ComplexFloat,
+    {
+        A::from(dk).unwrap().sqrt().recip()
     }
 }

@@ -40,6 +40,5 @@ pub(crate) mod impls {
 
 pub mod prelude {
     pub use super::attention::prelude::*;
-    pub use super::primitives::*;
     pub use super::Transformer;
 }
