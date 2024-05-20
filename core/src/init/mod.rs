@@ -16,6 +16,8 @@ pub use self::prelude::*;
 pub(crate) mod initialize;
 pub(crate) mod utils;
 
+pub mod initializer;
+
 pub mod distr {
     pub use self::prelude::*;
 

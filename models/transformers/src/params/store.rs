@@ -74,12 +74,12 @@ where
 
     dimensional!(q());
 
-    ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
-    ndview!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
+    qkv_view!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
+    qkv_view!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
 
-    ndview!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
-    ndview!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataShared);
+    qkv_view!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
+    qkv_view!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataShared);
 
-    ndview!(view::<'a, ViewRepr>(&self) where S: Data);
-    ndview!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
+    qkv_view!(view::<'a, ViewRepr>(&self) where S: Data);
+    qkv_view!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
 }

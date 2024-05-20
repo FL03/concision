@@ -10,15 +10,19 @@
 //! processing (NLP) domains
 pub(crate) use self::_impl_methods::*;
 pub use self::head::AttentionHead;
+pub use self::score::Score;
 pub use self::utils::*;
 
 pub(crate) mod head;
+pub(crate) mod score;
 
 // #69: Multi-Head Attention implementation
 pub mod multi;
 
 pub(crate) mod prelude {
     pub use super::head::AttentionHead;
+    pub use super::multi::prelude::*;
+    pub use super::score::Score;
     pub use super::utils::*;
 }
 
@@ -29,6 +33,7 @@ pub trait Attention {
 }
 
 pub(crate) mod utils {
+    use super::Score;
     use concision::nn::DropoutLayer;
     use nd::linalg::Dot;
     use nd::prelude::*;
@@ -41,7 +46,7 @@ pub(crate) mod utils {
         v: &ArrayBase<S, D>,
         mask: Option<&Array<bool, D>>,
         dropout: Option<&DropoutLayer>,
-    ) -> Array<A, D>
+    ) -> Score<A, D>
     where
         A: ComplexFloat + nd::ScalarOperand,
         S: nd::Data<Elem = A>,
@@ -54,6 +59,7 @@ pub(crate) mod utils {
 }
 
 mod _impl_methods {
+    use super::Score;
     use concision::prelude::{DropoutLayer, MaskFill, Softmax};
     use nd::linalg::Dot;
     use nd::prelude::*;
@@ -65,7 +71,7 @@ mod _impl_methods {
         v: &ArrayBase<S, D>,
         mask: Option<&Array<bool, D>>,
         dropout: Option<&DropoutLayer>,
-    ) -> Array<A, D>
+    ) -> Score<A, D>
     where
         A: ComplexFloat + nd::ScalarOperand,
         S: nd::Data<Elem = A>,
@@ -84,7 +90,7 @@ mod _impl_methods {
         if let Some(dropout) = dropout {
             z = dropout.forward(&z);
         }
-        z.dot(&v)
+        (z.dot(&v), z).into()
     }
 
     pub(crate) fn scale<A>(dk: usize) -> A

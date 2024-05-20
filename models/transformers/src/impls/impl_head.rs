@@ -2,7 +2,7 @@
     Appellation: impl_head <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::attention::{Attention, AttentionHead};
+use crate::attention::{Attention, AttentionHead, Score};
 use crate::params::QkvBase;
 use core::borrow::{Borrow, BorrowMut};
 use nd::linalg::Dot;
@@ -18,7 +18,7 @@ where
     ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
     Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
 {
-    type Output = Array<A, D>;
+    type Output = Score<A, D>;
 
     fn attention(&self) -> Self::Output {
         self.attention()
@@ -78,5 +78,15 @@ where
 {
     fn default() -> Self {
         Self::from_params(QkvBase::default())
+    }
+}
+
+impl<A, S, D> From<QkvBase<S, D>> for AttentionHead<A, D, S>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
+    fn from(params: QkvBase<S, D>) -> Self {
+        Self::from_params(params)
     }
 }

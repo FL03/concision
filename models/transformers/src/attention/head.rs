@@ -2,6 +2,7 @@
     Appellation: head <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::{_attention, Score};
 use crate::params::QkvBase;
 use concision::getters;
 use concision::nn::DropoutLayer;
@@ -9,11 +10,16 @@ use nd::linalg::Dot;
 use nd::*;
 use num::complex::ComplexFloat;
 
+
+
 // #68
 /// [AttentionHead] implements the scaled dot-product attention mechanism formally defined in
 /// [Attention is all you need](https://arxiv.org/abs/1706.03762).
 ///
-/// [DropoutLayer]: requires the `rand` feature
+/// ### Fields
+/// 
+/// [dropout](DropoutLayer): requires the `rand` feature
+/// 
 pub struct AttentionHead<A = f64, D = Ix2, S = OwnedRepr<A>>
 where
     D: Dimension,
@@ -55,8 +61,8 @@ where
     {
         Self::from_params(QkvBase::from_elem(shape, value))
     }
-    /// Computes the score using scaled dot-product attention.
-    pub fn attention(&self) -> Array<A, D>
+    /// Computes the [Score] using scaled dot-product attention.
+    pub fn attention(&self) -> Score<A, D>
     where
         A: ComplexFloat + ScalarOperand,
         S: Data,
@@ -64,7 +70,7 @@ where
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
         let (q, k, v) = self.qkv();
-        super::_attention(q, k, v, self.mask(), self.dropout())
+        _attention(q, k, v, self.mask(), self.dropout())
     }
     /// Returns an immutable reference to the, optional, [Dropout] layer
     pub fn mask(&self) -> Option<&Array<bool, D>> {

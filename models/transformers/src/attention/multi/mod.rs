@@ -8,3 +8,7 @@
 pub use self::multi_head::*;
 
 pub(crate) mod multi_head;
+
+pub(crate) mod prelude {
+    pub use super::multi_head::MultiHeadAttention;
+}

@@ -2,9 +2,46 @@
     Appellation: traits <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use core::iter::Sum;
 use nd::{Array, ArrayBase, Data, Dimension};
 use num::complex::{Complex, ComplexFloat};
-use num::traits::Signed;
+use num::traits::{FromPrimitive, Num, Signed};
+
+pub trait IterStats<T> where T: FromPrimitive {
+    type Output;
+
+    fn elems(&self) -> T;
+
+    fn mean(&self) -> Self::Output;
+
+    fn std(&self) -> Self::Output where T: ComplexFloat;
+
+    fn var(&self) -> Self::Output where T: ComplexFloat;
+}
+
+impl<T, I> IterStats<T> for I where I: Clone + ExactSizeIterator<Item = T>, T: Clone + FromPrimitive + Num + Sum {
+    type Output = T;
+
+    fn elems(&self) -> T {
+        T::from_usize(self.len()).unwrap()
+    }
+
+    fn mean(&self) -> Self::Output {
+        self.clone().sum::<T>() / self.elems()
+    }
+
+    fn std(&self) -> Self::Output where T: ComplexFloat {
+        let mean = self.mean();
+        let sum = self.clone().map(|x| (x - mean).powi(2)).sum::<T>();
+        (sum / self.elems()).sqrt()
+    }
+
+    fn var(&self) -> Self::Output where T: ComplexFloat {
+        let mean = self.mean();
+        let sum = self.clone().map(|x| (x - mean).powi(2)).sum::<T>();
+        sum / self.elems()
+    }
+}
 
 unary!(
     Abs::abs(self),

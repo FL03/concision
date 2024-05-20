@@ -11,7 +11,7 @@ pub trait TensorData {
     fn as_mut_slice(&mut self) -> &mut [Self::Elem];
 }
 
-pub trait NdTensor<T> {
+pub trait NdContainer<T> {
     const RANK: Option<usize> = None;
 
     type Data: TensorData<Elem = T>;
@@ -27,6 +27,8 @@ pub trait NdTensor<T> {
 
     fn shape(&self) -> &[usize];
 }
+
+
 
 /*
  ******** implementations ********
