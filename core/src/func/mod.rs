@@ -7,12 +7,9 @@ pub use self::prelude::*;
 
 #[macro_use]
 pub mod activate;
-pub mod dropout;
 pub mod loss;
 
 pub(crate) mod prelude {
     pub use super::activate::prelude::*;
-    #[cfg(feature = "rand")]
-    pub use super::dropout::*;
     pub use super::loss::prelude::*;
 }

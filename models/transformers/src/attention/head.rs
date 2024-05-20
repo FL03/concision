@@ -4,6 +4,8 @@
 */
 use crate::params::QkvBase;
 use concision::getters;
+use concision::nn::DropoutLayer;
+
 use core::borrow::{Borrow, BorrowMut};
 use nd::linalg::Dot;
 use nd::*;
@@ -15,7 +17,8 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub(crate) mask: Option<ArrayBase<S, D>>,
+    pub(crate) dropout: Option<DropoutLayer>,
+    pub(crate) mask: Option<Array<bool, D>>,
     pub(crate) params: QkvBase<S, D>,
 }
 
@@ -25,7 +28,11 @@ where
     S: RawData<Elem = A>,
 {
     pub fn from_params(params: QkvBase<S, D>) -> Self {
-        Self { mask: None, params }
+        Self {
+            dropout: None,
+            mask: None,
+            params,
+        }
     }
 
     pub fn builder<Sh, F>(shape: Sh, builder: F) -> Self
@@ -44,7 +51,7 @@ where
     {
         Self::from_params(QkvBase::from_elem(shape, value))
     }
-
+    #[cfg(not(feature = "rand"))]
     pub fn attention(&self) -> Array<A, D>
     where
         A: ComplexFloat + ScalarOperand,
@@ -53,7 +60,26 @@ where
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
         let (q, k, v) = self.qkv();
-        crate::attention::scaled_dot_product_attention(q, k, v)
+        super::_attention_no_dropout(q, k, v, self.mask())
+    }
+    #[cfg(feature = "rand")]
+    pub fn attention(&self) -> Array<A, D>
+    where
+        A: ComplexFloat + ScalarOperand,
+        S: Data,
+        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
+    {
+        let (q, k, v) = self.qkv();
+        super::_attention(q, k, v, self.mask(), self.dropout())
+    }
+
+    pub fn dropout(&self) -> Option<&DropoutLayer> {
+        self.dropout.as_ref()
+    }
+    /// Returns an immutable reference to the, optional, [Dropout] layer
+    pub fn mask(&self) -> Option<&Array<bool, D>> {
+        self.mask.as_ref()
     }
     /// Returns an immuable reference to the underlying parameters.
     pub const fn params(&self) -> &QkvBase<S, D> {

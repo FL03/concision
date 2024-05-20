@@ -2,13 +2,15 @@
    Appellation: nn <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{error::ModelError, model::prelude::*};
+pub use self::{dropout::*, error::ModelError, model::prelude::*};
 
+pub mod dropout;
 pub mod error;
 pub mod model;
 
 pub(crate) mod prelude {
-    pub use super::error::ModelError;
+    pub use super::dropout::*;
+    pub use super::error::*;
     pub use super::model::prelude::*;
 }
 

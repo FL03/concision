@@ -103,13 +103,19 @@ crate-type = ["lib"]
 doctest = false
 test = true
 
-[[test]]
-name = "random"
-required-features = ["rand"]
+
 
 [[test]]
 name = "fft"
 required-features = ["approx"]
+
+[[test]]
+name = "nn"
+
+[[test]]
+name = "random"
+required-features = ["rand", "std"]
+
 
 [build-dependencies]
 

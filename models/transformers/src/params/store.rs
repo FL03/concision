@@ -6,6 +6,8 @@ use concision::{dimensional, getters};
 use nd::*;
 use num::traits::{One, Zero};
 
+/// [QkvBase] is a container for the query, key, and value arrays used in the
+/// attention mechanism of the transformer model.
 pub struct QkvBase<S = OwnedRepr<f64>, D = Ix2>
 where
     D: Dimension,

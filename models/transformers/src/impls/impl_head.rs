@@ -15,6 +15,7 @@ where
 {
     fn clone(&self) -> Self {
         Self {
+            dropout: self.dropout.clone(),
             mask: self.mask.clone(),
             params: self.params.clone(),
         }
@@ -26,6 +27,7 @@ where
     A: Copy,
     D: Copy + Dimension,
     S: Copy + RawDataClone<Elem = A>,
+    Array<bool, D>: Copy,
 {
 }
 

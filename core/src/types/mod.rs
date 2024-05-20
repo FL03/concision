@@ -6,6 +6,7 @@ pub use self::prelude::*;
 #[cfg(feature = "std")]
 pub use self::std_types::*;
 
+pub mod mask;
 pub mod propagate;
 
 pub type NdResult<T> = core::result::Result<T, nd::ShapeError>;
@@ -22,6 +23,7 @@ mod std_types {
 }
 
 pub(crate) mod prelude {
+    pub use super::mask::*;
     pub use super::propagate::Propagate;
     #[cfg(feature = "std")]
     pub use super::std_types::*;

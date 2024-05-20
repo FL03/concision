@@ -28,7 +28,9 @@ pub trait Attention {
 }
 
 pub(crate) mod utils {
-    use concision::func::activate::Softmax;
+    use concision::func::Softmax;
+    use concision::nn::DropoutLayer;
+    use concision::MaskFill;
     use nd::linalg::Dot;
     use nd::prelude::{Array, ArrayBase, ArrayView, Axis, Dimension};
     use nd::{Data, ScalarOperand};
@@ -46,6 +48,23 @@ pub(crate) mod utils {
         q: &ArrayBase<S, D>,
         k: &ArrayBase<S, D>,
         v: &ArrayBase<S, D>,
+        mask: Option<&Array<bool, D>>,
+    ) -> Array<A, D>
+    where
+        A: ComplexFloat + ScalarOperand,
+        S: Data<Elem = A>,
+        D: Dimension,
+        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
+    {
+        _attention_no_dropout(q, k, v, mask)
+    }
+
+    pub(crate) fn _attention_no_dropout<A, S, D>(
+        q: &ArrayBase<S, D>,
+        k: &ArrayBase<S, D>,
+        v: &ArrayBase<S, D>,
+        mask: Option<&Array<bool, D>>,
     ) -> Array<A, D>
     where
         A: ComplexFloat + ScalarOperand,
@@ -55,6 +74,37 @@ pub(crate) mod utils {
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
         let dk = scale::<A>(k.len_of(Axis(1)));
-        (q.dot(&k.t()) * dk).softmax().dot(&v)
+        let mut z = q.dot(&k.t()) * dk;
+        if let Some(mask) = mask {
+            z = z.masked_fill(mask, A::zero());
+        }
+        z.softmax().dot(&v)
+    }
+    #[cfg(feature = "rand")]
+    pub(crate) fn _attention<A, S, D>(
+        q: &ArrayBase<S, D>,
+        k: &ArrayBase<S, D>,
+        v: &ArrayBase<S, D>,
+        mask: Option<&Array<bool, D>>,
+        dropout: Option<&DropoutLayer>,
+    ) -> Array<A, D>
+    where
+        A: ComplexFloat + ScalarOperand,
+        S: Data<Elem = A>,
+        D: Dimension,
+        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
+    {
+        use concision::Forward;
+        let dk = scale::<A>(k.len_of(Axis(1)));
+        let mut z = q.dot(&k.t()) * dk;
+        if let Some(mask) = mask {
+            z = z.masked_fill(mask, A::zero());
+        }
+        z = z.softmax();
+        if let Some(dropout) = dropout {
+            z = dropout.forward(&z);
+        }
+        z.dot(&v)
     }
 }
