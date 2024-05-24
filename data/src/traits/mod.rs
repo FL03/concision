@@ -2,7 +2,9 @@
     Appellation: traits <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{data::*, records::*, shape::*};
+pub use self::{data::*, ext::*, records::*, shape::*};
+
+pub mod build;
 
 pub mod records;
 pub mod shape;
@@ -20,8 +22,23 @@ pub mod data {
     }
 }
 
+pub mod ext {
+    pub use self::{ndarray::*, ndtensor::*, ndview::*};
+
+    pub(crate) mod ndarray;
+    pub(crate) mod ndtensor;
+    pub(crate) mod ndview;
+
+    pub(crate) mod prelude {
+        pub use super::ndarray::*;
+        pub use super::ndtensor::*;
+        pub use super::ndview::*;
+    }
+}
+
 pub(crate) mod prelude {
     pub use super::data::prelude::*;
+    pub use super::ext::prelude::*;
     pub use super::records::*;
     pub use super::shape::*;
 }

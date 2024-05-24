@@ -17,30 +17,27 @@ pub mod arr {
     mod misc;
     mod ops;
     mod reshape;
-    mod tensor;
 
     pub(crate) mod prelude {
         pub use super::create::*;
         pub use super::misc::*;
         pub use super::ops::*;
         pub use super::reshape::*;
-        pub use super::tensor::*;
     }
 }
 
 pub mod misc {
-    pub mod adjust;
+    pub use self::prelude::*;
+
+    pub(crate) mod adjust;
     #[doc(hidden)]
-    pub mod container;
+    pub(crate) mod sequential;
     #[doc(hidden)]
-    pub mod sequential;
-    #[doc(hidden)]
-    pub mod store;
-    pub mod toggle;
+    pub(crate) mod store;
+    pub(crate) mod toggle;
 
     pub(crate) mod prelude {
         pub use super::adjust::*;
-        pub use super::container::*;
         pub use super::sequential::*;
         pub use super::store::*;
         pub use super::toggle::*;
