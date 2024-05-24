@@ -3,6 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
+pub(crate) fn dk(d_model: usize, heads: usize) -> usize {
+    d_model / heads
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Config {
@@ -20,7 +24,7 @@ impl Config {
     }
 
     pub fn dk(&self) -> usize {
-        self.d_model() / self.heads()
+        dk(self.d_model(), self.heads())
     }
 
     pub fn heads(&self) -> usize {

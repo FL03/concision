@@ -4,7 +4,7 @@
 */
 #![cfg(feature = "rand")]
 
-use crate::params::{ParamMode, ParamsBase};
+use crate::params::{LinearParams, ParamMode, ParamsBase};
 use crate::{bias_dim, Linear};
 use concision::init::rand::Rng;
 use concision::init::rand_distr::{uniform::SampleUniform, Distribution, StandardNormal};
@@ -12,30 +12,32 @@ use concision::{Initialize, InitializeExt};
 use nd::*;
 use num::Float;
 
-impl<A, D, K> Linear<A, K, D>
+impl<A, S, D, K> Linear<A, K, D, S>
 where
     A: Clone + Float,
     D: RemoveAxis,
     K: ParamMode,
+    S: DataOwned<Elem = A>,
     StandardNormal: Distribution<A>,
 {
-    pub fn uniform(self) -> Self
+    pub fn uniform(self) -> Linear<A, K, D, OwnedRepr<A>>
     where
         A: SampleUniform,
         <A as SampleUniform>::Sampler: Clone,
     {
-        Self {
+        Linear {
+            config: self.config,
             params: self.params.uniform(),
-            ..self
         }
     }
 }
 
-impl<A, K, D> crate::LinearParams<A, K, D>
+impl<A, S, D, K> ParamsBase<S, D, K>
 where
     A: Clone + Float + SampleUniform,
     D: RemoveAxis,
     K: ParamMode,
+    S: RawData<Elem = A>,
     StandardNormal: Distribution<A>,
     <A as SampleUniform>::Sampler: Clone,
 {
@@ -48,42 +50,42 @@ where
         self.dk().sqrt()
     }
 
-    pub fn uniform(self) -> Self {
+    pub fn uniform(self) -> LinearParams<A, K, D>
+    where
+        S: DataOwned,
+    {
         let dk = self.dk_sqrt();
         self.uniform_between(-dk, dk)
     }
 
-    pub fn uniform_between(self, low: A, high: A) -> Self {
-        if self.is_biased() && !self.bias.is_some() {
+    pub fn uniform_between(self, low: A, high: A) -> LinearParams<A, K, D>
+    where
+        S: DataOwned,
+    {
+        let weight = Array::uniform_between(self.raw_dim(), low, high);
+        let bias = if self.is_biased() && !self.bias.is_some() {
             let b_dim = bias_dim(self.raw_dim());
-            Self {
-                bias: Some(Array::uniform_between(b_dim, low, high)),
-                weight: Array::uniform_between(self.raw_dim(), low, high),
-                _mode: self._mode,
-            }
+            Some(Array::uniform_between(b_dim, low, high))
         } else if !self.is_biased() && self.bias.is_some() {
-            Self {
-                bias: None,
-                weight: Array::uniform_between(self.raw_dim(), low, high),
-                _mode: self._mode,
-            }
+            None
         } else {
-            Self {
-                bias: self
-                    .bias
-                    .as_ref()
-                    .map(|b| Array::uniform_between(b.raw_dim(), low, high)),
-                weight: Array::uniform_between(self.raw_dim(), low, high),
-                _mode: self._mode,
-            }
+            self.bias
+                .as_ref()
+                .map(|b| Array::uniform_between(b.raw_dim(), low, high))
+        };
+        LinearParams {
+            weight,
+            bias,
+            _mode: core::marker::PhantomData::<K>,
         }
     }
 }
 
-impl<A, K, D> Initialize<A, D> for Linear<A, K, D>
+impl<A, S, D, K> Initialize<A, D> for Linear<A, K, D, S>
 where
     D: RemoveAxis,
     K: ParamMode,
+    S: DataOwned<Elem = A>,
     StandardNormal: Distribution<A>,
 {
     type Data = OwnedRepr<A>;

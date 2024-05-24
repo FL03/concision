@@ -39,6 +39,19 @@ where
     pub(crate) params: QkvBase<S, D>,
 }
 
+impl<A, S> AttentionHead<A, Ix2, S>
+where
+    S: RawData<Elem = A>,
+{
+    pub fn std(dm: usize, dk: usize) -> Self
+    where
+        A: Default,
+        S: DataOwned,
+    {
+        Self::from_params(QkvBase::new((dk, dm)))
+    }
+}
+
 impl<A, S, D> AttentionHead<A, D, S>
 where
     D: Dimension,

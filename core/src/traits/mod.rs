@@ -32,12 +32,16 @@ pub mod misc {
     pub mod adjust;
     #[doc(hidden)]
     pub mod container;
+    #[doc(hidden)]
+    pub mod sequential;
+    #[doc(hidden)]
     pub mod store;
     pub mod toggle;
 
     pub(crate) mod prelude {
         pub use super::adjust::*;
         pub use super::container::*;
+        pub use super::sequential::*;
         pub use super::store::*;
         pub use super::toggle::*;
     }

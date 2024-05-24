@@ -9,8 +9,11 @@
 //! as well as the `ndarray` crate.
 pub use self::traits::*;
 
+pub mod arith;
+pub mod stats;
 pub mod traits;
 
 pub(crate) mod prelude {
+    pub use super::stats::prelude::*;
     pub use super::traits::*;
 }

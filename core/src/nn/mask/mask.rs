@@ -35,7 +35,11 @@ where
         res
     }
 
-    pub fn mask_inplace<'a, A, T, F>(&mut self, data: &'a mut ArrayBase<T, D>, fill: A) -> &'a mut ArrayBase<T, D>
+    pub fn mask_inplace<'a, A, T, F>(
+        &mut self,
+        data: &'a mut ArrayBase<T, D>,
+        fill: A,
+    ) -> &'a mut ArrayBase<T, D>
     where
         A: Clone,
         S: Data,
