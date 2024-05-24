@@ -85,7 +85,7 @@ where
         let (q, k, v) = self.qkv();
         _attention(q, k, v, self.mask(), self.dropout())
     }
-    /// Returns an immutable reference to the, optional, [Dropout] layer
+    /// Returns an immutable reference to the, optional, mask.
     pub fn mask(&self) -> Option<&Array<bool, D>> {
         self.mask.as_ref()
     }

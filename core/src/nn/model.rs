@@ -6,6 +6,8 @@ pub use self::module::*;
 
 pub mod config;
 pub mod module;
+#[doc(hidden)]
+pub mod repo;
 
 pub(crate) mod prelude {
     pub use super::config::*;

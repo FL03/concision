@@ -57,6 +57,16 @@ where
         (self.q.view(), self.k.view(), self.v.view())
     }
 
+    // pub fn attention(&self, mask: Option<Array<bool, D>>) -> Array<A, D>
+    // where
+    //     A: ComplexFloat,
+    //     S: Data,
+    // {
+    //     let (q, k, v) = self.as_qkv();
+    //     let (q, k, v) = _attention(q, k, v, mask);
+    //     q.dot(&v)
+    // }
+
     /// Consumes the store and returns a three-tuple consisting of the query, key, and value arrays respectively.
     pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>) {
         (self.q, self.k, self.v)
