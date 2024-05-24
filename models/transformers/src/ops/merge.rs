@@ -2,9 +2,15 @@
    Appellation: merge <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::_merge_dim;
 use concision::NdResult;
-use nd::prelude::*;
-use nd::{Data, RemoveAxis};
+use nd::{Array, ArrayBase, Data, Dimension, RemoveAxis};
+
+pub trait DimMerge {
+    type Output;
+
+    fn merge(&self, tgt: usize) -> Self::Output;
+}
 
 // #67: Optimize the Merge trait
 pub trait Merge {
@@ -20,6 +26,19 @@ pub trait Merge {
 /*
  ************* Implementations *************
 */
+impl<D> DimMerge for D
+where
+    D: RemoveAxis,
+    D::Smaller: Dimension,
+    D::Larger: Dimension,
+{
+    type Output = D::Smaller;
+
+    fn merge(&self, tgt: usize) -> Self::Output {
+        _merge_dim(self, tgt)
+    }
+}
+
 impl<A, S, D, E> Merge for ArrayBase<S, D>
 where
     A: Clone,
@@ -36,7 +55,6 @@ where
     }
 
     fn merge_along(&self, swap: usize) -> NdResult<Self::Output> {
-        use ndarray::Order;
-        super::merger(self, swap, swap + 1, Order::RowMajor)
+        super::_merge(self, swap, swap + 1, super::ORDER)
     }
 }

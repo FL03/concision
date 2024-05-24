@@ -17,7 +17,7 @@ extern crate concision_core as concision;
 extern crate concision_linear as linear;
 extern crate ndarray as nd;
 
-pub use self::attention::AttentionHead;
+pub use self::attention::{scaled_dot_product_attention, AttentionHead};
 pub use self::params::*;
 pub use self::primitives::*;
 pub use self::transformer::Transformer;
@@ -29,6 +29,7 @@ pub(crate) mod transformer;
 
 pub mod attention;
 pub mod codec;
+pub mod model;
 pub mod ops;
 pub mod params;
 
@@ -40,6 +41,5 @@ pub(crate) mod impls {
 
 pub mod prelude {
     pub use super::attention::prelude::*;
-    pub use super::primitives::*;
     pub use super::Transformer;
 }

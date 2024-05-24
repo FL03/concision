@@ -2,14 +2,15 @@
     Appellation: dropout <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![cfg(feature = "rand")]
+#![allow(unused_imports)]
 use crate::Forward;
 use nd::prelude::*;
-use nd::{DataOwned, RemoveAxis, ScalarOperand};
-use ndrand::rand_distr::Bernoulli;
-use ndrand::RandomExt;
+use nd::{DataOwned, ScalarOperand};
+#[cfg(feature = "rand")]
+use ndrand::{rand_distr::Bernoulli, RandomExt};
 use num::traits::Num;
 
+#[cfg(feature = "rand")]
 pub fn dropout<A, S, D>(array: &ArrayBase<S, D>, p: f64) -> Array<A, D>
 where
     A: Num + ScalarOperand,
@@ -27,44 +28,46 @@ where
     array * mask
 }
 
-pub fn dropout_axis<A, S, D>(array: &ArrayBase<S, D>, _axis: Axis, p: f64) -> Array<A, D>
-where
-    A: Num + ScalarOperand,
-    D: RemoveAxis,
-    S: DataOwned<Elem = A>,
-{
-    // Create a Bernoulli distribution for dropout
-    let distribution = Bernoulli::new(p).unwrap();
+/// [Dropout] randomly zeroizes elements with a given probability (`p`).
+pub trait Dropout {
+    type Output;
 
-    // Create a mask of the same shape as the input array
-    let _mask: Array<bool, D> = Array::random(array.dim(), distribution);
-
-    unimplemented!()
+    fn dropout(&self, p: f64) -> Self::Output;
 }
 
-/// The [Dropout] layer is randomly zeroizes inputs with a given probability (`p`).
+/// The [DropoutLayer] layer is randomly zeroizes inputs with a given probability (`p`).
 /// This regularization technique is often used to prevent overfitting.
 ///
 ///
 /// ### Config
 ///
 /// - (p) Probability of dropping an element
-pub struct Dropout {
-    p: f64,
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct DropoutLayer {
+    pub(crate) p: f64,
 }
 
-impl Dropout {
+/*
+ ************* Implementations *************
+*/
+#[cfg(feature = "rand")]
+impl<A, S, D> Dropout for ArrayBase<S, D>
+where
+    A: Num + ScalarOperand,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn dropout(&self, p: f64) -> Self::Output {
+        dropout(self, p)
+    }
+}
+
+impl DropoutLayer {
     pub fn new(p: f64) -> Self {
         Self { p }
-    }
-
-    pub fn dropout<A, S, D>(&self, array: &ArrayBase<S, D>) -> Array<A, D>
-    where
-        A: Num + ScalarOperand,
-        D: Dimension,
-        S: DataOwned<Elem = A>,
-    {
-        dropout(array, self.p)
     }
 
     pub fn scale(&self) -> f64 {
@@ -72,13 +75,14 @@ impl Dropout {
     }
 }
 
-impl Default for Dropout {
+impl Default for DropoutLayer {
     fn default() -> Self {
         Self::new(0.5)
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for Dropout
+#[cfg(feature = "rand")]
+impl<A, S, D> Forward<ArrayBase<S, D>> for DropoutLayer
 where
     A: Num + ScalarOperand,
     D: Dimension,
@@ -87,6 +91,6 @@ where
     type Output = Array<A, D>;
 
     fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
-        dropout(input, self.p)
+        input.dropout(self.p)
     }
 }

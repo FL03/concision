@@ -103,15 +103,23 @@ crate-type = ["lib"]
 doctest = false
 test = true
 
-[[test]]
-name = "random"
-required-features = ["rand"]
+
 
 [[test]]
 name = "fft"
 required-features = ["approx"]
 
+[[test]]
+name = "init"
+required-features = ["rand", "std"]
+
+[[test]]
+name = "nn"
+
 [build-dependencies]
+
+[dev-dependencies]
+lazy_static.workspace = true
 
 [dependencies]
 ndarray.workspace = true
@@ -153,9 +161,6 @@ version = "0.1"
 default-features = false
 features = ["v5", "v8"]
 version = "1"
-
-[dev-dependencies]
-lazy_static = "1"
 
 [package.metadata.docs.rs]
 all-features = true

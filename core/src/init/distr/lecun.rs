@@ -1,10 +1,11 @@
 /*
-    Appellation: lecun <module>
+    Appellation: lecun <distr>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::init::distr::TruncatedNormal;
 use num::Float;
 use rand::Rng;
-use rand_distr::{Distribution, Normal, NormalError, StandardNormal};
+use rand_distr::{Distribution, NormalError, StandardNormal};
 
 /// [LecunNormal] is a truncated [normal](rand_distr::Normal) distribution centered at 0
 /// with a standard deviation that is calculated as `σ = sqrt(1/n_in)`
@@ -18,14 +19,14 @@ impl LecunNormal {
     pub fn new(n: usize) -> Self {
         Self { n }
     }
-    /// Create a [normal](rand_distr::Normal) [distribution](Distribution) centered at 0;
+    /// Create a [truncated normal](TruncatedNormal) [distribution](Distribution) centered at 0;
     /// See [Self::std_dev] for the standard deviation calculations.
-    pub fn distr<F>(&self) -> Result<Normal<F>, NormalError>
+    pub fn distr<F>(&self) -> Result<TruncatedNormal<F>, NormalError>
     where
         F: Float,
         StandardNormal: Distribution<F>,
     {
-        Normal::new(F::zero(), self.std_dev())
+        TruncatedNormal::new(F::zero(), self.std_dev())
     }
     /// Calculate the standard deviation (`σ`) of the distribution.
     /// This is done by computing the root of the reciprocal of the number of inputs
@@ -48,6 +49,6 @@ where
     where
         R: Rng + ?Sized,
     {
-        self.distr().unwrap().sample(rng)
+        self.distr().expect("NormalError").sample(rng)
     }
 }

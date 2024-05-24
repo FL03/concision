@@ -95,6 +95,10 @@ crate-type = ["lib"]
 doctest = true
 test = true
 
+[[test]]
+name = "attention"
+required-features = ["approx", "rand"]
+
 [build-dependencies]
 
 [dependencies]
@@ -128,8 +132,8 @@ version = "1"
 optional = true
 version = "0.1"
 
-[dev-dependencies.lazy_static]
-workspace = true
+[dev-dependencies]
+lazy_static.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

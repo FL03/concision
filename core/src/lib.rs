@@ -34,6 +34,7 @@ pub mod types;
 pub mod utils;
 
 pub mod prelude {
+    #[allow(unused_imports)]
     pub(crate) use super::primitives::rust::*;
 
     pub use super::error::prelude::*;

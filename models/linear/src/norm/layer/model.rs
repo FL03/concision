@@ -6,7 +6,7 @@ use super::Config;
 use crate::{Biased, LinearParams, ParamMode, Unbiased};
 use concision::Forward;
 use nd::prelude::*;
-use nd::RemoveAxis;
+use nd::{Data, RemoveAxis};
 use num::traits::{Float, FromPrimitive, One, Zero};
 
 // #62
@@ -139,14 +139,15 @@ where
     }
 }
 
-impl<A, D> Forward<Array<A, D>> for LayerNorm<A, Biased, D>
+impl<A, S, D> Forward<ArrayBase<S, D>> for LayerNorm<A, Biased, D>
 where
     A: Float + FromPrimitive,
     D: RemoveAxis,
+    S: Data<Elem = A>,
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, x: &Array<A, D>) -> Self::Output {
+    fn forward(&self, x: &ArrayBase<S, D>) -> Self::Output {
         let norm = if let Some(axis) = self.config().axis() {
             super::layer_norm_axis(x, *axis, self.eps())
         } else {
@@ -156,14 +157,15 @@ where
     }
 }
 
-impl<A, D> Forward<Array<A, D>> for LayerNorm<A, Unbiased, D>
+impl<A, S, D> Forward<ArrayBase<S, D>> for LayerNorm<A, Unbiased, D>
 where
     A: Float + FromPrimitive,
     D: RemoveAxis,
+    S: Data<Elem = A>,
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, x: &Array<A, D>) -> Self::Output {
+    fn forward(&self, x: &ArrayBase<S, D>) -> Self::Output {
         let norm = if let Some(axis) = self.config().axis() {
             super::layer_norm_axis(x, *axis, self.eps())
         } else {

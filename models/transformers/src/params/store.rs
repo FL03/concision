@@ -2,10 +2,16 @@
     Appellation: params <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::attention::{Score, _attention};
+use concision::nn::DropoutLayer;
 use concision::{dimensional, getters};
+use nd::linalg::Dot;
 use nd::*;
+use num::complex::ComplexFloat;
 use num::traits::{One, Zero};
 
+/// [QkvBase] is a container for the query, key, and value arrays used in the
+/// attention mechanism of the transformer model.
 pub struct QkvBase<S = OwnedRepr<f64>, D = Ix2>
 where
     D: Dimension,
@@ -72,12 +78,53 @@ where
 
     dimensional!(q());
 
-    ndview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
-    ndview!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
+    qkv_view!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
+    qkv_view!(to_owned::<OwnedRepr>(&self) where A: Clone, S: Data);
 
-    ndview!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
-    ndview!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataShared);
+    qkv_view!(into_shared::<OwnedArcRepr>(self) where A: Clone, S: DataOwned);
+    qkv_view!(to_shared::<OwnedArcRepr>(&self) where A: Clone, S: DataShared);
 
-    ndview!(view::<'a, ViewRepr>(&self) where S: Data);
-    ndview!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
+    qkv_view!(view::<'a, ViewRepr>(&self) where S: Data);
+    qkv_view!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
+}
+
+#[cfg(not(feature = "rand"))]
+impl<A, S, D> QkvBase<S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+    A: Clone,
+{
+    /// Computes the [Score] using scaled dot-product attention.
+    pub fn attention(&self, dropout: Option<f64>, mask: Option<&Array<bool, D>>) -> Score<A, D>
+    where
+        A: ComplexFloat + ScalarOperand,
+        S: Data,
+        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
+    {
+        let (q, k, v) = self.qkv();
+        _attention(q, k, v, mask, None)
+    }
+}
+
+#[cfg(feature = "rand")]
+impl<A, S, D> QkvBase<S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+    A: Clone,
+{
+    /// Computes the [Score] using scaled dot-product attention.
+    pub fn attention(&self, dropout: Option<f64>, mask: Option<&Array<bool, D>>) -> Score<A, D>
+    where
+        A: ComplexFloat + ScalarOperand,
+        S: Data,
+        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
+    {
+        let dropout = dropout.map(DropoutLayer::new);
+        let (q, k, v) = self.qkv();
+        _attention(q, k, v, mask, dropout.as_ref())
+    }
 }

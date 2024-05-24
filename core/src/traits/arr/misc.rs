@@ -2,17 +2,18 @@
    Appellation: convert <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use nd::Axis;
-use nd::{ArrayBase, Dimension, RawData};
+use nd::prelude::*;
+use nd::{DataMut, RawData};
 
-pub trait Dimensional<D> {
-    type Pattern;
+/// This trait is used to fill an array with a value based on a mask.
+/// The mask is a boolean array of the same shape as the array.
+pub trait MaskFill<A, D>
+where
+    D: Dimension,
+{
+    type Output;
 
-    fn dim(&self) -> Self::Pattern;
-
-    fn raw_dim(&self) -> D;
-
-    fn shape(&self) -> &[usize];
+    fn masked_fill(&self, mask: &Array<bool, D>, value: A) -> Self::Output;
 }
 
 pub trait IntoAxis {
@@ -26,23 +27,24 @@ pub trait IsSquare {
 /*
  ******** implementations ********
 */
-impl<S, D> Dimensional<D> for ArrayBase<S, D>
+
+impl<A, S, D> MaskFill<A, D> for ArrayBase<S, D>
 where
+    A: Clone,
     D: Dimension,
-    S: RawData,
+    S: DataMut<Elem = A>,
+    Self: Clone,
 {
-    type Pattern = D::Pattern;
+    type Output = ArrayBase<S, D>;
 
-    fn shape(&self) -> &[usize] {
-        ArrayBase::shape(self)
-    }
-
-    fn dim(&self) -> Self::Pattern {
-        ArrayBase::dim(self)
-    }
-
-    fn raw_dim(&self) -> D {
-        ArrayBase::raw_dim(self)
+    fn masked_fill(&self, mask: &Array<bool, D>, value: A) -> Self::Output {
+        let mut arr = self.clone();
+        arr.zip_mut_with(&mask, |x, &m| {
+            if m {
+                *x = value.clone();
+            }
+        });
+        arr
     }
 }
 

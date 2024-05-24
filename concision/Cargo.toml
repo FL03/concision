@@ -45,7 +45,7 @@ models = [
     "gnn",
     "kan",
     "linear",
-    "transformers",
+    "transformer",
 ]
 
 gnn = [
@@ -60,7 +60,7 @@ linear = [
     "dep:concision-linear",
 ]
 
-transformers = [
+transformer = [
     "dep:concision-transformers",
 ]
 
@@ -184,6 +184,10 @@ test = true
 name = "linear"
 required-features = ["linear", "rand", "serde", "tracing"]
 
+[[example]]
+name = "transformer"
+required-features = ["transformer", "rand", "serde", "tracing"]
+
 [build-dependencies]
 
 [dependencies.concision-core]
@@ -229,6 +233,7 @@ version = "0.1.14"
 
 [dev-dependencies]
 anyhow = "1"
+approx.workspace = true
 lazy_static.workspace = true
 ndarray.workspace = true
 num = { features = ["rand", "serde"], version = "0.4" }

@@ -6,10 +6,12 @@ use crate::params::QkvBase;
 use nd::prelude::*;
 use nd::{Data, DataOwned, RawDataClone};
 
-impl<S, D> Clone for QkvBase<S, D>
+pub(crate) type ThreeTuple<A, B = A, C = B> = (A, B, C);
+
+impl<A, S, D> Clone for QkvBase<S, D>
 where
     D: Dimension,
-    S: RawDataClone,
+    S: RawDataClone<Elem = A>,
 {
     fn clone(&self) -> Self {
         Self {
@@ -20,18 +22,18 @@ where
     }
 }
 
-impl<S, D> Copy for QkvBase<S, D>
+impl<A, S, D> Copy for QkvBase<S, D>
 where
     D: Copy + Dimension,
-    S: Copy + RawDataClone,
+    S: Copy + RawDataClone<Elem = A>,
 {
 }
 
-impl<S, D> Default for QkvBase<S, D>
+impl<A, S, D> Default for QkvBase<S, D>
 where
+    A: Default,
     D: Dimension,
-    S: DataOwned,
-    S::Elem: Default,
+    S: DataOwned<Elem = A>,
 {
     fn default() -> Self {
         Self {
@@ -49,7 +51,7 @@ where
     S: Data<Elem = A>,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.q == *other.q() && self.k == *other.k() && self.v == *other.v()
+        self.q() == other.q() && self.k() == other.k() && self.v() == other.v()
     }
 }
 
@@ -64,6 +66,21 @@ where
     ArrayBase<S, D>: PartialEq<ArrayBase<S2, D2>>,
 {
     fn eq(&self, other: &ArrayBase<S2, D2>) -> bool {
-        self.q == *other && self.k == *other && self.v == *other
+        self.q() == other && self.k() == other && self.v() == other
+    }
+}
+
+impl<A, B, S, D, S2, D2> PartialEq<ThreeTuple<ArrayBase<S2, D2>>> for QkvBase<S, D>
+where
+    A: PartialEq,
+    B: PartialEq,
+    D: Dimension,
+    S: Data<Elem = A>,
+    S2: Data<Elem = B>,
+    D2: Dimension,
+    ArrayBase<S, D>: PartialEq<ArrayBase<S2, D2>>,
+{
+    fn eq(&self, (q, k, v): &ThreeTuple<ArrayBase<S2, D2>>) -> bool {
+        self.q() == q && self.k() == k && self.v() == v
     }
 }

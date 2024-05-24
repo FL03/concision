@@ -2,7 +2,7 @@
     Appellation: impl_linalg <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::params::{Params, QkvBase};
+use crate::params::{Qkv, QkvBase};
 use concision::Matmul;
 use nd::linalg::Dot;
 use nd::*;
@@ -17,7 +17,7 @@ where
     T: Data<Elem = A>,
     ArrayBase<S, D>: Dot<ArrayBase<T, E>, Output = Array<A, F>>,
 {
-    type Output = Params<A, F>;
+    type Output = Qkv<A, F>;
 
     fn matmul(&self, rhs: &QkvBase<T, E>) -> Self::Output {
         QkvBase {
@@ -38,7 +38,7 @@ where
     T: Data<Elem = A>,
     ArrayBase<S, D>: Dot<ArrayBase<T, E>, Output = Array<A, F>>,
 {
-    type Output = Params<A, F>;
+    type Output = Qkv<A, F>;
 
     fn matmul(&self, rhs: &ArrayBase<T, E>) -> Self::Output {
         QkvBase {
