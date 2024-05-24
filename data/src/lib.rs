@@ -22,9 +22,11 @@ pub mod params;
 pub mod preproc;
 pub mod tensor;
 pub mod traits;
+pub mod types;
 
 pub mod prelude {
     pub use super::dataset::*;
     pub use super::params::prelude::*;
     pub use super::traits::prelude::*;
+    pub use super::types::prelude::*;
 }
