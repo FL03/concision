@@ -59,6 +59,21 @@ where
     {
         Self::from_params(QkvBase::from_elem(shape, value))
     }
+    /// Setup the [AttentionHead] with a [DropoutLayer]
+    #[cfg(feature = "rand")]
+    pub fn with_dropout(self, dropout: DropoutLayer) -> Self {
+        Self {
+            dropout: Some(dropout),
+            ..self
+        }
+    }
+    /// Setup the [AttentionHead] with a mask
+    pub fn with_mask(self, mask: Array<bool, D>) -> Self {
+        Self {
+            mask: Some(mask),
+            ..self
+        }
+    }
     /// Computes the [Score] using scaled dot-product attention.
     pub fn attention(&self) -> Score<A, D>
     where

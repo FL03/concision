@@ -19,13 +19,15 @@ pub(crate) mod prelude {
 }
 
 pub(crate) mod utils {
-    use nd::{Array, Axis, Dimension, RemoveAxis};
+    use nd::prelude::*;
+    use nd::{Data, RemoveAxis};
     use num::traits::{Float, FromPrimitive};
 
-    pub(crate) fn layer_norm<A, D>(x: &Array<A, D>, eps: f64) -> Array<A, D>
+    pub(crate) fn layer_norm<A, S, D>(x: &ArrayBase<S, D>, eps: f64) -> Array<A, D>
     where
         A: Float + FromPrimitive,
         D: Dimension,
+        S: Data<Elem = A>,
     {
         let mean = x.mean().unwrap();
         let denom = {
@@ -36,10 +38,11 @@ pub(crate) mod utils {
         x.mapv(|xi| (xi - mean) / denom)
     }
 
-    pub(crate) fn layer_norm_axis<A, D>(x: &Array<A, D>, axis: Axis, eps: f64) -> Array<A, D>
+    pub(crate) fn layer_norm_axis<A, S, D>(x: &ArrayBase<S, D>, axis: Axis, eps: f64) -> Array<A, D>
     where
         A: Float + FromPrimitive,
         D: RemoveAxis,
+        S: Data<Elem = A>,
     {
         let eps = A::from(eps).unwrap();
         let mean = x.mean_axis(axis).unwrap();

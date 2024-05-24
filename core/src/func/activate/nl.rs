@@ -34,8 +34,8 @@ where
     &e / e.sum()
 }
 
-// fn __softmax<T, I>(args: &I) -> I 
-// where 
+// fn __softmax<T, I>(args: &I) -> I
+// where
 //     I: Clone + core::ops::Div<T, Output = I> + Exp<Output = I>, T: Exp<Output = T> + core::iter::Sum ,
 //     for<'a> I: IntoIterator<Item = &'a T>,
 // {

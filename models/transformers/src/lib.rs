@@ -29,6 +29,7 @@ pub(crate) mod transformer;
 
 pub mod attention;
 pub mod codec;
+pub mod model;
 pub mod ops;
 pub mod params;
 

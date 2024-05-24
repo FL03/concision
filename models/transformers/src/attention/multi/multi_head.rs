@@ -2,11 +2,9 @@
     Appellation: multi_head <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::Config;
 
-pub struct Config {
-    pub heads: usize,
-}
-
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MultiHeadAttention {
     pub(crate) config: Config,
 }
