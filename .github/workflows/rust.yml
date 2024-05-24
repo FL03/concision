@@ -6,6 +6,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  CRATE_BASENAME: ${{ github.event.repository.name }}
 
 on:
   pull_request:
@@ -53,12 +54,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: setup (langspace)
+      - name: rustup
         run: |
           rustup default nightly
           rustup update
-      - name: Bench
-        run: cargo bench --all -v
+      - run: cargo bench --all -v
+    
   test:
     name: Test
     strategy:
@@ -67,14 +68,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: setup (langspace)
-        run: |
-          rustup default ${{ matrix.toolchain }}
-          rustup update
-      - name: Test
-        run: cargo test --features full -v --workspace
+      - run: rustup default ${{ matrix.toolchain }} && rustup update
+      - run: cargo test --features full -v --workspace
+
   blas:
     continue-on-error: true
+    env:
+      PACKAGE_NAME: ${{ github.event.repository.name }}-${{ matrix.crate }}
     name: Test (blas)
     strategy:
       matrix:
@@ -83,9 +83,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: rustup
-        run: |
-          rustup default ${{ matrix.toolchain }}
-          rustup update
+      - run: rustup default ${{ matrix.toolchain }} && rustup update
       - name: test
-        run: cargo test --features blas -v --package ${{ github.event.repository.name }}-${{ matrix.crate }}
+        run: |
+          cargo clean
+          cargo test --features blas -v -p ${{ env.PACKAGE_NAME }}
