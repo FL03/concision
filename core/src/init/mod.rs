@@ -11,9 +11,11 @@
 //! better suited for machine-learning workloads.
 #![cfg(feature = "rand")]
 
-pub use self::prelude::*;
+pub use self::distr::prelude::*;
+pub use self::traits::*;
+pub use self::utils::*;
 
-pub(crate) mod initialize;
+pub(crate) mod traits;
 pub(crate) mod utils;
 
 pub mod initializer;
@@ -41,6 +43,6 @@ pub use rand_distr;
 
 pub(crate) mod prelude {
     pub use super::distr::prelude::*;
-    pub use super::initialize::{Initialize, InitializeExt};
+    pub use super::traits::{Initialize, InitializeExt};
     pub use super::utils::*;
 }

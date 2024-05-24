@@ -2,8 +2,12 @@
     Appellation: params <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::attention::{Score, _attention};
+use concision::nn::DropoutLayer;
 use concision::{dimensional, getters};
+use nd::linalg::Dot;
 use nd::*;
+use num::complex::ComplexFloat;
 use num::traits::{One, Zero};
 
 /// [QkvBase] is a container for the query, key, and value arrays used in the
@@ -57,16 +61,6 @@ where
         (self.q.view(), self.k.view(), self.v.view())
     }
 
-    // pub fn attention(&self, mask: Option<Array<bool, D>>) -> Array<A, D>
-    // where
-    //     A: ComplexFloat,
-    //     S: Data,
-    // {
-    //     let (q, k, v) = self.as_qkv();
-    //     let (q, k, v) = _attention(q, k, v, mask);
-    //     q.dot(&v)
-    // }
-
     /// Consumes the store and returns a three-tuple consisting of the query, key, and value arrays respectively.
     pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>) {
         (self.q, self.k, self.v)
@@ -92,4 +86,45 @@ where
 
     qkv_view!(view::<'a, ViewRepr>(&self) where S: Data);
     qkv_view!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
+}
+
+#[cfg(not(feature = "rand"))]
+impl<A, S, D> QkvBase<S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+    A: Clone,
+{
+    /// Computes the [Score] using scaled dot-product attention.
+    pub fn attention(&self, dropout: Option<f64>, mask: Option<&Array<bool, D>>) -> Score<A, D>
+    where
+        A: ComplexFloat + ScalarOperand,
+        S: Data,
+        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
+    {
+        let (q, k, v) = self.qkv();
+        _attention(q, k, v, mask, None)
+    }
+}
+
+#[cfg(feature = "rand")]
+impl<A, S, D> QkvBase<S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+    A: Clone,
+{
+    /// Computes the [Score] using scaled dot-product attention.
+    pub fn attention(&self, dropout: Option<f64>, mask: Option<&Array<bool, D>>) -> Score<A, D>
+    where
+        A: ComplexFloat + ScalarOperand,
+        S: Data,
+        ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
+        Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
+    {
+        let dropout = dropout.map(DropoutLayer::new);
+        let (q, k, v) = self.qkv();
+        _attention(q, k, v, mask, dropout.as_ref())
+    }
 }

@@ -139,6 +139,20 @@ where
     {
         Self::rand(shape, Uniform::new(dk.clone().neg(), dk))
     }
+
+    fn uniform_from_seed<Sh>(shape: Sh, start: A, stop: A, key: u64) -> Self
+    where
+        A: SampleUniform,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+        <A as SampleUniform>::Sampler: Clone,
+    {
+        Self::rand_with(
+            shape,
+            Uniform::new(start, stop),
+            &mut StdRng::seed_from_u64(key),
+        )
+    }
     /// Generate a random array with values between u(-a, a) where a is the reciprocal of the value at the given axis
     fn uniform_along<Sh>(shape: Sh, axis: usize) -> Self
     where

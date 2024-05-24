@@ -5,9 +5,6 @@
 
 #[macro_export]
 macro_rules! builder {
-    ($(#[derive($($d:ident),+)])?$name:ident::<$inner:ty> {$($k:ident: $v:ty),* $(,)?}) => {
-        $crate::builder!(@loop builder: $name, derive: [$($($d),+)?], inner: $inner {$($k: $v),*});
-    };
     ($(#[derive($($d:ident),+)])? $name:ident($inner:ty) {$($k:ident: $v:ty),* $(,)?}) => {
         $crate::builder!(@loop builder: $name, derive: [$($($d),+)?], inner: $inner {$($k: $v),*});
     };

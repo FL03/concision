@@ -6,7 +6,6 @@ pub use self::prelude::*;
 #[cfg(feature = "std")]
 pub use self::std_types::*;
 
-pub mod mask;
 pub mod propagate;
 pub mod shape;
 
@@ -24,7 +23,6 @@ mod std_types {
 }
 
 pub(crate) mod prelude {
-    pub use super::mask::Mask;
     pub use super::propagate::Propagate;
     pub use super::shape::ModelShape;
     #[cfg(feature = "std")]

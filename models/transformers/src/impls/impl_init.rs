@@ -1,5 +1,8 @@
+/*
+    Appellation: init <impls>
+    Contrib: FL03 <jo3mccain@icloud.com>
+*/
 #![cfg(feature = "rand")]
-
 use crate::QkvBase;
 use concision::Initialize;
 use concision::init::rand::Rng;

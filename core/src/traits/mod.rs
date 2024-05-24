@@ -13,15 +13,17 @@ pub mod train;
 pub mod arr {
     pub use self::prelude::*;
 
-    pub(crate) mod create;
-    pub(crate) mod misc;
-    pub(crate) mod ops;
-    pub(crate) mod tensor;
+    mod create;
+    mod misc;
+    mod ops;
+    mod reshape;
+    mod tensor;
 
     pub(crate) mod prelude {
         pub use super::create::*;
         pub use super::misc::*;
         pub use super::ops::*;
+        pub use super::reshape::*;
         pub use super::tensor::*;
     }
 }

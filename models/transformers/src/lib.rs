@@ -17,7 +17,7 @@ extern crate concision_core as concision;
 extern crate concision_linear as linear;
 extern crate ndarray as nd;
 
-pub use self::attention::AttentionHead;
+pub use self::attention::{scaled_dot_product_attention, AttentionHead};
 pub use self::params::*;
 pub use self::primitives::*;
 pub use self::transformer::Transformer;

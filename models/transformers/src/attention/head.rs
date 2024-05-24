@@ -12,12 +12,22 @@ use num::complex::ComplexFloat;
 
 // #68
 /// [AttentionHead] implements the scaled dot-product attention mechanism formally defined in
-/// [Attention is all you need](https://arxiv.org/abs/1706.03762).
+/// [Attention is all you need](https://arxiv.org/abs/1706.03762). The structure is designed to
+/// be flexible, relying upon the n-dimensional [QkvBase] to store the query, key, and value tensors.
+/// More so, the head may be configured with an optional dropout and/or masking layers.
 ///
-/// ### Fields
+/// ### Dropout
 ///
-/// [dropout](DropoutLayer): requires the `rand` feature
+/// The [DropoutLayer] is an optional layer applied after the softmax function is applied to the
+/// score. The layer is used to prevent overfitting by randomly setting a fraction of the input
+/// units to zero at each update during training time.
 ///
+/// ### Masking
+///
+/// After computing the dot-product of the query and key tensors, an optional mask may be applied to
+/// the attention score. The mask is used to prevent the model from attending to certain parts of the
+/// input sequence. For example, in the case of a language model, the mask may be used to prevent the
+/// model from attending to the padding tokens.
 pub struct AttentionHead<A = f64, D = Ix2, S = OwnedRepr<A>>
 where
     D: Dimension,
@@ -59,21 +69,6 @@ where
     {
         Self::from_params(QkvBase::from_elem(shape, value))
     }
-    /// Setup the [AttentionHead] with a [DropoutLayer]
-    #[cfg(feature = "rand")]
-    pub fn with_dropout(self, dropout: DropoutLayer) -> Self {
-        Self {
-            dropout: Some(dropout),
-            ..self
-        }
-    }
-    /// Setup the [AttentionHead] with a mask
-    pub fn with_mask(self, mask: Array<bool, D>) -> Self {
-        Self {
-            mask: Some(mask),
-            ..self
-        }
-    }
     /// Computes the [Score] using scaled dot-product attention.
     pub fn attention(&self) -> Score<A, D>
     where
@@ -105,6 +100,30 @@ where
     pub fn into_qkv(self) -> (ArrayBase<S, D>, ArrayBase<S, D>, ArrayBase<S, D>) {
         self.params.into_qkv()
     }
+    /// Sets the dropout layer for the [AttentionHead]
+    #[cfg(feature = "rand")]
+    pub fn set_dropout(&mut self, dropout: Option<DropoutLayer>) {
+        self.dropout = dropout;
+    }
+    /// Sets the mask for the [AttentionHead]
+    pub fn set_mask(&mut self, mask: Option<Array<bool, D>>) {
+        self.mask = mask;
+    }
+    /// Configure the [AttentionHead] with a [DropoutLayer]
+    #[cfg(feature = "rand")]
+    pub fn with_dropout(self, dropout: DropoutLayer) -> Self {
+        Self {
+            dropout: Some(dropout),
+            ..self
+        }
+    }
+    /// Consume and store a mask for the [AttentionHead]
+    pub fn with_mask(self, mask: Array<bool, D>) -> Self {
+        Self {
+            mask: Some(mask),
+            ..self
+        }
+    }
 
     getters!(params::<[q, k, v]> => ArrayBase<S, D>);
     ndbuilder!(new::default() where A: Default, S: DataOwned);
@@ -118,6 +137,9 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
+    /// Returns an immutable reference to the, optional, [dropout](DropoutLayer) layer.
+    /// With the `rand` feature flag disabled, the dropout layer is
+    /// unavailable and returns `None`.
     pub fn dropout(&self) -> Option<&DropoutLayer> {
         self.dropout.as_ref()
     }
@@ -129,6 +151,9 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
+    /// Returns an immutable reference to the, optional, [dropout](DropoutLayer) layer.
+    /// With the `rand` feature flag disabled, the dropout layer is
+    /// unavailable and returns `None`.
     #[cfg(not(feature = "rand"))]
     pub fn dropout(&self) -> Option<&DropoutLayer> {
         None

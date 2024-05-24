@@ -2,18 +2,10 @@
     Appellation: mask <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-
 use nd::prelude::*;
-use nd::RawData;
+use nd::{OwnedRepr, RawData};
 
-pub trait NdMask<D = Ix2>
-where
-    D: Dimension,
-{
-    type Data: RawData<Elem = bool>;
-}
-
-pub struct Mask<S, D>(ArrayBase<S, D>)
+pub struct Mask<S = OwnedRepr<bool>, D = Ix2>(ArrayBase<S, D>)
 where
     D: Dimension,
     S: RawData<Elem = bool>;
@@ -32,9 +24,10 @@ where
  ************* Implementations *************
 */
 mod impls {
-    use super::*;
+    use super::Mask;
     use core::borrow::{Borrow, BorrowMut};
     use core::ops::{Deref, DerefMut};
+    use nd::{ArrayBase, Dimension, RawData};
 
     impl<S, D> AsRef<ArrayBase<S, D>> for Mask<S, D>
     where
@@ -97,6 +90,11 @@ mod impls {
             &mut self.0
         }
     }
+}
+
+mod impl_from {
+    use super::Mask;
+    use nd::{ArrayBase, Dimension, RawData};
 
     impl<S, D> From<ArrayBase<S, D>> for Mask<S, D>
     where

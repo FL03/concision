@@ -24,11 +24,13 @@ impl Codec {
     );
 }
 
-builder!(CodecBuilder::<Codec> {
-    ctx: Context,
-    decoder: Decoder,
-    encoder: Encoder,
-});
+builder! {
+    CodecBuilder(Codec) {
+        ctx: Context,
+        decoder: Decoder,
+        encoder: Encoder,
+    }
+}
 
 #[derive(Default)]
 pub struct Generator {
