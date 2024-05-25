@@ -35,7 +35,7 @@ where
     where
         A: Clone + Default,
     {
-        let dropout = dropout.map(|p| Dropout::new(p));
+        let dropout = dropout.map(Dropout::new);
         let input = Linear::from_features(d_model, features);
         let output = Linear::from_features(features, d_model);
         Self {
@@ -50,13 +50,7 @@ impl<A, D, K> FeedForwardNetwork<A, K, D>
 where
     D: Dimension,
 {
-    pub fn input(&self) -> &Linear<A, K, D> {
-        &self.input
-    }
-
-    pub fn output(&self) -> &Linear<A, K, D> {
-        &self.output
-    }
+    concision::getters!(input, output => Linear<A, K, D>);
 }
 
 #[cfg(feature = "rand")]

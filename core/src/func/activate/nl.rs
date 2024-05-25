@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::math::Exp;
-use ndarray::*;
+use nd::*;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::Zero;
 
@@ -34,14 +34,16 @@ where
     &e / e.sum()
 }
 
-// fn __softmax<T, I>(args: &I) -> I
-// where
-//     I: Clone + core::ops::Div<T, Output = I> + Exp<Output = I>, T: Exp<Output = T> + core::iter::Sum ,
-//     for<'a> I: IntoIterator<Item = &'a T>,
-// {
-//     let e = args.exp();
-//     e.clone() / e.into_iter().sum::<T>()
-// }
+fn _softmax_axis<A, S, D>(args: &ArrayBase<S, D>, axis: usize) -> Array<A, D>
+where
+    A: ComplexFloat + ScalarOperand,
+    D: RemoveAxis,
+    S: Data<Elem = A>,
+{
+    let axis = Axis(axis);
+    let e = args.exp();
+    &e / &e.sum_axis(axis)
+}
 
 fn _tanh<T>(args: T) -> T
 where
@@ -56,6 +58,22 @@ unary!(
     Softmax::softmax(self),
     Tanh::tanh(self),
 );
+
+pub trait SoftmaxAxis {
+    type Output;
+
+    fn softmax_axis(self, axis: usize) -> Self::Output;
+}
+
+pub trait NonLinear {
+    type Output;
+
+    fn relu(self) -> Self::Output;
+    fn sigmoid(self) -> Self::Output;
+    fn softmax(self) -> Self::Output;
+    fn softmax_axis(self, axis: usize) -> Self::Output;
+    fn tanh(self) -> Self::Output;
+}
 
 /*
  ********** Implementations **********
@@ -228,5 +246,31 @@ where
 
     fn softmax(self) -> Self::Output {
         _softmax(self)
+    }
+}
+
+impl<A, S, D> SoftmaxAxis for ArrayBase<S, D>
+where
+    A: ComplexFloat + ScalarOperand,
+    D: RemoveAxis,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn softmax_axis(self, axis: usize) -> Self::Output {
+        _softmax_axis(&self, axis)
+    }
+}
+
+impl<'a, A, S, D> SoftmaxAxis for &'a ArrayBase<S, D>
+where
+    A: ComplexFloat + ScalarOperand,
+    D: RemoveAxis,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn softmax_axis(self, axis: usize) -> Self::Output {
+        _softmax_axis(&self, axis)
     }
 }
