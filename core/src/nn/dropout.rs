@@ -11,7 +11,7 @@ use ndrand::{rand_distr::Bernoulli, RandomExt};
 use num::traits::Num;
 
 #[cfg(feature = "rand")]
-pub fn dropout<A, S, D>(array: &ArrayBase<S, D>, p: f64) -> Array<A, D>
+pub(crate) fn _dropout<A, S, D>(array: &ArrayBase<S, D>, p: f64) -> Array<A, D>
 where
     A: Num + ScalarOperand,
     D: Dimension,
@@ -29,7 +29,7 @@ where
 }
 
 /// [Dropout] randomly zeroizes elements with a given probability (`p`).
-pub trait Dropout {
+pub trait DropOut {
     type Output;
 
     fn dropout(&self, p: f64) -> Self::Output;
@@ -44,7 +44,7 @@ pub trait Dropout {
 /// - (p) Probability of dropping an element
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct DropoutLayer {
+pub struct Dropout {
     pub(crate) p: f64,
 }
 
@@ -52,7 +52,7 @@ pub struct DropoutLayer {
  ************* Implementations *************
 */
 #[cfg(feature = "rand")]
-impl<A, S, D> Dropout for ArrayBase<S, D>
+impl<A, S, D> DropOut for ArrayBase<S, D>
 where
     A: Num + ScalarOperand,
     D: Dimension,
@@ -61,13 +61,22 @@ where
     type Output = Array<A, D>;
 
     fn dropout(&self, p: f64) -> Self::Output {
-        dropout(self, p)
+        _dropout(self, p)
     }
 }
 
-impl DropoutLayer {
+impl Dropout {
     pub fn new(p: f64) -> Self {
         Self { p }
+    }
+
+    pub fn apply<A, S, D>(&self, input: &ArrayBase<S, D>) -> Array<A, D>
+    where
+        A: Num + ScalarOperand,
+        D: Dimension,
+        S: DataOwned<Elem = A>,
+    {
+        _dropout(input, self.p)
     }
 
     pub fn scale(&self) -> f64 {
@@ -75,14 +84,14 @@ impl DropoutLayer {
     }
 }
 
-impl Default for DropoutLayer {
+impl Default for Dropout {
     fn default() -> Self {
         Self::new(0.5)
     }
 }
 
 #[cfg(feature = "rand")]
-impl<A, S, D> Forward<ArrayBase<S, D>> for DropoutLayer
+impl<A, S, D> Forward<ArrayBase<S, D>> for Dropout
 where
     A: Num + ScalarOperand,
     D: Dimension,

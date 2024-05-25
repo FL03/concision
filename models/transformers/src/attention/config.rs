@@ -9,13 +9,17 @@ pub(crate) fn dk(d_model: usize, heads: usize) -> usize {
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Config {
-    pub d_model: usize,
-    pub heads: usize,
+pub struct AttentionConfig {
+    pub d_model: usize, // embedding size; default is 512
+    pub heads: usize,   // number of heads; default is 8
 }
 
-impl Config {
-    pub fn new() -> ConfigBuilder {
+impl AttentionConfig {
+    pub fn new(d_model: usize, heads: usize) -> Self {
+        Self { d_model, heads }
+    }
+    ///
+    pub fn create() -> ConfigBuilder {
         ConfigBuilder::new()
     }
 
@@ -32,7 +36,7 @@ impl Config {
     }
 }
 
-impl Default for Config {
+impl Default for AttentionConfig {
     fn default() -> Self {
         Self {
             d_model: crate::D_MODEL,
@@ -42,7 +46,7 @@ impl Default for Config {
 }
 
 concision::builder! {
-    ConfigBuilder(Config) {
+    ConfigBuilder(AttentionConfig) {
         d_model: usize,
         heads: usize,
     }

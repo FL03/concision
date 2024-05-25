@@ -192,44 +192,44 @@ required-features = ["transformer", "rand", "serde", "tracing"]
 
 [dependencies.concision-core]
 path = "../core"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-data]
 optional = true
 path = "../data"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-derive]
 optional = true
 path = "../derive"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-macros]
 optional = true
 path = "../macros"
-version = "0.1.14"
+version = "0.1.15"
 
 # *************** Models ***************
 
 [dependencies.concision-gnn]
 optional = true
 path = "../models/gnn"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-kan]
 optional = true
 path = "../models/kan"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-linear]
 optional = true
 path = "../models/linear"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-transformer]
 optional = true
 path = "../models/transformers"
-version = "0.1.14"
+version = "0.1.15"
 
 [dev-dependencies]
 anyhow = "1"

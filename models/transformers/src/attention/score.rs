@@ -33,7 +33,6 @@ where
     pub fn into_score(self) -> Array<A, D> {
         self.score
     }
-
     /// Retrieve the attention tensor.
     pub fn attention(&self) -> &Array<A, D> {
         &self.attention

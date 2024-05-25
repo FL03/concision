@@ -99,7 +99,7 @@ version = "0.5"
 [dependencies.concision-core]
 default-features = false
 path = "../../core"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.serde]
 default-features = false

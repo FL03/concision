@@ -18,7 +18,7 @@ fn test_merge() {
     let shape = (3, 4, 5);
     let dout = (4, 15);
     let arr = linarr::<f64, Ix3>(shape.clone()).unwrap();
-    let a = arr.clone().merge().unwrap();
+    let a = arr.merge().unwrap();
 
     assert_eq!(a.dim(), dout);
     assert_eq!(a, utils::merge3(&arr).unwrap());

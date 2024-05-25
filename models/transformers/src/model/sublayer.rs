@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #![cfg(feature = "rand")]
-use concision::nn::DropoutLayer;
+use concision::nn::Dropout;
 use concision::Forward;
 use linear::{Biased, LayerNorm, ParamMode, Unbiased};
 use nd::prelude::*;
@@ -16,7 +16,7 @@ pub struct Sublayer<A = f64, K = Biased, D = Ix2>
 where
     D: Dimension,
 {
-    pub(crate) dropout: DropoutLayer,
+    pub(crate) dropout: Dropout,
     pub(crate) norm: LayerNorm<A, K, D>,
 }
 
@@ -31,12 +31,12 @@ where
         Sh: ShapeBuilder<Dim = D>,
     {
         Self {
-            dropout: DropoutLayer::new(dropout),
+            dropout: Dropout::new(dropout),
             norm: LayerNorm::new(shape),
         }
     }
 
-    pub fn dropout(&self) -> &DropoutLayer {
+    pub fn dropout(&self) -> &Dropout {
         &self.dropout
     }
 

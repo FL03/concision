@@ -5,12 +5,11 @@
 //! # Multi-Head Attention
 //!
 //!
-pub use self::{config::Config, multi_head::*};
+pub use self::multi_head::*;
 
-pub(crate) mod config;
+// pub(crate) mod config;
 pub(crate) mod multi_head;
 
 pub(crate) mod prelude {
-    pub use super::config::Config as MultiHeadAttentionConfig;
     pub use super::multi_head::MultiHeadAttention;
 }
