@@ -87,18 +87,21 @@ doctest = true
 test = true
 
 [[test]]
-name = "model"
-required-features = ["rand"]
+name = "linear"
+required-features = ["std"]
+
+[[test]]
+name = "norm"
+required-features = ["approx", "std"]
 
 [[test]]
 name = "params"
-required-features = ["rand"]
+required-features = ["std"]
 
 [build-dependencies]
 
 [dependencies]
 ndarray.workspace = true
-ndarray-stats.workspace = true
 num.workspace = true
 smart-default.workspace = true
 strum.workspace = true
@@ -106,6 +109,11 @@ strum.workspace = true
 [dependencies.approx]
 optional = true
 version = "0.5"
+
+[dependencies.concision-core]
+default-features = false
+path = "../../core"
+version = "0.1.14"
 
 [dependencies.serde]
 default-features = false
@@ -116,12 +124,6 @@ version = "1"
 [dependencies.tracing]
 optional = true
 version = "0.1"
-
-
-[dependencies.concision-core]
-default-features = false
-path = "../../core"
-version = "0.1.13"
 
 [dev-dependencies]
 lazy_static.workspace = true

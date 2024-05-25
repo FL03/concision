@@ -21,22 +21,10 @@ full = [
     "default",
     "approx",
     "derive",
+    "models",
     "rand",
     "serde",
     "tracing",
-    "linear",
-    "gnn",
-]
-
-alloc = [
-    "concision-core/alloc",
-    "concision-data/alloc",
-    "concision-linear/alloc",
-    "concision-gnn/alloc",
-]
-
-approx = [
-    "concision-core/approx",
 ]
 
 data = [
@@ -48,6 +36,18 @@ derive = [
     "macros",
 ]
 
+macros = [
+    "dep:concision-macros"
+]
+
+# ********* [FF] Models(s) *********
+models = [
+    "gnn",
+    "kan",
+    "linear",
+    "transformer",
+]
+
 gnn = [
     "dep:concision-gnn",
 ]
@@ -57,74 +57,97 @@ kan = [
 ]
 
 linear = [
-    "dep:concision-linear"
+    "dep:concision-linear",
 ]
 
-macros = [
-    "dep:concision-macros"
+transformer = [
+    "dep:concision-transformers",
 ]
 
-models = [
-    "gnn",
-    "kan",
-    "linear",
+
+# ********* [FF] Dependencies *********
+alloc = [
+    "concision-core/alloc",
+    "concision-data?/alloc",
+    "concision-gnn?/alloc",
+    "concision-kan?/alloc",
+    "concision-linear?/alloc",
+    "concision-transformers?/alloc",
+]
+
+approx = [
+    "concision-core/approx",
+    "concision-data?/approx",
+    "concision-gnn?/approx",
+    "concision-kan?/approx",
+    "concision-linear?/approx",
+    "concision-transformers?/approx",
 ]
 
 rand = [
     "concision-core/rand",
-    "concision-data/rand",
-
-    "concision-gnn/rand",
-    "concision-kan/rand",
-    "concision-linear/rand",
+    "concision-data?/rand",
+    "concision-gnn?/rand",
+    "concision-kan?/rand",
+    "concision-linear?/rand",
+    "concision-transformers?/rand",
 ]
 
 serde = [
     "concision-core/serde",
-    "concision-data/serde",
-    "concision-gnn/serde",
-    "concision-kan/serde",
-    "concision-linear/serde",
-]
-
-std = [
-    "concision-core/std",
-    "concision-data/std",
-    "concision-gnn/std",
-    "concision-kan/std",
-    "concision-linear/std",
+    "concision-data?/serde",
+    "concision-gnn?/serde",
+    "concision-kan?/serde",
+    "concision-linear?/serde",
+    "concision-transformers?/serde",
 ]
 
 tracing = [
     "concision-core/tracing",
-    "concision-data/tracing",
-    "concision-gnn/tracing",
-    "concision-kan/tracing",
-    "concision-linear/tracing",
+    "concision-data?/tracing",
+    "concision-gnn?/tracing",
+    "concision-kan?/tracing",
+    "concision-linear?/tracing",
+    "concision-transformers?/tracing",
+]
+
+# ********* [FF] Environment(s) *********
+
+std = [
+    "concision-core/std",
+    "concision-data?/std",
+    "concision-gnn?/std",
+    "concision-kan?/std",
+    "concision-linear?/std",
+    "concision-transformers?/std",
 ]
 
 wasm = [
     "concision-core/wasm",
-    "concision-data/wasm",
-    "concision-gnn/wasm",
-    "concision-kan/wasm",
-    "concision-linear/wasm",
+    "concision-data?/wasm",
+    "concision-gnn?/wasm",
+    "concision-kan?/wasm",
+    "concision-linear?/wasm",
+    "concision-transformers?/wasm",
 ]
 
 wasi = [    
     "concision-core/wasi",
-    "concision-data/wasi",
-    "concision-gnn/wasi",
-    "concision-kan/wasi",
-    "concision-linear/wasi",
+    "concision-data?/wasi",
+    "concision-gnn?/wasi",
+    "concision-kan?/wasi",
+    "concision-linear?/wasi",
+    "concision-transformers?/wasi",
 ]
 
+# ********* [FF] Blas *********
 blas = [
     "concision-core/blas",
-    "concision-data/blas",
-    "concision-gnn/blas",
-    "concision-kan/blas",
-    "concision-linear/blas",
+    "concision-data?/blas",
+    "concision-gnn?/blas",
+    "concision-kan?/blas",
+    "concision-linear?/blas",
+    "concision-transformers?/blas",
 ]
 
 intel-mkl-system = [
@@ -161,46 +184,56 @@ test = true
 name = "linear"
 required-features = ["linear", "rand", "serde", "tracing"]
 
+[[example]]
+name = "transformer"
+required-features = ["transformer", "rand", "serde", "tracing"]
+
 [build-dependencies]
 
 [dependencies.concision-core]
 path = "../core"
-version = "0.1.13"
+version = "0.1.14"
 
 [dependencies.concision-data]
 optional = true
 path = "../data"
-version = "0.1.13"
+version = "0.1.14"
 
 [dependencies.concision-derive]
 optional = true
 path = "../derive"
-version = "0.1.13"
+version = "0.1.14"
 
 [dependencies.concision-macros]
 optional = true
 path = "../macros"
-version = "0.1.13"
+version = "0.1.14"
 
 # *************** Models ***************
 
 [dependencies.concision-gnn]
 optional = true
 path = "../models/gnn"
-version = "0.1.13"
+version = "0.1.14"
 
 [dependencies.concision-kan]
 optional = true
 path = "../models/kan"
-version = "0.1.13"
+version = "0.1.14"
 
 [dependencies.concision-linear]
 optional = true
 path = "../models/linear"
-version = "0.1.13"
+version = "0.1.14"
+
+[dependencies.concision-transformers]
+optional = true
+path = "../models/transformers"
+version = "0.1.14"
 
 [dev-dependencies]
 anyhow = "1"
+approx.workspace = true
 lazy_static.workspace = true
 ndarray.workspace = true
 num = { features = ["rand", "serde"], version = "0.4" }

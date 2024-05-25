@@ -16,7 +16,7 @@ pub use self::nn::Module;
 pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::prelude::*};
 
 #[cfg(feature = "rand")]
-pub use self::rand::{GenerateRandom, RandomExt};
+pub use self::init::{Initialize, InitializeExt};
 
 #[macro_use]
 pub(crate) mod macros;
@@ -24,26 +24,27 @@ pub(crate) mod primitives;
 
 pub mod error;
 pub mod func;
+pub mod init;
+pub mod math;
 pub mod nn;
 pub mod ops;
-pub mod params;
-#[cfg(feature = "rand")]
-pub mod rand;
+
 pub mod traits;
 pub mod types;
 pub mod utils;
 
 pub mod prelude {
+    #[allow(unused_imports)]
     pub(crate) use super::primitives::rust::*;
 
     pub use super::error::prelude::*;
     pub use super::func::prelude::*;
+    #[cfg(feature = "rand")]
+    pub use super::init::prelude::*;
+    pub use super::math::prelude::*;
     pub use super::nn::prelude::*;
     pub use super::ops::prelude::*;
-    pub use super::params::prelude::*;
     pub use super::primitives::*;
-    #[cfg(feature = "rand")]
-    pub use super::rand::prelude::*;
     pub use super::traits::prelude::*;
     pub use super::types::prelude::*;
     pub use super::utils::prelude::*;

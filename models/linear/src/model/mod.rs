@@ -3,9 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 pub use self::layout::prelude::*;
-pub use self::{config::Config, linear::Linear};
+pub use self::{config::Config, layer::Linear};
 
-mod linear;
+mod layer;
 
 pub mod config;
 
@@ -22,5 +22,5 @@ pub mod layout {
 }
 
 pub(crate) mod prelude {
-    pub use super::linear::Linear;
+    pub use super::layer::Linear;
 }

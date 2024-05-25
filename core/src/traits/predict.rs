@@ -4,16 +4,6 @@
 */
 use crate::error::PredictError;
 
-#[doc(hidden)]
-pub trait Activate<T, F>: Forward<T>
-where
-    F: Fn(&Self::Output) -> Self::Output,
-{
-    fn activate(&self, args: &T, f: F) -> Self::Output {
-        f(&self.forward(args))
-    }
-}
-
 /// [Forward] describes an object capable of forward propagation.
 pub trait Forward<T> {
     type Output;
@@ -39,17 +29,17 @@ pub trait Predict<T> {
 /*
  ********* Implementations *********
 */
-impl<S, T> Forward<T> for Option<S>
+impl<X, Y, S> Forward<X> for S
 where
-    S: Forward<T, Output = T>,
-    T: Clone,
+    S: Predict<X, Output = Y>,
 {
-    type Output = T;
+    type Output = Y;
 
-    fn forward(&self, args: &T) -> Self::Output {
-        match self {
-            Some(s) => s.forward(args),
-            None => args.clone(),
+    fn forward(&self, args: &X) -> Self::Output {
+        if let Ok(y) = self.predict(args) {
+            y
+        } else {
+            panic!("Error in forward propagation")
         }
     }
 }

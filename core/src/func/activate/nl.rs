@@ -2,59 +2,60 @@
     Appellation: sigmoid <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::math::Exp;
 use ndarray::*;
 use num::complex::{Complex, ComplexFloat};
-use num::{Float, Zero};
+use num::traits::Zero;
 
-pub fn relu<T>(args: &T) -> T
+fn _relu<T>(args: T) -> T
 where
-    T: Clone + PartialOrd + Zero,
+    T: PartialOrd + Zero,
 {
-    if args > &T::zero() {
-        return args.clone();
+    if args > T::zero() {
+        return args;
     }
     T::zero()
 }
 
-pub fn sigmoid<T>(args: &T) -> T
+fn _sigmoid<T>(args: T) -> T
 where
     T: ComplexFloat,
 {
-    (T::one() + (*args).neg().exp()).recip()
+    (T::one() + args.neg().exp()).recip()
 }
 
-pub fn softmax<T, D>(args: &Array<T, D>) -> Array<T, D>
+fn _softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
 where
+    A: ComplexFloat + ScalarOperand,
     D: Dimension,
-    T: Float,
+    S: Data<Elem = A>,
 {
-    let denom = args.mapv(|x| x.exp()).sum();
-    args.mapv(|x| x.exp() / denom)
+    let e = args.exp();
+    &e / e.sum()
 }
 
-pub fn softmax_axis<T, D>(args: &Array<T, D>, axis: Option<usize>) -> Array<T, D>
-where
-    D: Dimension + RemoveAxis,
-    T: NdFloat,
-{
-    let exp = args.mapv(|x| x.exp());
-    if let Some(axis) = axis {
-        let denom = exp.sum_axis(Axis(axis));
-        exp / denom
-    } else {
-        let denom = exp.sum();
-        exp / denom
-    }
-}
+// fn __softmax<T, I>(args: &I) -> I
+// where
+//     I: Clone + core::ops::Div<T, Output = I> + Exp<Output = I>, T: Exp<Output = T> + core::iter::Sum ,
+//     for<'a> I: IntoIterator<Item = &'a T>,
+// {
+//     let e = args.exp();
+//     e.clone() / e.into_iter().sum::<T>()
+// }
 
-pub fn tanh<T>(args: &T) -> T
+fn _tanh<T>(args: T) -> T
 where
     T: ComplexFloat,
 {
     args.tanh()
 }
 
-build_unary_trait!(ReLU.relu, Sigmoid.sigmoid, Softmax.softmax, Tanh.tanh,);
+unary!(
+    ReLU::relu(self),
+    Sigmoid::sigmoid(self),
+    Softmax::softmax(self),
+    Tanh::tanh(self),
+);
 
 /*
  ********** Implementations **********
@@ -73,21 +74,24 @@ macro_rules! nonlinear {
         nonlinear!(@arr $rho::$call);
     };
     (@impl $rho:ident::$call:ident<$T:ty>) => {
-        impl $rho for $T {
-            type Output = $T;
+        paste::paste! {
+            impl $rho for $T {
+                type Output = $T;
 
-            fn $call(&self) -> Self::Output {
-                $call(self)
+                fn $call(self) -> Self::Output {
+                    [<_ $call>](self)
+                }
+            }
+
+            impl<'a> $rho for &'a $T {
+                type Output = $T;
+
+                fn $call(self) -> Self::Output {
+                    [<_ $call>](*self)
+                }
             }
         }
 
-        impl<'a> $rho for &'a $T {
-            type Output = $T;
-
-            fn $call(&self) -> Self::Output {
-                $call(*self)
-            }
-        }
 
     };
     (@arr $name:ident::$call:ident) => {
@@ -99,12 +103,24 @@ macro_rules! nonlinear {
         {
             type Output = Array<<A as $name>::Output, D>;
 
-            fn $call(&self) -> Self::Output {
-                self.map($name::$call)
+            fn $call(self) -> Self::Output {
+                self.mapv($name::$call)
+            }
+        }
+
+        impl<'a, A, S, D> $name for &'a ArrayBase<S, D>
+        where
+            A: Clone + $name,
+            D: Dimension,
+            S: Data<Elem = A>
+        {
+            type Output = Array<<A as $name>::Output, D>;
+
+            fn $call(self) -> Self::Output {
+                self.mapv($name::$call)
             }
         }
     };
-
 }
 
 nonlinear!(
@@ -134,6 +150,32 @@ nonlinear!(
         f32,
         f64,
         Complex<f32>,
-        Complex < f64 >
+        Complex<f64>
     ]>,
 );
+
+impl<A, S, D> Softmax for ArrayBase<S, D>
+where
+    A: ComplexFloat + ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn softmax(self) -> Self::Output {
+        _softmax(&self)
+    }
+}
+
+impl<'a, A, S, D> Softmax for &'a ArrayBase<S, D>
+where
+    A: ComplexFloat + ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn softmax(self) -> Self::Output {
+        _softmax(self)
+    }
+}

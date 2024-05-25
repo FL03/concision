@@ -4,8 +4,9 @@
 */
 //! # Linear Models
 //!
-//! This library implements the framework for building linear models.
-//!
+//! This library works to provide the necessary tools for creating and training linear models.
+//! The primary focus is on the [Linear] model, which is a simple linear model that can be used
+//! for regression or classification tasks.
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "alloc")]
@@ -13,15 +14,17 @@ extern crate alloc;
 
 extern crate concision_core as concision;
 extern crate ndarray as nd;
-extern crate ndarray_stats as stats;
+// extern crate ndarray_stats as ndstats;
 
 pub use self::model::{Config, Features, Layout, Linear};
-pub use self::params::{mode::*, LinearParams};
+pub use self::norm::LayerNorm;
+pub use self::params::{mode::*, ParamsBase};
 #[allow(unused_imports)]
-pub use self::{traits::prelude::*, utils::*};
+pub use self::{primitives::*, traits::*, utils::*};
 
 #[macro_use]
 pub(crate) mod macros;
+pub(crate) mod primitives;
 #[macro_use]
 pub(crate) mod seal;
 pub(crate) mod utils;
@@ -33,6 +36,7 @@ pub mod dense;
 #[doc(hidden)]
 pub mod mlp;
 pub mod model;
+pub mod norm;
 pub mod params;
 pub mod traits;
 
@@ -53,6 +57,7 @@ mod impls {
 
 pub mod prelude {
     pub use crate::model::prelude::*;
+    pub use crate::norm::prelude::*;
     pub use crate::params::prelude::*;
-    pub use crate::traits::prelude::*;
+    pub use crate::traits::*;
 }

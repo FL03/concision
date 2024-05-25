@@ -4,52 +4,52 @@
 */
 pub use self::prelude::*;
 
-pub mod math;
+pub mod num;
+pub mod ops;
 pub mod predict;
+pub mod setup;
 pub mod train;
 
 pub mod arr {
     pub use self::prelude::*;
 
-    pub(crate) mod create;
-    pub(crate) mod misc;
-    pub(crate) mod ops;
+    mod create;
+    mod misc;
+    mod ops;
+    mod reshape;
 
     pub(crate) mod prelude {
         pub use super::create::*;
         pub use super::misc::*;
         pub use super::ops::*;
+        pub use super::reshape::*;
     }
 }
 
-pub(crate) mod misc {
-    pub mod adjust;
-    pub mod setup;
-    pub mod store;
+pub mod misc {
+    pub use self::prelude::*;
+
+    pub(crate) mod adjust;
+    #[doc(hidden)]
+    pub(crate) mod sequential;
+    #[doc(hidden)]
+    pub(crate) mod store;
+    pub(crate) mod toggle;
 
     pub(crate) mod prelude {
         pub use super::adjust::*;
-        pub use super::setup::*;
+        pub use super::sequential::*;
         pub use super::store::*;
+        pub use super::toggle::*;
     }
 }
 
-pub trait Transform<T> {
-    type Output;
-
-    fn transform(&self, args: &T) -> Self::Output;
-}
-
 pub(crate) mod prelude {
-    pub use super::Transform;
-
-    pub use super::math::*;
-    pub use super::predict::*;
-    pub use super::train::*;
-
     pub use super::arr::prelude::*;
     pub use super::misc::prelude::*;
+    pub use super::num::*;
+    pub use super::ops::*;
+    pub use super::predict::*;
+    pub use super::setup::*;
+    pub use super::train::*;
 }
-
-#[cfg(test)]
-mod tests {}

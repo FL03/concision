@@ -2,50 +2,52 @@
     Appellation: impl_linear <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Config, Linear, LinearParams, ParamMode};
+use crate::{Config, Linear, ParamMode, ParamsBase};
 use core::borrow::{Borrow, BorrowMut};
-use nd::RemoveAxis;
+use nd::{DataOwned, Ix2, RawData, RemoveAxis};
 
-impl<K, A> Linear<K, A>
+impl<A, K, S> Linear<A, K, Ix2, S>
 where
     K: ParamMode,
+    S: RawData<Elem = A>,
 {
     pub fn from_features(inputs: usize, outputs: usize) -> Self
     where
         A: Clone + Default,
+        S: DataOwned,
     {
         let config = Config::std(inputs, outputs);
-        let params = LinearParams::default(config.dim());
+        let params = ParamsBase::new(config.dim());
         Self { config, params }
     }
 }
 
-impl<K, A, D> Borrow<Config<D, K>> for Linear<K, A, D>
+impl<A, S, D, K> Borrow<Config<K, D>> for Linear<A, K, D, S>
 where
     D: RemoveAxis,
-    K: ParamMode,
+    S: RawData<Elem = A>,
 {
-    fn borrow(&self) -> &Config<D, K> {
+    fn borrow(&self) -> &Config<K, D> {
         &self.config
     }
 }
 
-impl<K, A, D> Borrow<LinearParams<K, A, D>> for Linear<K, A, D>
+impl<A, S, D, K> Borrow<ParamsBase<S, D, K>> for Linear<A, K, D, S>
 where
     D: RemoveAxis,
-    K: ParamMode,
+    S: RawData<Elem = A>,
 {
-    fn borrow(&self) -> &LinearParams<K, A, D> {
+    fn borrow(&self) -> &ParamsBase<S, D, K> {
         &self.params
     }
 }
 
-impl<K, A, D> BorrowMut<LinearParams<K, A, D>> for Linear<K, A, D>
+impl<A, S, D, K> BorrowMut<ParamsBase<S, D, K>> for Linear<A, K, D, S>
 where
     D: RemoveAxis,
-    K: ParamMode,
+    S: RawData<Elem = A>,
 {
-    fn borrow_mut(&mut self) -> &mut LinearParams<K, A, D> {
+    fn borrow_mut(&mut self) -> &mut ParamsBase<S, D, K> {
         &mut self.params
     }
 }

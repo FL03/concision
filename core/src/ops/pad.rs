@@ -2,134 +2,83 @@
    Appellation: pad <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::utils::*;
-use num::Zero;
-use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, VariantNames};
+pub use self::{action::PadAction, mode::PadMode, utils::*};
 
-pub trait PadItem<T> {
+pub(crate) mod action;
+pub(crate) mod mode;
+
+use nd::{Array, ArrayBase, DataOwned, Dimension};
+use num::traits::{FromPrimitive, Num};
+
+pub trait Pad<T> {
     type Output;
 
-    fn pad(&self, pad: usize) -> Self::Output;
+    fn pad(&self, mode: PadMode<T>, pad: &[[usize; 2]]) -> Self::Output;
 }
 
-// impl<T, D> Pad<T> for Array<T, D>
-// where
-//     T: Clone + Num,
-//     D: Dimension,
-// {
-//     fn pad(&self, pad: usize) -> Self {
-//         self.pad_with(pad, T::zero())
-//     }
+impl<A, S, D> Pad<A> for ArrayBase<S, D>
+where
+    A: Copy + FromPrimitive + Num,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+{
+    type Output = Array<A, D>;
 
-//     fn pad_with(&self, pad: usize, value: T) -> Self {
-//         let mut pad = vec![value; pad];
-//         pad.extend_from_slice(self);
-//         pad.extend_from_slice(&vec![value; pad.len()]);
-//         Array::from_vec(pad)
-//     }
-// }
-
-#[derive(
-    AsRefStr,
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Display,
-    EnumCount,
-    EnumIs,
-    EnumIter,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    VariantNames,
-)]
-#[repr(u8)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "snake_case", untagged)
-)]
-#[strum(serialize_all = "snake_case")]
-pub enum PadAction {
-    Clipping,
-    Lane,
-    Reflecting,
-    #[default]
-    StopAfterCopy,
-    Wrapping,
-}
-
-#[derive(Clone, Copy, Debug, Display, EnumCount, EnumIs, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "lowercase", untagged)
-)]
-pub enum PadMode<T> {
-    Constant(T),
-    Edge,
-    Maximum,
-    Mean,
-    Median,
-    Minimum,
-    Mode,
-    Reflect,
-    Symmetric,
-    Wrap,
-}
-
-impl<T> From<T> for PadMode<T> {
-    fn from(value: T) -> Self {
-        PadMode::Constant(value)
-    }
-}
-
-impl<T> PadMode<T> {
-    pub(crate) fn action(&self) -> PadAction {
-        match self {
-            PadMode::Constant(_) => PadAction::StopAfterCopy,
-            PadMode::Edge => PadAction::Clipping,
-            PadMode::Maximum => PadAction::Clipping,
-            PadMode::Mean => PadAction::Clipping,
-            PadMode::Median => PadAction::Clipping,
-            PadMode::Minimum => PadAction::Clipping,
-            PadMode::Mode => PadAction::Clipping,
-            PadMode::Reflect => PadAction::Reflecting,
-            PadMode::Symmetric => PadAction::Reflecting,
-            PadMode::Wrap => PadAction::Wrapping,
-        }
-    }
-    pub fn init(&self) -> T
-    where
-        T: Copy + Zero,
-    {
-        match *self {
-            PadMode::Constant(v) => v,
-            _ => T::zero(),
-        }
+    fn pad(&self, mode: PadMode<A>, pad: &[[usize; 2]]) -> Self::Output {
+        self::utils::pad(self, pad, mode)
     }
 }
 
 pub struct Padding<T> {
-    pub mode: PadMode<T>,
-    pub pad: usize,
+    pub(crate) action: PadAction,
+    pub(crate) mode: PadMode<T>,
+    pub(crate) pad: Vec<[usize; 2]>,
+    pub(crate) padding: usize,
+}
+
+impl<T> Padding<T> {
+    pub fn new() -> Self {
+        Self {
+            action: PadAction::default(),
+            mode: PadMode::default(),
+            pad: Vec::new(),
+            padding: 0,
+        }
+    }
+
+    pub fn pad(&self) -> &[[usize; 2]] {
+        &self.pad
+    }
+
+    pub fn with_action(mut self, action: PadAction) -> Self {
+        self.action = action;
+        self
+    }
+
+    pub fn with_mode(mut self, mode: PadMode<T>) -> Self {
+        self.mode = mode;
+        self
+    }
+
+    pub fn with_padding(mut self, padding: usize) -> Self {
+        self.padding = padding;
+        self
+    }
 }
 
 mod utils {
+    #![cfg(any(feature = "std", feature = "alloc"))]
     use super::{PadAction, PadMode};
     use crate::traits::ArrayLike;
-    use ndarray::{Array, ArrayBase, AxisDescription, Data, DataOwned, Dimension, Slice};
+    use nd::{Array, ArrayBase, AxisDescription, Data, DataOwned, Dimension, Slice};
     use num::{FromPrimitive, Num};
 
-    #[cfg(no_std)]
+    #[cfg(all(feature = "alloc", no_std))]
     use alloc::borrow::Cow;
     #[cfg(feature = "std")]
     use std::borrow::Cow;
 
-    fn read_pad(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
+    fn reader(nb_dim: usize, pad: &[[usize; 2]]) -> Cow<[[usize; 2]]> {
         if pad.len() == 1 && pad.len() < nb_dim {
             // The user provided a single padding for all dimensions
             Cow::from(vec![pad[0]; nb_dim])
@@ -146,7 +95,7 @@ mod utils {
         D: Dimension,
         S: DataOwned<Elem = A>,
     {
-        let pad = read_pad(data.ndim(), pad);
+        let pad = reader(data.ndim(), pad);
         let mut new_dim = data.raw_dim();
         for (ax, (&ax_len, pad)) in data.shape().iter().zip(pad.iter()).enumerate() {
             new_dim[ax] = ax_len + pad[0] + pad[1];
@@ -168,7 +117,7 @@ mod utils {
         D: Dimension,
         S: Data<Elem = A>,
     {
-        let pad = read_pad(data.ndim(), pad);
+        let pad = reader(data.ndim(), pad);
 
         // Select portion of padded array that needs to be copied from the original array.
         output

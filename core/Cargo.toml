@@ -30,6 +30,7 @@ alloc = [
     "num/alloc",
     "rand?/alloc",
     "rand_distr?/alloc",
+    "scsys/alloc",
     "serde?/alloc",
 ]
 
@@ -55,7 +56,7 @@ rand-ext = [
     "uuid/v4",
 ]
 
-rng_std = [
+std-rng = [
     "rand?/std",
     "rand?/std_rng",
 ]
@@ -66,6 +67,7 @@ serde = [
     "num/serde",
     "rand?/serde1",
     "rand_distr?/serde1",
+    "scsys/serde",
     "uuid/serde"
 ]
 
@@ -80,15 +82,18 @@ tracing = [
 # ********* [FF] Environments *********
 std = [
     "alloc",
+    "std-rng",
     "ndarray/std",
     "num/std",
-    "rng_std",
+    "scsys/std",
     "serde/std",
     "strum/std",
     "uuid/std"
 ]
 
-wasm = []
+wasm = [
+    "getrandom/js",
+]
 
 wasi = []
 
@@ -98,15 +103,29 @@ crate-type = ["lib"]
 doctest = false
 test = true
 
+
+
 [[test]]
 name = "fft"
 required-features = ["approx"]
 
+[[test]]
+name = "init"
+required-features = ["rand", "std"]
+
+[[test]]
+name = "nn"
+
 [build-dependencies]
+
+[dev-dependencies]
+lazy_static.workspace = true
 
 [dependencies]
 ndarray.workspace = true
 num.workspace = true
+paste.workspace = true
+scsys.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
@@ -143,13 +162,11 @@ default-features = false
 features = ["v5", "v8"]
 version = "1"
 
-[dev-dependencies]
-lazy_static = "1"
-
 [package.metadata.docs.rs]
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
 
-[target.wasm32-unknown-unknown]
+[target.wasm32-unknown-unknown.dependencies]
+getrandom = "0.2"
 
 [target.wasm32-wasi]
