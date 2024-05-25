@@ -61,7 +61,7 @@ linear = [
 ]
 
 transformer = [
-    "dep:concision-transformers",
+    "dep:concision-transformer",
 ]
 
 
@@ -72,7 +72,7 @@ alloc = [
     "concision-gnn?/alloc",
     "concision-kan?/alloc",
     "concision-linear?/alloc",
-    "concision-transformers?/alloc",
+    "concision-transformer?/alloc",
 ]
 
 approx = [
@@ -81,7 +81,7 @@ approx = [
     "concision-gnn?/approx",
     "concision-kan?/approx",
     "concision-linear?/approx",
-    "concision-transformers?/approx",
+    "concision-transformer?/approx",
 ]
 
 rand = [
@@ -90,7 +90,7 @@ rand = [
     "concision-gnn?/rand",
     "concision-kan?/rand",
     "concision-linear?/rand",
-    "concision-transformers?/rand",
+    "concision-transformer?/rand",
 ]
 
 serde = [
@@ -99,7 +99,7 @@ serde = [
     "concision-gnn?/serde",
     "concision-kan?/serde",
     "concision-linear?/serde",
-    "concision-transformers?/serde",
+    "concision-transformer?/serde",
 ]
 
 tracing = [
@@ -108,7 +108,7 @@ tracing = [
     "concision-gnn?/tracing",
     "concision-kan?/tracing",
     "concision-linear?/tracing",
-    "concision-transformers?/tracing",
+    "concision-transformer?/tracing",
 ]
 
 # ********* [FF] Environment(s) *********
@@ -119,7 +119,7 @@ std = [
     "concision-gnn?/std",
     "concision-kan?/std",
     "concision-linear?/std",
-    "concision-transformers?/std",
+    "concision-transformer?/std",
 ]
 
 wasm = [
@@ -128,7 +128,7 @@ wasm = [
     "concision-gnn?/wasm",
     "concision-kan?/wasm",
     "concision-linear?/wasm",
-    "concision-transformers?/wasm",
+    "concision-transformer?/wasm",
 ]
 
 wasi = [    
@@ -137,7 +137,7 @@ wasi = [
     "concision-gnn?/wasi",
     "concision-kan?/wasi",
     "concision-linear?/wasi",
-    "concision-transformers?/wasi",
+    "concision-transformer?/wasi",
 ]
 
 # ********* [FF] Blas *********
@@ -147,7 +147,7 @@ blas = [
     "concision-gnn?/blas",
     "concision-kan?/blas",
     "concision-linear?/blas",
-    "concision-transformers?/blas",
+    "concision-transformer?/blas",
 ]
 
 intel-mkl-system = [
@@ -226,7 +226,7 @@ optional = true
 path = "../models/linear"
 version = "0.1.14"
 
-[dependencies.concision-transformers]
+[dependencies.concision-transformer]
 optional = true
 path = "../models/transformers"
 version = "0.1.14"

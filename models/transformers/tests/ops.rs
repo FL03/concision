@@ -3,12 +3,12 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 extern crate concision_core as concision;
-extern crate concision_transformers as transformers;
+extern crate concision_transformer as transformer;
 extern crate ndarray as nd;
 
 use concision::linarr;
 use nd::prelude::*;
-use transformers::ops::*;
+use transformer::ops::*;
 
 pub const HEADS: usize = 2;
 pub const ORDER: nd::Order = nd::Order::RowMajor;

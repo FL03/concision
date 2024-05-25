@@ -3,10 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 extern crate concision_core as concision;
-extern crate concision_transformers as transformers;
+extern crate concision_transformer as transformer;
 
 use approx::AbsDiffEq;
-use transformers::AttentionHead;
+use transformer::AttentionHead;
 
 use ndarray::prelude::*;
 

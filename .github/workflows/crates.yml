@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        features: [ kan, gnn, linear ]
+        features: [ kan, gnn, linear, transformer ]
     steps:
       - uses: actions/checkout@v4
       - name: Publish (${{ github.event.repository.name }}-${{ matrix.features }})

@@ -29,7 +29,7 @@ pub use concision_linear as linear;
 pub use concision_macros::*;
 #[cfg(feature = "transformer")]
 #[doc(inline)]
-pub use concision_transformers as transformer;
+pub use concision_transformer as transformer;
 
 pub mod prelude {
     pub use concision_core::prelude::*;
@@ -46,5 +46,5 @@ pub mod prelude {
     #[cfg(feature = "macros")]
     pub use concision_macros::*;
     #[cfg(feature = "transformer")]
-    pub use concision_transformers::prelude::*;
+    pub use concision_transformer::prelude::*;
 }
