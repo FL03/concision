@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::attention::{Score, _attention};
-use concision::nn::DropoutLayer;
+use concision::nn::Dropout;
 use concision::{dimensional, getters};
 use nd::linalg::Dot;
 use nd::*;
@@ -88,6 +88,12 @@ where
     qkv_view!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
 }
 
+impl<A, S> QkvBase<S, Ix2> where S: RawData<Elem = A> {
+    pub fn std(dk: usize, d_model: usize) -> Self where A: Default, S: DataOwned {
+        Self::new((dk, d_model))
+    }
+}
+
 #[cfg(not(feature = "rand"))]
 impl<A, S, D> QkvBase<S, D>
 where
@@ -123,7 +129,7 @@ where
         ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
-        let dropout = dropout.map(DropoutLayer::new);
+        let dropout = dropout.map(Dropout::new);
         let (q, k, v) = self.qkv();
         _attention(q, k, v, mask, dropout.as_ref())
     }

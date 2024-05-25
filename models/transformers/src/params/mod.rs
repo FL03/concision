@@ -2,9 +2,9 @@
     Appellation: params <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{item::*, store::QkvBase};
+pub use self::{item::*, qkv::QkvBase};
 
-mod store;
+mod qkv;
 
 pub mod item;
 
@@ -31,7 +31,7 @@ params_ty!(
 
 #[allow(unused_imports)]
 pub(crate) mod prelude {
-    pub use super::item::{Entry, QKV};
-    pub use super::store::QkvBase;
+    pub use super::item::QKV;
+    pub use super::qkv::QkvBase;
     pub use super::{ArcQkv, Qkv, ViewQkv};
 }

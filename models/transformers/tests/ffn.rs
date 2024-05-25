@@ -8,14 +8,14 @@ extern crate concision_transformer as transformer;
 
 use concision::prelude::{linarr, Predict};
 use linear::Biased;
-use transformer::ffn::FeedForwardNetwork;
+use transformer::model::ffn::FeedForwardNetwork;
 
 use ndarray::prelude::*;
 
 #[test]
 fn test_ffn() {
     let (samples, d_model, d_ff) = (100, 30, 3);
-    let model = FeedForwardNetwork::<f64, Ix2, Biased>::new(d_model, d_ff, Some(0.1));
+    let model = FeedForwardNetwork::<f64, Biased>::std(d_model, d_ff, Some(0.1));
 
     let data = linarr::<f64, Ix2>((samples, d_model)).unwrap();
 

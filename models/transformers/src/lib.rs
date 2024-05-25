@@ -18,13 +18,7 @@ extern crate concision_linear as linear;
 extern crate ndarray as nd;
 
 #[doc(inline)]
-pub use self::attention::prelude::{
-    scaled_dot_product_attention, AttentionHead, MultiHeadAttention,
-};
-#[doc(inline)]
-pub use self::transformer::Transformer;
-#[doc(inline)]
-pub use self::{params::*, primitives::*};
+pub use self::{attention::prelude::*, params::prelude::*, ops::prelude::*, primitives::*, transformer::Transformer};
 
 #[macro_use]
 pub(crate) mod macros;
@@ -33,7 +27,7 @@ pub(crate) mod transformer;
 
 pub mod attention;
 pub mod codec;
-pub mod ffn;
+pub mod config;
 pub mod model;
 pub mod ops;
 pub mod params;
@@ -46,5 +40,6 @@ mod impls {
 
 pub mod prelude {
     pub use super::attention::prelude::*;
+    pub use super::params::prelude::*;
     pub use super::Transformer;
 }

@@ -2,32 +2,40 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{DropoutLayer, Forward, Predict, PredictError, ReLU};
+use concision::prelude::{Dropout, Forward, Predict, PredictError, ReLU};
 use linear::{Biased, Linear, ParamMode};
 use nd::prelude::*;
 use nd::{RemoveAxis, ScalarOperand};
 use num::traits::Num;
 
-// 
-pub struct FeedForwardNetwork<A = f64, D = Ix2, K = Biased>
+// #84: FeedForwardNetwork
+/// A piecewise, feed-forward neural network consisting of two [Linear] layers with a ReLU activation function
+/// optionally (and conditionally) supporting an [Dropout] layer.
+///
+/// ### Shape
+///
+/// - d_model: Embedding size
+/// - d_ff: upward projection
+///
+pub struct FeedForwardNetwork<A = f64, K = Biased, D = Ix2>
 where
     D: Dimension,
 {
     #[cfg(feature = "rand")]
-    pub(crate) dropout: Option<DropoutLayer>,
+    pub(crate) dropout: Option<Dropout>,
     pub(crate) input: Linear<A, K, D>,
     pub(crate) output: Linear<A, K, D>,
 }
 
-impl<A, K> FeedForwardNetwork<A, Ix2, K>
+impl<A, K> FeedForwardNetwork<A, K, Ix2>
 where
     K: ParamMode,
 {
-    pub fn new(d_model: usize, features: usize, dropout: Option<f64>) -> Self
+    pub fn std(d_model: usize, features: usize, dropout: Option<f64>) -> Self
     where
         A: Clone + Default,
     {
-        let dropout = dropout.map(|p| DropoutLayer::new(p));
+        let dropout = dropout.map(|p| Dropout::new(p));
         let input = Linear::from_features(d_model, features);
         let output = Linear::from_features(features, d_model);
         Self {
@@ -38,7 +46,7 @@ where
     }
 }
 
-impl<A, D, K> FeedForwardNetwork<A, D, K>
+impl<A, D, K> FeedForwardNetwork<A, K, D>
 where
     D: Dimension,
 {
@@ -52,26 +60,26 @@ where
 }
 
 #[cfg(feature = "rand")]
-impl<A, D, K> FeedForwardNetwork<A, D, K>
+impl<A, D, K> FeedForwardNetwork<A, K, D>
 where
     D: Dimension,
 {
-    pub fn dropout(&self) -> Option<&DropoutLayer> {
+    pub fn dropout(&self) -> Option<&Dropout> {
         self.dropout.as_ref()
     }
 }
 
 #[cfg(not(feature = "rand"))]
-impl<A, D, K> FeedForwardNetwork<A, D, K>
+impl<A, D, K> FeedForwardNetwork<A, K, D>
 where
     D: Dimension,
 {
-    pub fn dropout(&self) -> Option<&DropoutLayer> {
+    pub fn dropout(&self) -> Option<&Dropout> {
         None
     }
 }
 
-impl<A, B, D, E, K> Predict<Array<B, E>> for FeedForwardNetwork<A, D, K>
+impl<A, B, D, E, K> Predict<Array<B, E>> for FeedForwardNetwork<A, K, D>
 where
     B: Num + PartialOrd + ScalarOperand,
     D: RemoveAxis,
