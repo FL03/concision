@@ -71,7 +71,7 @@ macro_rules! nonlinear {
             nonlinear!(@impl $rho::$call<$T>);
         )*
 
-        nonlinear!(@arr $rho::$call);
+        // nonlinear!(@arr $rho::$call);
     };
     (@impl $rho:ident::$call:ident<$T:ty>) => {
         paste::paste! {
@@ -123,6 +123,40 @@ macro_rules! nonlinear {
     };
 }
 
+macro_rules! nonlinear_rho {
+    ($name:ident::$call:ident where A: $($rest:tt)* ) => {
+
+        paste::paste! {
+            impl<A, S, D> $name for ArrayBase<S, D>
+            where
+                D: Dimension,
+                S: Data<Elem = A>,
+                A: Clone + $($rest)*
+            {
+                type Output = Array<A, D>;
+
+                fn $call(self) -> Self::Output {
+                    self.mapv([<_ $call>])
+                }
+            }
+
+            impl<'a, A, S, D> $name for &'a ArrayBase<S, D>
+            where
+                D: Dimension,
+                S: Data<Elem = A>,
+                A: Clone + $($rest)*
+            {
+                type Output = Array<A, D>;
+
+                fn $call(self) -> Self::Output {
+                    self.mapv([<_ $call>])
+                }
+            }
+        }
+
+    };
+}
+
 nonlinear!(
     ReLU::relu<[
         f32,
@@ -153,6 +187,23 @@ nonlinear!(
         Complex<f64>
     ]>,
 );
+
+nonlinear_rho!(ReLU::relu where A: PartialOrd + Zero);
+nonlinear_rho!(Sigmoid::sigmoid where A: ComplexFloat);
+nonlinear_rho!(Tanh::tanh where A: ComplexFloat);
+
+// impl<A, S, D> ReLU for ArrayBase<S, D>
+// where
+//     A: Clone + PartialOrd + Zero,
+//     D: Dimension,
+//     S: Data<Elem = A>,
+// {
+//     type Output = Array<A, D>;
+
+//     fn relu(self) -> Self::Output {
+//         self.mapv(_relu)
+//     }
+// }
 
 impl<A, S, D> Softmax for ArrayBase<S, D>
 where

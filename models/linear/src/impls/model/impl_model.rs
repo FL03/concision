@@ -26,6 +26,24 @@ where
     }
 }
 
+// impl<U, V, A, K, D> concision::Forward<U> for Linear<A, K, D>
+// where
+//     D: RemoveAxis,
+//     LinearParams<A, K, D>: concision::Forward<U, Output = V>,
+// {
+//     type Output = V;
+
+//     #[cfg_attr(
+//         feature = "tracing",
+//         tracing::instrument(skip_all, level = "debug", name = "predict", target = "linear")
+//     )]
+//     fn forward(&self, input: &U) -> Self::Output {
+//         #[cfg(feature = "tracing")]
+//         tracing::debug!("Predicting with linear model");
+//         self.params().forward(input)
+//     }
+// }
+
 impl<U, V, A, K, D> Predict<U> for Linear<A, K, D>
 where
     D: RemoveAxis,
