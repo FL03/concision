@@ -12,6 +12,7 @@ extern crate ndarray as nd;
 extern crate ndarray_rand as ndrand;
 
 pub use self::error::{Error, ErrorKind, PredictError};
+pub use self::func::Activate;
 pub use self::nn::Module;
 pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::prelude::*};
 

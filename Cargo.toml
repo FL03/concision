@@ -43,6 +43,7 @@ members = [
     "models/linear",
     "models/gnn",
     "models/kan", 
+    "models/s4",
     "models/transformers",
 ]
 
