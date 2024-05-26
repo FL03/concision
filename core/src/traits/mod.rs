@@ -6,6 +6,7 @@ pub use self::prelude::*;
 
 pub mod num;
 pub mod ops;
+pub mod params;
 pub mod predict;
 pub mod setup;
 pub mod train;
@@ -49,6 +50,7 @@ pub(crate) mod prelude {
     pub use super::misc::prelude::*;
     pub use super::num::*;
     pub use super::ops::*;
+    pub use super::params::*;
     pub use super::predict::*;
     pub use super::setup::*;
     pub use super::train::*;

@@ -77,12 +77,11 @@ wasi = [
 
 [lib]
 crate-type = ["lib"]
-doctest = false
+doctest = true
 test = true
 
 [[test]]
-name = "params"
-required-features = ["std"]
+name = "default"
 
 [build-dependencies]
 

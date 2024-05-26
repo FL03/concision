@@ -18,6 +18,6 @@ fn test_perceptron() {
     let features = Features::new(1, 300);
     let data = linarr::<f64, Ix2>((samples, features.dmodel())).unwrap();
     let layer = Linear::<f64, Biased>::lecun_normal(features, 1);
-    let mlp = Perceptron::<f64, Biased>::new(layer.clone(), mlp::ReLU);
+    let mlp = Perceptron::new(layer.clone(), mlp::Relu);
     assert_eq!(mlp.forward(&data), layer.forward(&data).relu());
 }

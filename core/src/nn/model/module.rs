@@ -2,18 +2,18 @@
    Appellation: modules <traits::nn>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Config, Predict};
+use crate::{Config, Params, Predict};
 
 pub type ModuleDyn<C, P> = Box<dyn Module<Config = C, Params = P>>;
-pub type DynModuleExt<X, Y, C, P> = Box<dyn ModuleExt<X, Config = C, Output = Y, Params = P>>;
-pub type Stack<X, Y, C, P> = Vec<Box<dyn ModuleExt<X, Config = C, Output = Y, Params = P>>>;
+pub type DynModuleExt<X, Y, C, P> = Box<dyn Layer<X, Config = C, Output = Y, Params = P>>;
+pub type Stack<X, Y, C, P> = Vec<Box<dyn Layer<X, Config = C, Output = Y, Params = P>>>;
 
 /// A `Module` defines any object that may be used as a layer in a neural network.
-/// [Config](Module::Config) is a type that defines the configuration of the module; including any and all hyperparameters.
-/// [Params](Module::Params) is a type that defines the parameters of the module; typically references a Linear set of parameters { weights, bias }
+/// [Config](Module::Config) contains all of the hyperparameters for the model.
+/// [Params](Module::Params) refers to an object used to store the various learnable parameters.
 pub trait Module {
     type Config: Config;
-    type Params;
+    type Params: Params;
 
     fn config(&self) -> &Self::Config;
 
@@ -22,6 +22,10 @@ pub trait Module {
     fn params_mut(&mut self) -> &mut Self::Params;
 }
 
-pub trait ModuleExt<T>: Module + Predict<T> {}
+pub trait Layer<T>: Module + Predict<T> {}
 
-impl<T, M> ModuleExt<T> for M where M: Module + Predict<T> {}
+/*
+ ************* Implementations *************
+*/
+
+impl<T, M> Layer<T> for M where M: Module + Predict<T> {}

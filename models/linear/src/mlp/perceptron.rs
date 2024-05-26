@@ -2,14 +2,33 @@
    Appellation: perceptron <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Biased, Linear};
-use concision::prelude::{relu, Activate, Predict, PredictError};
+use concision::prelude::{Activate, Module, Predict, PredictError, ReLU};
 use nd::prelude::*;
 use nd::Data;
 use num::traits::Zero;
-pub struct ReLU;
 
-impl<A, S, D> Activate<ArrayBase<S, D>> for ReLU
+pub struct Rho<T>(T);
+
+impl<T> Rho<T> {
+    pub fn new(rho: T) -> Self {
+        Self(rho)
+    }
+
+    pub fn get(&self) -> &T {
+        &self.0
+    }
+
+    pub fn get_mut(&mut self) -> &mut T {
+        &mut self.0
+    }
+
+    pub fn activate(&self) -> &T {
+        &self.0
+    }
+}
+pub struct Relu;
+
+impl<A, S, D> Activate<ArrayBase<S, D>> for Relu
 where
     A: Clone + PartialOrd + Zero,
     D: Dimension,
@@ -18,11 +37,11 @@ where
     type Output = Array<A, D>;
 
     fn activate(&self, args: ArrayBase<S, D>) -> Self::Output {
-        args.mapv(relu)
+        args.relu()
     }
 }
 
-impl<'a, A, S, D> Activate<&'a ArrayBase<S, D>> for ReLU
+impl<'a, A, S, D> Activate<&'a ArrayBase<S, D>> for Relu
 where
     A: Clone + PartialOrd + Zero,
     D: Dimension,
@@ -31,23 +50,23 @@ where
     type Output = Array<A, D>;
 
     fn activate(&self, args: &'a ArrayBase<S, D>) -> Self::Output {
-        args.mapv(relu)
+        args.relu()
     }
 }
 
-pub struct Perceptron<A = f64, K = Biased, D = Ix2, F = ReLU>
+pub struct Perceptron<M, F = Relu>
 where
-    D: Dimension,
+    M: Module,
 {
-    module: Linear<A, K, D>,
+    module: M,
     rho: F,
 }
 
-impl<A, K, D, F> Perceptron<A, K, D, F>
+impl<M, F> Perceptron<M, F>
 where
-    D: Dimension,
+    M: Module,
 {
-    pub fn new(module: Linear<A, K, D>, rho: F) -> Self {
+    pub fn new(module: M, rho: F) -> Self {
         Self { module, rho }
     }
 
@@ -59,11 +78,10 @@ where
     }
 }
 
-impl<X, Y, Z, A, K, D, F> Predict<X> for Perceptron<A, K, D, F>
+impl<X, Y, Z, M, F> Predict<X> for Perceptron<M, F>
 where
-    D: Dimension,
     F: for<'a> Activate<&'a Y, Output = Z>,
-    Linear<A, K, D>: Predict<X, Output = Y>,
+    M: Module + Predict<X, Output = Y>,
 {
     type Output = Z;
 

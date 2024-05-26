@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::ParamsBase;
-use concision::prelude::{Predict, PredictError};
+use concision::prelude::{Params, Predict, PredictError};
 use core::ops::Add;
 use nd::linalg::Dot;
 use nd::*;
@@ -22,6 +22,14 @@ where
     {
         f(&self.predict(args).unwrap())
     }
+}
+
+impl<A, S, D, K> Params for ParamsBase<S, D, K>
+where
+    D: RemoveAxis,
+    S: RawData<Elem = A>,
+{
+    type Elem = A;
 }
 
 impl<A, S, D> Clone for ParamsBase<S, D>
