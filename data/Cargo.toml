@@ -80,10 +80,9 @@ crate-type = ["lib"]
 doctest = true
 test = true
 
-[[test]]
-name = "default"
-
 [build-dependencies]
+
+[dev-dependencies]
 
 [dependencies]
 itertools.workspace = true
@@ -110,8 +109,6 @@ version = "1"
 [dependencies.tracing]
 optional = true
 version = "0.1"
-
-[dev-dependencies]
 
 [package.metadata.docs.rs]
 all-features = true

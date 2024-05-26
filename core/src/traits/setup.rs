@@ -7,6 +7,14 @@ use core::borrow::{Borrow, BorrowMut};
 /// A trait used to denote objects that may be used for configuring various items
 pub trait Config {}
 
+pub trait CompositConfig: Config {
+    type Ctx: Config;
+
+    fn children(&self) -> Vec<Box<dyn Config>>;
+
+    fn context(&self) -> Self::Ctx;
+}
+
 /// [Configuration] describes composite configuration objects;
 /// A configuration object is allowed to inherit from another configuration object
 pub trait Configuration<C>

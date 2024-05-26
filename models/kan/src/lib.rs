@@ -22,6 +22,10 @@ extern crate alloc;
 extern crate concision_core as concision;
 extern crate ndarray as nd;
 
+#[doc(inline)]
+pub use self::actor::Actor;
+
+pub mod actor;
 pub mod model;
 
 pub mod prelude {}
