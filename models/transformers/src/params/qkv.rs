@@ -88,8 +88,15 @@ where
     qkv_view!(view_mut::<'a, ViewRepr>(&mut self) where S: DataMut);
 }
 
-impl<A, S> QkvBase<S, Ix2> where S: RawData<Elem = A> {
-    pub fn std(dk: usize, d_model: usize) -> Self where A: Default, S: DataOwned {
+impl<A, S> QkvBase<S, Ix2>
+where
+    S: RawData<Elem = A>,
+{
+    pub fn std(dk: usize, d_model: usize) -> Self
+    where
+        A: Default,
+        S: DataOwned,
+    {
         Self::new((dk, d_model))
     }
 }

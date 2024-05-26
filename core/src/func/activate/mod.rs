@@ -15,7 +15,6 @@ pub(crate) mod prelude {
     pub use super::{Activate, Evaluate};
 }
 
-#[doc(hidden)]
 pub trait Activate<T> {
     type Output;
 
@@ -30,3 +29,14 @@ pub trait Evaluate<T> {
 }
 
 activator!(LinearActor::<T>(T::clone) where T: Clone);
+
+impl<F, U, V> Activate<U> for F
+where
+    F: for<'a> Fn(&'a U) -> V,
+{
+    type Output = V;
+
+    fn activate(&self, args: &U) -> Self::Output {
+        self(args)
+    }
+}

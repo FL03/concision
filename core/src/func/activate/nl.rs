@@ -7,7 +7,7 @@ use nd::*;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::Zero;
 
-fn _relu<T>(args: T) -> T
+pub fn relu<T>(args: T) -> T
 where
     T: PartialOrd + Zero,
 {
@@ -17,14 +17,14 @@ where
     T::zero()
 }
 
-fn _sigmoid<T>(args: T) -> T
+pub fn sigmoid<T>(args: T) -> T
 where
     T: ComplexFloat,
 {
     (T::one() + args.neg().exp()).recip()
 }
 
-fn _softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
+pub fn softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
 where
     A: ComplexFloat + ScalarOperand,
     D: Dimension,
@@ -34,7 +34,7 @@ where
     &e / e.sum()
 }
 
-fn _softmax_axis<A, S, D>(args: &ArrayBase<S, D>, axis: usize) -> Array<A, D>
+pub fn softmax_axis<A, S, D>(args: &ArrayBase<S, D>, axis: usize) -> Array<A, D>
 where
     A: ComplexFloat + ScalarOperand,
     D: RemoveAxis,
@@ -45,7 +45,7 @@ where
     &e / &e.sum_axis(axis)
 }
 
-fn _tanh<T>(args: T) -> T
+pub fn tanh<T>(args: T) -> T
 where
     T: ComplexFloat,
 {
@@ -61,6 +61,8 @@ unary!(
 
 pub trait SoftmaxAxis {
     type Output;
+
+    fn softmax(self) -> Self::Output;
 
     fn softmax_axis(self, axis: usize) -> Self::Output;
 }
@@ -92,23 +94,22 @@ macro_rules! nonlinear {
         // nonlinear!(@arr $rho::$call);
     };
     (@impl $rho:ident::$call:ident<$T:ty>) => {
-        paste::paste! {
-            impl $rho for $T {
-                type Output = $T;
+        impl $rho for $T {
+            type Output = $T;
 
-                fn $call(self) -> Self::Output {
-                    [<_ $call>](self)
-                }
-            }
-
-            impl<'a> $rho for &'a $T {
-                type Output = $T;
-
-                fn $call(self) -> Self::Output {
-                    [<_ $call>](*self)
-                }
+            fn $call(self) -> Self::Output {
+                $call(self)
             }
         }
+
+        impl<'a> $rho for &'a $T {
+            type Output = $T;
+
+            fn $call(self) -> Self::Output {
+                $call(*self)
+            }
+        }
+
 
 
     };
@@ -143,8 +144,6 @@ macro_rules! nonlinear {
 
 macro_rules! nonlinear_rho {
     ($name:ident::$call:ident where A: $($rest:tt)* ) => {
-
-        paste::paste! {
             impl<A, S, D> $name for ArrayBase<S, D>
             where
                 D: Dimension,
@@ -154,7 +153,7 @@ macro_rules! nonlinear_rho {
                 type Output = Array<A, D>;
 
                 fn $call(self) -> Self::Output {
-                    self.mapv([<_ $call>])
+                    self.mapv($call)
                 }
             }
 
@@ -167,11 +166,9 @@ macro_rules! nonlinear_rho {
                 type Output = Array<A, D>;
 
                 fn $call(self) -> Self::Output {
-                    self.mapv([<_ $call>])
+                    self.mapv($call)
                 }
             }
-        }
-
     };
 }
 
@@ -232,7 +229,7 @@ where
     type Output = Array<A, D>;
 
     fn softmax(self) -> Self::Output {
-        _softmax(&self)
+        softmax(&self)
     }
 }
 
@@ -245,7 +242,7 @@ where
     type Output = Array<A, D>;
 
     fn softmax(self) -> Self::Output {
-        _softmax(self)
+        softmax(self)
     }
 }
 
@@ -257,8 +254,12 @@ where
 {
     type Output = Array<A, D>;
 
+    fn softmax(self) -> Self::Output {
+        softmax(&self)
+    }
+
     fn softmax_axis(self, axis: usize) -> Self::Output {
-        _softmax_axis(&self, axis)
+        softmax_axis(&self, axis)
     }
 }
 
@@ -270,7 +271,11 @@ where
 {
     type Output = Array<A, D>;
 
+    fn softmax(self) -> Self::Output {
+        softmax(self)
+    }
+
     fn softmax_axis(self, axis: usize) -> Self::Output {
-        _softmax_axis(&self, axis)
+        softmax_axis(&self, axis)
     }
 }

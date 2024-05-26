@@ -2,21 +2,39 @@
    Appellation: perceptron <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{Module, Predict, PredictError};
+use crate::{Biased, Linear};
+use concision::prelude::{Predict, PredictError};
+use nd::prelude::*;
+use num::Zero;
 
-pub struct Perceptron<F, M>
+pub struct ReLU;
+
+impl ReLU {
+    pub fn new() -> Self {
+        Self
+    }
+
+    pub fn activate<T>(&self, args: &T) -> T
+    where
+        T: Clone + PartialOrd + Zero,
+    {
+        concision::func::relu(args.clone())
+    }
+}
+
+pub struct Perceptron<F = ReLU, A = f64, K = Biased, D = Ix2>
 where
-    M: Module,
+    D: Dimension,
 {
-    module: M,
+    module: Linear<A, K, D>,
     rho: F,
 }
 
-impl<F, M> Perceptron<F, M>
+impl<F, A, K, D> Perceptron<F, A, K, D>
 where
-    M: Module,
+    D: Dimension,
 {
-    pub fn new(module: M, rho: F) -> Self {
+    pub fn new(module: Linear<A, K, D>, rho: F) -> Self {
         Self { module, rho }
     }
 
@@ -28,10 +46,11 @@ where
     }
 }
 
-impl<X, Y, F, M> Predict<X> for Perceptron<F, M>
+impl<X, Y, F, A, K, D> Predict<X> for Perceptron<F, A, K, D>
 where
+    D: Dimension,
     F: for<'a> Fn(&'a Y) -> Y,
-    M: Predict<X, Output = Y> + Module,
+    Linear<A, K, D>: Predict<X, Output = Y>,
 {
     type Output = Y;
 
