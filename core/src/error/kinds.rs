@@ -30,7 +30,7 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, VariantNames};
     serde(rename_all = "lowercase", tag = "kind")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum ErrorKind {
+pub enum Errors {
     IO,
     External(ExternalError),
     Predict(PredictError),
@@ -53,8 +53,8 @@ macro_rules! from_err {
     };
 }
 
-from_err!(ErrorKind:
-    ErrorKind::External(ExternalError),
-    ErrorKind::Model(ModelError),
-    ErrorKind::Predict(PredictError),
+from_err!(Errors:
+    Errors::External(ExternalError),
+    Errors::Model(ModelError),
+    Errors::Predict(PredictError),
 );

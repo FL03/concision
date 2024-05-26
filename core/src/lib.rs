@@ -11,7 +11,7 @@ extern crate ndarray as nd;
 #[cfg(feature = "rand")]
 extern crate ndarray_rand as ndrand;
 
-pub use self::error::{Error, ErrorKind, PredictError};
+pub use self::error::{Error, Errors, PredictError};
 pub use self::func::Activate;
 pub use self::nn::Module;
 pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::prelude::*};

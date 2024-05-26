@@ -2,19 +2,19 @@
     Appellation: err <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::ErrorKind;
+use super::Errors;
 use crate::uuid;
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize,))]
 pub struct Error {
     id: String,
-    kind: ErrorKind,
+    kind: Errors,
     message: String,
 }
 
 impl Error {
-    pub fn new(kind: ErrorKind, message: impl ToString) -> Self {
+    pub fn new(kind: Errors, message: impl ToString) -> Self {
         Self {
             id: uuid().to_string(),
             kind,
@@ -24,7 +24,7 @@ impl Error {
 
     pub fn from_kind<K>(kind: K) -> Self
     where
-        K: Into<ErrorKind>,
+        K: Into<Errors>,
     {
         Self::new(kind.into(), "")
     }
@@ -33,7 +33,7 @@ impl Error {
         &self.id
     }
 
-    pub fn kind(&self) -> &ErrorKind {
+    pub fn kind(&self) -> &Errors {
         &self.kind
     }
 
@@ -55,15 +55,15 @@ impl core::fmt::Display for Error {
 #[cfg(feature = "std")]
 impl std::error::Error for Error {}
 
-impl From<ErrorKind> for Error {
-    fn from(kind: ErrorKind) -> Self {
+impl From<Errors> for Error {
+    fn from(kind: Errors) -> Self {
         Self::from_kind(kind)
     }
 }
 
 impl<'a, K> From<&'a K> for Error
 where
-    K: Clone + Into<ErrorKind>,
+    K: Clone + Into<Errors>,
 {
     fn from(kind: &'a K) -> Self {
         Self::from_kind(kind.clone())

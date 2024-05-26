@@ -2,8 +2,9 @@
    Appellation: error <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use crate::error::ErrorKind;
 use smart_default::SmartDefault;
-use strum::{AsRefStr, EnumCount, EnumIs, EnumIter, VariantNames};
+use strum::{AsRefStr, EnumCount, EnumIs, VariantNames};
 
 #[derive(
     AsRefStr,
@@ -11,7 +12,6 @@ use strum::{AsRefStr, EnumCount, EnumIs, EnumIter, VariantNames};
     Debug,
     EnumCount,
     EnumIs,
-    EnumIter,
     Eq,
     Hash,
     Ord,
@@ -26,23 +26,23 @@ use strum::{AsRefStr, EnumCount, EnumIs, EnumIter, VariantNames};
     serde(rename_all = "lowercase", untagged)
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum ExternalError {
-    Error(String),
+pub enum ExternalError<E = String> {
+    Error(E),
     #[default]
     Unknown,
 }
 
-impl ExternalError {
-    pub fn new(err: impl ToString) -> Self {
-        let err = err.to_string();
-        if err.is_empty() {
-            return Self::unknown();
+impl<E> ExternalError<E> {
+    pub fn new(err: Option<E>) -> Self {
+        if let Some(err) = err {
+            Self::error(err)
+        } else {
+            Self::unknown()
         }
-        Self::error(err)
     }
 
-    pub fn error(err: impl ToString) -> Self {
-        ExternalError::Error(err.to_string())
+    pub fn error(err: impl Into<E>) -> Self {
+        ExternalError::Error(err.into())
     }
 
     pub fn unknown() -> Self {
@@ -50,7 +50,9 @@ impl ExternalError {
     }
 }
 
-impl core::fmt::Display for ExternalError {
+impl<E> ErrorKind for ExternalError<E> where E: Clone + ToString {}
+
+impl<E> core::fmt::Display for ExternalError<E> where E: ToString {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         let msg = match self {
             ExternalError::Error(ref err) => err.to_string(),

@@ -8,14 +8,14 @@ mod err;
 
 pub mod kinds;
 
-pub trait ErrKind {}
+pub trait ErrorKind: Clone + ToString {}
 
 macro_rules! impl_error_type {
     ($($ty:ty),* $(,)*) => {
         $(impl_error_type!(@impl $ty);)*
     };
     (@impl $ty:ty) => {
-        impl ErrKind for $ty {}
+        impl ErrorKind for $ty {}
 
         impl_error_type!(@std $ty);
     };
@@ -27,8 +27,7 @@ macro_rules! impl_error_type {
 }
 
 impl_error_type!(
-    kinds::ErrorKind,
-    kinds::ExternalError,
+    kinds::Errors,
     kinds::PredictError,
     crate::nn::ModelError
 );
