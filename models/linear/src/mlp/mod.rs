@@ -8,9 +8,13 @@
 //!
 //!
 #[doc(inline)]
-pub use self::perceptron::Perceptron;
+pub use self::perceptron::*;
 
-pub mod perceptron;
+pub(crate) mod perceptron;
+
+pub(crate) mod prelude {
+    pub use super::perceptron::Perceptron;
+}
 
 pub trait MultiLayerPerceptron {
     type Input;
@@ -18,10 +22,16 @@ pub trait MultiLayerPerceptron {
     type Output;
 }
 
-pub trait Neuron<T, F> {}
+pub trait Container {
+    type Elem;
+}
 
-pub trait Rho<T> {
-    type Output;
+pub trait Params {
+    type Data: Container<Elem = Self::Elem>;
+    type Dim;
+    type Elem;
+}
 
-    fn activate(&self, args: T) -> Self::Output;
+pub trait Neuron<F, A, D> {
+    type Rho;
 }

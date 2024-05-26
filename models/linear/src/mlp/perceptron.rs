@@ -3,26 +3,39 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::{Biased, Linear};
-use concision::prelude::{Predict, PredictError};
+use concision::prelude::{relu, Activate, Predict, PredictError};
 use nd::prelude::*;
-use num::Zero;
-
+use nd::Data;
+use num::traits::Zero;
 pub struct ReLU;
 
-impl ReLU {
-    pub fn new() -> Self {
-        Self
-    }
+impl<A, S, D> Activate<ArrayBase<S, D>> for ReLU
+where
+    A: Clone + PartialOrd + Zero,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
 
-    pub fn activate<T>(&self, args: &T) -> T
-    where
-        T: Clone + PartialOrd + Zero,
-    {
-        concision::func::relu(args.clone())
+    fn activate(&self, args: ArrayBase<S, D>) -> Self::Output {
+        args.mapv(relu)
     }
 }
 
-pub struct Perceptron<F = ReLU, A = f64, K = Biased, D = Ix2>
+impl<'a, A, S, D> Activate<&'a ArrayBase<S, D>> for ReLU
+where
+    A: Clone + PartialOrd + Zero,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn activate(&self, args: &'a ArrayBase<S, D>) -> Self::Output {
+        args.mapv(relu)
+    }
+}
+
+pub struct Perceptron<A = f64, K = Biased, D = Ix2, F = ReLU>
 where
     D: Dimension,
 {
@@ -30,7 +43,7 @@ where
     rho: F,
 }
 
-impl<F, A, K, D> Perceptron<F, A, K, D>
+impl<A, K, D, F> Perceptron<A, K, D, F>
 where
     D: Dimension,
 {
@@ -38,24 +51,24 @@ where
         Self { module, rho }
     }
 
-    pub fn activate<T>(&self, args: &T) -> T
+    pub fn activate<T>(&self, args: T) -> F::Output
     where
-        F: Fn(&T) -> T,
+        F: Activate<T>,
     {
-        (self.rho)(args)
+        self.rho.activate(args)
     }
 }
 
-impl<X, Y, F, A, K, D> Predict<X> for Perceptron<F, A, K, D>
+impl<X, Y, Z, A, K, D, F> Predict<X> for Perceptron<A, K, D, F>
 where
     D: Dimension,
-    F: for<'a> Fn(&'a Y) -> Y,
+    F: for<'a> Activate<&'a Y, Output = Z>,
     Linear<A, K, D>: Predict<X, Output = Y>,
 {
-    type Output = Y;
+    type Output = Z;
 
     fn predict(&self, args: &X) -> Result<Self::Output, PredictError> {
         let res = self.module.predict(args)?;
-        Ok(self.activate(&res))
+        Ok(self.rho.activate(&res))
     }
 }

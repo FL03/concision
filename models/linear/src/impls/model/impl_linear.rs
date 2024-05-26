@@ -4,7 +4,7 @@
 */
 use crate::{Config, Linear, ParamMode, ParamsBase};
 use core::borrow::{Borrow, BorrowMut};
-use nd::{DataOwned, Ix2, RawData, RemoveAxis};
+use nd::{DataOwned, Ix2, RawData, RawDataClone, RemoveAxis};
 
 impl<A, K, S> Linear<A, K, Ix2, S>
 where
@@ -49,5 +49,21 @@ where
 {
     fn borrow_mut(&mut self) -> &mut ParamsBase<S, D, K> {
         &mut self.params
+    }
+}
+
+impl<A, S, D, K> Clone for Linear<A, K, D, S>
+where
+    A: Clone,
+    D: RemoveAxis,
+    K: Clone,
+    S: RawDataClone<Elem = A>,
+    ParamsBase<S, D, K>: Clone,
+{
+    fn clone(&self) -> Self {
+        Self {
+            config: self.config.clone(),
+            params: self.params.clone(),
+        }
     }
 }

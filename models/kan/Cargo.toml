@@ -50,7 +50,8 @@ serde = [
     "serde-1",
     "concision-core/serde",
     "ndarray/serde-1",
-    "num/serde"
+    "num/serde",
+    "splines/serde",
 ]
 
 serde-1 = [
@@ -67,6 +68,7 @@ std = [
     "ndarray/std",
     "num/std",
     "serde?/std",
+    "splines/std",
     "strum/std",
 ]
 
@@ -106,6 +108,10 @@ default-features = false
 features = ["derive"]
 optional = true
 version = "1"
+
+[dependencies.splines]
+default-features = false
+version = "4"
 
 [dependencies.tracing]
 optional = true

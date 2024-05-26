@@ -15,10 +15,15 @@ pub(crate) mod prelude {
     pub use super::{Activate, Evaluate};
 }
 
+/// [Activate] designates a function or structure that can be used
+/// as an activation function for a neural network.
+///
+/// The trait enables implemented models to employ various activation
+/// functions either as a pure function or as a structure.
 pub trait Activate<T> {
     type Output;
 
-    fn activate(&self, args: &T) -> Self::Output;
+    fn activate(&self, args: T) -> Self::Output;
 }
 
 #[doc(hidden)]
@@ -32,11 +37,19 @@ activator!(LinearActor::<T>(T::clone) where T: Clone);
 
 impl<F, U, V> Activate<U> for F
 where
-    F: for<'a> Fn(&'a U) -> V,
+    F: Fn(U) -> V,
 {
     type Output = V;
 
-    fn activate(&self, args: &U) -> Self::Output {
+    fn activate(&self, args: U) -> Self::Output {
         self(args)
+    }
+}
+
+impl<U, V> Activate<U> for Box<dyn Activate<U, Output = V>> {
+    type Output = V;
+
+    fn activate(&self, args: U) -> Self::Output {
+        self.as_ref().activate(args)
     }
 }
