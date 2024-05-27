@@ -2,7 +2,7 @@
    Appellation: modules <traits::nn>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Config, Parameters, Predict};
+use crate::{Config, Parameters, Forward};
 
 pub type ModuleDyn<C, P> = Box<dyn Module<Config = C, Params = P>>;
 pub type DynModuleExt<X, Y, C, P> = Box<dyn Layer<X, Config = C, Output = Y, Params = P>>;
@@ -22,10 +22,10 @@ pub trait Module {
     fn params_mut(&mut self) -> &mut Self::Params;
 }
 
-pub trait Layer<T>: Module + Predict<T> {}
+pub trait Layer<T>: Module + Forward<T> {}
 
 /*
  ************* Implementations *************
 */
 
-impl<T, M> Layer<T> for M where M: Module + Predict<T> {}
+impl<T, M> Layer<T> for M where M: Module + Forward<T> {}

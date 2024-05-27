@@ -3,6 +3,8 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::error::PredictError;
+#[cfg(any(feature = "alloc", feature = "std"))]
+use crate::rust::Box;
 
 /// [Forward] describes an object capable of forward propagation.
 pub trait Forward<T> {
@@ -29,18 +31,11 @@ pub trait Predict<T> {
 /*
  ********* Implementations *********
 */
-impl<X, Y, S> Forward<X> for S
-where
-    S: Predict<X, Output = Y>,
-{
-    type Output = Y;
+impl<U, M> Forward<U> for M where M: Predict<U> {
+    type Output = M::Output;
 
-    fn forward(&self, args: &X) -> Self::Output {
-        if let Ok(y) = self.predict(args) {
-            y
-        } else {
-            panic!("Error in forward propagation")
-        }
+    fn forward(&self, args: &U) -> Self::Output {
+        self.predict(args).unwrap()
     }
 }
 
@@ -55,6 +50,14 @@ where
     fn forward_iter(self, args: &T) -> M::Output {
         self.into_iter()
             .fold(args.clone(), |acc, m| m.forward(&acc))
+    }
+}
+#[cfg(any(feature = "alloc", feature = "std"))]
+impl<U, V> Predict<U> for Box<dyn Predict<U, Output = V>> {
+    type Output = V;
+
+    fn predict(&self, args: &U) -> Result<Self::Output, PredictError> {
+        self.as_ref().predict(args)
     }
 }
 

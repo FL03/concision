@@ -5,6 +5,7 @@
 use concision::prelude::{Activate, Module, Predict, PredictError};
 use nd::{ArrayBase, Data, Dimension};
 
+// #91
 /// Perceptrons are the fundamental building block of multi-layer perceptrons (MLPs).
 /// They are used to model a particular layer within a neural network. Generally speaking,
 /// Perceptrons consist of a linear set of parameters and an activation function.
@@ -46,16 +47,3 @@ where
         Ok(self.rho.activate(res))
     }
 }
-
-// impl<X, M, F> Predict<X> for Perceptron<M, F>
-// where
-//     F: Activate<M::Output>,
-//     M: Module + Predict<X>,
-// {
-//     type Output = F::Output;
-
-//     fn predict(&self, args: &X) -> Result<Self::Output, PredictError> {
-//         let res = self.module.predict(args)?;
-//         Ok(self.rho.activate(res))
-//     }
-// }

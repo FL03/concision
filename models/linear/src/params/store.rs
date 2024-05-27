@@ -116,7 +116,7 @@ where
 
     pbuilder!(zeros where A: Clone + Zero, S: DataOwned);
 
-    dimensional!(weights());
+    dimensional!(weight);
 
     wnbview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
 

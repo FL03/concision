@@ -15,3 +15,10 @@ pub(crate) mod perceptron;
 pub(crate) mod prelude {
     pub use super::perceptron::Perceptron;
 }
+
+use concision::Forward;
+
+pub trait Neuron: Forward<Self::Elem> {
+    type Elem;
+    type Rho;
+}
