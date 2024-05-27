@@ -52,7 +52,10 @@ impl<E> ExternalError<E> {
 
 impl<E> ErrorKind for ExternalError<E> where E: Clone + ToString {}
 
-impl<E> core::fmt::Display for ExternalError<E> where E: ToString {
+impl<E> core::fmt::Display for ExternalError<E>
+where
+    E: ToString,
+{
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         let msg = match self {
             ExternalError::Error(ref err) => err.to_string(),

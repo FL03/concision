@@ -13,3 +13,12 @@ pub(crate) mod prelude {
     pub use super::activate::prelude::*;
     pub use super::loss::prelude::*;
 }
+
+#[doc(hidden)]
+pub trait Apply<T> {
+    type Output;
+
+    fn apply<U, F>(&self, f: F) -> Self::Output
+    where
+        F: Fn(T) -> U;
+}

@@ -2,16 +2,21 @@
     Appellation: activate <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{binary::*, linear::*, nl::*};
+#[doc(inline)]
+pub use self::utils::*;
+pub use self::{binary::*, linear::*, nonlinear::*};
+
+pub(crate) mod utils;
 
 pub mod binary;
 pub mod linear;
-pub mod nl;
+pub mod nonlinear;
 
 pub(crate) mod prelude {
     pub use super::binary::*;
     pub use super::linear::*;
-    pub use super::nl::*;
+    pub use super::nonlinear::*;
+    pub use super::utils::*;
     pub use super::{Activate, Evaluate};
 }
 
@@ -26,12 +31,17 @@ pub trait Activate<T> {
     fn activate(&self, args: T) -> Self::Output;
 }
 
-#[doc(hidden)]
-pub trait Evaluate<T> {
+/// [Evaluate] is used for _lazy_, structured functions that evaluate to
+/// some value.
+pub trait Evaluate {
     type Output;
 
-    fn eval(&self, args: T) -> Self::Output;
+    fn eval(&self) -> Self::Output;
 }
+
+/*
+ ************* Implementations *************
+*/
 
 activator!(LinearActor::<T>(T::clone) where T: Clone);
 

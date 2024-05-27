@@ -2,22 +2,10 @@
    Appellation: binary <activate>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::utils::heavyside;
 use nd::{Array, ArrayBase, Data, Dimension};
-use num::{One, Zero};
 
-///
-pub fn heavyside<T>(x: T) -> T
-where
-    T: One + PartialOrd + Zero,
-{
-    if x > T::zero() {
-        T::one()
-    } else {
-        T::zero()
-    }
-}
-
-unary!(Heavyside::heavyside(self),);
+unary!(Heavyside::heavyside(self));
 
 macro_rules! impl_heavyside {
     ($($ty:ty),* $(,)*) => {

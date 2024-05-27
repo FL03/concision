@@ -49,9 +49,10 @@ impl Error {
 
 impl core::fmt::Display for Error {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{}: {}", self.kind, self.message)
+        write!(f, "({}) Error: {}", self.kind, self.message)
     }
 }
+
 #[cfg(feature = "std")]
 impl std::error::Error for Error {}
 
