@@ -34,7 +34,7 @@ macro_rules! dimensional {
         pub fn ndim(&self) -> usize {
             self.$name.ndim()
         }
-        /// Forwards the 
+        /// Forwards the
         pub fn raw_dim(&self) -> D {
             self.$name.raw_dim()
         }
@@ -52,7 +52,7 @@ macro_rules! dimensional {
         pub fn ndim(&self) -> usize {
             self.$name().ndim()
         }
-        /// Forwards the 
+        /// Forwards the
         pub fn raw_dim(&self) -> D {
             self.$name().raw_dim()
         }

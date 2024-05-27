@@ -7,20 +7,22 @@ use crate::traits::ArrayLike;
 use nd::{Array, ArrayBase, AxisDescription, Data, DataOwned, Dimension, Slice};
 use num::{FromPrimitive, Num};
 
-
 fn reader(nb_dim: usize, pad: &[[usize; 2]]) -> Result<Vec<[usize; 2]>, PadError> {
     if pad.len() == 1 && pad.len() < nb_dim {
         // The user provided a single padding for all dimensions
         Ok(vec![pad[0]; nb_dim])
     } else if pad.len() == nb_dim {
         Ok(pad.to_vec())
-    }
-    else {
+    } else {
         Err(PadError::InconsistentDimensions)
     }
 }
 
-pub fn pad<A, S, D>(data: &ArrayBase<S, D>, pad: &[[usize; 2]], mode: PadMode<A>) -> Result<Array<A, D>, PadError>
+pub fn pad<A, S, D>(
+    data: &ArrayBase<S, D>,
+    pad: &[[usize; 2]],
+    mode: PadMode<A>,
+) -> Result<Array<A, D>, PadError>
 where
     A: Copy + FromPrimitive + Num,
     D: Dimension,
@@ -42,7 +44,8 @@ pub fn pad_to<A, S, D>(
     pad: &[[usize; 2]],
     mode: PadMode<A>,
     output: &mut Array<A, D>,
-) -> super::PadResult where
+) -> super::PadResult
+where
     A: Copy + FromPrimitive + Num,
     D: Dimension,
     S: Data<Elem = A>,
@@ -59,9 +62,9 @@ pub fn pad_to<A, S, D>(
         .assign(data);
 
     match mode.action() {
-        PadAction::StopAfterCopy => { 
+        PadAction::StopAfterCopy => {
             // Do nothing
-            return Ok(())
+            return Ok(());
         }
         _ => unimplemented!(),
     }

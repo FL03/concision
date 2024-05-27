@@ -3,6 +3,8 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::error::ErrorKind;
+#[cfg(any(feature = "alloc", feature = "std"))]
+use crate::rust::String;
 use smart_default::SmartDefault;
 use strum::{AsRefStr, EnumCount, EnumIs, VariantNames};
 
@@ -72,4 +74,15 @@ impl From<Box<dyn std::error::Error>> for ExternalError {
     }
 }
 
-from_variant!(ExternalError::Error {<&str>.to_string(), <String>.to_string()});
+from_variant! {
+    ExternalError::Error {
+        <&str>.to_string()
+    }
+}
+
+#[cfg(any(feature = "alloc", feature = "std"))]
+from_variant! {
+    ExternalError::Error {
+        <String>.to_string(),
+    }
+}

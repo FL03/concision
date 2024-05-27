@@ -31,7 +31,10 @@ pub trait Predict<T> {
 /*
  ********* Implementations *********
 */
-impl<U, M> Forward<U> for M where M: Predict<U> {
+impl<U, M> Forward<U> for M
+where
+    M: Predict<U>,
+{
     type Output = M::Output;
 
     fn forward(&self, args: &U) -> Self::Output {

@@ -10,6 +10,7 @@ pub mod dropout;
 pub mod error;
 pub mod mask;
 pub mod model;
+#[doc(hidden)]
 pub mod optim;
 
 pub(crate) mod prelude {

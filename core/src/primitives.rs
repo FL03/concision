@@ -23,6 +23,7 @@ pub(crate) mod rust {
         pub use alloc::borrow::Cow;
         pub use alloc::boxed::{self, Box};
         pub use alloc::collections::{self, BTreeMap, BTreeSet, BinaryHeap, VecDeque};
+        pub use alloc::string::{self, String, ToString};
         pub use alloc::vec::{self, Vec};
     }
     #[cfg(feature = "std")]
@@ -30,6 +31,7 @@ pub(crate) mod rust {
         pub use std::borrow::Cow;
         pub use std::boxed::{self, Box};
         pub use std::collections::{self, BTreeMap, BTreeSet, BinaryHeap, VecDeque};
+        pub use std::string::{self, String, ToString};
         pub use std::sync::Arc;
         pub use std::vec::{self, Vec};
     }

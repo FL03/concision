@@ -9,10 +9,7 @@ use nd::{ArrayBase, Data, Dimension};
 /// Perceptrons are the fundamental building block of multi-layer perceptrons (MLPs).
 /// They are used to model a particular layer within a neural network. Generally speaking,
 /// Perceptrons consist of a linear set of parameters and an activation function.
-pub struct Perceptron<M, F>
-where
-    M: Module,
-{
+pub struct Perceptron<M, F> {
     module: M,
     rho: F,
 }
@@ -24,11 +21,15 @@ where
     pub fn new(module: M, rho: F) -> Self {
         Self { module, rho }
     }
+}
 
-    pub fn activate<T>(&self, args: T) -> F::Output
-    where
-        F: Activate<T>,
-    {
+impl<T, M, F> Activate<T> for Perceptron<M, F>
+where
+    F: Activate<T>,
+{
+    type Output = F::Output;
+
+    fn activate(&self, args: T) -> Self::Output {
         self.rho.activate(args)
     }
 }

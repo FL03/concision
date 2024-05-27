@@ -10,7 +10,6 @@ pub mod kinds;
 
 pub trait ErrorKind: Clone + ToString {}
 
-
 impl_err!(kinds::Errors, kinds::PredictError, crate::nn::ModelError);
 
 pub(crate) mod prelude {
