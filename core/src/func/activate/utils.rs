@@ -8,7 +8,7 @@ use nd::{Data, RemoveAxis, ScalarOperand};
 use num::complex::ComplexFloat;
 use num::traits::{One, Zero};
 
-///
+/// Heaviside activation function
 pub fn heavyside<T>(x: T) -> T
 where
     T: One + PartialOrd + Zero,
@@ -25,9 +25,10 @@ where
     T: PartialOrd + Zero,
 {
     if args > T::zero() {
-        return args;
+        args
+    } else {
+        T::zero()
     }
-    T::zero()
 }
 ///
 pub fn sigmoid<T>(args: T) -> T

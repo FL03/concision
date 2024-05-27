@@ -2,59 +2,13 @@
    Appellation: perceptron <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{Activate, Module, Predict, PredictError, ReLU};
-use nd::prelude::*;
-use nd::Data;
-use num::traits::Zero;
+use concision::prelude::{Activate, Module, Predict, PredictError};
+use nd::{ArrayBase, Data, Dimension};
 
-pub struct Rho<T>(T);
-
-impl<T> Rho<T> {
-    pub fn new(rho: T) -> Self {
-        Self(rho)
-    }
-
-    pub fn get(&self) -> &T {
-        &self.0
-    }
-
-    pub fn get_mut(&mut self) -> &mut T {
-        &mut self.0
-    }
-
-    pub fn activate(&self) -> &T {
-        &self.0
-    }
-}
-pub struct Relu;
-
-impl<A, S, D> Activate<ArrayBase<S, D>> for Relu
-where
-    A: Clone + PartialOrd + Zero,
-    D: Dimension,
-    S: Data<Elem = A>,
-{
-    type Output = Array<A, D>;
-
-    fn activate(&self, args: ArrayBase<S, D>) -> Self::Output {
-        args.relu()
-    }
-}
-
-impl<'a, A, S, D> Activate<&'a ArrayBase<S, D>> for Relu
-where
-    A: Clone + PartialOrd + Zero,
-    D: Dimension,
-    S: Data<Elem = A>,
-{
-    type Output = Array<A, D>;
-
-    fn activate(&self, args: &'a ArrayBase<S, D>) -> Self::Output {
-        args.relu()
-    }
-}
-
-pub struct Perceptron<M, F = Relu>
+/// Perceptrons are the fundamental building block of multi-layer perceptrons (MLPs).
+/// They are used to model a particular layer within a neural network. Generally speaking,
+/// Perceptrons consist of a linear set of parameters and an activation function.
+pub struct Perceptron<M, F>
 where
     M: Module,
 {
@@ -78,15 +32,30 @@ where
     }
 }
 
-impl<X, Y, Z, M, F> Predict<X> for Perceptron<M, F>
+impl<A, S, D, M, F> Predict<ArrayBase<S, D>> for Perceptron<M, F>
 where
-    F: for<'a> Activate<&'a Y, Output = Z>,
-    M: Module + Predict<X, Output = Y>,
+    D: Dimension,
+    S: Data<Elem = A>,
+    F: Activate<M::Output>,
+    M: Module + Predict<ArrayBase<S, D>>,
 {
-    type Output = Z;
+    type Output = F::Output;
 
-    fn predict(&self, args: &X) -> Result<Self::Output, PredictError> {
+    fn predict(&self, args: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
         let res = self.module.predict(args)?;
-        Ok(self.rho.activate(&res))
+        Ok(self.rho.activate(res))
     }
 }
+
+// impl<X, M, F> Predict<X> for Perceptron<M, F>
+// where
+//     F: Activate<M::Output>,
+//     M: Module + Predict<X>,
+// {
+//     type Output = F::Output;
+
+//     fn predict(&self, args: &X) -> Result<Self::Output, PredictError> {
+//         let res = self.module.predict(args)?;
+//         Ok(self.rho.activate(res))
+//     }
+// }

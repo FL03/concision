@@ -6,7 +6,7 @@ extern crate concision_core as cnc;
 extern crate concision_linear as linear;
 
 use cnc::prelude::{linarr, Forward, ReLU};
-use linear::mlp::{self, Perceptron};
+use linear::mlp::Perceptron;
 use linear::{Biased, Features, Linear};
 use ndarray::prelude::*;
 
@@ -18,6 +18,6 @@ fn test_perceptron() {
     let features = Features::new(1, 300);
     let data = linarr::<f64, Ix2>((samples, features.dmodel())).unwrap();
     let layer = Linear::<f64, Biased>::lecun_normal(features, 1);
-    let mlp = Perceptron::new(layer.clone(), mlp::Relu);
+    let mlp = Perceptron::new(layer.clone(), Box::new(ReLU::relu));
     assert_eq!(mlp.forward(&data), layer.forward(&data).relu());
 }

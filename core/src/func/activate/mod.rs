@@ -17,7 +17,7 @@ pub(crate) mod prelude {
     pub use super::linear::*;
     pub use super::nonlinear::*;
     pub use super::utils::*;
-    pub use super::{Activate, Evaluate};
+    pub use super::{Activate, NdActivate};
 }
 
 /// [Activate] designates a function or structure that can be used
@@ -31,14 +31,18 @@ pub trait Activate<T> {
     fn activate(&self, args: T) -> Self::Output;
 }
 
-/// [Evaluate] is used for _lazy_, structured functions that evaluate to
-/// some value.
-pub trait Evaluate {
-    type Output;
+pub trait NdActivate<A, D> {
+    type Data;
 
-    fn eval(&self) -> Self::Output;
+    fn activate<B, F>(&self, f: F) -> nd::Array<B, D>
+    where
+        F: FnMut(A) -> B;
+
+    fn activate_mut<'a, B, F>(&'a mut self, f: F)
+    where
+        A: 'a,
+        F: FnMut(&'a A) -> B;
 }
-
 /*
  ************* Implementations *************
 */

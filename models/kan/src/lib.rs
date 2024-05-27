@@ -24,8 +24,12 @@ extern crate ndarray as nd;
 
 #[doc(inline)]
 pub use self::actor::Actor;
+#[doc(inline)]
+pub use self::model::Kan;
 
 pub mod actor;
 pub mod model;
 
-pub mod prelude {}
+pub mod prelude {
+    pub use super::model::prelude::*;
+}

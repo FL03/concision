@@ -15,23 +15,3 @@ pub(crate) mod perceptron;
 pub(crate) mod prelude {
     pub use super::perceptron::Perceptron;
 }
-
-pub trait MultiLayerPerceptron {
-    type Input;
-    type Hidden;
-    type Output;
-}
-
-pub trait Container {
-    type Elem;
-}
-
-pub trait Params {
-    type Data: Container<Elem = Self::Elem>;
-    type Dim;
-    type Elem;
-}
-
-pub trait Neuron<F, A, D> {
-    type Rho;
-}

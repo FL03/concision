@@ -6,31 +6,39 @@ pub use self::config::ActorConfig;
 
 pub(crate) mod config;
 
-use concision::prelude::{Activate, Predict, PredictError};
+use concision::prelude::{Eval, Predict, PredictError};
 use core::ops::Mul;
 use nd::prelude::*;
 use splines::interpolate::{Interpolate, Interpolator};
 use splines::Spline;
 
-/// An `actor` describe the learnable activation functions
-/// employed throughout KAN networks.
+#[doc(hidden)]
+pub type NdSpline<T, V> = Spline<Array1<T>, Array1<V>>;
+
+/// An `actor` represents the learned activation functions
+/// described within the KAN paper.
+///
+/// The learned activation functions are univariate and continuous.
+///
+/// ### Parameters
+///
+/// - b(**x**): bias function
+/// - spline(**x**): spline function; typically employs `Linear` interpolation
+/// - **ω**: weight factor
 ///
 /// The learned functions are one-dimensional, continuous
 pub struct Actor<T, V, B> {
     pub(crate) bias: B,
-    pub(crate) omega: Array1<V>,
     pub(crate) spline: Spline<T, V>,
+    pub(crate) weight: Array1<V>,
 }
 
-impl<T, V, B> Actor<T, V, B>
-where
-    B: Activate<V>,
-{
-    pub fn new(bias: B, omega: Array1<V>, spline: Spline<T, V>) -> Self {
+impl<T, V, B> Actor<T, V, B> {
+    pub fn new(bias: B, spline: Spline<T, V>, weight: Array1<V>) -> Self {
         Self {
             bias,
-            omega,
             spline,
+            weight,
         }
     }
 
@@ -38,26 +46,42 @@ where
         &self.bias
     }
 
-    pub fn omega(&self) -> &Array1<V> {
-        &self.omega
+    pub fn sample(&self, x: T) -> Option<V>
+    where
+        T: Interpolator,
+        V: Interpolate<T>,
+    {
+        self.spline().sample(x)
     }
 
     pub fn spline(&self) -> &Spline<T, V> {
         &self.spline
     }
+
+    pub fn spline_mut(&mut self) -> &mut Spline<T, V> {
+        &mut self.spline
+    }
+
+    pub fn weight(&self) -> &Array1<V> {
+        &self.weight
+    }
+
+    pub fn weight_mut(&mut self) -> &mut Array1<V> {
+        &mut self.weight
+    }
 }
 
-impl<T, V, B> Predict<Array1<T>> for Actor<T, V, B>
+impl<Z, T, V, B> Predict<Array1<T>> for Actor<T, V, B>
 where
-    B: Activate<Array1<V>>,
+    B: Eval<Array1<V>>,
     T: Interpolator,
     V: Interpolate<T>,
-    Array1<V>: Clone + Mul<B::Output>,
+    for<'a> &'a Array1<V>: Mul<B::Output, Output = Z>,
 {
-    type Output = <Array1<V> as Mul<B::Output>>::Output;
+    type Output = Z;
 
     fn predict(&self, x: &Array1<T>) -> Result<Self::Output, PredictError> {
         let y = x.mapv(|xi| self.spline.sample(xi).unwrap());
-        Ok(self.omega.clone() * self.bias.activate(y))
+        Ok(self.weight() * self.bias().eval(y))
     }
 }

@@ -10,12 +10,14 @@ pub mod dropout;
 pub mod error;
 pub mod mask;
 pub mod model;
+pub mod optim;
 
 pub(crate) mod prelude {
     pub use super::dropout::*;
     pub use super::error::*;
     pub use super::mask::prelude::*;
     pub use super::model::prelude::*;
+    pub use super::optim::prelude::*;
 }
 
 #[cfg(any(feature = "alloc", feature = "std"))]
