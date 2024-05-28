@@ -7,6 +7,7 @@ use linear::{Biased, Linear};
 use nd::prelude::*;
 use nd::{DataOwned, OwnedRepr, RawData};
 
+// #69
 pub struct MultiHeadAttention<A = f64, D = Ix2, S = OwnedRepr<A>>
 where
     D: Dimension,

@@ -81,7 +81,7 @@ where
     type Output = Z;
 
     fn predict(&self, x: &Array1<T>) -> Result<Self::Output, PredictError> {
-        let y = x.mapv(|xi| self.spline.sample(xi).unwrap());
+        let y = x.mapv(|xi| self.spline().sample(xi).unwrap());
         Ok(self.weight() * self.bias().eval(y))
     }
 }

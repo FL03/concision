@@ -20,6 +20,11 @@ pub(crate) mod prelude {
     pub use super::{Activate, NdActivate};
 }
 
+use nd::prelude::*;
+use nd::{Data, DataMut, RemoveAxis, ScalarOperand};
+use num::complex::ComplexFloat;
+use num::traits::{One, Zero};
+
 /// [Activate] designates a function or structure that can be used
 /// as an activation function for a neural network.
 ///
@@ -31,17 +36,75 @@ pub trait Activate<T> {
     fn activate(&self, args: T) -> Self::Output;
 }
 
-pub trait NdActivate<A, D> {
-    type Data;
+pub trait NdActivate<A, D>
+where
+    A: ScalarOperand,
+    D: Dimension,
+{
+    type Data: Data<Elem = A>;
 
-    fn activate<B, F>(&self, f: F) -> nd::Array<B, D>
+    fn activate<B, F>(&self, f: F) -> Array<B, D>
     where
         F: FnMut(A) -> B;
 
-    fn activate_mut<'a, B, F>(&'a mut self, f: F)
+    fn activate_inplace<'a, F>(&'a mut self, f: F)
     where
         A: 'a,
-        F: FnMut(&'a A) -> B;
+        F: FnMut(A) -> A,
+        Self::Data: DataMut<Elem = A>;
+
+    fn linear(&self) -> Array<A, D>
+    where
+        A: Clone,
+    {
+        self.activate(|x| x.clone())
+    }
+
+    fn heavyside(&self) -> Array<A, D>
+    where
+        A: One + PartialOrd + Zero,
+    {
+        self.activate(heavyside)
+    }
+
+    fn relu(&self) -> Array<A, D>
+    where
+        A: PartialOrd + Zero,
+    {
+        self.activate(relu)
+    }
+
+    fn sigmoid(&self) -> Array<A, D>
+    where
+        A: ComplexFloat,
+    {
+        self.activate(sigmoid)
+    }
+
+    fn softmax(&self) -> Array<A, D>
+    where
+        A: ComplexFloat,
+    {
+        let exp = self.activate(ComplexFloat::exp);
+        &exp / exp.sum()
+    }
+
+    fn softmax_axis(&self, axis: usize) -> Array<A, D>
+    where
+        A: ComplexFloat,
+        D: RemoveAxis,
+    {
+        let exp = self.activate(ComplexFloat::exp);
+        let axis = Axis(axis);
+        &exp / &exp.sum_axis(axis)
+    }
+
+    fn tanh(&self) -> Array<A, D>
+    where
+        A: ComplexFloat,
+    {
+        self.activate(tanh)
+    }
 }
 /*
  ************* Implementations *************
@@ -65,5 +128,30 @@ impl<U, V> Activate<U> for Box<dyn Activate<U, Output = V>> {
 
     fn activate(&self, args: U) -> Self::Output {
         self.as_ref().activate(args)
+    }
+}
+
+impl<A, S, D> NdActivate<A, D> for ArrayBase<S, D>
+where
+    A: ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Data = S;
+
+    fn activate<B, F>(&self, f: F) -> Array<B, D>
+    where
+        F: FnMut(A) -> B,
+    {
+        self.mapv(f)
+    }
+
+    fn activate_inplace<'a, F>(&'a mut self, f: F)
+    where
+        A: 'a,
+        S: DataMut,
+        F: FnMut(A) -> A,
+    {
+        self.mapv_inplace(f)
     }
 }
