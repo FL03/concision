@@ -4,7 +4,6 @@
 */
 use super::{Score, _attention};
 use crate::params::QkvBase;
-use concision::getters;
 use concision::nn::Dropout;
 use nd::linalg::Dot;
 use nd::*;
@@ -12,9 +11,9 @@ use num::complex::ComplexFloat;
 
 // #68
 /// [AttentionHead] implements the scaled dot-product attention mechanism formally defined in
-/// [Attention is all you need](https://arxiv.org/abs/1706.03762). The structure is designed to
-/// be flexible, relying upon the n-dimensional [QkvBase] to store the query, key, and value tensors.
-/// More so, the head may be configured with an optional dropout and/or masking layers.
+/// [Attention is all you need](https://arxiv.org/abs/1706.03762). The mechanism utilizes
+/// [QkvBase] to store the query, key, and value tensors. More so, the attention head
+/// has two optional features: a dropout and masking layer.
 ///
 /// ### `dropout`
 ///
@@ -58,15 +57,7 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn from_params(params: QkvBase<S, D>) -> Self {
-        Self {
-            #[cfg(feature = "rand")]
-            dropout: None,
-            mask: None,
-            params,
-        }
-    }
-
+    /// Create a new instance with the specified shape and builder function.
     pub fn builder<Sh, F>(shape: Sh, builder: F) -> Self
     where
         F: Fn(D) -> ArrayBase<S, D>,
@@ -74,7 +65,7 @@ where
     {
         Self::from_params(QkvBase::builder(shape, builder))
     }
-
+    /// Create a new instance with the specified shape and value.
     pub fn from_elem<Sh>(shape: Sh, value: A) -> Self
     where
         Sh: ShapeBuilder<Dim = D>,
@@ -82,6 +73,15 @@ where
         S: DataOwned,
     {
         Self::from_params(QkvBase::from_elem(shape, value))
+    }
+    /// Create a new instance from the [QkvBase] parameters.
+    pub fn from_params(params: QkvBase<S, D>) -> Self {
+        Self {
+            #[cfg(feature = "rand")]
+            dropout: None,
+            mask: None,
+            params,
+        }
     }
     /// Computes the [Score] using scaled dot-product attention.
     pub fn attention(&self) -> Score<A, D>
@@ -139,10 +139,12 @@ where
         }
     }
 
-    getters!(params::<[q, k, v]> => ArrayBase<S, D>);
-    ndbuilder!(new::default() where A: Default, S: DataOwned);
+    ndbuilder!(default() where A: Default, S: DataOwned);
     ndbuilder!(ones() where A: Clone + num::One, S: DataOwned);
     ndbuilder!(zeros() where A: Clone + num::Zero, S: DataOwned);
+
+    concision::dimensional!(params());
+    concision::getters!(params::<[q, k, v]> => ArrayBase<S, D>);
 }
 
 #[cfg(feature = "rand")]

@@ -27,7 +27,7 @@ where
         &mut self.axis
     }
 
-    pub fn eps(&self) -> f64 {
+    pub const fn eps(&self) -> f64 {
         self.eps
     }
 

@@ -2,7 +2,7 @@
     Appellation: ndarray <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::traits::Dimensional;
+use concision::Dimensional;
 use nd::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};
 use num::{One, Zero};
 

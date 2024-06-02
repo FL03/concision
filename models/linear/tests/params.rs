@@ -3,10 +3,10 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #![allow(unused_imports)]
-extern crate concision_core as concision;
+extern crate concision_core as cnc;
 extern crate concision_linear as linear;
 
-use concision::Predict;
+use cnc::Predict;
 use core::str::FromStr;
 use linear::params::{LinearParams, Param, Unbiased};
 use linear::Features;

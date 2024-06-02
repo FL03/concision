@@ -12,7 +12,7 @@ pub mod shape;
 pub type NdResult<T> = core::result::Result<T, nd::ShapeError>;
 /// A type alias for a [Result](core::result::Result) with the crate's [Error](crate::error::Error) type.
 /// Defaults to `Result<(), Error>`
-pub type Result<T = ()> = core::result::Result<T, crate::error::ErrorKind>;
+pub type Result<T = ()> = core::result::Result<T, crate::error::Errors>;
 
 #[cfg(feature = "std")]
 mod std_types {

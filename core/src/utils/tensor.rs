@@ -93,7 +93,7 @@ where
 
 pub(crate) mod gen {
     use nd::{Array, Array1, Dimension, IntoDimension, ShapeError};
-    use num::traits::{Float, FromPrimitive, Num, NumCast};
+    use num::traits::{Float, NumCast};
 
     pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
         Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
@@ -107,31 +107,6 @@ pub(crate) mod gen {
         let dim = dim.into_dimension();
         let n = dim.size();
         Array::linspace(A::zero(), A::from(n - 1).unwrap(), n).into_shape(dim)
-    }
-
-    pub fn linspace<T>(start: T, end: T, n: usize) -> Vec<T>
-    where
-        T: Copy + FromPrimitive + Num,
-    {
-        if n <= 1 {
-            panic!("linspace requires at least two points");
-        }
-
-        let step = (end - start) / T::from_usize(n - 1).unwrap();
-
-        (0..n)
-            .map(|i| start + step * T::from_usize(i).unwrap())
-            .collect()
-    }
-    /// creates a matrix from the given shape filled with numerical elements [0, n) spaced evenly by 1
-    pub fn rangespace<A, D>(dim: impl IntoDimension<Dim = D>) -> Array<A, D>
-    where
-        A: FromPrimitive,
-        D: Dimension,
-    {
-        let dim = dim.into_dimension();
-        let iter = (0..dim.size()).map(|i| A::from_usize(i).unwrap()).collect();
-        Array::from_shape_vec(dim, iter).unwrap()
     }
 }
 

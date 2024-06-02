@@ -2,7 +2,7 @@
    Appellation: ops <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Operations
+//! # Overloadable Operations
 pub use self::pad::*;
 
 pub(crate) mod pad;

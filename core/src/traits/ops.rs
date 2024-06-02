@@ -9,18 +9,22 @@ pub trait Apply<T, F> {
     fn apply<U>(&self, f: F) -> Self::Output
     where
         F: Fn(T) -> U;
-
-    fn apply_mut<U>(&mut self, f: F) -> Self::Output
-    where
-        F: FnMut(T) -> U;
 }
 
-pub trait ApplyOn<T, F> {
+/// An alternative trait for evaluating the logic of an expression;
+/// [Eval] is a substitute for functional traits (Fn, FnMut, and FnOnce) as
+/// implementing these traits is currently unstable.
+pub trait Eval<T> {
     type Output;
 
-    fn apply<U>(self, f: F) -> Self::Output
-    where
-        F: FnMut(T) -> U;
+    fn eval(&self, args: T) -> Self::Output;
+}
+/// [EvaluateLazy] is used for _lazy_, structured functions that evaluate to
+/// some value.
+pub trait EvaluateLazy {
+    type Output;
+
+    fn eval(&self) -> Self::Output;
 }
 
 pub trait Transform<T> {
@@ -32,16 +36,21 @@ pub trait Transform<T> {
 /*
  ************* Implementations *************
 */
-impl<T, F, S> ApplyOn<T, F> for S
+impl<X, Y, F> Eval<X> for F
 where
-    S: Iterator<Item = T>,
+    F: Fn(X) -> Y,
 {
-    type Output = core::iter::Map<S, F>;
+    type Output = Y;
 
-    fn apply<U>(self, f: F) -> Self::Output
-    where
-        F: FnMut(T) -> U,
-    {
-        self.map(f)
+    fn eval(&self, args: X) -> Self::Output {
+        self(args)
+    }
+}
+
+impl<X, Y> Eval<X> for Box<dyn Eval<X, Output = Y>> {
+    type Output = Y;
+
+    fn eval(&self, args: X) -> Self::Output {
+        self.as_ref().eval(args)
     }
 }

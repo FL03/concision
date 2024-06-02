@@ -41,3 +41,11 @@ updates:
     package-ecosystem: cargo
     schedule:
       interval: weekly
+  - directory: /models/s4
+    package-ecosystem: cargo
+    schedule:
+      interval: weekly
+  - directory: /models/transformer
+    package-ecosystem: cargo
+    schedule:
+      interval: weekly

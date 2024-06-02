@@ -17,7 +17,6 @@ pub use self::dataset::Dataset;
 pub use self::traits::prelude::*;
 
 pub mod dataset;
-pub mod params;
 #[doc(hidden)]
 pub mod preproc;
 pub mod tensor;
@@ -26,7 +25,6 @@ pub mod types;
 
 pub mod prelude {
     pub use super::dataset::*;
-    pub use super::params::prelude::*;
     pub use super::traits::prelude::*;
     pub use super::types::prelude::*;
 }

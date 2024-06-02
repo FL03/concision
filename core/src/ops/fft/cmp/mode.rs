@@ -7,7 +7,12 @@ use strum::{
     AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantArray, VariantNames,
 };
 
-toggle!(enum C, R);
+toggle! {
+    pub enum {
+        C,
+        R
+    }
+}
 
 ///
 #[derive(

@@ -8,10 +8,11 @@ use core::marker::PhantomData;
 use nd::*;
 use num::{One, Zero};
 
-/// The [ParamsBase] struct is a generic store for linear parameters. The store mimics
-/// the underlying [ArrayBase](ndarray::ArrayBase), enabling developers to specify
-/// the data repr and dimension. Additionally, the store is parameterized to
-/// accept a `K` type, used to designate the store as either [Biased](crate::Biased) or [Unbiased](crate::Unbiased).
+/// [ParamsBase] is a flexible store for linear parameters; it is parameterized to accept
+/// a `K` type, used to designate the store as either [Biased](crate::Biased) or [Unbiased](crate::Unbiased).
+/// This was done in an effort to streamline the creation of new instances of the store, and to provide
+/// a more ergonomic interface for the user. The store is also equipped with a number of builder methods
+///  native to the [ArrayBase] from `ndarray`.
 pub struct ParamsBase<S = OwnedRepr<f64>, D = Ix2, K = Biased>
 where
     D: Dimension,
@@ -116,7 +117,7 @@ where
 
     pbuilder!(zeros where A: Clone + Zero, S: DataOwned);
 
-    dimensional!(weights());
+    dimensional!(weight);
 
     wnbview!(into_owned::<OwnedRepr>(self) where A: Clone, S: Data);
 

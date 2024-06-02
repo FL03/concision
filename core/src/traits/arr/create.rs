@@ -3,15 +3,26 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use nd::{ArrayBase, DataOwned, Dimension, Ix2, ShapeBuilder};
-use num::traits::Num;
+use num::traits::{Num, One, Zero};
 
-pub trait NdLike<T, O = Self>
+pub trait NdLike<A = f64, D = Ix2>
 where
-    Self: DefaultLike<Output = O>
-        + FillLike<T, Output = O>
-        + OnesLike<Output = O>
-        + ZerosLike<Output = O>,
+    A: Clone,
+    D: Dimension,
 {
+    type Output;
+
+    fn default_like(&self) -> Self::Output
+    where
+        A: Default;
+
+    fn ones_like(&self) -> Self::Output
+    where
+        A: One;
+
+    fn zeros_like(&self) -> Self::Output
+    where
+        A: Zero;
 }
 
 pub trait ArrayLike<A = f64, D = Ix2>
@@ -42,15 +53,36 @@ macro_rules! ndlike {
 ndlike!(DefaultLike::default_like, OnesLike::ones_like, ZerosLike::zeros_like, FillLike::<T>::fill_like(elem: T));
 
 /*
- ******** implementations ********
+ ************* Implementations *************
 */
-
-impl<A, S, D> NdLike<A, ArrayBase<S, D>> for ArrayBase<S, D>
+impl<A, S, D> NdLike<A, D> for ArrayBase<S, D>
 where
-    A: Clone + Default + Num,
+    A: Clone + Num,
     D: Dimension,
     S: DataOwned<Elem = A>,
 {
+    type Output = ArrayBase<S, D>;
+
+    fn default_like(&self) -> Self::Output
+    where
+        A: Default,
+    {
+        ArrayBase::default(self.dim())
+    }
+
+    fn ones_like(&self) -> Self::Output
+    where
+        A: One,
+    {
+        ArrayBase::ones(self.dim())
+    }
+
+    fn zeros_like(&self) -> Self::Output
+    where
+        A: Zero,
+    {
+        ArrayBase::zeros(self.dim())
+    }
 }
 
 impl<A, S, D> ArrayLike<A, D> for ArrayBase<S, D>
@@ -105,5 +137,5 @@ macro_rules! impl_ndlike {
 }
 
 impl_ndlike!(DefaultLike::default_like.default: Default);
-impl_ndlike!(OnesLike::ones_like.ones: Clone + num::One);
-impl_ndlike!(ZerosLike::zeros_like.zeros: Clone + num::Zero);
+impl_ndlike!(OnesLike::ones_like.ones: Clone + One);
+impl_ndlike!(ZerosLike::zeros_like.zeros: Clone + Zero);

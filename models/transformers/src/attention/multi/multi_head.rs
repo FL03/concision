@@ -7,6 +7,7 @@ use linear::{Biased, Linear};
 use nd::prelude::*;
 use nd::{DataOwned, OwnedRepr, RawData};
 
+// #69
 pub struct MultiHeadAttention<A = f64, D = Ix2, S = OwnedRepr<A>>
 where
     D: Dimension,
@@ -22,18 +23,19 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
+    /// Returns an immutable reference to the [AttentionConfig]
     pub const fn config(&self) -> &AttentionConfig {
         &self.config
     }
-
+    /// Returns an immutable reference to the [AttentionHead]
     pub const fn head(&self) -> &AttentionHead<A, D, S> {
         &self.head
     }
-
+    /// Returns a mutable reference to the [AttentionHead]
     pub fn head_mut(&mut self) -> &mut AttentionHead<A, D, S> {
         &mut self.head
     }
-
+    /// Returns an immutable slice containing the [Linear] layers
     pub fn linears(&self) -> &[Linear<A, Biased, D, S>] {
         &self.linears
     }
@@ -69,7 +71,7 @@ where
     fn default() -> Self {
         Self {
             config: AttentionConfig::default(),
-            head: AttentionHead::default(),
+            head: Default::default(),
             linears: Vec::new(),
         }
     }

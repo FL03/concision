@@ -2,7 +2,8 @@
     Appellation: container <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::traits::{ContainerRepr, Dimensional};
+use crate::traits::ContainerRepr;
+use concision::Dimensional;
 
 pub trait Container<T> {
     type Data: ContainerRepr<Elem = T>;

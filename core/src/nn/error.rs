@@ -3,17 +3,16 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::error::PredictError;
-use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
+use strum::{AsRefStr, Display, EnumCount, EnumIs, VariantNames};
 
 #[derive(
     AsRefStr,
     Clone,
+    Copy,
     Debug,
     Display,
     EnumCount,
     EnumIs,
-    EnumIter,
-    EnumString,
     Eq,
     Hash,
     Ord,
@@ -32,7 +31,19 @@ pub enum ModelError {
 }
 
 impl ModelError {
-    // nested_constructor!(ModelError<Predict>, PredictError {
+    pub fn from_predict(err: PredictError) -> Self {
+        ModelError::Predict(err)
+    }
 
-    // })
+    pub fn predict(&self) -> Option<PredictError> {
+        match *self {
+            ModelError::Predict(err) => Some(err),
+        }
+    }
+}
+
+impl From<PredictError> for ModelError {
+    fn from(err: PredictError) -> Self {
+        ModelError::from_predict(err)
+    }
 }
