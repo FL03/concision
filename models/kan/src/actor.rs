@@ -22,7 +22,7 @@ pub type NdSpline<T, V> = Spline<Array1<T>, Array1<V>>;
 ///
 /// ### Parameters
 ///
-/// - b(**x**): bias function
+/// - `b(**x**)`: bias function
 /// - spline(**x**): spline function; typically employs `Linear` interpolation
 /// - **ω**: weight factor
 ///

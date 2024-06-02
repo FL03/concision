@@ -22,10 +22,14 @@ extern crate alloc;
 extern crate concision_core as concision;
 extern crate ndarray as nd;
 
+#[macro_use]
+pub(crate) mod macros;
+pub(crate) mod primitives;
+
 #[doc(inline)]
 pub use self::actor::Actor;
 #[doc(inline)]
-pub use self::model::Kan;
+pub use self::model::KAN;
 
 pub mod actor;
 pub mod model;

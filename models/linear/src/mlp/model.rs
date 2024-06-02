@@ -2,34 +2,36 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Neuron, Perceptron};
+use concision::{Predict, PredictError};
+use core::marker::PhantomData;
 
+// #92: Define the Multi-Layer Perceptron (MLP) model
+/// A multi-layer perceptron (MLP) model.
 pub struct Mlp<A, I, H, O>
 where
-    I: Neuron<A>,
-    H: Neuron<A>,
-    O: Neuron<A>,
+    I: Predict<A>,
+    H: Predict<I::Output, Output = I::Output>,
+    O: Predict<H::Output>,
 {
-    input: Perceptron<I::Module, I::Rho>,
-    hidden: Vec<Perceptron<H::Module, H::Rho>>,
-    output: Perceptron<O::Module, O::Rho>,
+    input: I,
+    hidden: Vec<H>,
+    output: O,
+    _dtype: PhantomData<A>,
 }
 
-impl<A, I, H, O> Mlp<A, I, H, O>
+impl<A, I, H, O> Predict<A> for Mlp<A, I, H, O>
 where
-    I: Neuron<A>,
-    H: Neuron<A>,
-    O: Neuron<A>,
+    I: Predict<A>,
+    H: Predict<I::Output, Output = I::Output>,
+    O: Predict<H::Output>,
 {
-    pub const fn input(&self) -> &Perceptron<I::Module, I::Rho> {
-        &self.input
-    }
+    type Output = O::Output;
 
-    pub fn hidden(&self) -> &[Perceptron<H::Module, H::Rho>] {
-        &self.hidden
-    }
-
-    pub const fn output(&self) -> &Perceptron<O::Module, O::Rho> {
-        &self.output
+    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+        let mut hidden = self.input.predict(input)?;
+        for layer in &self.hidden {
+            hidden = layer.predict(&hidden)?;
+        }
+        self.output.predict(&hidden)
     }
 }

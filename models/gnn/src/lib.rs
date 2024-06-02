@@ -15,4 +15,14 @@ extern crate alloc;
 extern crate concision_core as concision;
 extern crate ndarray as nd;
 
-pub mod prelude {}
+#[doc(inline)]
+pub use self::model::*;
+
+pub(crate) mod model;
+
+pub mod params;
+
+pub mod prelude {
+    pub use crate::model::prelude::*;
+    pub use crate::params::prelude::*;
+}
