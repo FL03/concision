@@ -13,51 +13,23 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = [
-    "std",
-]
+default = ["std"]
 
-full = [
-    "default",
-    "approx",
-    "rand",
-    "serde",
-]
+full = ["default", "approx", "rand", "serde"]
 
 # ********* [FF] Dependencies *********
-approx = [
-    "dep:approx",
-    "concision-core/approx",
-    "ndarray/approx-0_5",
-]
+approx = ["dep:approx", "concision-core/approx", "ndarray/approx"]
 
-rand = [
-    "concision-core/rand",
-    "num/rand",
-]
+rand = ["concision-core/rand", "num/rand"]
 
-serde = [
-    "dep:serde",
-    "concision-core/serde",
-    "ndarray/serde-1",
-    "num/serde"
-]
+serde = ["dep:serde", "concision-core/serde", "ndarray/serde-1", "num/serde"]
 
-tracing = [
-    "dep:tracing",
-]
+tracing = ["dep:tracing"]
 
 # ********* [FF] Environments *********
-alloc = [
-    "concision-core/alloc",
-    "num/alloc",
-    "serde?/alloc",
-]
+alloc = ["concision-core/alloc", "num/alloc", "serde?/alloc"]
 
-blas = [
-    "concision-core/blas",
-    "ndarray/blas",
-]
+blas = ["concision-core/blas", "ndarray/blas"]
 
 std = [
     "concision-core/std",
@@ -67,13 +39,9 @@ std = [
     "strum/std",
 ]
 
-wasm = [
-    "concision-core/wasm",
-]
+wasm = ["concision-core/wasm"]
 
-wasi = [    
-    "concision-core/wasi",
-]
+wasi = ["concision-core/wasi"]
 
 [lib]
 bench = false

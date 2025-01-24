@@ -13,17 +13,9 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = [
-    "std",
-]
+default = ["std"]
 
-full = [
-    "default",
-    "approx",
-    "rand",
-    "serde",
-    "tracing",
-]
+full = ["default", "approx", "rand", "serde", "tracing"]
 
 # [FF] Dependencies
 alloc = [
@@ -34,32 +26,15 @@ alloc = [
     "serde?/alloc",
 ]
 
-approx = [
-    "dep:approx",
-    "ndarray/approx-0_5",
-]
+approx = ["dep:approx", "ndarray/approx"]
 
-blas = [
-    "ndarray/blas",
-]
+blas = ["ndarray/blas"]
 
-rand = [
-    "dep:rand",
-    "dep:rand_distr",
-    "dep:ndarray-rand",
-    "rand-ext",
-]
+rand = ["dep:rand", "dep:rand_distr", "dep:ndarray-rand", "rand-ext"]
 
-rand-ext = [
-    "num/rand",
-    "uuid/rng",
-    "uuid/v4",
-]
+rand-ext = ["num/rand", "uuid/rng", "uuid/v4"]
 
-std-rng = [
-    "rand?/std",
-    "rand?/std_rng",
-]
+std-rng = ["rand?/std", "rand?/std_rng"]
 
 serde = [
     "serde-1",
@@ -68,16 +43,12 @@ serde = [
     "rand?/serde1",
     "rand_distr?/serde1",
     "scsys/serde",
-    "uuid/serde"
+    "uuid/serde",
 ]
 
-serde-1 = [
-    "dep:serde"
-]
+serde-1 = ["dep:serde"]
 
-tracing = [
-    "dep:tracing"
-]
+tracing = ["dep:tracing"]
 
 # ********* [FF] Environments *********
 std = [
@@ -88,12 +59,10 @@ std = [
     "scsys/std",
     "serde/std",
     "strum/std",
-    "uuid/std"
+    "uuid/std",
 ]
 
-wasm = [
-    "getrandom/js",
-]
+wasm = ["getrandom/js"]
 
 wasi = []
 
@@ -102,7 +71,6 @@ bench = false
 crate-type = ["lib"]
 doctest = false
 test = true
-
 
 
 [[test]]

@@ -1,4 +1,5 @@
 [package]
+name = "concision-derive"
 authors.workspace = true
 categories.workspace = true
 description.workspace = true
@@ -6,23 +7,16 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-derive"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
-default = [
-    "std"
-]
+default = ["std"]
 
 alloc = []
 
 std = []
-
-wasi = []
-
-wasm = []
 
 [lib]
 bench = false
