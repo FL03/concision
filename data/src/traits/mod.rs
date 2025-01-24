@@ -2,12 +2,10 @@
     Appellation: traits <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{data::*, ext::*, records::*, shape::*};
+pub use self::{data::*, ext::*, records::*};
 
 pub mod build;
-
 pub mod records;
-pub mod shape;
 
 #[doc(hidden)]
 pub mod data {
@@ -40,5 +38,4 @@ pub(crate) mod prelude {
     pub use super::data::prelude::*;
     pub use super::ext::prelude::*;
     pub use super::records::*;
-    pub use super::shape::*;
 }

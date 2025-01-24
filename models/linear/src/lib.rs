@@ -56,6 +56,7 @@ mod impls {
 }
 
 pub mod prelude {
+    pub use crate::mlp::prelude::*;
     pub use crate::model::prelude::*;
     pub use crate::norm::prelude::*;
     pub use crate::params::prelude::*;

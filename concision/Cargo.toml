@@ -45,6 +45,7 @@ models = [
     "gnn",
     "kan",
     "linear",
+    "s4",
     "transformer",
 ]
 
@@ -60,6 +61,10 @@ linear = [
     "dep:concision-linear",
 ]
 
+s4 = [
+    "dep:concision-s4",
+]
+
 transformer = [
     "dep:concision-transformer",
 ]
@@ -72,6 +77,7 @@ alloc = [
     "concision-gnn?/alloc",
     "concision-kan?/alloc",
     "concision-linear?/alloc",
+    "concision-s4?/alloc",
     "concision-transformer?/alloc",
 ]
 
@@ -81,6 +87,7 @@ approx = [
     "concision-gnn?/approx",
     "concision-kan?/approx",
     "concision-linear?/approx",
+    "concision-s4?/approx",
     "concision-transformer?/approx",
 ]
 
@@ -90,6 +97,7 @@ rand = [
     "concision-gnn?/rand",
     "concision-kan?/rand",
     "concision-linear?/rand",
+    "concision-s4?/rand",
     "concision-transformer?/rand",
 ]
 
@@ -99,6 +107,7 @@ serde = [
     "concision-gnn?/serde",
     "concision-kan?/serde",
     "concision-linear?/serde",
+    "concision-s4?/serde",
     "concision-transformer?/serde",
 ]
 
@@ -108,6 +117,7 @@ tracing = [
     "concision-gnn?/tracing",
     "concision-kan?/tracing",
     "concision-linear?/tracing",
+    "concision-s4?/tracing",
     "concision-transformer?/tracing",
 ]
 
@@ -119,6 +129,7 @@ std = [
     "concision-gnn?/std",
     "concision-kan?/std",
     "concision-linear?/std",
+    "concision-s4?/std",
     "concision-transformer?/std",
 ]
 
@@ -137,6 +148,7 @@ wasi = [
     "concision-gnn?/wasi",
     "concision-kan?/wasi",
     "concision-linear?/wasi",
+    "concision-s4?/wasi",
     "concision-transformer?/wasi",
 ]
 
@@ -147,6 +159,7 @@ blas = [
     "concision-gnn?/blas",
     "concision-kan?/blas",
     "concision-linear?/blas",
+    "concision-s4?/blas",
     "concision-transformer?/blas",
 ]
 
@@ -192,44 +205,49 @@ required-features = ["transformer", "rand", "serde", "tracing"]
 
 [dependencies.concision-core]
 path = "../core"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-data]
 optional = true
 path = "../data"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-derive]
 optional = true
 path = "../derive"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-macros]
 optional = true
 path = "../macros"
-version = "0.1.14"
+version = "0.1.15"
 
 # *************** Models ***************
 
 [dependencies.concision-gnn]
 optional = true
 path = "../models/gnn"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-kan]
 optional = true
 path = "../models/kan"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.concision-linear]
 optional = true
 path = "../models/linear"
-version = "0.1.14"
+version = "0.1.15"
+
+[dependencies.concision-s4]
+optional = true
+path = "../models/s4"
+version = "0.1.15"
 
 [dependencies.concision-transformer]
 optional = true
 path = "../models/transformers"
-version = "0.1.14"
+version = "0.1.15"
 
 [dev-dependencies]
 anyhow = "1"

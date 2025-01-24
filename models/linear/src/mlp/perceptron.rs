@@ -2,41 +2,49 @@
    Appellation: perceptron <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{Module, Predict, PredictError};
+use concision::prelude::{Activate, Module, Predict, PredictError};
+use nd::{ArrayBase, Data, Dimension};
 
-pub struct Perceptron<F, M>
-where
-    M: Module,
-{
+// #91
+/// Perceptrons are the fundamental building block of multi-layer perceptrons (MLPs).
+/// They are used to model a particular layer within a neural network. Generally speaking,
+/// Perceptrons consist of a linear set of parameters and an activation function.
+pub struct Perceptron<M, F> {
     module: M,
     rho: F,
 }
 
-impl<F, M> Perceptron<F, M>
+impl<M, F> Perceptron<M, F>
 where
     M: Module,
 {
     pub fn new(module: M, rho: F) -> Self {
         Self { module, rho }
     }
+}
 
-    pub fn activate<T>(&self, args: &T) -> T
-    where
-        F: Fn(&T) -> T,
-    {
-        (self.rho)(args)
+impl<T, M, F> Activate<T> for Perceptron<M, F>
+where
+    F: Activate<T>,
+{
+    type Output = F::Output;
+
+    fn activate(&self, args: T) -> Self::Output {
+        self.rho.activate(args)
     }
 }
 
-impl<X, Y, F, M> Predict<X> for Perceptron<F, M>
+impl<A, S, D, M, F> Predict<ArrayBase<S, D>> for Perceptron<M, F>
 where
-    F: for<'a> Fn(&'a Y) -> Y,
-    M: Predict<X, Output = Y> + Module,
+    D: Dimension,
+    S: Data<Elem = A>,
+    F: Activate<M::Output>,
+    M: Module + Predict<ArrayBase<S, D>>,
 {
-    type Output = Y;
+    type Output = F::Output;
 
-    fn predict(&self, args: &X) -> Result<Self::Output, PredictError> {
+    fn predict(&self, args: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
         let res = self.module.predict(args)?;
-        Ok(self.activate(&res))
+        Ok(self.rho.activate(res))
     }
 }

@@ -24,13 +24,13 @@ use strum::{AsRefStr, EnumDiscriminants, EnumIs, VariantNames};
         Hash,
         Ord,
         PartialOrd,
-        VariantNames,
         strum::Display,
         strum::EnumCount,
-        EnumIs,
+        strum::EnumIs,
         strum::EnumIter,
         strum::EnumString,
-        strum::VariantArray
+        strum::VariantArray,
+        strum::VariantNames,
     ),
     strum(serialize_all = "lowercase")
 )]

@@ -8,20 +8,16 @@
 //!
 //!
 #[doc(inline)]
-pub use self::perceptron::Perceptron;
+pub use self::{model::*, perceptron::*};
 
-pub mod perceptron;
+pub(crate) mod model;
+pub(crate) mod perceptron;
 
-pub trait MultiLayerPerceptron {
-    type Input;
-    type Hidden;
-    type Output;
+pub(crate) mod prelude {
+    pub use super::perceptron::Perceptron;
 }
 
-pub trait Neuron<T, F> {}
-
-pub trait Rho<T> {
+pub trait DeepNeuralNetwork<T> {
+    type Input;
     type Output;
-
-    fn activate(&self, args: T) -> Self::Output;
 }

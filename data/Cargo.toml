@@ -77,14 +77,12 @@ wasi = [
 
 [lib]
 crate-type = ["lib"]
-doctest = false
+doctest = true
 test = true
 
-[[test]]
-name = "params"
-required-features = ["std"]
-
 [build-dependencies]
+
+[dev-dependencies]
 
 [dependencies]
 itertools.workspace = true
@@ -100,7 +98,7 @@ version = "0.5"
 [dependencies.concision-core]
 default-features = false
 path = "../core"
-version = "0.1.14"
+version = "0.1.15"
 
 [dependencies.serde]
 default-features = false
@@ -111,8 +109,6 @@ version = "1"
 [dependencies.tracing]
 optional = true
 version = "0.1"
-
-[dev-dependencies]
 
 [package.metadata.docs.rs]
 all-features = true

@@ -1,14 +1,14 @@
 [workspace.package]
 authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems (https://github.com/scattered-systems)"]
 categories = [ "science" ]
-description = "Concision is a complete data-science toolkit written in Rust"
+description = "Concision is a toolkit for building powerful machine-learning models in Rust."
 edition = "2021"
 homepage = "https://github.com/FL03/concision/wiki"
 keywords = ["data-science", "scsys", "toolkit"]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
-version = "0.1.14"
+version = "0.1.15"
 
 [workspace.dependencies]
 # acme = { features = ["full"], branch = "v0.3.2", git = "https://github.com/FL03/acme", version = "0.3.2" }
@@ -43,6 +43,7 @@ members = [
     "models/linear",
     "models/gnn",
     "models/kan", 
+    "models/s4",
     "models/transformers",
 ]
 

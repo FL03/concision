@@ -9,10 +9,10 @@
 //! the Transformer model, primarily due to its capabilities in natural language
 //! processing (NLP) domains
 pub(crate) use self::_impl_methods::*;
-pub use self::head::AttentionHead;
-pub use self::score::Score;
 pub use self::utils::*;
+pub use self::{config::AttentionConfig, head::AttentionHead, score::Score};
 
+pub(crate) mod config;
 pub(crate) mod head;
 pub(crate) mod score;
 
@@ -34,7 +34,7 @@ pub trait Attention {
 
 pub(crate) mod utils {
     use super::Score;
-    use concision::nn::DropoutLayer;
+    use concision::nn::Dropout;
     use nd::linalg::Dot;
     use nd::prelude::*;
     use num::complex::ComplexFloat;
@@ -45,7 +45,7 @@ pub(crate) mod utils {
         k: &ArrayBase<S, D>,
         v: &ArrayBase<S, D>,
         mask: Option<&Array<bool, D>>,
-        dropout: Option<&DropoutLayer>,
+        dropout: Option<&Dropout>,
     ) -> Score<A, D>
     where
         A: ComplexFloat + nd::ScalarOperand,
@@ -60,7 +60,7 @@ pub(crate) mod utils {
 
 mod _impl_methods {
     use super::Score;
-    use concision::prelude::{DropoutLayer, MaskFill, Softmax};
+    use concision::prelude::{Dropout, MaskFill, Softmax};
     use nd::linalg::Dot;
     use nd::prelude::*;
     use num::complex::ComplexFloat;
@@ -70,7 +70,7 @@ mod _impl_methods {
         k: &ArrayBase<S, D>,
         v: &ArrayBase<S, D>,
         mask: Option<&Array<bool, D>>,
-        dropout: Option<&DropoutLayer>,
+        dropout: Option<&Dropout>,
     ) -> Score<A, D>
     where
         A: ComplexFloat + nd::ScalarOperand,

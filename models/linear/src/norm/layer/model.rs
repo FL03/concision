@@ -91,26 +91,12 @@ where
     pub fn params_mut(&mut self) -> &mut LinearParams<A, K, D> {
         &mut self.params
     }
-
-    pub fn dim(&self) -> D::Pattern {
-        self.config().dim()
-    }
-
-    pub fn eps(&self) -> f64 {
+    /// Returns the epsilon value used for numerical stability.
+    pub const fn eps(&self) -> f64 {
         self.config().eps()
     }
 
-    pub fn ndim(&self) -> usize {
-        self.config().ndim()
-    }
-
-    pub fn raw_dim(&self) -> D {
-        self.config().raw_dim()
-    }
-
-    pub fn shape(&self) -> &[usize] {
-        self.config().shape()
-    }
+    concision::dimensional!(config());
 }
 
 impl<A, D> Default for LayerNorm<A, Biased, D>
