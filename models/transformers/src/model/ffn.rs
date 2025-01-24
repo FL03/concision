@@ -98,7 +98,7 @@ where
     type Output = Array<B, E>;
 
     fn predict(&self, input: &Array<B, E>) -> Result<Self::Output, PredictError> {
-        let mut y = self.input().predict(input)?.relu();
+        let y = self.input().predict(input)?.relu();
         self.output().predict(&y)
     }
 }

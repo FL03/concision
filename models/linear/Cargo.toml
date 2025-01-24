@@ -28,9 +28,7 @@ blas = ["concision-core/blas", "ndarray/blas"]
 
 rand = ["concision-core/rand", "num/rand"]
 
-serde = ["serde-1", "concision-core/serde", "ndarray/serde-1", "num/serde"]
-
-serde-1 = ["dep:serde"]
+serde = ["dep:serde", "concision-core/serde", "ndarray/serde-1", "num/serde"]
 
 tracing = ["dep:tracing"]
 

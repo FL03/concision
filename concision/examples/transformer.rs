@@ -4,7 +4,6 @@
 */
 extern crate concision as cnc;
 
-use approx::AbsDiffEq;
 use cnc::prelude::Result;
 use cnc::transformer::AttentionHead;
 use ndarray::Array2;

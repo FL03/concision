@@ -2,6 +2,9 @@
    Appellation: core <library>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
+//! # concision-core
+//!
+//! This crate is the core library for the Concision project. It provides the basic building blocks for creating neural networks and other machine learning models.
 #![cfg_attr(not(feature = "std"), no_std)]
 #![crate_name = "concision_core"]
 
@@ -11,7 +14,7 @@ extern crate ndarray as nd;
 #[cfg(feature = "rand")]
 extern crate ndarray_rand as ndrand;
 
-pub use self::error::{Error, Errors, PredictError};
+pub use self::error::{Error, PredictError, Result};
 pub use self::func::Activate;
 pub use self::nn::Module;
 pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::prelude::*};

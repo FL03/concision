@@ -45,7 +45,7 @@ fn test_linarr() {
     let n = shape.0 * shape.1;
     let args = linarr::<f64, Ix2>(shape.clone()).unwrap();
     let exp = Array::linspace(0f64, (n - 1) as f64, n)
-        .into_shape(shape)
+        .into_shape_clone(shape)
         .unwrap();
     assert_eq!(args, exp);
 }

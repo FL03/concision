@@ -57,6 +57,7 @@ std = [
     "scsys/std",
     "serde/std",
     "strum/std",
+    "thiserror/std",
     "uuid/std",
 ]
 
@@ -90,6 +91,7 @@ paste.workspace = true
 scsys.workspace = true
 smart-default.workspace = true
 strum.workspace = true
+thiserror.workspace = true
 # Optional dependencies
 approx = { optional = true, version = "0.5" }
 ndarray-rand = { optional = true, version = "0.15" }

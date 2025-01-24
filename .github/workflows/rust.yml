@@ -42,7 +42,7 @@ jobs:
         run: cargo build --all-features -r -v --workspace
       - 
         name: test
-        run: cargo test --all-features -r -v --workspace
+        run: cargo test -r -v --workspace -F full
       - 
         name: bench
         if: matrix.toolchain == 'nightly'

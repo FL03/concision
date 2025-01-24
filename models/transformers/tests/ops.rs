@@ -107,10 +107,10 @@ pub(crate) mod utils {
     {
         let dim = param.shape().last().unwrap() / h;
         // reshape the qkv matrix into a 3d array
-        let mut res = param.clone().into_shape((param.shape()[0], h, dim))?;
+        let mut res = param.to_shape((param.shape()[0], h, dim))?;
         // swap the sequence and head axes
         res.swap_axes(0, 1);
-        Ok(res)
+        Ok(res.to_owned())
     }
 
     pub fn split_batch<T>(param: &Array3<T>, h: usize) -> NdResult<Array4<T>>
@@ -119,11 +119,9 @@ pub(crate) mod utils {
     {
         let dim = param.shape().last().unwrap() / h;
         // reshape the qkv matrix into a 3d array
-        let mut res = param
-            .clone()
-            .into_shape((param.shape()[0], param.shape()[1], h, dim))?;
+        let mut res = param.to_shape((param.shape()[0], param.shape()[1], h, dim))?;
         // swap the sequence and head axes
         res.swap_axes(1, 2);
-        Ok(res)
+        Ok(res.to_owned())
     }
 }

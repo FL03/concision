@@ -7,10 +7,6 @@ mod activate;
 #[macro_use]
 mod builder;
 #[macro_use]
-mod enums;
-#[macro_use]
-mod errors;
-#[macro_use]
 mod getters;
 #[macro_use]
 mod ops;

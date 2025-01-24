@@ -4,10 +4,9 @@
 */
 #[cfg(any(feature = "alloc", feature = "std"))]
 pub use self::types::*;
-pub use self::{dropout::*, error::ModelError, model::prelude::*};
+pub use self::{dropout::*, model::prelude::*};
 
 pub mod dropout;
-pub mod error;
 pub mod mask;
 pub mod model;
 #[doc(hidden)]
@@ -15,7 +14,6 @@ pub mod optim;
 
 pub(crate) mod prelude {
     pub use super::dropout::*;
-    pub use super::error::*;
     pub use super::mask::prelude::*;
     pub use super::model::prelude::*;
     pub use super::optim::prelude::*;

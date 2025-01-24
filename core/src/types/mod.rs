@@ -10,9 +10,6 @@ pub mod propagate;
 pub mod shape;
 
 pub type NdResult<T> = core::result::Result<T, nd::ShapeError>;
-/// A type alias for a [Result](core::result::Result) with the crate's [Error](crate::error::Error) type.
-/// Defaults to `Result<(), Error>`
-pub type Result<T = (), E = crate::error::Errors> = core::result::Result<T, E>;
 
 #[cfg(feature = "std")]
 mod std_types {
@@ -23,11 +20,11 @@ mod std_types {
 }
 
 pub(crate) mod prelude {
+    pub use super::NdResult;
     pub use super::propagate::Propagate;
     pub use super::shape::ModelShape;
     #[cfg(feature = "std")]
     pub use super::std_types::*;
-    pub use super::{NdResult, Result};
 }
 
 #[cfg(test)]

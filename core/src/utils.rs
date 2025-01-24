@@ -4,14 +4,14 @@
 */
 pub use self::prelude::*;
 
-pub(crate) mod id;
+pub(crate) mod checks;
 pub(crate) mod math;
 pub(crate) mod tensor;
 
+#[allow(unused_imports)]
+#[doc(hidden)]
 pub(crate) mod prelude {
-    #[allow(unused_imports)]
-    #[doc(hidden)]
-    pub use super::id::*;
+    pub use super::checks::*;
     pub use super::math::*;
     pub use super::tensor::*;
 }

@@ -26,6 +26,8 @@ num = { default-features = false, version = "0.4" }
 paste = "1"
 smart-default = "0.7"
 strum = { default-features = false, features = ["derive"], version = "0.26" }
+thiserror = { default-features = false, version = "2" }
+uuid = { default-features = false, version = "0.8" }
 
 [workspace]
 default-members = ["concision"]
@@ -52,7 +54,7 @@ opt-level = 0
 debug = true
 debug-assertions = true
 overflow-checks = true
-lto = false
+lto = true
 panic = 'unwind'
 incremental = true
 codegen-units = 256
