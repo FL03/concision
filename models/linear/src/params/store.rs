@@ -35,7 +35,7 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let dim = shape.into_shape().raw_dim().clone();
+        let dim = shape.into_shape_with_order().raw_dim().clone();
         let bias = if K::BIASED {
             Some(ArrayBase::from_elem(
                 crate::bias_dim(dim.clone()),
@@ -144,7 +144,7 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let dim = shape.into_shape().raw_dim().clone();
+        let dim = shape.into_shape_with_order().raw_dim().clone();
         Self {
             bias: build_bias(true, dim.clone(), ArrayBase::default),
             weight: ArrayBase::default(dim),

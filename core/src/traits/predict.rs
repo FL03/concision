@@ -2,11 +2,14 @@
    Appellation: predict <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::error::PredictError;
-#[cfg(any(feature = "alloc", feature = "std"))]
-use crate::rust::Box;
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
 
-/// [Forward] describes an object capable of forward propagation.
+use crate::PredictError;
+
+/// [Forward] describes an object capable of forward propagation; that is, it can
+/// take an input and produce an output.
+/// 
 pub trait Forward<T> {
     type Output;
 
@@ -22,10 +25,19 @@ pub trait ForwardIter<T> {
     fn forward_iter(self, args: &T) -> <Self::Item as Forward<T>>::Output;
 }
 
+/// The [Predict] is a generalized implementation of the [Forward] trait equipped with 
+/// additional error handling capabilities. 
 pub trait Predict<T> {
     type Output;
 
-    fn predict(&self, args: &T) -> Result<Self::Output, PredictError>;
+    fn predict(&self, args: &T) -> Result<Self::Output, crate::PredictError>;
+}
+
+pub trait PredictGen<T> {
+    type Error: core::fmt::Debug;
+    type Output;
+
+    fn predict(&self, args: &T) -> Result<Self::Output, Self::Error>;
 }
 
 /*
@@ -35,10 +47,10 @@ impl<U, M> Forward<U> for M
 where
     M: Predict<U>,
 {
-    type Output = M::Output;
+    type Output = Option<M::Output>;
 
     fn forward(&self, args: &U) -> Self::Output {
-        self.predict(args).unwrap()
+        self.predict(args).ok()
     }
 }
 

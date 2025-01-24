@@ -60,7 +60,7 @@ where
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         let msg = match self {
-            ExternalError::Error(ref err) => err.to_string(),
+            ExternalError::Error(err) => err.to_string(),
             ExternalError::Unknown => "Unknown error".to_string(),
         };
         write!(f, "{}", msg)

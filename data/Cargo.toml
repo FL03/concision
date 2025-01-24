@@ -27,7 +27,7 @@ rand = ["concision-core/rand"]
 
 serde = ["dep:serde", "serde-ext"]
 
-serde-ext = ["concision-core/serde", "ndarray/serde-1"]
+serde-ext = ["concision-core/serde", "ndarray/serde", "num/serde"]
 
 std = ["concision-core/std", "ndarray/std", "num/std", "serde/std", "strum/std"]
 

@@ -21,7 +21,47 @@ permissions:
   packages: write
 
 jobs:
+  core:
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [ core ]
+    env:
+      PACKAGE: ${{ github.event.repository.name }}-${{ matrix.package }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - 
+        name: rustup
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          cache-workspaces: true
+      - 
+        name: publish (${{ env.PACKAGE }})
+        run: cargo publish --all-features -v -p ${{ env.PACKAGE }}
+  features:
+    needs: core
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [ data, derive, macros, gnn, kan, linear, s4, transformers ]
+    env:
+      PACKAGE: ${{ github.event.repository.name }}-${{ matrix.package }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - 
+        name: rustup
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          cache-workspaces: true
+      - 
+        name: publish (${{ env.PACKAGE }})
+        run: cargo publish --all-features -v -p ${{ env.PACKAGE }}
   publish:
+    needs: features
     env:
       PACKAGE: ${{ github.event.repository.name }}
     runs-on: ubuntu-latest

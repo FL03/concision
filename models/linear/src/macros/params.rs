@@ -17,7 +17,7 @@ macro_rules! pbuilder {
             Sh: ndarray::ShapeBuilder<Dim = D>,
             $($rest)*
         {
-            let dim = shape.into_shape().raw_dim().clone();
+            let dim = shape.into_shape_with_order().raw_dim().clone();
             ParamsBase {
                 bias: build_bias(K::BIASED, dim.clone(), |dim| ndarray::ArrayBase::$call(dim)),
                 weight: ndarray::ArrayBase::$call(dim),

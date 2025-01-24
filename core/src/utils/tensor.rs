@@ -2,7 +2,7 @@
     Appellation: tensor <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{gen::*, stack::*};
+pub use self::{generators::*, stack::*};
 use nd::*;
 use num::traits::{NumAssign, Zero};
 
@@ -91,7 +91,7 @@ where
     out
 }
 
-pub(crate) mod gen {
+pub(crate) mod generators {
     use nd::{Array, Array1, Dimension, IntoDimension, ShapeError};
     use num::traits::{Float, NumCast};
 
@@ -106,7 +106,7 @@ pub(crate) mod gen {
     {
         let dim = dim.into_dimension();
         let n = dim.size();
-        Array::linspace(A::zero(), A::from(n - 1).unwrap(), n).into_shape(dim)
+        Array::linspace(A::zero(), A::from(n - 1).unwrap(), n).to_shape(dim).map(|x| x.to_owned())
     }
 }
 

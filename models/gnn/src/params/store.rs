@@ -2,22 +2,19 @@
     Appellation: store <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use petgraph::graph::Graph;
-use petgraph::{Directed, Direction};
+use petgraph::graph::{Graph, DefaultIx, IndexType, NodeIndex};
+use petgraph::{Directed, EdgeType};
 
-pub struct GraphStore<K, V, Q = Directed>
-where
-    Q: Direction,
-{
-    pub(crate) params: Graph<K, V, Q>,
+pub struct GraphStore<N, E, Q = Directed, Ix = DefaultIx> {
+    pub(crate) params: Graph<N, E, Q, Ix>,
 }
 
-impl<K, V, Q> GraphStore<K, V, Q> {
-    pub fn new(params: Graph<K, V, Q>) -> Self {
+impl<N, E, Q, Ix> GraphStore<N, E, Q, Ix> where Q: EdgeType, Ix: IndexType {
+    pub fn new(params: Graph<N, E, Q, Ix>) -> Self {
         Self { params }
     }
 
-    pub fn get(&self, key: K) -> Option<&V> {
+    pub fn get(&self, key: NodeIndex<Ix>) -> Option<&N> {
         self.params.node_weight(key)
     }
 }

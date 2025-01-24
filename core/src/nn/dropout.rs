@@ -7,11 +7,11 @@ use crate::{Eval, Predict, PredictError};
 use nd::prelude::*;
 use nd::{DataOwned, ScalarOperand};
 #[cfg(feature = "rand")]
-use ndrand::{rand_distr::Bernoulli, RandomExt};
+use ndarray_rand::{rand_distr::Bernoulli, RandomExt};
 use num::traits::Num;
 
 #[cfg(feature = "rand")]
-pub(crate) fn _dropout<A, S, D>(array: &ArrayBase<S, D>, p: f64) -> Array<A, D>
+pub(crate) fn _dropout<S, A, D>(array: &ArrayBase<S, D>, p: f64) -> Array<A, D>
 where
     A: Num + ScalarOperand,
     D: Dimension,
@@ -21,11 +21,11 @@ where
     let distribution = Bernoulli::new(p).unwrap();
 
     // Create a mask of the same shape as the input array
-    let mask: Array<bool, D> = Array::random(array.dim(), distribution);
+    let mask: Array<bool, D> = Array::random_using(array.dim(), distribution);
     let mask = mask.mapv(|x| if x { A::zero() } else { A::one() });
 
     // Element-wise multiplication to apply dropout
-    array * mask
+    array.to_owned() * mask
 }
 
 /// [Dropout] randomly zeroizes elements with a given probability (`p`).

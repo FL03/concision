@@ -61,7 +61,7 @@ where
         A: Clone,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let dim = shape.into_shape().raw_dim().clone();
+        let dim = shape.into_shape_with_order().raw_dim().clone();
         let config = Config::new().dim(dim.clone()).build();
         let params = LinearParams::<A, K, D>::from_elem(dim, elem);
         Self { config, params }

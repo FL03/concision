@@ -42,7 +42,7 @@ impl Features {
         D: RemoveAxis,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let shape = shape.into_shape();
+        let shape = shape.into_shape_with_order();
         let dim = shape.raw_dim().clone();
         features(dim).unwrap()
     }

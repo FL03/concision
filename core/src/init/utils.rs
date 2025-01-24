@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::*;
-use ndrand::RandomExt;
+use ndarray_rand::RandomExt;
 use num::complex::{Complex, ComplexDistribution};
 use num::Num;
 use rand::distributions::uniform::{SampleUniform, Uniform};
@@ -11,13 +11,14 @@ use rand::rngs::StdRng;
 use rand::{rngs, SeedableRng};
 use rand_distr::{Distribution, StandardNormal};
 
+#[cfg(feature = "rand")]
 /// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
 pub fn randc<A, S, D>(shape: impl IntoDimension<Dim = D>) -> ArrayBase<S, D>
 where
     A: Clone + Num,
     D: Dimension,
-    S: DataOwned<Elem = Complex<A>>,
-    ComplexDistribution<A, A>: Distribution<Complex<A>>,
+    S: RawData + DataOwned<Elem = Complex<A>>,
+    ComplexDistribution<A, A>: Distribution<S::Elem>,
 {
     let distr = ComplexDistribution::<A, A>::new(A::one(), A::one());
     ArrayBase::random(shape, distr)

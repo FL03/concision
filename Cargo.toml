@@ -5,7 +5,7 @@ authors = [
 ]
 categories = ["science"]
 description = "Concision is a toolkit for building powerful machine-learning models in Rust."
-edition = "2021"
+edition = "2024"
 homepage = "https://github.com/FL03/concision/wiki"
 keywords = ["data-science", "scsys", "toolkit"]
 license = "Apache-2.0"
@@ -14,9 +14,7 @@ repository = "https://github.com/FL03/concision"
 version = "0.1.16"
 
 [workspace.dependencies]
-# acme = { features = ["full"], branch = "v0.3.2", git = "https://github.com/FL03/acme", version = "0.3.2" }
-# ndtensor = { features = ["full"], branch = "v0.1.1", git = "https://github.com/FL03/ndtensor", version = "0.1" }
-scsys = { default-features = false, version = "0.2.3" }
+scsys = { default-features = false, features = ["derive"], version = "0.2.3" }
 
 approx = "0.5"
 itertools = "0.14"
@@ -46,7 +44,7 @@ members = [
     "models/transformers",
 ]
 
-resolver = "2"
+resolver = "3"
 
 [profile.dev]
 opt-level = 0
@@ -65,7 +63,7 @@ debug = false
 debug-assertions = false
 overflow-checks = false
 lto = false
-panic = 'unwind'
+panic = 'abort'
 incremental = false
 codegen-units = 16
 rpath = false

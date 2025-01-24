@@ -8,5 +8,5 @@ pub use self::store::*;
 pub(crate) mod store;
 
 pub(crate) mod prelude {
-    pub use crate::store::GraphStore;
+    pub use super::store::GraphStore;
 }

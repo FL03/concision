@@ -70,7 +70,7 @@ impl Features {
         D: RemoveAxis,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let dim = shape.into_shape().raw_dim().clone();
+        let dim = shape.into_shape_with_order().raw_dim().clone();
         _from_dim(dim).unwrap()
     }
     /// Creates a new instance given the model size (`inputs`, `d_model`) and total number of nodes within the network (`size`, `network`, `d_network`)
