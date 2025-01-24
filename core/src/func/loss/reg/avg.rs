@@ -2,9 +2,8 @@
     Appellation: avg <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use math::{Abs, Squared};
-use ndarray::prelude::*;
-use ndarray::{Data, ScalarOperand};
+use concision_math::{Abs, Squared};
+use ndarray::{ArrayBase, Data, Dimension, ScalarOperand};
 use num::traits::{FromPrimitive, Num, Pow, Signed};
 
 pub trait MeanAbsoluteError<Rhs = Self> {

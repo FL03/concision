@@ -2,9 +2,8 @@
     Appellation: utils <loss>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use math::{Abs, Squared};
-use nd::prelude::*;
-use nd::{Data, ScalarOperand};
+use concision_math::{Abs, Squared};
+use ndarray::{ArrayBase, Data, Dimension, ScalarOperand};
 use num::traits::{FromPrimitive, Num, Pow, Signed};
 
 /// A functional implementation of the mean absolute error loss function which compares two similar

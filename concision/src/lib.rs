@@ -27,9 +27,6 @@ pub use concision_kan as kan;
 pub use concision_linear as linear;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
-#[cfg(feature = "math")]
-#[doc(inline)]
-pub use concision_math as math;
 #[cfg(feature = "s4")]
 #[doc(inline)]
 pub use concision_s4 as s4;
@@ -38,6 +35,7 @@ pub use concision_s4 as s4;
 pub use concision_transformer as transformer;
 
 pub mod prelude {
+    pub use concision_core::prelude::*;
     #[cfg(feature = "gnn")]
     pub use crate::gnn::prelude::*;
     #[cfg(feature = "kan")]
@@ -48,7 +46,6 @@ pub mod prelude {
     pub use crate::s4::prelude::*;
     #[cfg(feature = "transformer")]
     pub use crate::transformer::prelude::*;
-    pub use concision_core::prelude::*;
     #[cfg(feature = "data")]
     pub use concision_data::prelude::*;
     #[cfg(feature = "derive")]

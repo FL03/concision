@@ -12,7 +12,7 @@ repository.workspace  = true
 version.workspace     = true
 
 [features]
-default = ["data", "math", "std"]
+default = ["data", "std"]
 full = [
     "approx",
     "default",
@@ -32,8 +32,6 @@ data = ["dep:concision-data"]
 derive = ["dep:concision-derive", "macros"]
 
 macros = ["dep:concision-macros"]
-
-math = ["dep:concision-math"]
 
 # ********* [FF] Models(s) *********
 models = []
@@ -55,7 +53,6 @@ alloc = [
     "concision-gnn?/alloc",
     "concision-kan?/alloc",
     "concision-linear?/alloc",
-    "concision-math?/alloc",
     "concision-s4?/alloc",
     "concision-transformer?/alloc",
 ]
@@ -66,7 +63,6 @@ approx = [
     "concision-gnn?/approx",
     "concision-kan?/approx",
     "concision-linear?/approx",
-    "concision-math?/approx",
     "concision-s4?/approx",
     "concision-transformer?/approx",
 ]
@@ -87,7 +83,6 @@ serde = [
     "concision-gnn?/serde",
     "concision-kan?/serde",
     "concision-linear?/serde",
-    "concision-math?/serde",
     "concision-s4?/serde",
     "concision-transformer?/serde",
 ]
@@ -98,7 +93,6 @@ tracing = [
     "concision-gnn?/tracing",
     "concision-kan?/tracing",
     "concision-linear?/tracing",
-    "concision-math?/tracing",
     "concision-s4?/tracing",
     "concision-transformer?/tracing",
 ]
@@ -111,7 +105,6 @@ std = [
     "concision-gnn?/std",
     "concision-kan?/std",
     "concision-linear?/std",
-    "concision-math?/std",
     "concision-s4?/std",
     "concision-transformer?/std",
 ]
@@ -123,7 +116,6 @@ blas = [
     "concision-gnn?/blas",
     "concision-kan?/blas",
     "concision-linear?/blas",
-    "concision-math?/blas",
     "concision-s4?/blas",
     "concision-transformer?/blas",
 ]
@@ -161,7 +153,6 @@ concision-core   = { path = "../core", version = "0.1.16" }
 concision-data   = { optional = true, path = "../data", version = "0.1.16" }
 concision-derive = { optional = true, path = "../derive", version = "0.1.16" }
 concision-macros = { optional = true, path = "../macros", version = "0.1.16" }
-concision-math   = { optional = true, path = "../math", version = "0.1.16" }
 
 # *************** Models ***************
 concision-gnn         = { optional = true, path = "../models/gnn", version = "0.1.16" }

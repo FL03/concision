@@ -14,11 +14,11 @@ version.workspace = true
 
 [features]
 default = ["std"]
-
 full = ["default", "approx", "rand", "serde", "tracing"]
 
-# [FF] Dependencies
+# ********* [FF] Dependencies *********
 alloc = [
+    "concision-math/alloc",
     "num/alloc",
     "rand?/alloc",
     "rand_distr?/alloc",
@@ -26,18 +26,17 @@ alloc = [
     "serde?/alloc",
 ]
 
-approx = ["dep:approx", "ndarray/approx"]
+approx = ["dep:approx", "ndarray/approx", "concision-math/approx"]
 
-blas = ["ndarray/blas"]
+blas = ["ndarray/blas", "concision-math/blas"]
 
-rand = ["dep:rand", "dep:rand_distr", "dep:ndarray-rand", "rand-ext"]
-
-rand-ext = ["num/rand", "uuid/rng", "uuid/v4"]
+rand = ["dep:rand", "dep:rand_distr", "dep:ndarray-rand", "num/rand", "uuid/rng", "uuid/v4"]
 
 std-rng = ["rand?/std", "rand?/std_rng"]
 
 serde = [
     "dep:serde",
+    "concision-math/serde",
     "ndarray/serde",
     "num/serde",
     "rand?/serde1",
@@ -46,11 +45,12 @@ serde = [
     "uuid/serde",
 ]
 
-tracing = ["dep:tracing"]
+tracing = ["dep:tracing", "concision-math/tracing"]
 
 # ********* [FF] Environments *********
 std = [
     "alloc",
+    "concision-math/std",
     "std-rng",
     "ndarray/std",
     "num/std",
@@ -85,7 +85,8 @@ name = "nn"
 lazy_static.workspace = true
 
 [dependencies]
-concision-math = { path = "../math", version = "0.1.16" }
+concision-math = { default-features = false, path = "../math", version = "0.1.16" }
+
 ndarray.workspace = true
 num.workspace = true
 paste.workspace = true
