@@ -7,7 +7,6 @@
 //! Concision aims to be a complete machine learning library written in pure Rust.
 //!
 #![allow(unused_imports)]
-
 #![crate_name = "concision"]
 
 #[doc(inline)]

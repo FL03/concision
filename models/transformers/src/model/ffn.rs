@@ -37,10 +37,7 @@ where
     {
         let input = Linear::from_features(d_model, features);
         let output = Linear::from_features(features, d_model);
-        Self {
-            input,
-            output,
-        }
+        Self { input, output }
     }
 }
 
@@ -118,7 +115,7 @@ where
     fn predict(&self, input: &Array<B, E>) -> Result<Self::Output, PredictError> {
         let mut y = self.input().predict(input)?.relu();
         if let Some(dropout) = self.dropout() {
-            y = dropout.forward(&y);
+            y = dropout.predict(&y)?;
         }
         self.output().predict(&y)
     }

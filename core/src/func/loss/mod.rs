@@ -11,9 +11,9 @@ pub mod entropy;
 pub mod reg;
 
 pub(crate) mod prelude {
+    pub use super::Loss;
     pub use super::reg::prelude::*;
     pub use super::utils::*;
-    pub use super::Loss;
 }
 
 pub trait Loss<A, B = A> {

@@ -8,8 +8,8 @@ extern crate concision_linear as linear;
 
 use cnc::Predict;
 use core::str::FromStr;
-use linear::params::{LinearParams, Param, Unbiased};
 use linear::Features;
+use linear::params::{LinearParams, Param, Unbiased};
 use ndarray::prelude::*;
 
 const SAMPLES: usize = 20;

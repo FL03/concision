@@ -7,7 +7,7 @@
 extern crate concision_core as concision;
 extern crate concision_kan as kan;
 
-use concision::prelude::{linarr, Forward};
+use concision::prelude::{Forward, linarr};
 
 use lazy_static::lazy_static;
 

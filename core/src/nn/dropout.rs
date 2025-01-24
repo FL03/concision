@@ -2,12 +2,9 @@
     Appellation: dropout <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![allow(unused_imports)]
 use crate::{Eval, Predict, PredictError};
 use nd::prelude::*;
 use nd::{DataOwned, ScalarOperand};
-#[cfg(feature = "rand")]
-use ndarray_rand::{rand_distr::Bernoulli, RandomExt};
 use num::traits::Num;
 
 #[cfg(feature = "rand")]
@@ -17,11 +14,9 @@ where
     D: Dimension,
     S: DataOwned<Elem = A>,
 {
-    // Create a Bernoulli distribution for dropout
-    let distribution = Bernoulli::new(p).unwrap();
-
+    use crate::init::InitializeExt;
     // Create a mask of the same shape as the input array
-    let mask: Array<bool, D> = Array::random_using(array.dim(), distribution);
+    let mask: Array<bool, D> = Array::bernoulli(array.dim(), p).expect("Failed to create mask");
     let mask = mask.mapv(|x| if x { A::zero() } else { A::one() });
 
     // Element-wise multiplication to apply dropout

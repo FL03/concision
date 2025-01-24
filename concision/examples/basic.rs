@@ -10,9 +10,6 @@ extern crate ndarray as nd;
 use cnc::ops::pad;
 use nd::prelude::Array;
 
-use std::autodiff::autodiff;
-
-#[autodiff(add_grad, forward)]
 fn add(x: f64, y: f64) -> f64 {
     x + y
 }

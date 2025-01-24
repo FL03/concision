@@ -1,8 +1,8 @@
 #![allow(unused_imports)]
 extern crate concision_core as concision;
 
-use concision::nn::Dropout;
 use concision::Forward;
+use concision::nn::Dropout;
 use ndarray::prelude::*;
 
 #[test]
@@ -14,5 +14,5 @@ fn test_dropout() {
     let out = dropout.forward(&arr);
 
     assert!(arr.iter().all(|&x| x == 1.0));
-    assert!(out.iter().any(|&x| x == 0.0));
+    assert!(out.iter().any(|x| x.iter().any(|xi| xi == &0.0)));
 }

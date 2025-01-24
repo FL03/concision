@@ -2,8 +2,8 @@
     Appellation: group <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use ndarray::prelude::{Array, Dimension, Ix2};
 use ndarray::IntoDimension;
+use ndarray::prelude::{Array, Dimension, Ix2};
 use num::Float;
 
 #[derive(Clone, Debug, Eq, PartialEq)]

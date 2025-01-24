@@ -29,9 +29,11 @@ fn main() -> Result<()> {
     let shape = (3, 3);
     let head = AttentionHead::<f64>::ones(shape);
     let score = head.attention();
-    assert!(score
-        .attention()
-        .abs_diff_eq(&Array2::from_elem(shape, 1f64 / 3f64), 1e-6));
+    assert!(
+        score
+            .attention()
+            .abs_diff_eq(&Array2::from_elem(shape, 1f64 / 3f64), 1e-6)
+    );
     println!("{:?}", score);
 
     Ok(())

@@ -117,7 +117,7 @@ where
     D: RemoveAxis,
     S: Data<Elem = T>,
     T: ComplexFloat,
-{    
+{
     type Output = B;
 
     fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {

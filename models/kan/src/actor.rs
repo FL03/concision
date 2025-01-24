@@ -9,8 +9,8 @@ pub(crate) mod config;
 use concision::prelude::{Eval, Predict, PredictError};
 use core::ops::Mul;
 use nd::prelude::*;
-use splines::interpolate::{Interpolate, Interpolator};
 use splines::Spline;
+use splines::interpolate::{Interpolate, Interpolator};
 
 #[doc(hidden)]
 pub type NdSpline<T, V> = Spline<Array1<T>, Array1<V>>;

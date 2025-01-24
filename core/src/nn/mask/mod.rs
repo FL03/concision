@@ -7,8 +7,8 @@ pub use self::mask::*;
 pub(crate) mod mask;
 
 pub(crate) mod prelude {
-    pub use super::mask::Mask;
     pub use super::NdMask;
+    pub use super::mask::Mask;
 }
 
 use nd::{ArrayBase, Dimension, Ix2, RawData};

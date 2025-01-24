@@ -2,7 +2,7 @@
     Appellation: multi_head <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{attention::AttentionConfig, AttentionHead};
+use crate::{AttentionHead, attention::AttentionConfig};
 use linear::{Biased, Linear};
 use nd::prelude::*;
 use nd::{DataOwned, OwnedRepr, RawData};

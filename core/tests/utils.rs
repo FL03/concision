@@ -16,15 +16,15 @@ fn test_conj() {
     let exp = array![[1.0, 2.0], [3.0, 4.0]];
     assert_eq!(exp, a.conj());
 
-    let a = array![
-        [Complex::new(0.0, 0.0), Complex::new(1.0, 0.25)],
-        [Complex::new(2.0, 0.5), Complex::new(3.0, 0.0)]
-    ];
+    let a = array![[Complex::new(0.0, 0.0), Complex::new(1.0, 0.25)], [
+        Complex::new(2.0, 0.5),
+        Complex::new(3.0, 0.0)
+    ]];
 
-    let exp = array![
-        [Complex::new(0.0, 0.0), Complex::new(1.0, -0.25)],
-        [Complex::new(2.0, -0.5), Complex::new(3.0, 0.0)]
-    ];
+    let exp = array![[Complex::new(0.0, 0.0), Complex::new(1.0, -0.25)], [
+        Complex::new(2.0, -0.5),
+        Complex::new(3.0, 0.0)
+    ]];
 
     assert_eq!(exp, a.conj());
 }

@@ -33,10 +33,10 @@ pub trait DFT<T> {
 }
 
 pub(crate) mod prelude {
+    pub use super::DFT;
     pub use super::cmp::prelude::*;
     pub use super::fft::*;
     pub use super::utils::*;
-    pub use super::DFT;
 }
 
 #[cfg(test)]

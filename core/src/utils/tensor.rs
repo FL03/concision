@@ -106,12 +106,14 @@ pub(crate) mod generators {
     {
         let dim = dim.into_dimension();
         let n = dim.size();
-        Array::linspace(A::zero(), A::from(n - 1).unwrap(), n).to_shape(dim).map(|x| x.to_owned())
+        Array::linspace(A::zero(), A::from(n - 1).unwrap(), n)
+            .to_shape(dim)
+            .map(|x| x.to_owned())
     }
 }
 
 pub(crate) mod stack {
-    use nd::{s, Array1, Array2};
+    use nd::{Array1, Array2, s};
     use num::Num;
     /// Creates a larger array from an iterator of smaller arrays.
     pub fn stack_iter<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>

@@ -6,7 +6,7 @@ extern crate concision_core as cnc;
 extern crate concision_linear as linear;
 extern crate concision_transformer as transformer;
 
-use cnc::prelude::{linarr, Predict};
+use cnc::prelude::{Predict, linarr};
 use linear::Biased;
 use transformer::model::ffn::FeedForwardNetwork;
 

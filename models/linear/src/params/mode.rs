@@ -2,7 +2,7 @@
     Appellation: mode <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::{toggle, TypeTag};
+use concision::{TypeTag, toggle};
 
 pub trait ParamMode: TypeTag {
     const BIASED: bool = false;

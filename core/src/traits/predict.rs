@@ -9,7 +9,7 @@ use crate::PredictError;
 
 /// [Forward] describes an object capable of forward propagation; that is, it can
 /// take an input and produce an output.
-/// 
+///
 pub trait Forward<T> {
     type Output;
 
@@ -25,8 +25,8 @@ pub trait ForwardIter<T> {
     fn forward_iter(self, args: &T) -> <Self::Item as Forward<T>>::Output;
 }
 
-/// The [Predict] is a generalized implementation of the [Forward] trait equipped with 
-/// additional error handling capabilities. 
+/// The [Predict] is a generalized implementation of the [Forward] trait equipped with
+/// additional error handling capabilities.
 pub trait Predict<T> {
     type Output;
 

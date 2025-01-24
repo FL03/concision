@@ -37,16 +37,14 @@ rand-ext = ["num/rand", "uuid/rng", "uuid/v4"]
 std-rng = ["rand?/std", "rand?/std_rng"]
 
 serde = [
-    "serde-1",
-    "ndarray/serde-1",
+    "dep:serde",
+    "ndarray/serde",
     "num/serde",
     "rand?/serde1",
     "rand_distr?/serde1",
     "scsys/serde",
     "uuid/serde",
 ]
-
-serde-1 = ["dep:serde"]
 
 tracing = ["dep:tracing"]
 
@@ -61,10 +59,6 @@ std = [
     "strum/std",
     "uuid/std",
 ]
-
-wasm = ["getrandom/js"]
-
-wasi = []
 
 [lib]
 bench = false
@@ -96,34 +90,18 @@ paste.workspace = true
 scsys.workspace = true
 smart-default.workspace = true
 strum.workspace = true
-
-[dependencies.approx]
-optional = true
-version = "0.5"
-
-[dependencies.ndarray-rand]
-optional = true
-version = "0.14"
-
-[dependencies.rand]
-default-features = false
-optional = true
-version = "0.8"
-
-[dependencies.rand_distr]
-default-features = false
-optional = true
-version = "0.4"
+# Optional dependencies
+approx = { optional = true, version = "0.5" }
+ndarray-rand = { optional = true, version = "0.15" }
+rand = { default-features = false, optional = true, version = "0.8" }
+rand_distr = { default-features = false, optional = true, version = "0.4" }
+tracing = { optional = true, version = "0.1" }
 
 [dependencies.serde]
 default-features = false
 features = ["derive"]
 optional = true
 version = "1"
-
-[dependencies.tracing]
-optional = true
-version = "0.1"
 
 [dependencies.uuid]
 default-features = false
@@ -134,7 +112,5 @@ version = "1"
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
 
-[target.wasm32-unknown-unknown.dependencies]
-getrandom = "0.2"
-
-[target.wasm32-wasi]
+[target.'cfg(wasm32)'.dependencies]
+getrandom = { features = ["js"], version = "0.2" }

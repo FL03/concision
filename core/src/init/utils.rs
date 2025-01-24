@@ -4,11 +4,11 @@
 */
 use ndarray::*;
 use ndarray_rand::RandomExt;
-use num::complex::{Complex, ComplexDistribution};
 use num::Num;
+use num::complex::{Complex, ComplexDistribution};
 use rand::distributions::uniform::{SampleUniform, Uniform};
 use rand::rngs::StdRng;
-use rand::{rngs, SeedableRng};
+use rand::{SeedableRng, rngs};
 use rand_distr::{Distribution, StandardNormal};
 
 #[cfg(feature = "rand")]

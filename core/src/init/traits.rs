@@ -14,63 +14,23 @@ use rand::{Rng, SeedableRng};
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, NormalError, StandardNormal};
 
-pub trait Init<S, A, D> where D: Dimension, S: RawData<Elem = A> {
-    type Tensor;
-
-    fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self::Tensor
-    where
-        Ds: Clone + Distribution<A>,
-        Sh: ShapeBuilder<Dim = D>,
-        S: RawData<Elem = A> + DataOwned;
-
-    fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self::Tensor
-    where
-        R: Rng + ?Sized,
-        Ds: Clone + Distribution<A>,
-        Sh: ShapeBuilder<Dim = D>,
-        S: DataOwned;
-}
-
-impl<U, S, A, D> Init<S, A, D> for U
-where
-    D: Dimension,   
-    S: RawData<Elem = A> + DataOwned,
-    U: RandomExt<S, A, D>,
-{
-    type Tensor = U;
-
-    fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
-    where
-        Ds: Clone + Distribution<A>,
-        Sh: ShapeBuilder<Dim = D>,
-        S: DataOwned,
-    {
-        Self::random(shape, distr)
-    }
-
-    fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self
-    where
-        R: Rng + ?Sized,
-        Ds: Clone + Distribution<A>,
-        Sh: ShapeBuilder<Dim = D>,
-        S: DataOwned,
-    {
-        Self::random_using(shape, distr, rng)
-    }
-}
-
+/// [Initialize]
+///
 /// This trait provides the base methods required for initializing an [ndarray](ndarray::ArrayBase) with random values.
 /// [Initialize] is similar to [RandomExt](ndarray_rand::RandomExt), however, it focuses on flexibility while implementing additional
 /// features geared towards machine-learning models; such as lecun_normal initialization.
-pub trait Initialize<A, D: Dimension> {
+pub trait Initialize<A, D>
+where
+    D: Dimension,
+{
     type Data: RawData<Elem = A>;
-    /// Generate a random array using the given distribution
+
     fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
     where
         Ds: Clone + Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
         Self::Data: DataOwned;
-    /// Generate a random array using the given distribution and random number generator
+
     fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self
     where
         R: Rng + ?Sized,
@@ -210,3 +170,39 @@ where
  ************ Implementations ************
 */
 
+impl<S, A, D> Initialize<A, D> for ArrayBase<S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+    ArrayBase<S, D>: RandomExt<S, A, D>,
+{
+    type Data = S;
+
+    fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
+    where
+        Ds: Clone + Distribution<A>,
+        Sh: ShapeBuilder<Dim = D>,
+        S: DataOwned,
+    {
+        Self::random(shape, distr)
+    }
+
+    fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self
+    where
+        R: Rng + ?Sized,
+        Ds: Clone + Distribution<A>,
+        Sh: ShapeBuilder<Dim = D>,
+        S: DataOwned,
+    {
+        Self::random_using(shape, distr, rng)
+    }
+}
+
+impl<U, A, S, D> InitializeExt<A, S, D> for U
+where
+    A: Clone,
+    D: Dimension,
+    S: RawData<Elem = A>,
+    U: Initialize<A, D, Data = S> + Sized,
+{
+}

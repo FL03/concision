@@ -18,7 +18,7 @@ extern crate ndarray as nd;
 
 pub use self::model::{Config, Features, Layout, Linear};
 pub use self::norm::LayerNorm;
-pub use self::params::{mode::*, ParamsBase};
+pub use self::params::{ParamsBase, mode::*};
 #[allow(unused_imports)]
 pub use self::{primitives::*, traits::*, utils::*};
 

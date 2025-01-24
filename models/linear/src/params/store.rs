@@ -2,7 +2,7 @@
     Appellation: params <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{build_bias, Biased, Features, Node, ParamMode, Unbiased};
+use crate::{Biased, Features, Node, ParamMode, Unbiased, build_bias};
 use concision::dimensional;
 use core::marker::PhantomData;
 use nd::*;

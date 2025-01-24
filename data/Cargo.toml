@@ -33,10 +33,6 @@ std = ["concision-core/std", "ndarray/std", "num/std", "serde/std", "strum/std"]
 
 tracing = ["dep:tracing", "concision-core/tracing"]
 
-wasm = ["concision-core/wasm"]
-
-wasi = ["concision-core/wasi"]
-
 [lib]
 crate-type = ["lib"]
 doctest = true
@@ -53,9 +49,8 @@ num.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
-[dependencies.approx]
-optional = true
-version = "0.5"
+approx = { optional = true, version = "0.5" }
+tracing = { optional = true, version = "0.1" }
 
 [dependencies.concision-core]
 default-features = false
@@ -67,10 +62,6 @@ default-features = false
 features = ["derive"]
 optional = true
 version = "1"
-
-[dependencies.tracing]
-optional = true
-version = "0.1"
 
 [package.metadata.docs.rs]
 all-features = true

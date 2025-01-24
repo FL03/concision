@@ -39,10 +39,6 @@ std = [
     "strum/std",
 ]
 
-wasm = ["concision-core/wasm"]
-
-wasi = ["concision-core/wasi"]
-
 [lib]
 bench = false
 crate-type = ["lib"]
@@ -55,19 +51,15 @@ test = true
 lazy_static.workspace = true
 
 [dependencies]
+concision-core.workspace = true
+
 ndarray.workspace = true
 num.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
-[dependencies.approx]
-optional = true
-version = "0.5"
-
-[dependencies.concision-core]
-default-features = false
-path = "../../core"
-version = "0.1.15"
+approx = { optional = true, version = "0.5" }
+tracing = { optional = true, version = "0.1" }
 
 [dependencies.serde]
 default-features = false
@@ -75,9 +67,6 @@ features = ["derive"]
 optional = true
 version = "1"
 
-[dependencies.tracing]
-optional = true
-version = "0.1"
 
 [package.metadata.docs.rs]
 all-features = true

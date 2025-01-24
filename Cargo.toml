@@ -14,6 +14,7 @@ repository = "https://github.com/FL03/concision"
 version = "0.1.16"
 
 [workspace.dependencies]
+concision-core = { default-features = false, path = "core", version = "0.1.16" }
 scsys = { default-features = false, features = ["derive"], version = "0.2.3" }
 
 approx = "0.5"
@@ -62,7 +63,7 @@ opt-level = 3
 debug = false
 debug-assertions = false
 overflow-checks = false
-lto = false
+lto = true
 panic = 'abort'
 incremental = false
 codegen-units = 16

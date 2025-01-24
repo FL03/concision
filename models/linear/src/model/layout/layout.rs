@@ -2,7 +2,7 @@
    Appellation: layout <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::model::layout::{features, Features};
+use crate::model::layout::{Features, features};
 use core::borrow::Borrow;
 use nd::{Dimension, RemoveAxis, ShapeBuilder, ShapeError};
 

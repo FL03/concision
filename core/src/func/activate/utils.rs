@@ -13,22 +13,14 @@ pub fn heavyside<T>(x: T) -> T
 where
     T: One + PartialOrd + Zero,
 {
-    if x > T::zero() {
-        T::one()
-    } else {
-        T::zero()
-    }
+    if x > T::zero() { T::one() } else { T::zero() }
 }
 ///
 pub fn relu<T>(args: T) -> T
 where
     T: PartialOrd + Zero,
 {
-    if args > T::zero() {
-        args
-    } else {
-        T::zero()
-    }
+    if args > T::zero() { args } else { T::zero() }
 }
 ///
 pub fn sigmoid<T>(args: T) -> T

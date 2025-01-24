@@ -2,7 +2,7 @@
     Appellation: head <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::{Score, _attention};
+use super::{_attention, Score};
 use crate::params::QkvBase;
 use concision::nn::Dropout;
 use nd::linalg::Dot;

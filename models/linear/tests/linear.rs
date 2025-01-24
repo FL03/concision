@@ -5,7 +5,7 @@
 extern crate concision_core as concision;
 extern crate concision_linear as linear;
 
-use concision::prelude::{linarr, Sigmoid};
+use concision::prelude::{Sigmoid, linarr};
 use lazy_static::lazy_static;
 use linear::params::{Biased, Unbiased};
 use linear::{Config, Features, Linear};

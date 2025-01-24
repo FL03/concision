@@ -4,7 +4,7 @@
 */
 use super::Config;
 use crate::{Biased, LinearParams, ParamMode, Unbiased};
-use concision::Forward;
+use concision::{Predict, PredictError};
 use nd::prelude::*;
 use nd::{Data, RemoveAxis};
 use num::traits::{Float, FromPrimitive, One, Zero};
@@ -125,7 +125,7 @@ where
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for LayerNorm<A, Biased, D>
+impl<A, S, D> Predict<ArrayBase<S, D>> for LayerNorm<A, Biased, D>
 where
     A: Float + FromPrimitive,
     D: RemoveAxis,
@@ -133,17 +133,18 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, x: &ArrayBase<S, D>) -> Self::Output {
+    fn predict(&self, x: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
         let norm = if let Some(axis) = self.config().axis() {
             super::layer_norm_axis(x, *axis, self.eps())
         } else {
             super::layer_norm(x, self.eps())
         };
-        norm * self.params().weights() + self.params().bias()
+        let y = norm * self.params().weights() + self.params().bias();
+        Ok(y)
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for LayerNorm<A, Unbiased, D>
+impl<A, S, D> Predict<ArrayBase<S, D>> for LayerNorm<A, Unbiased, D>
 where
     A: Float + FromPrimitive,
     D: RemoveAxis,
@@ -151,12 +152,13 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, x: &ArrayBase<S, D>) -> Self::Output {
+    fn predict(&self, x: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
         let norm = if let Some(axis) = self.config().axis() {
             super::layer_norm_axis(x, *axis, self.eps())
         } else {
             super::layer_norm(x, self.eps())
         };
-        norm * self.params().weights()
+        let y = norm * self.params().weights();
+        Ok(y)
     }
 }

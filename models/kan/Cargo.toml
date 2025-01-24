@@ -28,14 +28,13 @@ blas = ["concision-core/blas", "ndarray/blas"]
 rand = ["concision-core/rand", "num/rand"]
 
 serde = [
-    "serde-1",
+    "dep:serde",
     "concision-core/serde",
     "ndarray/serde-1",
     "num/serde",
     "splines/serde",
 ]
 
-serde-1 = ["dep:serde"]
 
 tracing = ["dep:tracing"]
 
@@ -49,10 +48,6 @@ std = [
     "strum/std",
 ]
 
-wasm = ["concision-core/wasm"]
-
-wasi = ["concision-core/wasi"]
-
 [lib]
 bench = false
 crate-type = ["lib"]
@@ -65,30 +60,22 @@ test = true
 ndarray.workspace = true
 num.workspace = true
 smart-default.workspace = true
+splines = "4"
 strum.workspace = true
 
-[dependencies.approx]
-optional = true
-version = "0.5"
+approx = { optional = true, version = "0.5" }
+tracing = { optional = true, version = "0.1" }
 
 [dependencies.concision-core]
 default-features = false
 path = "../../core"
-version = "0.1.15"
+version = "0.1.16"
 
 [dependencies.serde]
 default-features = false
 features = ["derive"]
 optional = true
 version = "1"
-
-[dependencies.splines]
-default-features = false
-version = "4"
-
-[dependencies.tracing]
-optional = true
-version = "0.1"
 
 [dev-dependencies]
 lazy_static.workspace = true

@@ -133,25 +133,6 @@ std = [
     "concision-transformer?/std",
 ]
 
-wasm = [
-    "concision-core/wasm",
-    "concision-data?/wasm",
-    "concision-gnn?/wasm",
-    "concision-kan?/wasm",
-    "concision-linear?/wasm",
-    "concision-transformer?/wasm",
-]
-
-wasi = [    
-    "concision-core/wasi",
-    "concision-data?/wasi",
-    "concision-gnn?/wasi",
-    "concision-kan?/wasi",
-    "concision-linear?/wasi",
-    "concision-s4?/wasi",
-    "concision-transformer?/wasi",
-]
-
 # ********* [FF] Blas *********
 blas = [
     "concision-core/blas",
