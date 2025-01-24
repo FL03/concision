@@ -2,7 +2,7 @@
     Appellation: impl_linear <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Config, Linear, ParamMode, ParamsBase};
+use crate::{LinearConfig, Linear, ParamMode, ParamsBase};
 use core::borrow::{Borrow, BorrowMut};
 use nd::{DataOwned, Ix2, RawData, RawDataClone, RemoveAxis};
 
@@ -16,18 +16,18 @@ where
         A: Clone + Default,
         S: DataOwned,
     {
-        let config = Config::std(inputs, outputs);
+        let config = LinearConfig::std(inputs, outputs);
         let params = ParamsBase::new(config.dim());
         Self { config, params }
     }
 }
 
-impl<A, S, D, K> Borrow<Config<K, D>> for Linear<A, K, D, S>
+impl<A, S, D, K> Borrow<LinearConfig<K, D>> for Linear<A, K, D, S>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
-    fn borrow(&self) -> &Config<K, D> {
+    fn borrow(&self) -> &LinearConfig<K, D> {
         &self.config
     }
 }

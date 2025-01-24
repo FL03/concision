@@ -39,10 +39,10 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
       - 
         name: build
-        run: cargo build --all-features -r -v --workspace
+        run: cargo build --all-features -r -v --target ${{ matrix.target }} --workspace
       - 
         name: test
-        run: cargo test -r -v --workspace -F full
+        run: cargo test -r -v --features full --target ${{ matrix.target }} --workspace
       - 
         name: bench
         if: matrix.toolchain == 'nightly'

@@ -2,7 +2,7 @@
     Appellation: impl_model <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Config, Linear, ParamsBase};
+use crate::{LinearConfig, Linear, ParamsBase};
 use concision::prelude::{Module, Predict, PredictError};
 use nd::{RawData, RemoveAxis};
 
@@ -11,7 +11,7 @@ where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
-    type Config = Config<K, D>;
+    type Config = LinearConfig<K, D>;
     type Elem = A;
     type Params = ParamsBase<S, D, K>;
 

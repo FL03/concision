@@ -2,21 +2,16 @@
     Appellation: config <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+use super::LinearConfig;
 use super::layout::{Features, Layout};
 use crate::params::{Biased, Unbiased};
 use core::marker::PhantomData;
 use nd::prelude::*;
 use nd::{IntoDimension, RemoveAxis, ShapeError};
 
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Config<K = Biased, D = Ix2> {
-    pub layout: Layout<D>,
-    pub name: String,
-    _biased: PhantomData<K>,
-}
 
-impl<K, D> Config<K, D>
+
+impl<K, D> LinearConfig<K, D>
 where
     D: Dimension,
 {
@@ -46,16 +41,16 @@ where
         Self::new().with_layout(layout)
     }
 
-    pub fn into_biased(self) -> Config<Biased, D> {
-        Config {
+    pub fn into_biased(self) -> LinearConfig<Biased, D> {
+        LinearConfig {
             layout: self.layout,
             name: self.name,
             _biased: PhantomData::<Biased>,
         }
     }
 
-    pub fn into_unbiased(self) -> Config<Unbiased, D> {
-        Config {
+    pub fn into_unbiased(self) -> LinearConfig<Unbiased, D> {
+        LinearConfig {
             layout: self.layout,
             name: self.name,
             _biased: PhantomData::<Unbiased>,
@@ -69,23 +64,23 @@ where
         }
     }
 
-    pub fn with_layout<E>(self, layout: Layout<E>) -> Config<K, E>
+    pub fn with_layout<E>(self, layout: Layout<E>) -> LinearConfig<K, E>
     where
         E: Dimension,
     {
-        Config {
+        LinearConfig {
             layout,
             name: self.name,
             _biased: self._biased,
         }
     }
 
-    pub fn with_shape<E, Sh>(self, shape: Sh) -> Config<K, E>
+    pub fn with_shape<E, Sh>(self, shape: Sh) -> LinearConfig<K, E>
     where
         E: RemoveAxis,
         Sh: ShapeBuilder<Dim = E>,
     {
-        Config {
+        LinearConfig {
             layout: self.layout.with_shape(shape),
             name: self.name,
             _biased: self._biased,
@@ -93,11 +88,11 @@ where
     }
 
     /// This function attempts to convert the [layout](Layout) of the [Config] into a new [dimension](ndarray::Dimension)
-    pub fn into_dimensionality<E>(self, dim: E) -> Result<Config<K, E>, nd::ShapeError>
+    pub fn into_dimensionality<E>(self, dim: E) -> Result<LinearConfig<K, E>, nd::ShapeError>
     where
         E: Dimension,
     {
-        let tmp = Config {
+        let tmp = LinearConfig {
             layout: self.layout.into_dimensionality(dim)?,
             name: self.name,
             _biased: self._biased,
@@ -141,7 +136,7 @@ where
     }
 }
 
-impl<K> Config<K, Ix2> {
+impl<K> LinearConfig<K, Ix2> {
     pub fn std(inputs: usize, outputs: usize) -> Self {
         Self {
             layout: Layout::new((outputs, inputs).into_dimension()),
@@ -151,7 +146,7 @@ impl<K> Config<K, Ix2> {
     }
 }
 
-impl<D> Config<Biased, D>
+impl<D> LinearConfig<Biased, D>
 where
     D: Dimension,
 {
@@ -161,7 +156,7 @@ where
     }
 }
 
-impl<D> Config<Unbiased, D>
+impl<D> LinearConfig<Unbiased, D>
 where
     D: Dimension,
 {
@@ -170,9 +165,9 @@ where
     }
 }
 
-impl<K, D> concision::Config for Config<K, D> where D: Dimension {}
+impl<K, D> concision::Config for LinearConfig<K, D> where D: Dimension {}
 
-impl<D> Default for Config<Biased, D>
+impl<D> Default for LinearConfig<Biased, D>
 where
     D: Dimension,
 {

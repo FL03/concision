@@ -8,7 +8,7 @@ extern crate concision_linear as linear;
 use concision::prelude::{Sigmoid, linarr};
 use lazy_static::lazy_static;
 use linear::params::{Biased, Unbiased};
-use linear::{Config, Features, Linear};
+use linear::{LinearConfig, Features, Linear};
 use ndarray::*;
 
 const SAMPLES: usize = 20;
@@ -23,9 +23,9 @@ lazy_static! {
 #[test]
 fn test_config() {
     let dim = FEATURES.clone().into_dimension();
-    let config = Config::<Biased>::from_shape(dim);
+    let config = LinearConfig::<Biased>::from_shape(dim);
     assert!(config.is_biased());
-    let config = Config::<Unbiased>::from_shape(dim);
+    let config = LinearConfig::<Unbiased>::from_shape(dim);
     assert!(!config.is_biased());
 }
 
