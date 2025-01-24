@@ -2,7 +2,7 @@
     Appellation: dropout <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Eval, Predict, PredictError};
+use crate::{Eval, Predict, ModelError};
 use nd::prelude::*;
 use nd::{DataOwned, ScalarOperand};
 use num::traits::Num;
@@ -122,7 +122,7 @@ where
 {
     type Output = Array<A, D>;
 
-    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
         Ok(input.dropout(self.p))
     }
 }

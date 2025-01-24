@@ -10,11 +10,13 @@
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+
+extern crate concision_math as math;
 extern crate ndarray as nd;
 #[cfg(feature = "rand")]
 extern crate ndarray_rand as ndrand;
 
-pub use self::error::{Error, PredictError, Result};
+pub use self::error::{Error, ModelError, Result};
 pub use self::func::Activate;
 pub use self::nn::Module;
 pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::prelude::*};
@@ -29,7 +31,6 @@ pub(crate) mod primitives;
 pub mod error;
 pub mod func;
 pub mod init;
-pub mod math;
 pub mod nn;
 pub mod ops;
 
@@ -41,11 +42,10 @@ pub mod prelude {
     #[allow(unused_imports)]
     pub(crate) use super::primitives::rust::*;
 
-    pub use super::error::prelude::*;
+    pub use super::error::*;
     pub use super::func::prelude::*;
     #[cfg(feature = "rand")]
     pub use super::init::prelude::*;
-    pub use super::math::prelude::*;
     pub use super::nn::prelude::*;
     pub use super::ops::prelude::*;
     pub use super::primitives::*;

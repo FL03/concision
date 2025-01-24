@@ -27,6 +27,9 @@ pub use concision_kan as kan;
 pub use concision_linear as linear;
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
+#[cfg(feature = "math")]
+#[doc(inline)]
+pub use concision_math as math;
 #[cfg(feature = "s4")]
 #[doc(inline)]
 pub use concision_s4 as s4;

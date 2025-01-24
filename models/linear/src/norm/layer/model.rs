@@ -4,7 +4,7 @@
 */
 use super::Config;
 use crate::{Biased, LinearParams, ParamMode, Unbiased};
-use concision::{Predict, PredictError};
+use concision::{Predict, ModelError};
 use nd::prelude::*;
 use nd::{Data, RemoveAxis};
 use num::traits::{Float, FromPrimitive, One, Zero};
@@ -133,7 +133,7 @@ where
 {
     type Output = Array<A, D>;
 
-    fn predict(&self, x: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, x: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
         let norm = if let Some(axis) = self.config().axis() {
             super::layer_norm_axis(x, *axis, self.eps())
         } else {
@@ -152,7 +152,7 @@ where
 {
     type Output = Array<A, D>;
 
-    fn predict(&self, x: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, x: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
         let norm = if let Some(axis) = self.config().axis() {
             super::layer_norm_axis(x, *axis, self.eps())
         } else {

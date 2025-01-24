@@ -2,7 +2,7 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::{Predict, PredictError};
+use concision::{Predict, ModelError};
 use core::marker::PhantomData;
 
 // #92: Define the Multi-Layer Perceptron (MLP) model
@@ -25,7 +25,7 @@ where
 {
     type Output = O::Output;
 
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &A) -> Result<Self::Output, ModelError> {
         let mut hidden = self.input.predict(input)?;
         for layer in &self.hidden {
             hidden = layer.predict(&hidden)?;

@@ -2,9 +2,9 @@
     Appellation: summary <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::math::arith::Root;
+use crate::Root;
 use core::iter::{Product, Sum};
-use nd::{ArrayBase, Data, Dimension};
+use ndarray::{ArrayBase, Data, Dimension};
 use num::traits::{FromPrimitive, Num, NumOps, Pow};
 
 /// This trait describes the fundamental methods of summary statistics.

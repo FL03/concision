@@ -2,7 +2,7 @@
    Appellation: perceptron <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{Activate, Module, Predict, PredictError};
+use concision::prelude::{Activate, Module, Predict, ModelError};
 use nd::{ArrayBase, Data, Dimension};
 
 // #91
@@ -43,7 +43,7 @@ where
 {
     type Output = F::Output;
 
-    fn predict(&self, args: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, args: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
         let res = self.module.predict(args)?;
         Ok(self.rho.activate(res))
     }

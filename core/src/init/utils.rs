@@ -11,7 +11,6 @@ use rand::rngs::StdRng;
 use rand::{SeedableRng, rngs};
 use rand_distr::{Distribution, StandardNormal};
 
-#[cfg(feature = "rand")]
 /// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
 pub fn randc<A, S, D>(shape: impl IntoDimension<Dim = D>) -> ArrayBase<S, D>
 where

@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::ParamsBase;
-use concision::prelude::{Parameters, Predict, PredictError};
+use concision::prelude::{Parameters, Predict, ModelError};
 use core::ops::Add;
 use nd::linalg::Dot;
 use nd::*;
@@ -100,7 +100,7 @@ where
 {
     type Output = B;
 
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &A) -> Result<Self::Output, ModelError> {
         let wt = self.weights().t().to_owned();
         let mut res = input.dot(&wt);
         if let Some(bias) = self.bias.as_ref() {
@@ -120,7 +120,7 @@ where
 {
     type Output = B;
 
-    fn predict(&self, input: &A) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &A) -> Result<Self::Output, ModelError> {
         let wt = self.weights().t().to_owned();
         let mut res = input.dot(&wt);
         if let Some(bias) = self.bias.as_ref() {

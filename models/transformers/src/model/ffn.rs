@@ -2,7 +2,7 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{Dropout, Predict, PredictError, ReLU};
+use concision::prelude::{Dropout, Predict, ModelError, ReLU};
 use linear::{Biased, Linear, ParamMode};
 use nd::prelude::*;
 use nd::{RemoveAxis, ScalarOperand};
@@ -97,7 +97,7 @@ where
 {
     type Output = Array<B, E>;
 
-    fn predict(&self, input: &Array<B, E>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &Array<B, E>) -> Result<Self::Output, ModelError> {
         let y = self.input().predict(input)?.relu();
         self.output().predict(&y)
     }
@@ -112,7 +112,7 @@ where
 {
     type Output = Array<B, E>;
 
-    fn predict(&self, input: &Array<B, E>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &Array<B, E>) -> Result<Self::Output, ModelError> {
         let mut y = self.input().predict(input)?.relu();
         if let Some(dropout) = self.dropout() {
             y = dropout.predict(&y)?;

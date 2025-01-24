@@ -2,7 +2,7 @@
     Appellation: utils <loss>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::math::{Abs, Squared};
+use math::{Abs, Squared};
 use nd::prelude::*;
 use nd::{Data, ScalarOperand};
 use num::traits::{FromPrimitive, Num, Pow, Signed};

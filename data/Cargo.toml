@@ -1,25 +1,25 @@
 [package]
-authors.workspace = true
-build = "build.rs"
-categories.workspace = true
+authors.workspace     = true
+build                 = "build.rs"
+categories.workspace  = true
 description.workspace = true
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license.workspace = true
-name = "concision-data"
-readme.workspace = true
-repository.workspace = true
-version.workspace = true
+edition.workspace     = true
+homepage.workspace    = true
+keywords.workspace    = true
+license.workspace     = true
+name                  = "concision-data"
+readme.workspace      = true
+repository.workspace  = true
+version.workspace     = true
 
 [features]
 default = ["std"]
 
-full = ["default", "approx", "rand", "serde", "tracing"]
-
+full = ["approx", "default", "rand", "serde", "tracing"]
+# ********* [FF] Dependencies *********
 alloc = ["concision-core/alloc"]
 
-approx = ["dep:approx", "concision-core/approx", "ndarray/approx"]
+approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
 
 blas = ["concision-core/blas", "ndarray/blas"]
 
@@ -31,41 +31,38 @@ serde-ext = ["concision-core/serde", "ndarray/serde", "num/serde"]
 
 std = ["concision-core/std", "ndarray/std", "num/std", "serde/std", "strum/std"]
 
-tracing = ["dep:tracing", "concision-core/tracing"]
+tracing = ["concision-core/tracing", "dep:tracing"]
 
 [lib]
-crate-type = ["lib"]
-doctest = true
-test = true
+bench      = false
+crate-type = ["cdylib", "rlib"]
+doctest    = true
+test       = true
 
 [build-dependencies]
 
 [dev-dependencies]
 
 [dependencies]
-itertools.workspace = true
-ndarray.workspace = true
-num.workspace = true
-smart-default.workspace = true
-strum.workspace = true
+concision-core.workspace = true
+itertools.workspace      = true
+ndarray.workspace        = true
+num.workspace            = true
+smart-default.workspace  = true
+strum.workspace          = true
 
-approx = { optional = true, version = "0.5" }
+approx  = { optional = true, version = "0.5" }
 tracing = { optional = true, version = "0.1" }
-
-[dependencies.concision-core]
-default-features = false
-path = "../core"
-version = "0.1.15"
 
 [dependencies.serde]
 default-features = false
-features = ["derive"]
-optional = true
-version = "1"
+features         = ["derive"]
+optional         = true
+version          = "1"
 
 [package.metadata.docs.rs]
 all-features = true
-rustc-args = ["--cfg", "docsrs"]
+rustc-args   = ["--cfg", "docsrs"]
 
 [target.wasm32-unknown-unknown]
 

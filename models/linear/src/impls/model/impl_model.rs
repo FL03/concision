@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::{LinearConfig, Linear, ParamsBase};
-use concision::prelude::{Module, Predict, PredictError};
+use concision::prelude::{Module, Predict, ModelError};
 use nd::{RawData, RemoveAxis};
 
 impl<A, D, S, K> Module for Linear<A, K, D, S>
@@ -40,7 +40,7 @@ where
         feature = "tracing",
         tracing::instrument(skip_all, level = "debug", name = "predict", target = "linear")
     )]
-    fn predict(&self, input: &U) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &U) -> Result<Self::Output, ModelError> {
         #[cfg(feature = "tracing")]
         tracing::debug!("Predicting with linear model");
         self.params().predict(input)

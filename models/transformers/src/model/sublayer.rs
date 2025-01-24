@@ -4,7 +4,7 @@
 */
 #![cfg(feature = "rand")]
 use concision::nn::Dropout;
-use concision::{Predict, PredictError};
+use concision::{Predict, ModelError};
 use linear::{Biased, LayerNorm, ParamMode, Unbiased};
 use nd::prelude::*;
 use nd::{DataOwned, RemoveAxis, ScalarOperand};
@@ -53,7 +53,7 @@ where
 {
     type Output = Array<A, D>;
 
-    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
         let normal = self.norm().predict(input)?;
         let y = input + self.dropout().predict(&normal)?;
         Ok(y)
@@ -68,7 +68,7 @@ where
 {
     type Output = Array<A, D>;
 
-    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
         let normal = self.norm().predict(input)?;
         let y = input + self.dropout().predict(&normal)?;
         Ok(y)

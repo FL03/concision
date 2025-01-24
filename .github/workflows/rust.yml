@@ -23,10 +23,9 @@ jobs:
   workspace:
     strategy:
       matrix:
-        platform: [ ubuntu-latest ]
-        target: [ x86_64-unknown-linux-gnu ]
-        toolchain: [ stable, nightly ]
-    runs-on: ${{ matrix.platform }}
+        target: [ x86_64-unknown-linux-gnu, ]
+        toolchain: [ stable, nightly, ]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - 
@@ -36,7 +35,6 @@ jobs:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           cache-workspaces: true
           target: ${{ matrix.target }}
-          toolchain: ${{ matrix.toolchain }}
       - 
         name: build
         run: cargo build --all-features -r -v --target ${{ matrix.target }} --workspace

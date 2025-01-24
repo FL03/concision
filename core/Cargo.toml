@@ -63,7 +63,7 @@ std = [
 
 [lib]
 bench = false
-crate-type = ["lib"]
+crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
@@ -85,6 +85,7 @@ name = "nn"
 lazy_static.workspace = true
 
 [dependencies]
+concision-math = { path = "../math", version = "0.1.16" }
 ndarray.workspace = true
 num.workspace = true
 paste.workspace = true

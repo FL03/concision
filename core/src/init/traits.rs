@@ -40,16 +40,14 @@ where
 }
 
 /// This trait extends the [Initialize] trait with methods for generating random arrays from various distributions.
-pub trait InitializeExt<A, S, D>: Initialize<A, D, Data = S> + Sized
+pub trait InitializeExt<A, D>
 where
-    A: Clone,
     D: Dimension,
-    S: RawData<Elem = A>,
+    Self: Initialize<A, D> + Sized,
+    Self::Data: DataOwned<Elem = A>,
 {
-    fn bernoulli<Sh>(shape: Sh, p: f64) -> Result<Self, BernoulliError>
+    fn bernoulli<Sh: ShapeBuilder<Dim = D>>(shape: Sh, p: f64) -> Result<Self, BernoulliError>
     where
-        S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
         Bernoulli: Distribution<A>,
     {
         let dist = Bernoulli::new(p)?;
@@ -59,62 +57,56 @@ where
     /// LecunNormal distributions are truncated [Normal](rand_distr::Normal)
     /// distributions centered at 0 with a standard deviation equal to the
     /// square root of the reciprocal of the number of inputs.
-    fn lecun_normal<Sh>(shape: Sh, n: usize) -> Self
+    fn lecun_normal<Sh: ShapeBuilder<Dim = D>>(shape: Sh, n: usize) -> Self
     where
         A: Float,
-        S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
         StandardNormal: Distribution<A>,
+        Self::Data: DataOwned<Elem = A>,
     {
         let distr = LecunNormal::new(n);
         Self::rand(shape, distr)
     }
     /// Given a shape, mean, and standard deviation generate a new object using the [Normal](rand_distr::Normal) distribution
-    fn normal<Sh>(shape: Sh, mean: A, std: A) -> Result<Self, NormalError>
+    fn normal<Sh: ShapeBuilder<Dim = D>>(shape: Sh, mean: A, std: A) -> Result<Self, NormalError>
     where
         A: Float,
-        S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
         StandardNormal: Distribution<A>,
+        Self::Data: DataOwned<Elem = A>,
     {
         let distr = Normal::new(mean, std)?;
         Ok(Self::rand(shape, distr))
     }
 
-    fn randc<Sh>(shape: Sh, re: A, im: A) -> Self
+    fn randc<Sh: ShapeBuilder<Dim = D>>(shape: Sh, re: A, im: A) -> Self
     where
-        S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
         ComplexDistribution<A, A>: Distribution<A>,
+        Self::Data: DataOwned<Elem = A>,
     {
         let distr = ComplexDistribution::new(re, im);
-        Self::rand(shape, distr)
+        Self::rand(shape, &distr)
     }
     /// Generate a random array using the [StandardNormal](rand_distr::StandardNormal) distribution
-    fn stdnorm<Sh>(shape: Sh) -> Self
+    fn stdnorm<Sh: ShapeBuilder<Dim = D>>(shape: Sh) -> Self
     where
-        S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
         StandardNormal: Distribution<A>,
+        Self::Data: DataOwned<Elem = A>,
     {
         Self::rand(shape, StandardNormal)
     }
     /// Generate a random array using the [StandardNormal](rand_distr::StandardNormal) distribution with a given seed
-    fn stdnorm_from_seed<Sh>(shape: Sh, seed: u64) -> Self
+    fn stdnorm_from_seed<Sh: ShapeBuilder<Dim = D>>(shape: Sh, seed: u64) -> Self
     where
-        S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
         StandardNormal: Distribution<A>,
+        Self::Data: DataOwned<Elem = A>,
     {
         Self::rand_with(shape, StandardNormal, &mut StdRng::seed_from_u64(seed))
     }
     /// Initialize the object using the [TruncatedNormal](crate::init::distr::TruncatedNormal) distribution
-    fn truncnorm<Sh>(shape: Sh, mean: A, std: A) -> Result<Self, NormalError>
+    fn truncnorm<Sh: ShapeBuilder<Dim = D>>(shape: Sh, mean: A, std: A) -> Result<Self, NormalError>
     where
         A: Float,
-        S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
         StandardNormal: Distribution<A>,
+        Self::Data: DataOwned<Elem = A>,
     {
         let distr = TruncatedNormal::new(mean, std)?;
         Ok(Self::rand(shape, distr))
@@ -122,20 +114,20 @@ where
     /// A [uniform](rand_distr::uniform::Uniform) generator with values between u(-dk, dk)
     fn uniform<Sh>(shape: Sh, dk: A) -> Self
     where
-        A: Neg<Output = A> + SampleUniform,
-        S: DataOwned,
+        A: Copy + Neg<Output = A> + SampleUniform,
         Sh: ShapeBuilder<Dim = D>,
         <A as SampleUniform>::Sampler: Clone,
+        Self::Data: DataOwned<Elem = A>,
     {
-        Self::rand(shape, Uniform::new(dk.clone().neg(), dk))
+        Self::rand(shape, Uniform::new(dk.neg(), dk))
     }
 
     fn uniform_from_seed<Sh>(shape: Sh, start: A, stop: A, key: u64) -> Self
     where
-        A: SampleUniform,
-        S: DataOwned,
+        A: Clone + SampleUniform,
         Sh: ShapeBuilder<Dim = D>,
         <A as SampleUniform>::Sampler: Clone,
+        Self::Data: DataOwned<Elem = A>,
     {
         Self::rand_with(
             shape,
@@ -147,9 +139,9 @@ where
     fn uniform_along<Sh>(shape: Sh, axis: usize) -> Self
     where
         A: Copy + Float + SampleUniform,
-        S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
         <A as SampleUniform>::Sampler: Clone,
+        Self::Data: DataOwned<Elem = A>,
     {
         let dim = shape.into_shape_with_order().raw_dim().clone();
         let dk = A::from(dim[axis]).unwrap().recip();
@@ -158,10 +150,10 @@ where
     /// A [uniform](rand_distr::uniform::Uniform) generator with values between u(-dk, dk)
     fn uniform_between<Sh>(shape: Sh, a: A, b: A) -> Self
     where
-        A: SampleUniform,
-        S: DataOwned,
+        A: Clone + SampleUniform,
         Sh: ShapeBuilder<Dim = D>,
         <A as SampleUniform>::Sampler: Clone,
+        Self::Data: DataOwned<Elem = A>,
     {
         Self::rand(shape, Uniform::new(a, b))
     }
@@ -198,11 +190,11 @@ where
     }
 }
 
-impl<U, A, S, D> InitializeExt<A, S, D> for U
+impl<U, A, S, D> InitializeExt<A, D> for U
 where
     A: Clone,
     D: Dimension,
-    S: RawData<Elem = A>,
+    S: DataOwned<Elem = A>,
     U: Initialize<A, D, Data = S> + Sized,
 {
 }

@@ -2,7 +2,7 @@
     Appellation: utils <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::math::Exp;
+use math::Exp;
 use nd::prelude::{Array, ArrayBase, Axis, Dimension};
 use nd::{Data, RemoveAxis, ScalarOperand};
 use num::complex::ComplexFloat;

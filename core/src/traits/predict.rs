@@ -5,7 +5,7 @@
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
 
-use crate::PredictError;
+use crate::ModelError;
 
 /// [Forward] describes an object capable of forward propagation; that is, it can
 /// take an input and produce an output.
@@ -30,7 +30,7 @@ pub trait ForwardIter<T> {
 pub trait Predict<T> {
     type Output;
 
-    fn predict(&self, args: &T) -> Result<Self::Output, crate::PredictError>;
+    fn predict(&self, args: &T) -> Result<Self::Output, crate::ModelError>;
 }
 
 pub trait PredictGen<T> {
@@ -71,7 +71,7 @@ where
 impl<U, V> Predict<U> for Box<dyn Predict<U, Output = V>> {
     type Output = V;
 
-    fn predict(&self, args: &U) -> Result<Self::Output, PredictError> {
+    fn predict(&self, args: &U) -> Result<Self::Output, ModelError> {
         self.as_ref().predict(args)
     }
 }
@@ -83,7 +83,7 @@ where
 {
     type Output = T;
 
-    fn predict(&self, args: &T) -> Result<Self::Output, PredictError> {
+    fn predict(&self, args: &T) -> Result<Self::Output, ModelError> {
         match self {
             Some(s) => s.predict(args),
             None => Ok(args.clone()),

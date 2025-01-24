@@ -54,7 +54,7 @@ std = [
 
 [lib]
 bench = false
-crate-type = ["lib"]
+crate-type = ["cdylib", "rlib"]
 doctest = true
 test = true
 

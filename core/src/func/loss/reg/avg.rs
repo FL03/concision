@@ -2,9 +2,9 @@
     Appellation: avg <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::math::{Abs, Squared};
-use nd::prelude::*;
-use nd::{Data, ScalarOperand};
+use math::{Abs, Squared};
+use ndarray::prelude::*;
+use ndarray::{Data, ScalarOperand};
 use num::traits::{FromPrimitive, Num, Pow, Signed};
 
 pub trait MeanAbsoluteError<Rhs = Self> {
