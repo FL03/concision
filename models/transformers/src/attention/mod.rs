@@ -9,8 +9,8 @@
 //! the Transformer model, primarily due to its capabilities in natural language
 //! processing (NLP) domains
 pub(crate) use self::_impl_methods::*;
-pub use self::{config::AttentionConfig, head::AttentionHead, score::Score};
 pub use self::utils::*;
+pub use self::{config::AttentionConfig, head::AttentionHead, score::Score};
 
 pub(crate) mod config;
 pub(crate) mod head;

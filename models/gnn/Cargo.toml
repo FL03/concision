@@ -25,45 +25,39 @@ full = [
 ]
 
 # ********* [FF] Dependencies *********
-
-alloc = [
-    "concision-core/alloc",
-]
-
 approx = [
     "dep:approx",
     "concision-core/approx",
     "ndarray/approx-0_5",
 ]
 
-blas = [
-    "concision-core/blas",
-    "ndarray/blas",
-]
-
 rand = [
     "concision-core/rand",
-    "num/rand"
+    "num/rand",
 ]
 
 serde = [
     "dep:serde",
-    "serde-ext",
-]
-
-serde-ext = [
     "concision-core/serde",
     "ndarray/serde-1",
     "num/serde"
 ]
-
-
 
 tracing = [
     "dep:tracing",
 ]
 
 # ********* [FF] Environments *********
+alloc = [
+    "concision-core/alloc",
+    "num/alloc",
+    "serde?/alloc",
+]
+
+blas = [
+    "concision-core/blas",
+    "ndarray/blas",
+]
 
 std = [
     "concision-core/std",
@@ -89,9 +83,13 @@ test = true
 
 [build-dependencies]
 
+[dev-dependencies]
+lazy_static.workspace = true
+
 [dependencies]
 ndarray.workspace = true
 num.workspace = true
+petgraph = { version = "0.6" }
 smart-default.workspace = true
 strum.workspace = true
 
@@ -113,9 +111,6 @@ version = "1"
 [dependencies.tracing]
 optional = true
 version = "0.1"
-
-[dev-dependencies]
-lazy_static.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

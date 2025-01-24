@@ -21,7 +21,12 @@ impl TransformerConfig {
         }
     }
 
-    getters!(dropout<Option<f64>>, features<Features>, heads<usize>, layers<usize>);
+    getters!(
+        dropout<Option<f64>>,
+        features<Features>,
+        heads<usize>,
+        layers<usize>
+    );
     getters!(features::<[d_model<usize>, qkv<QkvShape>]>);
     getters!(features::<[dk, dq, dv]> => usize);
 }
@@ -33,10 +38,7 @@ pub struct Features {
 
 impl Features {
     pub fn new(d_model: usize, qkv: QkvShape) -> Self {
-        Self {
-            d_model,
-            qkv,
-        }
+        Self { d_model, qkv }
     }
 
     getters!(d_model<usize>, qkv<QkvShape>);
@@ -51,13 +53,9 @@ pub struct QkvShape {
 
 impl QkvShape {
     pub fn new(dq: usize, dk: usize, dv: usize) -> Self {
-        Self {
-            dq,
-            dk,
-            dv,
-        }
+        Self { dq, dk, dv }
     }
-    
+
     pub fn std(dk: usize) -> Self {
         let (dq, dv) = (dk, dk);
 

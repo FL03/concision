@@ -9,10 +9,10 @@ macro_rules! activator {
         #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
         pub struct $name;
 
-        impl<T> $crate::func::activate::Activate<T> for $name $($rest)* {
+        impl<'a, T> $crate::func::activate::Activate<&'a T> for $name $($rest)* {
             type Output = $out;
 
-            fn activate(&self, args: &T) -> Self::Output {
+            fn activate(&self, args: &'a T) -> Self::Output {
                 $rho(args)
             }
         }

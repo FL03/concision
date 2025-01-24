@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 #![allow(unused_imports)]
-use crate::Forward;
+use crate::{Eval, Predict, PredictError};
 use nd::prelude::*;
 use nd::{DataOwned, ScalarOperand};
 #[cfg(feature = "rand")]
@@ -69,7 +69,7 @@ impl Dropout {
     pub fn new(p: f64) -> Self {
         Self { p }
     }
-
+    #[cfg(feature = "rand")]
     pub fn apply<A, S, D>(&self, input: &ArrayBase<S, D>) -> Array<A, D>
     where
         A: Num + ScalarOperand,
@@ -91,7 +91,7 @@ impl Default for Dropout {
 }
 
 #[cfg(feature = "rand")]
-impl<A, S, D> Forward<ArrayBase<S, D>> for Dropout
+impl<A, S, D> Eval<ArrayBase<S, D>> for Dropout
 where
     A: Num + ScalarOperand,
     D: Dimension,
@@ -99,7 +99,35 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
+    fn eval(&self, input: ArrayBase<S, D>) -> Self::Output {
         input.dropout(self.p)
+    }
+}
+
+#[cfg(feature = "rand")]
+impl<'a, A, S, D> Eval<&'a ArrayBase<S, D>> for Dropout
+where
+    A: Num + ScalarOperand,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn eval(&self, input: &'a ArrayBase<S, D>) -> Self::Output {
+        input.dropout(self.p)
+    }
+}
+
+#[cfg(feature = "rand")]
+impl<A, S, D> Predict<ArrayBase<S, D>> for Dropout
+where
+    A: Num + ScalarOperand,
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, PredictError> {
+        Ok(input.dropout(self.p))
     }
 }

@@ -2,13 +2,29 @@
    Appellation: kinds <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{external::*, predict::*};
+pub use self::external::*;
 
 mod external;
-mod predict;
 
 use crate::nn::ModelError;
 use strum::{AsRefStr, Display, EnumCount, EnumIs, VariantNames};
+
+err! {
+    PredictError {
+        ArithmeticError,
+        ShapeMismatch,
+        TypeError,
+    }
+}
+
+err! {
+    ShapeError {
+        IncompatibleLayout,
+        IncompatibleRank,
+        ShapeMismatch,
+        SizeMismatch,
+    }
+}
 
 #[derive(
     AsRefStr,
@@ -30,31 +46,29 @@ use strum::{AsRefStr, Display, EnumCount, EnumIs, VariantNames};
     serde(rename_all = "lowercase", tag = "kind")
 )]
 #[strum(serialize_all = "lowercase")]
-pub enum ErrorKind {
+pub enum Errors {
     IO,
     External(ExternalError),
-    Predict(PredictError),
     Model(ModelError),
     Shape(String),
 }
 
-macro_rules! from_err {
-    ($S:ty: $($($p:ident)::*($err:ty)),* $(,)*) => {
-        $(
-            from_err!(@impl $S: $($p)::*($err));
-        )*
-    };
-    (@impl $S:ty: $($p:ident)::*($err:ty)) => {
-        impl From<$err> for $S {
-            fn from(err: $err) -> Self {
-                $($p)::*(err)
-            }
-        }
-    };
+/*
+ ************* Implementations *************
+*/
+from_err!(Errors:
+    Errors::External(ExternalError),
+    Errors::Model(ModelError),
+);
+
+impl From<&str> for Errors {
+    fn from(err: &str) -> Self {
+        Errors::External(err.into())
+    }
 }
 
-from_err!(ErrorKind:
-    ErrorKind::External(ExternalError),
-    ErrorKind::Model(ModelError),
-    ErrorKind::Predict(PredictError),
-);
+impl From<PredictError> for Errors {
+    fn from(err: PredictError) -> Self {
+        Errors::Model(ModelError::Predict(err))
+    }
+}

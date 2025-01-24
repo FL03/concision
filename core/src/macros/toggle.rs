@@ -5,15 +5,25 @@
 
 #[macro_export]
 macro_rules! toggle {
-    (enum $($name:ident),* $(,)?) => {
-        $(toggle!(@enum $name);)*
+    ($vis:vis enum {$($name:ident),* $(,)?}) => {
+        $(toggle!(@impl $vis enum $name);)*
     };
 
-    (@enum $name:ident) => {
+    (@impl $vis:vis enum $name:ident) => {
         #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
         #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-        pub enum $name {}
+        $vis enum $name {}
 
-        impl $crate::traits::misc::toggle::Toggle for $name {}
+        impl $name {
+            $vis fn of<T: 'static>() -> bool {
+                use ::core::any::TypeId;
+                TypeId::of::<T>() == TypeId::of::<Self>()
+            }
+            $vis fn phantom() -> core::marker::PhantomData<Self> {
+                core::marker::PhantomData
+            }
+        }
+
+        impl $crate::traits::TypeTag for $name {}
     };
 }

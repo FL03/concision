@@ -28,6 +28,9 @@ pub trait Train: Compile {
     fn train(&mut self) -> Self::Output;
 }
 
+/*
+ ************* Implementations *************
+*/
 impl<S> Backward for Option<S>
 where
     S: Backward,

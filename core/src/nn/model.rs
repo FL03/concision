@@ -4,8 +4,9 @@
 */
 pub use self::module::*;
 
+pub(crate) mod module;
+
 pub mod config;
-pub mod module;
 #[doc(hidden)]
 pub mod repo;
 
@@ -17,16 +18,11 @@ pub(crate) mod prelude {
 
 use crate::traits::Forward;
 
-pub trait Model: Module
-where
-    Self: Forward<Self::Data>,
-{
-    type Ctx;
-    type Data;
+pub trait Model: Forward<Self::Args> {
+    type Args;
+    type Elem;
 
-    fn children(&self) -> Vec<ModuleDyn<Self::Ctx, Self::Params>>;
-
-    fn context(&self) -> Self::Ctx;
+    type Params;
 }
 
 /// This trait describes any neural networks or models that

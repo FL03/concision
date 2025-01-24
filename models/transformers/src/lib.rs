@@ -18,7 +18,10 @@ extern crate concision_linear as linear;
 extern crate ndarray as nd;
 
 #[doc(inline)]
-pub use self::{attention::prelude::*, params::prelude::*, ops::prelude::*, primitives::*, transformer::Transformer};
+pub use self::{
+    attention::prelude::*, ops::prelude::*, params::prelude::*, primitives::*,
+    transformer::Transformer,
+};
 
 #[macro_use]
 pub(crate) mod macros;
