@@ -6,7 +6,7 @@ pub use self::config::ActorConfig;
 
 pub(crate) mod config;
 
-use concision::prelude::{Eval, Predict, ModelError};
+use concision::prelude::{Eval, ModelError, Predict};
 use core::ops::Mul;
 use nd::prelude::*;
 use splines::Spline;

@@ -8,7 +8,7 @@ extern crate concision_linear as linear;
 use concision::prelude::{Sigmoid, linarr};
 use lazy_static::lazy_static;
 use linear::params::{Biased, Unbiased};
-use linear::{LinearConfig, Features, Linear};
+use linear::{Features, Linear, LinearConfig};
 use ndarray::*;
 
 const SAMPLES: usize = 20;

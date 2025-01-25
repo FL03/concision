@@ -2,8 +2,8 @@
     Appellation: impl_model <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{LinearConfig, Linear, ParamsBase};
-use concision::prelude::{Module, Predict, ModelError};
+use crate::{Linear, LinearConfig, ParamsBase};
+use concision::prelude::{ModelError, Module, Predict};
 use nd::{RawData, RemoveAxis};
 
 impl<A, D, S, K> Module for Linear<A, K, D, S>

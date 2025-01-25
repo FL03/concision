@@ -4,10 +4,13 @@
 */
 use core::slice;
 
-use crate::ops::prelude::fft_permutation;
+use super::utils::fft_permutation;
 
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde_derive::Deserialize, serde_derive::Serialize)
+)]
 pub struct FftPlan {
     len: usize,
     plan: Vec<usize>,
@@ -88,10 +91,10 @@ impl FromIterator<usize> for FftPlan {
     }
 }
 
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 impl IntoIterator for FftPlan {
     type Item = usize;
-    type IntoIter = crate::rust::vec::IntoIter<Self::Item>;
+    type IntoIter = alloc::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.plan.into_iter()

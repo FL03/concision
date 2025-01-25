@@ -14,6 +14,5 @@
 extern crate alloc;
 
 extern crate concision_core as concision;
-extern crate ndarray as nd;
 
 pub mod prelude {}

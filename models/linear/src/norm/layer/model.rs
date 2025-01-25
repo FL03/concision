@@ -4,7 +4,7 @@
 */
 use super::Config;
 use crate::{Biased, LinearParams, ParamMode, Unbiased};
-use concision::{Predict, ModelError};
+use concision::{ModelError, Predict};
 use nd::prelude::*;
 use nd::{Data, RemoveAxis};
 use num::traits::{Float, FromPrimitive, One, Zero};

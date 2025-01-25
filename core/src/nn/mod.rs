@@ -2,7 +2,7 @@
    Appellation: nn <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 pub use self::types::*;
 pub use self::{dropout::*, model::prelude::*};
 
@@ -12,6 +12,8 @@ pub mod model;
 #[doc(hidden)]
 pub mod optim;
 
+mod traits;
+
 pub(crate) mod prelude {
     pub use super::dropout::*;
     pub use super::mask::prelude::*;
@@ -19,12 +21,14 @@ pub(crate) mod prelude {
     pub use super::optim::prelude::*;
 }
 
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 mod types {
     use crate::rust::Box;
     use nd::prelude::Array2;
 
     pub type ForwardDyn<T = Array2<f64>, O = T> = Box<dyn crate::Forward<T, Output = O>>;
+
+    pub type PredictDyn<T = Array2<f64>, O = T> = Box<dyn crate::Predict<T, Output = O>>;
 }
 
 #[cfg(test)]

@@ -3,6 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
+#[macro_use]
+pub(crate) mod toggle;
+
 macro_rules! unary {
     ($($name:ident::$call:ident),* $(,)?) => {
         $(

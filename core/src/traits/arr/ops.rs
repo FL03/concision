@@ -2,8 +2,8 @@
     Appellation: ops <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use nd::linalg::Dot;
-use nd::*;
+use ndarray::linalg::Dot;
+use ndarray::*;
 use num::traits::{Num, NumAssign};
 
 pub trait Affine<X, Y = X> {

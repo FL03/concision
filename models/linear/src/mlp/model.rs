@@ -2,7 +2,7 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::{Predict, ModelError};
+use concision::{ModelError, Predict};
 use core::marker::PhantomData;
 
 // #92: Define the Multi-Layer Perceptron (MLP) model

@@ -3,12 +3,12 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! The core modules of the `concision` sdk implement the building blocks for neural networks and other machine learning models.
-//! 
+//!
 //! ## Overview
-//! 
+//!
 //! `concision` and its constituent modules are designed to be a lightweight, flexible, and efficient machine learning library built around
 //! well-documented and tested abstractions. The core modules provide the following:
-//! 
+//!
 //! - **Neural Network Layers**: A collection of neural network layers and activation functions.
 //! - **Optimization Algorithms**: A collection of optimization algorithms for training neural networks.
 //! - **Loss Functions**: A collection of loss functions for training neural networks.
@@ -52,6 +52,7 @@ pub mod utils;
 pub mod prelude {
     #[allow(unused_imports)]
     pub(crate) use super::primitives::rust::*;
+    pub use concision_math::prelude::*;
 
     pub use super::error::*;
     pub use super::func::prelude::*;

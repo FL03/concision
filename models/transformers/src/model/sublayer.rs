@@ -4,7 +4,7 @@
 */
 #![cfg(feature = "rand")]
 use concision::nn::Dropout;
-use concision::{Predict, ModelError};
+use concision::{ModelError, Predict};
 use linear::{Biased, LayerNorm, ParamMode, Unbiased};
 use nd::prelude::*;
 use nd::{DataOwned, RemoveAxis, ScalarOperand};

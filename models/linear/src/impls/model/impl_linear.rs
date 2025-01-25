@@ -2,7 +2,7 @@
     Appellation: impl_linear <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{LinearConfig, Linear, ParamMode, ParamsBase};
+use crate::{Linear, LinearConfig, ParamMode, ParamsBase};
 use core::borrow::{Borrow, BorrowMut};
 use nd::{DataOwned, Ix2, RawData, RawDataClone, RemoveAxis};
 

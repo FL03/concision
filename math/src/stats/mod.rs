@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 //! Statistical functions and utilities for calculating summary statistics.
-//! 
+//!
 pub use self::summary::SummaryStatistics;
 
 pub mod summary;

@@ -67,11 +67,6 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
-
-[[test]]
-name = "fft"
-required-features = ["approx"]
-
 [[test]]
 name = "init"
 required-features = ["rand", "std"]

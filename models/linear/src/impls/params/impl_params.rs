@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::params::ParamsBase;
-use concision::prelude::{Parameters, Predict, ModelError};
+use concision::prelude::{ModelError, Parameters, Predict};
 use core::ops::Add;
 use nd::linalg::Dot;
 use nd::*;

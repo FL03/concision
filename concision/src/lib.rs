@@ -35,7 +35,6 @@ pub use concision_s4 as s4;
 pub use concision_transformer as transformer;
 
 pub mod prelude {
-    pub use concision_core::prelude::*;
     #[cfg(feature = "gnn")]
     pub use crate::gnn::prelude::*;
     #[cfg(feature = "kan")]
@@ -46,6 +45,7 @@ pub mod prelude {
     pub use crate::s4::prelude::*;
     #[cfg(feature = "transformer")]
     pub use crate::transformer::prelude::*;
+    pub use concision_core::prelude::*;
     #[cfg(feature = "data")]
     pub use concision_data::prelude::*;
     #[cfg(feature = "derive")]

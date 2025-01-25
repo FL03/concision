@@ -5,8 +5,7 @@
 extern crate concision_core as cnc;
 
 use cnc::linarr;
-use ndarray::prelude::*;
-use num::Complex;
+use ndarray::{Array2, Ix2, array};
 
 #[test]
 fn test_affine() {
@@ -25,14 +24,6 @@ fn test_masked_fill() {
     let arr = linarr::<f64, Ix2>(shape).unwrap();
     let a = arr.masked_fill(&mask, 0.0);
     assert_eq!(a, array![[0.0, 1.0], [2.0, 0.0]]);
-}
-
-#[test]
-fn test_as_complex() {
-    use cnc::traits::AsComplex;
-    let x = 1.0;
-    let y = x.as_re();
-    assert_eq!(y, Complex::new(1.0, 0.0));
 }
 
 #[test]

@@ -2,7 +2,7 @@
     Appellation: model <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{Dropout, Predict, ModelError, ReLU};
+use concision::prelude::{Dropout, ModelError, Predict, ReLU};
 use linear::{Biased, Linear, ParamMode};
 use nd::prelude::*;
 use nd::{RemoveAxis, ScalarOperand};

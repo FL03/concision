@@ -2,7 +2,7 @@
    Appellation: perceptron <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision::prelude::{Activate, Module, Predict, ModelError};
+use concision::prelude::{Activate, ModelError, Module, Predict};
 use nd::{ArrayBase, Data, Dimension};
 
 // #91

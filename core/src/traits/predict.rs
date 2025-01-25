@@ -27,19 +27,11 @@ pub trait ForwardIter<T> {
 
 /// The [Predict] is a generalized implementation of the [Forward] trait equipped with
 /// additional error handling capabilities.
-pub trait Predict<T> {
+pub trait Predict<T = ndarray::Array2<f64>> {
     type Output;
 
-    fn predict(&self, args: &T) -> Result<Self::Output, crate::ModelError>;
+    fn predict(&self, args: &T) -> Result<Self::Output, ModelError>;
 }
-
-pub trait PredictGen<T> {
-    type Error: core::fmt::Debug;
-    type Output;
-
-    fn predict(&self, args: &T) -> Result<Self::Output, Self::Error>;
-}
-
 /*
  ********* Implementations *********
 */
@@ -67,7 +59,7 @@ where
             .fold(args.clone(), |acc, m| m.forward(&acc))
     }
 }
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 impl<U, V> Predict<U> for Box<dyn Predict<U, Output = V>> {
     type Output = V;
 

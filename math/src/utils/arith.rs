@@ -1,6 +1,6 @@
 /*
-    Appellation: math <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: arith <utils>
+    Contrib: @FL03
 */
 use num::traits::{Float, Num};
 

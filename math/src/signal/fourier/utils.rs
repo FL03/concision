@@ -172,7 +172,7 @@ where
 
 #[doc(hidden)]
 /// Generates a permutation for the Fast Fourier Transform.
-pub fn fft_permutation(length: usize) -> Vec<usize> {
+pub(crate) fn fft_permutation(length: usize) -> Vec<usize> {
     let mut result = Vec::new();
     result.reserve_exact(length);
     for i in 0..length {

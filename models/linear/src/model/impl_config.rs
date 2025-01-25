@@ -9,8 +9,6 @@ use core::marker::PhantomData;
 use nd::prelude::*;
 use nd::{IntoDimension, RemoveAxis, ShapeError};
 
-
-
 impl<K, D> LinearConfig<K, D>
 where
     D: Dimension,

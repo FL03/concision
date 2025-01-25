@@ -2,7 +2,7 @@
     Appellation: dropout <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Eval, Predict, ModelError};
+use crate::{Eval, ModelError, Predict};
 use nd::prelude::*;
 use nd::{DataOwned, ScalarOperand};
 use num::traits::Num;

@@ -42,10 +42,16 @@ crate-type = ["cdylib", "rlib"]
 doctest    = true
 test       = true
 
+[[test]]
+name = "fft"
+path = "tests/fft.rs"
+required-features = ["approx", "std"]
+
 [build-dependencies]
 
 [dependencies]
 # Shared dependencies
+scsys.workspace          = true
 ndarray.workspace        = true
 num.workspace            = true
 strum.workspace          = true

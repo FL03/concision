@@ -2,10 +2,10 @@
     Appellation: fft <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-extern crate concision_core as concision;
+extern crate concision_math as concision;
 
 use approx::assert_abs_diff_eq;
-use concision::ops::fft::*;
+use concision::signal::fourier::*;
 use lazy_static::lazy_static;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::Float;
@@ -51,14 +51,6 @@ where
     out.sort_by(|a, b| a.im().partial_cmp(&b.im()).unwrap());
     out.extend(tmp);
     out
-}
-
-#[test]
-fn test_plan() {
-    let samples = 16;
-
-    let plan = FftPlan::new(samples).build();
-    assert_eq!(plan.plan(), fft_permutation(16).as_slice());
 }
 
 #[test]

@@ -119,10 +119,9 @@ impl_summary!(Vec<T>, [T]);
 impl<A, S, D> SummaryStatistics for ArrayBase<S, D>
 where
     A: Copy + FromPrimitive + Num + Pow<i32, Output = A> + Product + Root<Output = A> + Sum,
-    
     D: Dimension,
     S: Data<Elem = A>,
-    for <'a> &'a A: Product,
+    for<'a> &'a A: Product,
 {
     type Item = A;
     type Output = A;
