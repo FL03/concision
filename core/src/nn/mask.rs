@@ -2,9 +2,8 @@
     Appellation: mask <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use nd::iter::{Iter, IterMut};
-use nd::prelude::*;
-use nd::{Data, DataMut, OwnedRepr, RawData, RawDataClone};
+use ndarray::iter::{Iter, IterMut};
+use ndarray::{ArrayBase, Data, DataMut, Dimension, Ix2, OwnedRepr, RawData, RawDataClone};
 
 pub struct Mask<S = OwnedRepr<bool>, D = Ix2>(ArrayBase<S, D>)
 where

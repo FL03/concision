@@ -1,12 +1,11 @@
-#![allow(unused_imports)]
-extern crate concision_core as concision;
 
-use concision::Forward;
-use concision::nn::Dropout;
+extern crate concision_core as cnc;
+
+use cnc::Forward;
+use cnc::nn::Dropout;
 use ndarray::prelude::*;
 
 #[test]
-#[cfg(feature = "rand")]
 fn test_dropout() {
     let shape = (512, 2048);
     let arr = Array2::<f64>::ones(shape);

@@ -1,5 +1,4 @@
 [package]
-name = "concision-derive"
 authors.workspace = true
 categories.workspace = true
 description.workspace = true
@@ -7,16 +6,19 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
+name = "concision-derive"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
-default = ["std"]
+default = [ "std" ]
+full = [ "default" ]
 
-alloc = []
+# ********* [FF] Dependencies *********
+alloc = [  ]
 
-std = []
+std = [ "alloc" ]
 
 [lib]
 bench = false
@@ -26,11 +28,14 @@ test = false
 [dependencies]
 proc-macro2 = "1"
 quote = "1"
-syn = { features = ["full"], version = "2" }
+syn = { features = ["full",], version = "2" }
 
 [package.metadata.docs.rs]
 all-features = true
-rustc-args = ["--cfg", "docsrs"]
+rustc-args = [
+  "--cfg",
+  "docsrs",
+]
 
 [target.wasm32-unknown-unknown]
 

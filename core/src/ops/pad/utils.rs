@@ -61,7 +61,7 @@ where
         })
         .assign(data);
 
-    match mode.action() {
+    match mode.into_pad_action() {
         PadAction::StopAfterCopy => {
             // Do nothing
             return Ok(());

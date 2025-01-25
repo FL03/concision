@@ -13,8 +13,14 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = ["std"]
-full = ["default", "approx", "rand", "serde", "tracing"]
+default = [ "std" ]
+full = [
+    "approx",
+    "default",
+    "rand",
+    "serde",
+    "tracing",
+]
 
 # ********* [FF] Dependencies *********
 alloc = [
@@ -26,17 +32,35 @@ alloc = [
     "serde?/alloc",
 ]
 
-approx = ["dep:approx", "ndarray/approx", "concision-math/approx"]
+approx = [
+    "concision-math/approx",
+    "dep:approx",
+    "ndarray/approx",
+]
 
-blas = ["ndarray/blas", "concision-math/blas"]
+blas = [
+    "concision-math/blas",
+    "ndarray/blas",
+]
 
-rand = ["dep:rand", "dep:rand_distr", "dep:ndarray-rand", "num/rand", "uuid/rng", "uuid/v4"]
+rand = [
+    "dep:ndarray-rand",
+    "dep:rand",
+    "dep:rand_distr",
+    "num/rand",
+    "uuid/rng",
+    "uuid/v4",
+]
 
-std-rng = ["rand?/std", "rand?/std_rng"]
+std-rng = [
+    "rand?/std",
+    "rand?/std_rng",
+]
 
 serde = [
-    "dep:serde",
     "concision-math/serde",
+    "dep:serde",
+    "serde?/derive",
     "ndarray/serde",
     "num/serde",
     "rand?/serde1",
@@ -45,17 +69,20 @@ serde = [
     "uuid/serde",
 ]
 
-tracing = ["dep:tracing", "concision-math/tracing"]
+tracing = [
+    "concision-math/tracing",
+    "dep:tracing",
+]
 
 # ********* [FF] Environments *********
 std = [
     "alloc",
     "concision-math/std",
-    "std-rng",
     "ndarray/std",
     "num/std",
     "scsys/std",
     "serde/std",
+    "std-rng",
     "strum/std",
     "thiserror/std",
     "uuid/std",
@@ -63,16 +90,26 @@ std = [
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = [
+    "cdylib",
+    "rlib",
+]
 doctest = false
 test = true
 
 [[test]]
 name = "init"
-required-features = ["rand", "std"]
+required-features = [
+    "rand",
+    "std",
+]
 
 [[test]]
-name = "nn"
+name = "dropout"
+required-features = [
+    "rand",
+    "std",
+]
 
 [build-dependencies]
 
@@ -96,20 +133,24 @@ rand = { default-features = false, optional = true, version = "0.8" }
 rand_distr = { default-features = false, optional = true, version = "0.4" }
 tracing = { optional = true, version = "0.1" }
 
-[dependencies.serde]
-default-features = false
-features = ["derive"]
-optional = true
-version = "1"
+    [dependencies.serde]
+    default-features = false
+    optional = true
+    version = "1"
 
-[dependencies.uuid]
-default-features = false
-features = ["v5", "v8"]
-version = "1"
+    [dependencies.uuid]
+    default-features = false
+    features = [ "v5", "v8" ]
+    version = "1"
 
-[package.metadata.docs.rs]
-all-features = true
-rustc-args = ["--cfg", "docsrs"]
+    [package.metadata.docs.rs]
+    all-features = true
+    rustc-args = [
+        "--cfg",
+        "docsrs",
+    ]
 
 [target.'cfg(wasm32)'.dependencies]
-getrandom = { features = ["js"], version = "0.2" }
+getrandom = { features = [
+    "js",
+], version = "0.2" }

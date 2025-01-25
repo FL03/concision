@@ -20,10 +20,6 @@ alloc = []
 
 std = []
 
-wasi = []
-
-wasm = []
-
 [lib]
 bench = false
 proc-macro = true

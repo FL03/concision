@@ -4,7 +4,7 @@
 */
 #[cfg(feature = "alloc")]
 pub use self::types::*;
-pub use self::{dropout::*, model::prelude::*};
+pub use self::{dropout::Dropout, model::prelude::*};
 
 pub mod dropout;
 pub mod mask;
@@ -15,8 +15,8 @@ pub mod optim;
 mod traits;
 
 pub(crate) mod prelude {
-    pub use super::dropout::*;
-    pub use super::mask::prelude::*;
+    pub use super::dropout::Dropout;
+    pub use super::mask::Mask;
     pub use super::model::prelude::*;
     pub use super::optim::prelude::*;
 }

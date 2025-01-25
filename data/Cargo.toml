@@ -1,69 +1,105 @@
 [package]
-authors.workspace     = true
-build                 = "build.rs"
-categories.workspace  = true
+build = "build.rs"
+name = "concision-data"
+
+authors.workspace = true
+categories.workspace = true
 description.workspace = true
-edition.workspace     = true
-homepage.workspace    = true
-keywords.workspace    = true
-license.workspace     = true
-name                  = "concision-data"
-readme.workspace      = true
-repository.workspace  = true
-version.workspace     = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
 
 [features]
-default = ["std"]
+default = [ "std" ]
 
-full = ["approx", "default", "rand", "serde", "tracing"]
+full = [
+  "approx",
+  "default",
+  "rand",
+  "serde",
+  "tracing",
+]
 # ********* [FF] Dependencies *********
-alloc = ["concision-core/alloc"]
+alloc = [
+  "concision-core/alloc",
+]
 
-approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
+approx = [
+  "concision-core/approx",
+  "dep:approx",
+  "ndarray/approx",
+]
 
-blas = ["concision-core/blas", "ndarray/blas"]
+blas = [
+  "concision-core/blas",
+  "ndarray/blas",
+]
 
-rand = ["concision-core/rand"]
+rand = [ "concision-core/rand" ]
 
-serde = ["dep:serde", "serde-ext"]
+serde = [
+  "dep:serde",
+  "serde-ext",
+]
 
-serde-ext = ["concision-core/serde", "ndarray/serde", "num/serde"]
+serde-ext = [
+  "concision-core/serde",
+  "ndarray/serde",
+  "num/serde",
+]
 
-std = ["concision-core/std", "ndarray/std", "num/std", "serde/std", "strum/std"]
+std = [
+  "concision-core/std",
+  "ndarray/std",
+  "num/std",
+  "serde/std",
+  "strum/std",
+]
 
-tracing = ["concision-core/tracing", "dep:tracing"]
+tracing = [
+  "concision-core/tracing",
+  "dep:tracing",
+]
 
 [lib]
-bench      = false
-crate-type = ["cdylib", "rlib"]
-doctest    = true
-test       = true
+bench = false
+crate-type = [
+  "cdylib",
+  "rlib",
+]
+doctest = true
+test = true
 
 [build-dependencies]
 
 [dev-dependencies]
+lazy_static.workspace = true
 
 [dependencies]
+# shared dependencies
 concision-core.workspace = true
-itertools.workspace      = true
-ndarray.workspace        = true
-num.workspace            = true
-smart-default.workspace  = true
-strum.workspace          = true
-
-approx  = { optional = true, version = "0.5" }
+itertools.workspace = true
+ndarray.workspace = true
+num.workspace = true
+smart-default.workspace = true
+strum.workspace = true
+# optional dependencies
+approx = { optional = true, version = "0.5" }
 tracing = { optional = true, version = "0.1" }
 
-[dependencies.serde]
-default-features = false
-features         = ["derive"]
-optional         = true
-version          = "1"
+  [dependencies.serde]
+  default-features = false
+  features = [ "derive" ]
+  optional = true
+  version = "1"
 
-[package.metadata.docs.rs]
-all-features = true
-rustc-args   = ["--cfg", "docsrs"]
-
-[target.wasm32-unknown-unknown]
-
-[target.wasm32-wasi]
+  [package.metadata.docs.rs]
+  all-features = true
+  rustc-args = [
+    "--cfg",
+    "docsrs",
+  ]
