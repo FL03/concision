@@ -1,4 +1,3 @@
-
 extern crate concision_core as cnc;
 
 use cnc::Forward;

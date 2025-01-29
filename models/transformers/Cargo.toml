@@ -13,34 +13,34 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = ["std"]
+default = [ "std" ]
 
-full = ["default", "approx", "rand", "serde"]
+full = [ "approx", "default", "rand", "serde" ]
 
 # ********* [FF] Dependencies *********
 
-alloc = ["concision-core/alloc", "concision-linear/alloc", "serde?/alloc"]
+alloc = [ "concision-core/alloc", "concision-linear/alloc", "serde?/alloc" ]
 
 approx = [
-    "dep:approx",
     "concision-core/approx",
     "concision-linear/approx",
+    "dep:approx",
     "ndarray/approx",
 ]
 
-blas = ["concision-core/blas", "concision-linear/blas", "ndarray/blas"]
+blas = [ "concision-core/blas", "concision-linear/blas", "ndarray/blas" ]
 
-rand = ["concision-core/rand", "concision-linear/rand", "num/rand"]
+rand = [ "concision-core/rand", "concision-linear/rand", "num/rand" ]
 
 serde = [
-    "dep:serde",
     "concision-core/serde",
     "concision-linear/serde",
+    "dep:serde",
     "ndarray/serde-1",
     "num/serde",
 ]
 
-tracing = ["dep:tracing", "concision-core/tracing", "concision-linear/tracing"]
+tracing = [ "concision-core/tracing", "concision-linear/tracing", "dep:tracing" ]
 
 # ********* [FF] Environments *********
 std = [
@@ -54,13 +54,13 @@ std = [
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = [ "cdylib", "rlib" ]
 doctest = true
 test = true
 
 [[test]]
 name = "attention"
-required-features = ["approx", "rand"]
+required-features = [ "approx", "rand" ]
 
 [build-dependencies]
 
@@ -72,26 +72,21 @@ paste.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
-approx = { optional = true, version = "0.5" }
-tracing = { optional = true, version = "0.1" }
-
+approx = { optional = true, workspace = true }
+serde = { default-features = false, optional = true, workspace = true }
+tracing = { optional = true, workspace = true }
 
 [dependencies.concision-linear]
 default-features = false
 path = "../linear"
 version = "0.1.16"
 
-[dependencies.serde]
-default-features = false
-features = ["derive"]
-optional = true
-version = "1"
 [dev-dependencies]
 lazy_static.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
-rustc-args = ["--cfg", "docsrs"]
+rustc-args = [ "--cfg", "docsrs" ]
 
 [target.wasm32-unknown-unknown]
 

@@ -6,11 +6,12 @@ use crate::init::distr::*;
 
 use core::ops::Neg;
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};
-use ndarray_rand::RandomExt;
 use num::complex::ComplexDistribution;
 use num::traits::Float;
-use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
+use rand::{
+    Rng, SeedableRng,
+    rngs::{SmallRng, StdRng},
+};
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, NormalError, StandardNormal};
 
@@ -112,31 +113,28 @@ where
         Ok(Self::rand(shape, distr))
     }
     /// A [uniform](rand_distr::uniform::Uniform) generator with values between u(-dk, dk)
-    fn uniform<Sh>(shape: Sh, dk: A) -> Self
+    fn uniform<Sh>(shape: Sh, dk: A) -> super::UniformResult<Self>
     where
         A: Copy + Neg<Output = A> + SampleUniform,
         Sh: ShapeBuilder<Dim = D>,
         <A as SampleUniform>::Sampler: Clone,
         Self::Data: DataOwned<Elem = A>,
     {
-        Self::rand(shape, Uniform::new(dk.neg(), dk))
+        Uniform::new(dk.neg(), dk).map(|distr| Self::rand(shape, distr))
     }
 
-    fn uniform_from_seed<Sh>(shape: Sh, start: A, stop: A, key: u64) -> Self
+    fn uniform_from_seed<Sh>(shape: Sh, start: A, stop: A, key: u64) -> super::UniformResult<Self>
     where
         A: Clone + SampleUniform,
         Sh: ShapeBuilder<Dim = D>,
         <A as SampleUniform>::Sampler: Clone,
         Self::Data: DataOwned<Elem = A>,
     {
-        Self::rand_with(
-            shape,
-            Uniform::new(start, stop),
-            &mut StdRng::seed_from_u64(key),
-        )
+        Uniform::new(start, stop)
+            .map(|distr| Self::rand_with(shape, distr, &mut StdRng::seed_from_u64(key)))
     }
     /// Generate a random array with values between u(-a, a) where a is the reciprocal of the value at the given axis
-    fn uniform_along<Sh>(shape: Sh, axis: usize) -> Self
+    fn uniform_along<Sh>(shape: Sh, axis: usize) -> super::UniformResult<Self>
     where
         A: Copy + Float + SampleUniform,
         Sh: ShapeBuilder<Dim = D>,
@@ -148,14 +146,14 @@ where
         Self::uniform(dim, dk)
     }
     /// A [uniform](rand_distr::uniform::Uniform) generator with values between u(-dk, dk)
-    fn uniform_between<Sh>(shape: Sh, a: A, b: A) -> Self
+    fn uniform_between<Sh>(shape: Sh, a: A, b: A) -> super::UniformResult<Self>
     where
         A: Clone + SampleUniform,
         Sh: ShapeBuilder<Dim = D>,
         <A as SampleUniform>::Sampler: Clone,
         Self::Data: DataOwned<Elem = A>,
     {
-        Self::rand(shape, Uniform::new(a, b))
+        Uniform::new(a, b).map(|distr| Self::rand(shape, distr))
     }
 }
 /*
@@ -166,7 +164,6 @@ impl<S, A, D> Initialize<A, D> for ArrayBase<S, D>
 where
     D: Dimension,
     S: RawData<Elem = A>,
-    ArrayBase<S, D>: RandomExt<S, A, D>,
 {
     type Data = S;
 
@@ -176,7 +173,7 @@ where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
     {
-        Self::random(shape, distr)
+        Self::rand_with(shape, distr, &mut SmallRng::from_rng(&mut rand::rng()))
     }
 
     fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self
@@ -186,7 +183,7 @@ where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
     {
-        Self::random_using(shape, distr, rng)
+        Self::from_shape_simple_fn(shape, move || distr.sample(rng))
     }
 }
 

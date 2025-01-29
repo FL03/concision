@@ -64,19 +64,16 @@ required-features = ["std"]
 [dependencies]
 concision-core.workspace = true
 
+# shared
 ndarray.workspace = true
 num.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
-approx = { optional = true, version = "0.5" }
-tracing = { optional = true, version = "0.1" }
-
-[dependencies.serde]
-default-features = false
-features = ["derive"]
-optional = true
-version = "1"
+# optional
+approx = { optional = true, workspace = true }
+serde = { default-features = false, optional = true, workspace = true }
+tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static.workspace = true

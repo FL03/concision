@@ -43,10 +43,6 @@ rand = [ "concision-core/rand" ]
 
 serde = [
   "dep:serde",
-  "serde-ext",
-]
-
-serde-ext = [
   "concision-core/serde",
   "ndarray/serde",
   "num/serde",
@@ -80,26 +76,24 @@ test = true
 lazy_static.workspace = true
 
 [dependencies]
-# shared dependencies
+# project
 concision-core.workspace = true
+
+# shared
 itertools.workspace = true
 ndarray.workspace = true
 num.workspace = true
 smart-default.workspace = true
 strum.workspace = true
-# optional dependencies
-approx = { optional = true, version = "0.5" }
-tracing = { optional = true, version = "0.1" }
 
-  [dependencies.serde]
-  default-features = false
-  features = [ "derive" ]
-  optional = true
-  version = "1"
+# optional
+approx = { optional = true, workspace = true }
+serde = { default-features = false, optional = true, workspace = true }
+tracing = { optional = true, workspace = true }
 
-  [package.metadata.docs.rs]
-  all-features = true
-  rustc-args = [
-    "--cfg",
-    "docsrs",
-  ]
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = [
+  "--cfg",
+  "docsrs",
+]

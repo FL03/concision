@@ -22,43 +22,41 @@ permissions:
 
 jobs:
   features:
-    env:
-      PKG_PREFIX: ${{ github.event.repository.name }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - 
         name: rustup
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          cache-workspaces: true
+        run: |
+          rustup self update
+          rustup update
       - 
         name: publish (features)
         run: |
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-math
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-core
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-data
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-derive
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-macros
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-gnn
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-kan
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-linear
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-s4
-          cargo publish --all-features -v -p ${{ env.PKG_PREFIX }}-transformers
-  publish:
-    needs: features
-    env:
-      PACKAGE: ${{ github.event.repository.name }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+          cargo publish --all-features -v -p concision-math
+          cargo publish --all-features -v -p concision-core
+
+          cargo publish --all-features -v -p concision-data
+          cargo publish --all-features -v -p concision-derive
+          cargo publish --all-features -v -p concision-macros
+          cargo publish --all-features -v -p concision-kan
+          cargo publish --all-features -v -p concision-gnn
+          cargo publish --all-features -v -p concision-linear
+          cargo publish --all-features -v -p concision-s4
+          cargo publish --all-features -v -p concision-transformers
+
+          cargo publish --all-features -v -p concision
       - 
-        name: rustup
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        name: cache
+        uses: actions/cache@v4
         with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          cache-workspaces: true
-      - 
-        name: publish (${{ env.PACKAGE }})
-        run: cargo publish --all-features -v -p ${{ env.PACKAGE }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            ${{ runner.os }}-cargo-
+            ${{ runner.os }}-
+

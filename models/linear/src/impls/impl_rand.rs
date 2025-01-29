@@ -9,7 +9,7 @@ use crate::{Linear, bias_dim};
 use concision::init::rand::Rng;
 use concision::init::rand_distr::{Distribution, StandardNormal, uniform::SampleUniform};
 use concision::{Initialize, InitializeExt};
-use nd::*;
+use ndarray::{Array, ArrayBase, DataOwned, OwnedRepr, RemoveAxis, ShapeBuilder};
 use num::Float;
 
 impl<A, S, D, K> Linear<A, K, D, S>
@@ -37,7 +37,7 @@ where
     A: Clone + Float + SampleUniform,
     D: RemoveAxis,
     K: ParamMode,
-    S: RawData<Elem = A>,
+    S: ndarray::RawData<Elem = A>,
     StandardNormal: Distribution<A>,
     <A as SampleUniform>::Sampler: Clone,
 {
@@ -62,16 +62,17 @@ where
     where
         S: DataOwned,
     {
-        let weight = Array::uniform_between(self.raw_dim(), low, high);
+        let weight =
+            Array::uniform_between(self.raw_dim(), low, high).expect("Failed to create weight");
         let bias = if self.is_biased() && !self.bias.is_some() {
             let b_dim = bias_dim(self.raw_dim());
-            Some(Array::uniform_between(b_dim, low, high))
+            Some(Array::uniform_between(b_dim, low, high).expect("Failed to create bias"))
         } else if !self.is_biased() && self.bias.is_some() {
             None
         } else {
-            self.bias
-                .as_ref()
-                .map(|b| Array::uniform_between(b.raw_dim(), low, high))
+            self.bias.as_ref().map(|b| {
+                Array::uniform_between(b.raw_dim(), low, high).expect("Failed to create bias")
+            })
         };
         LinearParams {
             weight,

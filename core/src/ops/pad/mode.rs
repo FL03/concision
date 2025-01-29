@@ -101,7 +101,7 @@ impl<T> PadMode<T> {
             PadMode::Wrap => PadAction::Wrapping,
         }
     }
-    
+
     pub fn into_pad_action(self) -> PadAction {
         match self {
             PadMode::Constant(_) => PadAction::StopAfterCopy,

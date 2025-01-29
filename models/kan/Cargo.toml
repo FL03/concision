@@ -57,25 +57,21 @@ test = true
 [build-dependencies]
 
 [dependencies]
+splines = "4"
+
+# project
+concision-core.workspace = true
+
+# shared
 ndarray.workspace = true
 num.workspace = true
 smart-default.workspace = true
-splines = "4"
 strum.workspace = true
 
-approx = { optional = true, version = "0.5" }
-tracing = { optional = true, version = "0.1" }
-
-[dependencies.concision-core]
-default-features = false
-path = "../../core"
-version = "0.1.16"
-
-[dependencies.serde]
-default-features = false
-features = ["derive"]
-optional = true
-version = "1"
+# optional
+approx = { optional = true, workspace = true }
+serde = { default-features = false, optional = true, workspace = true }
+tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static.workspace = true

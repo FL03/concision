@@ -21,9 +21,6 @@ extern crate alloc;
 
 extern crate ndarray as nd;
 
-#[cfg(feature = "rand")]
-extern crate ndarray_rand as ndrand;
-
 #[doc(inline)]
 pub use concision_math as math;
 

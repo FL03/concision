@@ -1,29 +1,31 @@
 [package]
 build = "build.rs"
-name  = "concision-math"
+name = "concision-math"
 
-authors.workspace     = true
-categories.workspace  = true
+authors.workspace = true
+categories.workspace = true
 description.workspace = true
-edition.workspace     = true
-homepage.workspace    = true
-keywords.workspace    = true
-license.workspace     = true
-readme.workspace      = true
-repository.workspace  = true
-version.workspace     = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
 
 [features]
-default = ["std"]
+default = [ "std" ]
 
-full = ["approx", "default", "serde", "tracing"]
+full = [ "approx", "default", "serde", "tracing" ]
 
 # ********* [FF] Dependencies *********
-alloc = []
+alloc = [  ]
 
-approx = ["dep:approx", "ndarray/approx"]
+approx = [ "dep:approx", "ndarray/approx" ]
 
-blas = ["ndarray/blas"]
+blas = [ "ndarray/blas" ]
+
+rand = [ "num/rand" ]
 
 serde = [
     "dep:serde",
@@ -32,34 +34,35 @@ serde = [
     "num/serde",
 ]
 
-tracing = ["dep:tracing"]
+tracing = [ "dep:tracing" ]
 
 # ********* [FF] Environments *********
-std = ["ndarray/std", "num/std", "serde/std", "strum/std"]
+std = [ "ndarray/std", "num/std", "serde/std", "strum/std" ]
 
 [lib]
-crate-type = ["cdylib", "rlib"]
-doctest    = true
-test       = true
+crate-type = [ "cdylib", "rlib" ]
+doctest = true
+test = true
 
 [[test]]
 name = "fft"
 path = "tests/fft.rs"
-required-features = ["approx", "std"]
+required-features = [ "approx", "std" ]
 
 [build-dependencies]
 
 [dependencies]
 # Shared dependencies
-scsys.workspace          = true
-ndarray.workspace        = true
-num.workspace            = true
-strum.workspace          = true
+ndarray.workspace = true
+num.workspace = true
+scsys.workspace = true
+strum.workspace = true
+
 # Optional dependencies
-approx       = { optional = true, version = "0.5" }
-serde        = { default-features = false, optional = true, version = "1.0" }
-serde_derive = { optional = true, version = "1.0" }
-tracing      = { optional = true, version = "0.1" }
+approx = { optional = true, workspace = true }
+serde = { default-features = false, optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static.workspace = true

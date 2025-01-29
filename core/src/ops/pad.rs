@@ -18,7 +18,6 @@ pub trait Pad<T> {
     fn pad(&self, mode: PadMode<T>, pad: &[[usize; 2]]) -> Self::Output;
 }
 
-
 pub struct Padding<T> {
     pub(crate) action: PadAction,
     pub(crate) mode: PadMode<T>,
@@ -26,9 +25,8 @@ pub struct Padding<T> {
     pub(crate) padding: usize,
 }
 
-
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 
 use ndarray::{Array, ArrayBase, DataOwned, Dimension};

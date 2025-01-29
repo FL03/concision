@@ -2,7 +2,7 @@
     Appellation: padding <module>
     Contrib: @FL03
 */
-use super::{Padding, PadAction, PadMode};
+use super::{PadAction, PadMode, Padding};
 
 impl<T> Padding<T> {
     pub fn new() -> Self {
