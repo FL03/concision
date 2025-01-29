@@ -14,7 +14,7 @@ repository = "https://github.com/FL03/concision"
 version = "0.1.16"
 
 [workspace.dependencies]
-concision-core = { default-features = false, path = "core", version = "0.1.16" }
+concision-core = { default-features = false, path = "core", verison = "0.1.16" }
 scsys = { default-features = false, features = ["derive"], version = "0.2.3" }
 
 approx = "0.5"
