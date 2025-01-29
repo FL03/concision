@@ -11,11 +11,11 @@ where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
-    type Config = LinearConfig<K, D>;
+    type CSpace = LinearConfig<K, D>;
     type Elem = A;
     type Params = ParamsBase<S, D, K>;
 
-    fn config(&self) -> &Self::Config {
+    fn config(&self) -> &Self::CSpace {
         &self.config
     }
 
