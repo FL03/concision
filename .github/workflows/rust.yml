@@ -24,20 +24,26 @@ jobs:
     strategy:
       matrix:
         target: [ x86_64-unknown-linux-gnu, ]
-        toolchain: [ stable, nightly, ]
+        toolchain: [ nightly, ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - 
+      # - 
+      #   name: rustup
+      #   uses: actions-rust-lang/setup-rust-toolchain@v1
+      #   with:
+      #     cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      #     cache-workspaces: true
+      #     target: ${{ matrix.target }}
+      -
         name: rustup
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          cache-workspaces: true
-          target: ${{ matrix.target }}
+        run: |
+          rustup self update
+          rustup update
+          rustup default ${{ matrix.toolchain }}
       - 
         name: build
-        run: cargo build --all-features -r -v --target ${{ matrix.target }} --workspace
+        run: cargo build -r -v --features full --target ${{ matrix.target }} --workspace
       - 
         name: test
         run: cargo test -r -v --features full --target ${{ matrix.target }} --workspace
