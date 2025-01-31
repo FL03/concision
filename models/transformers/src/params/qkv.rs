@@ -2,8 +2,7 @@
     Appellation: params <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::attention::{Score, _attention};
-use concision::nn::Dropout;
+use crate::attention::{_attention, Score};
 use concision::{dimensional, getters};
 use nd::linalg::Dot;
 use nd::*;
@@ -32,7 +31,7 @@ where
         F: Fn(D) -> ArrayBase<S, D>,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let dim = shape.into_shape().raw_dim().clone();
+        let dim = shape.into_shape_with_order().raw_dim().clone();
         Self {
             q: builder(dim.clone()),
             k: builder(dim.clone()),
@@ -46,7 +45,7 @@ where
         A: Clone,
         S: DataOwned,
     {
-        let dim = shape.into_shape().raw_dim().clone();
+        let dim = shape.into_shape_with_order().raw_dim().clone();
         Self {
             q: ArrayBase::from_elem(dim.clone(), value.clone()),
             k: ArrayBase::from_elem(dim.clone(), value.clone()),
@@ -136,6 +135,8 @@ where
         ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
+        use concision::nn::Dropout;
+
         let dropout = dropout.map(Dropout::new);
         let (q, k, v) = self.qkv();
         _attention(q, k, v, mask, dropout.as_ref())

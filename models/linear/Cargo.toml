@@ -14,54 +14,23 @@ version.workspace = true
 
 
 [features]
-default = [
-    "std",
-]
+default = ["std"]
 
-full = [
-    "default",
-    "approx",
-    "rand",
-    "serde",
-    "tracing",
-]
+full = ["default", "approx", "rand", "serde", "tracing"]
 
 # ********* [FF] Dependencies *********
 
-alloc = [
-    "concision-core/alloc",
-]
+alloc = ["concision-core/alloc"]
 
-approx = [
-    "dep:approx",
-    "concision-core/approx",
-    "ndarray/approx-0_5",
-]
+approx = ["dep:approx", "concision-core/approx", "ndarray/approx"]
 
-blas = [
-    "concision-core/blas",
-    "ndarray/blas",
-]
+blas = ["concision-core/blas", "ndarray/blas"]
 
-rand = [
-    "concision-core/rand",
-    "num/rand"
-]
+rand = ["concision-core/rand", "num/rand"]
 
-serde = [
-    "serde-1",
-    "concision-core/serde",
-    "ndarray/serde-1",
-    "num/serde"
-]
+serde = ["dep:serde", "concision-core/serde", "ndarray/serde-1", "num/serde"]
 
-serde-1 = [
-    "dep:serde",
-]
-
-tracing = [
-    "dep:tracing",
-]
+tracing = ["dep:tracing"]
 
 # ********* [FF] Environments *********
 std = [
@@ -70,14 +39,6 @@ std = [
     "num/std",
     "serde?/std",
     "strum/std",
-]
-
-wasm = [
-    "concision-core/wasm",
-]
-
-wasi = [    
-    "concision-core/wasi",
 ]
 
 [lib]
@@ -101,29 +62,18 @@ required-features = ["std"]
 [build-dependencies]
 
 [dependencies]
+concision-core.workspace = true
+
+# shared
 ndarray.workspace = true
 num.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
-[dependencies.approx]
-optional = true
-version = "0.5"
-
-[dependencies.concision-core]
-default-features = false
-path = "../../core"
-version = "0.1.15"
-
-[dependencies.serde]
-default-features = false
-features = ["derive"]
-optional = true
-version = "1"
-
-[dependencies.tracing]
-optional = true
-version = "0.1"
+# optional
+approx = { optional = true, workspace = true }
+serde = { default-features = false, optional = true, workspace = true }
+tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static.workspace = true
@@ -135,4 +85,3 @@ rustc-args = ["--cfg", "docsrs"]
 [target.wasm32-unknown-unknown]
 
 [target.wasm32-wasi]
-

@@ -2,7 +2,7 @@
    Appellation: layout <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::model::layout::{features, Features};
+use crate::model::layout::{Features, features};
 use core::borrow::Borrow;
 use nd::{Dimension, RemoveAxis, ShapeBuilder, ShapeError};
 
@@ -35,7 +35,7 @@ where
         D: RemoveAxis,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let shape = shape.into_shape();
+        let shape = shape.into_shape_with_order();
         let dim = shape.raw_dim().clone();
         let features = Features::from_shape(shape);
         Self { dim, features }
@@ -46,7 +46,7 @@ where
         E: RemoveAxis,
         Sh: ShapeBuilder<Dim = E>,
     {
-        let shape = shape.into_shape();
+        let shape = shape.into_shape_with_order();
         let dim = shape.raw_dim().clone();
         let features = Features::from_shape(dim.clone());
         Layout { dim, features }

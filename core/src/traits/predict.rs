@@ -2,11 +2,14 @@
    Appellation: predict <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::error::PredictError;
-#[cfg(any(feature = "alloc", feature = "std"))]
-use crate::rust::Box;
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
 
-/// [Forward] describes an object capable of forward propagation.
+use crate::ModelError;
+
+/// [Forward] describes an object capable of forward propagation; that is, it can
+/// take an input and produce an output.
+///
 pub trait Forward<T> {
     type Output;
 
@@ -22,12 +25,13 @@ pub trait ForwardIter<T> {
     fn forward_iter(self, args: &T) -> <Self::Item as Forward<T>>::Output;
 }
 
-pub trait Predict<T> {
+/// The [Predict] is a generalized implementation of the [Forward] trait equipped with
+/// additional error handling capabilities.
+pub trait Predict<T = ndarray::Array2<f64>> {
     type Output;
 
-    fn predict(&self, args: &T) -> Result<Self::Output, PredictError>;
+    fn predict(&self, args: &T) -> Result<Self::Output, ModelError>;
 }
-
 /*
  ********* Implementations *********
 */
@@ -35,10 +39,10 @@ impl<U, M> Forward<U> for M
 where
     M: Predict<U>,
 {
-    type Output = M::Output;
+    type Output = Option<M::Output>;
 
     fn forward(&self, args: &U) -> Self::Output {
-        self.predict(args).unwrap()
+        self.predict(args).ok()
     }
 }
 
@@ -55,11 +59,11 @@ where
             .fold(args.clone(), |acc, m| m.forward(&acc))
     }
 }
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 impl<U, V> Predict<U> for Box<dyn Predict<U, Output = V>> {
     type Output = V;
 
-    fn predict(&self, args: &U) -> Result<Self::Output, PredictError> {
+    fn predict(&self, args: &U) -> Result<Self::Output, ModelError> {
         self.as_ref().predict(args)
     }
 }
@@ -71,7 +75,7 @@ where
 {
     type Output = T;
 
-    fn predict(&self, args: &T) -> Result<Self::Output, PredictError> {
+    fn predict(&self, args: &T) -> Result<Self::Output, ModelError> {
         match self {
             Some(s) => s.predict(args),
             None => Ok(args.clone()),

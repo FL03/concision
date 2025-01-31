@@ -2,27 +2,25 @@
     Appellation: direction <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use strum::{AsRefStr, Display, EnumCount, EnumIs, EnumIter, EnumString, VariantNames};
-
 #[derive(
-    AsRefStr,
     Clone,
     Copy,
     Debug,
     Default,
-    Display,
-    EnumCount,
-    EnumIs,
-    EnumIter,
-    EnumString,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
-    VariantNames,
+    scsys::VariantConstructors,
+    strum::AsRefStr,
+    strum::Display,
+    strum::EnumCount,
+    strum::EnumIs,
+    strum::EnumIter,
+    strum::EnumString,
+    strum::VariantNames,
 )]
-#[repr(usize)]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
@@ -35,17 +33,6 @@ pub enum Propagate {
     Forward = 1,
 }
 
-impl Propagate {
-    /// A functional alias for [Direction::Backward].
-    pub fn backward() -> Self {
-        Self::Backward
-    }
-    /// A functional alias for [Direction::Forward].
-    pub fn forward() -> Self {
-        Self::Forward
-    }
-}
-
 impl From<Propagate> for usize {
     fn from(direction: Propagate) -> Self {
         direction as usize
@@ -54,6 +41,7 @@ impl From<Propagate> for usize {
 
 impl From<usize> for Propagate {
     fn from(index: usize) -> Self {
+        use strum::EnumCount;
         match index % Self::COUNT {
             0 => Self::Backward,
             _ => Self::Forward,

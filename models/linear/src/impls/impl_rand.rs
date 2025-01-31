@@ -5,11 +5,11 @@
 #![cfg(feature = "rand")]
 
 use crate::params::{LinearParams, ParamMode, ParamsBase};
-use crate::{bias_dim, Linear};
+use crate::{Linear, bias_dim};
 use concision::init::rand::Rng;
-use concision::init::rand_distr::{uniform::SampleUniform, Distribution, StandardNormal};
+use concision::init::rand_distr::{Distribution, StandardNormal, uniform::SampleUniform};
 use concision::{Initialize, InitializeExt};
-use nd::*;
+use ndarray::{Array, ArrayBase, DataOwned, OwnedRepr, RemoveAxis, ShapeBuilder};
 use num::Float;
 
 impl<A, S, D, K> Linear<A, K, D, S>
@@ -37,7 +37,7 @@ where
     A: Clone + Float + SampleUniform,
     D: RemoveAxis,
     K: ParamMode,
-    S: RawData<Elem = A>,
+    S: ndarray::RawData<Elem = A>,
     StandardNormal: Distribution<A>,
     <A as SampleUniform>::Sampler: Clone,
 {
@@ -62,16 +62,17 @@ where
     where
         S: DataOwned,
     {
-        let weight = Array::uniform_between(self.raw_dim(), low, high);
+        let weight =
+            Array::uniform_between(self.raw_dim(), low, high).expect("Failed to create weight");
         let bias = if self.is_biased() && !self.bias.is_some() {
             let b_dim = bias_dim(self.raw_dim());
-            Some(Array::uniform_between(b_dim, low, high))
+            Some(Array::uniform_between(b_dim, low, high).expect("Failed to create bias"))
         } else if !self.is_biased() && self.bias.is_some() {
             None
         } else {
-            self.bias
-                .as_ref()
-                .map(|b| Array::uniform_between(b.raw_dim(), low, high))
+            self.bias.as_ref().map(|b| {
+                Array::uniform_between(b.raw_dim(), low, high).expect("Failed to create bias")
+            })
         };
         LinearParams {
             weight,
@@ -106,21 +107,21 @@ where
         Self::from_params(ParamsBase::rand_with(shape, distr, rng))
     }
 
-    fn init_rand<Ds>(self, distr: Ds) -> Self
-    where
-        Ds: Clone + Distribution<A>,
-        Self: Sized,
-    {
-        Self::rand(self.dim(), distr)
-    }
+    // fn init_rand<Ds>(self, distr: Ds) -> Self
+    // where
+    //     Ds: Clone + Distribution<A>,
+    //     Self: Sized,
+    // {
+    //     Self::rand(self.dim(), distr)
+    // }
 
-    fn init_rand_with<Ds, R>(self, distr: Ds, rng: &mut R) -> Self
-    where
-        R: Rng + ?Sized,
-        Ds: Clone + Distribution<A>,
-    {
-        Self::rand_with(self.dim(), distr, rng)
-    }
+    // fn init_rand_with<Ds, R>(self, distr: Ds, rng: &mut R) -> Self
+    // where
+    //     R: Rng + ?Sized,
+    //     Ds: Clone + Distribution<A>,
+    // {
+    //     Self::rand_with(self.dim(), distr, rng)
+    // }
 }
 
 impl<A, S, D, K> Initialize<A, D> for ParamsBase<S, D, K>
@@ -136,7 +137,7 @@ where
         Sh: ShapeBuilder<Dim = D>,
         Dstr: Clone + Distribution<A>,
     {
-        let dim = shape.into_shape().raw_dim().clone();
+        let dim = shape.into_shape_with_order().raw_dim().clone();
         let bias = if K::BIASED {
             Some(ArrayBase::rand(bias_dim(dim.clone()), distr.clone()))
         } else {
@@ -156,7 +157,7 @@ where
         Ds: Clone + Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let dim = shape.into_shape().raw_dim().clone();
+        let dim = shape.into_shape_with_order().raw_dim().clone();
         let bias = if K::BIASED {
             Some(ArrayBase::rand_with(
                 bias_dim(dim.clone()),
@@ -173,21 +174,21 @@ where
         }
     }
 
-    fn init_rand<Ds>(self, distr: Ds) -> Self
-    where
-        S: DataOwned,
-        Ds: Clone + Distribution<A>,
-        Self: Sized,
-    {
-        Self::rand(self.dim(), distr)
-    }
+    // fn init_rand<Ds>(self, distr: Ds) -> Self
+    // where
+    //     S: DataOwned,
+    //     Ds: Clone + Distribution<A>,
+    //     Self: Sized,
+    // {
+    //     Self::rand(self.dim(), distr)
+    // }
 
-    fn init_rand_with<Ds, R>(self, distr: Ds, rng: &mut R) -> Self
-    where
-        R: Rng + ?Sized,
-        S: DataOwned,
-        Ds: Clone + Distribution<A>,
-    {
-        Self::rand_with(self.dim(), distr, rng)
-    }
+    // fn init_rand_with<Ds, R>(self, distr: Ds, rng: &mut R) -> Self
+    // where
+    //     R: Rng + ?Sized,
+    //     S: DataOwned,
+    //     Ds: Clone + Distribution<A>,
+    // {
+    //     Self::rand_with(self.dim(), distr, rng)
+    // }
 }

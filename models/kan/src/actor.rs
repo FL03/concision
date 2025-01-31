@@ -6,11 +6,11 @@ pub use self::config::ActorConfig;
 
 pub(crate) mod config;
 
-use concision::prelude::{Eval, Predict, PredictError};
+use concision::prelude::{Eval, ModelError, Predict};
 use core::ops::Mul;
 use nd::prelude::*;
-use splines::interpolate::{Interpolate, Interpolator};
 use splines::Spline;
+use splines::interpolate::{Interpolate, Interpolator};
 
 #[doc(hidden)]
 pub type NdSpline<T, V> = Spline<Array1<T>, Array1<V>>;
@@ -80,7 +80,7 @@ where
 {
     type Output = Z;
 
-    fn predict(&self, x: &Array1<T>) -> Result<Self::Output, PredictError> {
+    fn predict(&self, x: &Array1<T>) -> Result<Self::Output, ModelError> {
         let y = x.mapv(|xi| self.spline().sample(xi).unwrap());
         Ok(self.weight() * self.bias().eval(y))
     }

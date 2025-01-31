@@ -79,7 +79,6 @@ mod _impl_methods {
         ArrayBase<S, D>: for<'a> Dot<ArrayView<'a, A, D>, Output = Array<A, D>>,
         Array<A, D>: Dot<ArrayBase<S, D>, Output = Array<A, D>>,
     {
-        use concision::Forward;
         let dk = scale::<A>(k.len_of(nd::Axis(1)));
         let mut z = q.dot(&k.t()) * dk;
         if let Some(mask) = mask {
@@ -88,7 +87,7 @@ mod _impl_methods {
         z = z.softmax();
         #[cfg(feature = "rand")]
         if let Some(dropout) = dropout {
-            z = dropout.forward(&z);
+            z = concision::Predict::predict(dropout, &z).unwrap();
         }
         (z.dot(&v), z).into()
     }

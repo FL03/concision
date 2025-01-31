@@ -10,8 +10,8 @@ pub use self::optimizer::*;
 pub(crate) mod optimizer;
 
 pub(crate) mod prelude {
-    pub use super::optimizer::*;
     pub use super::Optimize;
+    pub use super::optimizer::*;
 }
 
 pub trait Optimize {}

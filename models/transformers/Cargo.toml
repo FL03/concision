@@ -13,61 +13,34 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = [
-    "std",
-]
+default = [ "std" ]
 
-full = [
-    "default",
-    "approx",
-    "rand",
-    "serde",
-]
+full = [ "approx", "default", "rand", "serde" ]
 
 # ********* [FF] Dependencies *********
 
-alloc = [
-    "concision-core/alloc",
-    "concision-linear/alloc",
-    "serde?/alloc",
-]
+alloc = [ "concision-core/alloc", "concision-linear/alloc", "serde?/alloc" ]
 
 approx = [
-    "dep:approx",
     "concision-core/approx",
     "concision-linear/approx",
-    "ndarray/approx-0_5",
+    "dep:approx",
+    "ndarray/approx",
 ]
 
-blas = [
-    "concision-core/blas",
-    "concision-linear/blas",
-    "ndarray/blas",
-]
+blas = [ "concision-core/blas", "concision-linear/blas", "ndarray/blas" ]
 
-rand = [
-    "concision-core/rand",
-    "concision-linear/rand",
-    "num/rand"
-]
+rand = [ "concision-core/rand", "concision-linear/rand", "num/rand" ]
 
 serde = [
-    "serde-1",
     "concision-core/serde",
     "concision-linear/serde",
-    "ndarray/serde-1",
-    "num/serde"
-]
-
-serde-1 = [
     "dep:serde",
+    "ndarray/serde-1",
+    "num/serde",
 ]
 
-tracing = [
-    "dep:tracing",
-    "concision-core/tracing",
-    "concision-linear/tracing",
-]
+tracing = [ "concision-core/tracing", "concision-linear/tracing", "dep:tracing" ]
 
 # ********* [FF] Environments *********
 std = [
@@ -79,65 +52,41 @@ std = [
     "strum/std",
 ]
 
-wasm = [
-    "concision-core/wasm",
-    "concision-linear/wasm",
-]
-
-wasi = [    
-    "concision-core/wasi",
-    "concision-linear/wasi",
-]
-
 [lib]
 bench = false
-crate-type = ["lib"]
+crate-type = [ "cdylib", "rlib" ]
 doctest = true
 test = true
 
 [[test]]
 name = "attention"
-required-features = ["approx", "rand"]
+required-features = [ "approx", "rand" ]
 
 [build-dependencies]
 
 [dependencies]
+concision-core.workspace = true
 ndarray.workspace = true
 num.workspace = true
 paste.workspace = true
 smart-default.workspace = true
 strum.workspace = true
 
-[dependencies.approx]
-optional = true
-version = "0.5"
-
-[dependencies.concision-core]
-default-features = false
-path = "../../core"
-version = "0.1.15"
+approx = { optional = true, workspace = true }
+serde = { default-features = false, optional = true, workspace = true }
+tracing = { optional = true, workspace = true }
 
 [dependencies.concision-linear]
 default-features = false
 path = "../linear"
-version = "0.1.15"
-
-[dependencies.serde]
-default-features = false
-features = ["derive"]
-optional = true
-version = "1"
-
-[dependencies.tracing]
-optional = true
-version = "0.1"
+version = "0.1.16"
 
 [dev-dependencies]
 lazy_static.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
-rustc-args = ["--cfg", "docsrs"]
+rustc-args = [ "--cfg", "docsrs" ]
 
 [target.wasm32-unknown-unknown]
 

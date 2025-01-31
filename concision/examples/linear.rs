@@ -5,7 +5,7 @@
 extern crate concision as cnc;
 
 use cnc::linear::Features;
-use cnc::prelude::{linarr, InitializeExt, Linear, Result, Sigmoid};
+use cnc::prelude::{InitializeExt, Linear, Result, Sigmoid, linarr};
 use ndarray::Ix2;
 
 fn tracing() {

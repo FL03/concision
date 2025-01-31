@@ -16,9 +16,9 @@ extern crate concision_core as concision;
 extern crate ndarray as nd;
 // extern crate ndarray_stats as ndstats;
 
-pub use self::model::{Config, Features, Layout, Linear};
+pub use self::model::{Features, Layout, Linear, LinearConfig};
 pub use self::norm::LayerNorm;
-pub use self::params::{mode::*, ParamsBase};
+pub use self::params::{ParamsBase, mode::*};
 #[allow(unused_imports)]
 pub use self::{primitives::*, traits::*, utils::*};
 

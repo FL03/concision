@@ -4,7 +4,7 @@
 */
 #![cfg(feature = "rand")]
 use concision::nn::Dropout;
-use concision::Forward;
+use concision::{ModelError, Predict};
 use linear::{Biased, LayerNorm, ParamMode, Unbiased};
 use nd::prelude::*;
 use nd::{DataOwned, RemoveAxis, ScalarOperand};
@@ -12,7 +12,7 @@ use num::traits::{Float, FromPrimitive};
 
 /// A residual connection followed by a [layer norm](LayerNorm)
 /// [Transformer](crate::Transformer)
-pub struct Sublayer<A = f64, K = Biased, D = Ix2>
+pub struct TransformerSublayer<A = f64, K = Biased, D = Ix2>
 where
     D: Dimension,
 {
@@ -20,7 +20,7 @@ where
     pub(crate) norm: LayerNorm<A, K, D>,
 }
 
-impl<A, K, D> Sublayer<A, K, D>
+impl<A, K, D> TransformerSublayer<A, K, D>
 where
     D: RemoveAxis,
 {
@@ -45,7 +45,7 @@ where
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for Sublayer<A, Biased, D>
+impl<A, S, D> Predict<ArrayBase<S, D>> for TransformerSublayer<A, Unbiased, D>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: RemoveAxis,
@@ -53,13 +53,14 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
-        let normal = self.norm().forward(input);
-        input + self.dropout().forward(&normal)
+    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
+        let normal = self.norm().predict(input)?;
+        let y = input + self.dropout().predict(&normal)?;
+        Ok(y)
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for Sublayer<A, Unbiased, D>
+impl<A, S, D> Predict<ArrayBase<S, D>> for TransformerSublayer<A, Biased, D>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: RemoveAxis,
@@ -67,8 +68,9 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
-        let normal = self.norm().forward(input);
-        input + self.dropout().forward(&normal)
+    fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
+        let normal = self.norm().predict(input)?;
+        let y = input + self.dropout().predict(&normal)?;
+        Ok(y)
     }
 }

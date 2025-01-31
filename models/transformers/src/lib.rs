@@ -42,7 +42,7 @@ mod impls {
 }
 
 pub mod prelude {
+    pub use super::Transformer;
     pub use super::attention::prelude::*;
     pub use super::params::prelude::*;
-    pub use super::Transformer;
 }

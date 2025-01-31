@@ -5,7 +5,7 @@
 extern crate concision_core as concision;
 extern crate concision_transformer as transformer;
 
-use concision::{linarr, Matmul};
+use concision::{Matmul, linarr};
 use transformer::Qkv;
 
 use ndarray::prelude::*;

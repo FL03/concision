@@ -7,5 +7,5 @@ pub use self::kan::*;
 pub(crate) mod kan;
 
 pub(crate) mod prelude {
-    pub use super::kan::Kan;
+    pub use super::kan::KAN;
 }

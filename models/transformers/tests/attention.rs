@@ -5,7 +5,6 @@
 extern crate concision_core as concision;
 extern crate concision_transformer as transformer;
 
-use approx::AbsDiffEq;
 use transformer::AttentionHead;
 
 use ndarray::prelude::*;

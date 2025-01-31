@@ -2,8 +2,8 @@
     Appellation: impl_model <impls>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{Config, Linear, ParamsBase};
-use concision::prelude::{Module, Predict, PredictError};
+use crate::{Linear, LinearConfig, ParamsBase};
+use concision::prelude::{ModelError, Module, Predict};
 use nd::{RawData, RemoveAxis};
 
 impl<A, D, S, K> Module for Linear<A, K, D, S>
@@ -11,11 +11,11 @@ where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
-    type Config = Config<K, D>;
+    type CSpace = LinearConfig<K, D>;
     type Elem = A;
     type Params = ParamsBase<S, D, K>;
 
-    fn config(&self) -> &Self::Config {
+    fn config(&self) -> &Self::CSpace {
         &self.config
     }
 
@@ -40,7 +40,7 @@ where
         feature = "tracing",
         tracing::instrument(skip_all, level = "debug", name = "predict", target = "linear")
     )]
-    fn predict(&self, input: &U) -> Result<Self::Output, PredictError> {
+    fn predict(&self, input: &U) -> Result<Self::Output, ModelError> {
         #[cfg(feature = "tracing")]
         tracing::debug!("Predicting with linear model");
         self.params().predict(input)
