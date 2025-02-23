@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 pub use self::{generators::*, stack::*};
-use nd::*;
+use ndarray::*;
 use num::traits::{NumAssign, Zero};
 
 /// Creates an n-dimensional array from an iterator of n dimensional arrays.
@@ -92,7 +92,7 @@ where
 }
 
 pub(crate) mod generators {
-    use nd::{Array, Array1, Dimension, IntoDimension, ShapeError};
+    use ndarray::{Array, Array1, Dimension, IntoDimension, ShapeError};
     use num::traits::{Float, NumCast};
 
     pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
@@ -113,7 +113,7 @@ pub(crate) mod generators {
 }
 
 pub(crate) mod stack {
-    use nd::{Array1, Array2, s};
+    use ndarray::{Array1, Array2, s};
     use num::Num;
     /// Creates a larger array from an iterator of smaller arrays.
     pub fn stack_iter<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>

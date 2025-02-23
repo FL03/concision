@@ -5,9 +5,6 @@
 //! A collection of mathematical functions and utilities for signal processing, statistics, and more.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(feature = "alloc")]
-extern crate alloc;
-
 pub use self::{traits::prelude::*, utils::prelude::*};
 
 #[macro_use]

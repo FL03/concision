@@ -3,8 +3,8 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::{PadAction, PadError, PadMode};
-use crate::traits::ArrayLike;
-use nd::{Array, ArrayBase, AxisDescription, Data, DataOwned, Dimension, Slice};
+use crate::ArrayLike;
+use ndarray::{Array, ArrayBase, AxisDescription, Data, DataOwned, Dimension, Slice};
 use num::{FromPrimitive, Num};
 
 fn reader(nb_dim: usize, pad: &[[usize; 2]]) -> Result<Vec<[usize; 2]>, PadError> {

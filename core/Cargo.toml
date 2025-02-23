@@ -18,6 +18,7 @@ default = [ "std" ]
 full = [
     "approx",
     "default",
+    "json",
     "rand",
     "serde",
     "tracing",
@@ -25,7 +26,6 @@ full = [
 
 # ********* [FF] Dependencies *********
 alloc = [
-    "concision-math/alloc",
     "num/alloc",
     "rand?/alloc",
     "rand_distr?/alloc",
@@ -44,31 +44,43 @@ blas = [
     "ndarray/blas",
 ]
 
-rand = [
-    "dep:rand",
-    "dep:rand_distr",
-    "concision-math/rand",
-    "rand?/small_rng",
-    "rand?/thread_rng",
-    "num/rand",
-    "uuid/rng",
-    "uuid/v4",
+json = [
+    "dep:serde_json",
+    "serde"
 ]
 
-std-rng = [
-    "rand?/std",
-    "rand?/std_rng",
+rand = [
+    "concision-math/rand",
+    "dep:rand",
+    "dep:rand_distr",
+    "num/rand",
+    "rng",
+]
+
+rayon = [
+    "dep:rayon",
+    "concision-math/rayon",
+    "ndarray/rayon",
+]
+
+rng = [
+    "dep:getrandom",
+    "rand?/small_rng",
+    "rand?/thread_rng",
+    "uuid/rng",
+    "uuid/v4",
 ]
 
 serde = [
     "concision-math/serde",
     "dep:serde",
-    "serde?/derive",
+    "dep:serde_derive",
     "ndarray/serde",
     "num/serde",
     "rand?/serde",
     "rand_distr?/serde",
     "scsys/serde",
+    "serde?/derive",
     "uuid/serde",
 ]
 
@@ -83,9 +95,10 @@ std = [
     "concision-math/std",
     "ndarray/std",
     "num/std",
+    "rand?/std",
+    "rand?/std_rng",
     "scsys/std",
     "serde/std",
-    "std-rng",
     "strum/std",
     "thiserror/std",
     "uuid/std",
@@ -100,21 +113,7 @@ crate-type = [
 doctest = false
 test = true
 
-[[test]]
-name = "init"
-required-features = [
-    "rand",
-    "std",
-]
 
-[[test]]
-name = "dropout"
-required-features = [
-    "rand",
-    "std",
-]
-
-[build-dependencies]
 
 [dev-dependencies]
 lazy_static.workspace = true
@@ -122,30 +121,50 @@ lazy_static.workspace = true
 [dependencies]
 concision-math = { default-features = false, path = "../math", version = "0.1.16" }
 
-ndarray.workspace = true
-num.workspace = true
-paste.workspace = true
-scsys.workspace = true
-smart-default.workspace = true
-strum.workspace = true
-thiserror.workspace = true
+
+ndarray = { workspace = true }
+num = { workspace = true }
+paste = { workspace = true }
+scsys = { workspace = true }
+smart-default = { workspace = true }
+strum = { workspace = true }
+thiserror = { workspace = true }
 # Optional dependencies
 approx = { optional = true, workspace = true }
+getrandom = { default-features = false, optional = true, version = "0.3" }
 rand = { default-features = false, optional = true, workspace = true }
 rand_distr = { default-features = false, optional = true, workspace = true }
+rayon = { optional = true, workspace = true }
 serde = { default-features = false, optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
 tracing = { optional = true, workspace = true }
 uuid = { default-features = false, features = [ "v5", "v8" ], workspace = true }
 
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
 
-    [package.metadata.docs.rs]
-    all-features = true
-    rustc-args = [
-        "--cfg",
-        "docsrs",
-    ]
+[[test]]
+name = "default"
 
-[target.'cfg(wasm32)'.dependencies]
-getrandom = { features = [
-    "js",
-], version = "0.2" }
+[[test]]
+name = "dropout"
+required-features = ["rand", "std"]
+
+[[test]]
+name = "init"
+required-features = ["rand", "std"]
+
+[[test]]
+name = "traits"
+required-features = ["std"]
+
+
+[[test]]
+name = "utils"
+required-features = ["std"]
+

@@ -2,10 +2,8 @@
    Appellation: predict <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-#[cfg(feature = "alloc")]
-use alloc::boxed::Box;
 
-use crate::ModelError;
+pub type BoxPredict<T = ndarray::Array2<f64>, O = T> = Box<dyn Predict<T, Output = O>>;
 
 /// [Forward] describes an object capable of forward propagation; that is, it can
 /// take an input and produce an output.
@@ -30,7 +28,7 @@ pub trait ForwardIter<T> {
 pub trait Predict<T = ndarray::Array2<f64>> {
     type Output;
 
-    fn predict(&self, args: &T) -> Result<Self::Output, ModelError>;
+    fn predict(&self, args: &T) -> crate::Result<Self::Output>;
 }
 /*
  ********* Implementations *********
@@ -63,7 +61,7 @@ where
 impl<U, V> Predict<U> for Box<dyn Predict<U, Output = V>> {
     type Output = V;
 
-    fn predict(&self, args: &U) -> Result<Self::Output, ModelError> {
+    fn predict(&self, args: &U) -> crate::Result<Self::Output> {
         self.as_ref().predict(args)
     }
 }
@@ -75,7 +73,7 @@ where
 {
     type Output = T;
 
-    fn predict(&self, args: &T) -> Result<Self::Output, ModelError> {
+    fn predict(&self, args: &T) -> crate::Result<Self::Output> {
         match self {
             Some(s) => s.predict(args),
             None => Ok(args.clone()),

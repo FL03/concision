@@ -47,7 +47,7 @@ impl Default for Dropout {
 mod impls {
     use super::*;
 
-    use crate::{Eval, ModelError, Predict};
+    use crate::Forward;
     use ndarray::{Array, ArrayBase, DataOwned, Dimension, ScalarOperand};
     use num::traits::Num;
 
@@ -91,8 +91,7 @@ mod impls {
         }
     }
 
-    #[cfg(feature = "rand")]
-    impl<A, S, D> Eval<ArrayBase<S, D>> for Dropout
+    impl<A, S, D> Forward<ArrayBase<S, D>> for Dropout
     where
         A: Num + ScalarOperand,
         D: Dimension,
@@ -100,34 +99,8 @@ mod impls {
     {
         type Output = Array<A, D>;
 
-        fn eval(&self, input: ArrayBase<S, D>) -> Self::Output {
+        fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
             input.dropout(self.p)
-        }
-    }
-
-    impl<'a, A, S, D> Eval<&'a ArrayBase<S, D>> for Dropout
-    where
-        A: Num + ScalarOperand,
-        D: Dimension,
-        S: DataOwned<Elem = A>,
-    {
-        type Output = Array<A, D>;
-
-        fn eval(&self, input: &'a ArrayBase<S, D>) -> Self::Output {
-            input.dropout(self.p)
-        }
-    }
-
-    impl<A, S, D> Predict<ArrayBase<S, D>> for Dropout
-    where
-        A: Num + ScalarOperand,
-        D: Dimension,
-        S: DataOwned<Elem = A>,
-    {
-        type Output = Array<A, D>;
-
-        fn predict(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, ModelError> {
-            Ok(input.dropout(self.p))
         }
     }
 }

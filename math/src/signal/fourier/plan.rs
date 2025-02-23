@@ -91,10 +91,9 @@ impl FromIterator<usize> for FftPlan {
     }
 }
 
-#[cfg(feature = "alloc")]
 impl IntoIterator for FftPlan {
     type Item = usize;
-    type IntoIter = alloc::vec::IntoIter<Self::Item>;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.plan.into_iter()

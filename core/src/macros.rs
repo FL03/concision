@@ -5,13 +5,9 @@
 #[macro_use]
 mod activate;
 #[macro_use]
-mod builder;
-#[macro_use]
 mod getters;
 #[macro_use]
 mod ops;
-#[macro_use]
-mod toggle;
 
 /// Generates methods for forwarding [dimensional](ndarray::Dimension) related methods inherited from
 /// a particular field (or method via `$name()`) which references either an [ArrayBase](ndarray::ArrayBase)

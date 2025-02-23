@@ -120,7 +120,7 @@ mod impls {
     use super::Mask;
     use core::borrow::{Borrow, BorrowMut};
     use core::ops::{Deref, DerefMut, Index, IndexMut};
-    use nd::{ArrayBase, Data, DataMut, Dimension, NdIndex, RawData};
+    use ndarray::{ArrayBase, Data, DataMut, Dimension, NdIndex, RawData};
 
     impl<S, D> AsRef<ArrayBase<S, D>> for Mask<S, D>
     where
@@ -211,7 +211,7 @@ mod impls {
 
 mod impl_from {
     use super::Mask;
-    use nd::{ArrayBase, Dimension, RawData};
+    use ndarray::{ArrayBase, Dimension, RawData};
 
     impl<S, D> From<ArrayBase<S, D>> for Mask<S, D>
     where

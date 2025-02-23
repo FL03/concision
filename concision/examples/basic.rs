@@ -2,13 +2,10 @@
     Appellation: basic <example>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-#![feature(autodiff)]
-
 extern crate concision as cnc;
-extern crate ndarray as nd;
 
 use cnc::ops::pad;
-use nd::prelude::Array;
+use ndarray::prelude::Array;
 
 fn add(x: f64, y: f64) -> f64 {
     x + y
@@ -20,8 +17,6 @@ fn main() -> anyhow::Result<()> {
     dbg!(add(3.0, 4.0));
     Ok(())
 }
-pub enum Biased {}
-pub enum Unbiased {}
 
 pub fn sample_padding(samples: usize) -> anyhow::Result<()> {
     let arr = Array::range(0.0, (samples * samples) as f64, 1.0);
