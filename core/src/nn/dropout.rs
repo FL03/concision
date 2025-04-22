@@ -2,13 +2,7 @@
     Appellation: dropout <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-
-/// [Dropout] randomly zeroizes elements with a given probability (`p`).
-pub trait DropOut {
-    type Output;
-
-    fn dropout(&self, p: f64) -> Self::Output;
-}
+use crate::DropOut;
 
 /// The [Dropout] layer is randomly zeroizes inputs with a given probability (`p`).
 /// This regularization technique is often used to prevent overfitting.
@@ -67,19 +61,6 @@ mod impls {
         array.to_owned() * mask
     }
 
-    impl<A, S, D> DropOut for ArrayBase<S, D>
-    where
-        A: Num + ScalarOperand,
-        D: Dimension,
-        S: DataOwned<Elem = A>,
-    {
-        type Output = Array<A, D>;
-
-        fn dropout(&self, p: f64) -> Self::Output {
-            _dropout(self, p)
-        }
-    }
-
     impl Dropout {
         pub fn apply<A, S, D>(&self, input: &ArrayBase<S, D>) -> Array<A, D>
         where
@@ -99,8 +80,9 @@ mod impls {
     {
         type Output = Array<A, D>;
 
-        fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
-            input.dropout(self.p)
+        fn forward(&self, input: &ArrayBase<S, D>) -> crate::Result<Self::Output> {
+            let res = input.dropout(self.p);
+            Ok(res)
         }
     }
 }

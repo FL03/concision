@@ -19,6 +19,12 @@ default = [ "std" ]
 full = [ "approx", "default", "serde", "tracing" ]
 
 # ********* [FF] Dependencies *********
+alloc = [
+    "num/alloc",
+    "scsys/alloc",
+    "serde?/alloc",
+]
+
 approx = [ "dep:approx", "ndarray/approx" ]
 
 blas = [ "ndarray/blas" ]
@@ -38,7 +44,7 @@ serde = [
 tracing = [ "dep:tracing" ]
 
 # ********* [FF] Environments *********
-std = [ "ndarray/std", "num/std", "scsys/std", "serde/std", "strum/std" ]
+std = [ "alloc", "ndarray/std", "num/std", "scsys/std", "serde/std", "strum/std" ]
 
 [lib]
 crate-type = [ "cdylib", "rlib" ]
@@ -48,17 +54,17 @@ test = true
 [build-dependencies]
 
 [dependencies]
+scsys = { workspace = true }
+
 # Shared dependencies
+approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
 num = { workspace = true }
-scsys = { workspace = true }
-strum = { workspace = true }
-
-# Optional dependencies
-approx = { optional = true, workspace = true }
 rayon = { optional = true, workspace = true }
 serde = { default-features = false, optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
+strum = { workspace = true }
+thiserror = { workspace = true }
 tracing = { optional = true, workspace = true }
 
 [dev-dependencies]

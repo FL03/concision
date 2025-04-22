@@ -2,12 +2,12 @@
     Appellation: initialize <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::init::distr::*;
+use super::distr::*;
 
 use core::ops::Neg;
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};
-use num::complex::ComplexDistribution;
-use num::traits::Float;
+use num_complex::ComplexDistribution;
+use num_traits::{Float, FromPrimitive};
 use rand::{
     Rng, SeedableRng,
     rngs::{SmallRng, StdRng},
@@ -28,14 +28,14 @@ where
 
     fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
     where
-        Ds: Clone + Distribution<A>,
+        Ds: Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
         Self::Data: DataOwned;
 
     fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self
     where
         R: Rng + ?Sized,
-        Ds: Clone + Distribution<A>,
+        Ds: Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
         Self::Data: DataOwned;
 }
@@ -54,17 +54,40 @@ where
         let dist = Bernoulli::new(p)?;
         Ok(Self::rand(shape, dist))
     }
+    /// Initialize the object according to the Glorot Initialization scheme.
+    fn glorot_normal<Sh>(shape: Sh, inputs: usize, outputs: usize) -> Self
+    where
+        A: Float + FromPrimitive,
+        Sh: ShapeBuilder<Dim = D>,
+        StandardNormal: Distribution<A>,
+        Self::Data: DataOwned<Elem = A>,
+    {
+        let distr = XavierNormal::new(inputs, outputs);
+        Self::rand(shape, distr)
+    }
+    /// Initialize the object according to the Glorot Initialization scheme.
+    fn glorot_uniform<Sh>(shape: Sh, inputs: usize, outputs: usize) -> super::UniformResult<Self>
+    where
+        A: Float + FromPrimitive + SampleUniform,
+        Sh: ShapeBuilder<Dim = D>,
+        <A as SampleUniform>::Sampler: Clone,
+        Self::Data: DataOwned<Elem = A>,
+    {
+        let distr = XavierUniform::new(inputs, outputs)?;
+        Ok(Self::rand(shape, distr))
+    }
     /// Initialize the object according to the Lecun Initialization scheme.
     /// LecunNormal distributions are truncated [Normal](rand_distr::Normal)
     /// distributions centered at 0 with a standard deviation equal to the
     /// square root of the reciprocal of the number of inputs.
-    fn lecun_normal<Sh: ShapeBuilder<Dim = D>>(shape: Sh, n: usize) -> Self
+    fn lecun_normal<Sh: ShapeBuilder<Dim = D>>(shape: Sh) -> Self
     where
         A: Float,
         StandardNormal: Distribution<A>,
         Self::Data: DataOwned<Elem = A>,
     {
-        let distr = LecunNormal::new(n);
+        let shape = shape.into_shape_with_order();
+        let distr = LecunNormal::new(shape.size());
         Self::rand(shape, distr)
     }
     /// Given a shape, mean, and standard deviation generate a new object using the [Normal](rand_distr::Normal) distribution
@@ -169,7 +192,7 @@ where
 
     fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
     where
-        Ds: Clone + Distribution<A>,
+        Ds: Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
     {
@@ -179,7 +202,7 @@ where
     fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self
     where
         R: Rng + ?Sized,
-        Ds: Clone + Distribution<A>,
+        Ds: Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
     {

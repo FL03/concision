@@ -6,15 +6,15 @@
 //! machine-learning models.
 //!
 //!
-
-pub use self::distr::prelude::*;
-pub use self::initialize::*;
-pub use self::utils::*;
+#![cfg(feature = "rand")]
+#[doc(inline)]
+pub use self::{distr::prelude::*, initialize::*, utils::*};
 
 pub(crate) mod initialize;
 pub(crate) mod utils;
 
 pub mod distr {
+    #[doc(inline)]
     pub use self::prelude::*;
 
     pub mod lecun;
@@ -36,6 +36,7 @@ pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
+#[allow(unused_imports)]
 pub(crate) mod prelude {
     pub use super::distr::prelude::*;
     pub use super::initialize::{Initialize, InitializeExt};

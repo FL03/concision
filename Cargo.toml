@@ -1,7 +1,7 @@
 [workspace]
 default-members = [ "concision" ]
 
-exclude = [ ".artifacts/archive/*" ]
+exclude = [ ".artifacts/**/*" ]
 
 members = [
     "concision",
@@ -30,8 +30,12 @@ version = "0.1.16"
 
 [workspace.dependencies]
 concision-core = { default-features = false, path = "core", version = "0.1.16" }
+concision-math = { default-features = false, path = "math", version = "0.1.16" }
+concision-derive = { default-features = false, path = "derive", version = "0.1.16" }
+concision-macros = { default-features = false, path = "macros", version = "0.1.16" }
 
 scsys = { default-features = false, features = [ "derive" ], version = "0.2.3" }
+scsys-derive = { default-features = false, version = "0.2.3" }
 
 anyhow = { default-features = false, version = "1" }
 approx = "0.5"
@@ -42,6 +46,8 @@ ndarray-linalg = { default-features = false, version = "0.17" }
 ndarray-rand = { default-features = false, version = "0.16" }
 ndarray-stats = "0.6"
 num = { default-features = false, version = "0.4" }
+num-complex = { version = "0.4" }
+num-traits = { default-features = false, version = "0.2" }
 paste = "1"
 rand = { default-features = false, version = "0.9" }
 rand_distr = { default-features = false, version = "0.5" }
@@ -55,6 +61,8 @@ thiserror = { default-features = false, version = "2" }
 tracing = "0.1"
 tracing-subscriber = "0.3"
 uuid = { default-features = false, version = "1" }
+
+time = { default-features = false, version = "0.3" }
 
 [profile.dev]
 codegen-units = 256

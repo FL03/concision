@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::{Array, ArrayBase, Axis, Data, Dimension, RemoveAxis, ScalarOperand};
-use num::traits::{Float, One, Zero};
+use num_traits::{Float, One, Zero};
 
 /// Heaviside activation function
 pub fn heavyside<T>(x: T) -> T
@@ -19,12 +19,31 @@ where
 {
     if args > T::zero() { args } else { T::zero() }
 }
-///
+
+pub fn relu_derivative<T>(args: T) -> T
+where
+    T: PartialOrd + One + Zero,
+{
+    if args > T::zero() {
+        T::one()
+    } else {
+        T::zero()
+    }
+}
+/// the sigmoid activation function: $f(x) = \frac{1}{1 + e^{-x}}$
 pub fn sigmoid<T>(args: T) -> T
 where
     T: Float,
 {
     (T::one() + args.neg().exp()).recip()
+}
+/// the derivative of the sigmoid function
+pub fn sigmoid_derivative<T>(args: T) -> T
+where
+    T: Float,
+{
+    let s = sigmoid(args);
+    s * (T::one() - s)
 }
 ///
 pub fn softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
@@ -53,4 +72,12 @@ where
     T: num::traits::Float,
 {
     args.tanh()
+}
+///
+pub fn tanh_derivative<T>(args: T) -> T
+where
+    T: num::traits::Float,
+{
+    let t = tanh(args);
+    T::one() - t * t
 }

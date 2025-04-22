@@ -1,112 +1,101 @@
 /*
-    Appellation: proton-neural <lib>
+    Appellation: concision-core <library>
     Contrib: @FL03
 */
-//! This crates provides a set of tools to create and train neural networks.
-// #![feature(autodiff)]
-#[allow(unused_imports)]
+//! the core modules 
+#![crate_name = "concision_core"]
+#![crate_type = "lib"]
+
 #[doc(inline)]
 pub use self::{
-    error::*, ops::prelude::*, traits::prelude::*, types::prelude::*, utils::prelude::*,
+    activate::prelude::*, error::*, ops::prelude::*, params::prelude::*, traits::*,
+    types::*, utils::prelude::*,
 };
 
-#[doc(inline)]
-pub use concision_math as math;
-
+#[allow(unused)]
 #[macro_use]
 pub(crate) mod macros;
+#[allow(unused)]
+#[macro_use]
+pub(crate) mod seal;
 
 pub mod activate;
+pub mod data;
 pub mod error;
-#[cfg(feature = "rand")]
 pub mod init;
-pub mod loss;
-pub mod models;
 pub mod nn;
+pub mod params;
 
 pub mod ops {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod adjust;
     pub mod fill;
-    pub mod matmul;
-    pub mod num;
     pub mod pad;
     pub mod reshape;
     pub mod tensor;
 
     pub(crate) mod prelude {
-        pub use super::adjust::*;
+        #[doc(inline)]
         pub use super::fill::*;
-        pub use super::matmul::*;
-        pub use super::num::*;
+        #[doc(inline)]
         pub use super::pad::*;
+        #[doc(inline)]
         pub use super::reshape::*;
+        #[doc(inline)]
         pub use super::tensor::*;
     }
 }
-
 pub mod traits {
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{clip::*, create::*, init::*, loss::*, mask::*, norm::*, predict::*, train::*};
 
-    pub mod activation;
-    pub mod create;
-    pub mod model;
-    pub mod predict;
-    pub mod tensor;
-    pub mod train;
-
-    pub(crate) mod prelude {
-        pub use super::activation::*;
-        pub use super::create::*;
-        pub use super::model::*;
-        pub use super::predict::*;
-        pub use super::tensor::*;
-        pub use super::train::*;
-    }
+    pub(crate) mod clip;
+    pub(crate) mod create;
+    pub(crate) mod init;
+    pub(crate) mod loss;
+    pub(crate) mod mask;
+    pub(crate) mod norm;
+    pub(crate) mod predict;
+    pub(crate) mod train;
 }
 
 pub mod types {
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::features::*;
 
-    pub mod features;
-    pub mod layer;
-    pub mod params;
-    pub mod perceptron;
-
-    pub(crate) mod prelude {
-        pub use super::features::*;
-        pub use super::layer::*;
-        pub use super::params::*;
-        pub use super::perceptron::*;
-    }
+    pub(crate) mod features;
 }
 
 pub mod utils {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod checks;
+    pub mod gradient;
+    pub mod norm;
+    pub mod patterns;
     pub mod tensor;
 
     pub(crate) mod prelude {
-        pub use super::checks::*;
+        pub use super::gradient::*;
+        pub use super::patterns::*;
         pub use super::tensor::*;
     }
 }
 
-#[allow(unused_imports)]
 pub mod prelude {
-    pub use concision_math::prelude::*;
-
-    #[cfg(feature = "rand")]
-    pub use crate::init::prelude::*;
-    pub use crate::loss::prelude::*;
-    pub use crate::models::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::activate::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::error::*;
+    #[doc(no_inline)]
     pub use crate::ops::prelude::*;
-    pub use crate::traits::prelude::*;
-    pub use crate::types::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::params::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::traits::*;
+    #[doc(no_inline)]
+    pub use crate::types::*;
+    #[doc(no_inline)]
+    pub use crate::utils::prelude::*;
 }

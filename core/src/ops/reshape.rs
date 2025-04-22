@@ -1,19 +1,40 @@
 /*
-    Appellation: reshape <module> [traits::arr]
-    Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: reshape <module>
+    Contrib: @FL03
 */
-use ndarray::prelude::*;
-use ndarray::{RawData, RawDataClone};
+use ndarray::{ArrayBase, Axis, Dimension, RawData, RawDataClone, RemoveAxis};
+
+/// This trait enables an array to remove an axis from itself
+pub trait DecrementAxis {
+    type Output;
+
+    fn dec(&self) -> Self::Output;
+}
+
+pub trait IncrementAxis {
+    type Output;
+
+    fn inc(&self) -> Self::Output;
+}
 
 pub trait Unsqueeze {
     type Output;
 
     fn unsqueeze(self, axis: usize) -> Self::Output;
 }
-
 /*
  ************* Implementations *************
 */
+impl<D> DecrementAxis for D
+where
+    D: RemoveAxis,
+{
+    type Output = D::Smaller;
+
+    fn dec(&self) -> Self::Output {
+        self.remove_axis(Axis(self.ndim() - 1))
+    }
+}
 
 impl<A, S, D> Unsqueeze for ArrayBase<S, D>
 where

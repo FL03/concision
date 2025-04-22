@@ -4,12 +4,13 @@
 */
 use crate::activate::{ReLU, Sigmoid, Softmax, Tanh};
 
-use ndarray::{Array, ArrayBase, DataMut, DataOwned, Dimension, NdFloat};
+use ndarray::{Array, ArrayBase, Data, Dimension, ScalarOperand};
+use num_traits::Float;
 
 impl<A, S, D> ReLU for ArrayBase<S, D>
 where
     A: Copy + core::cmp::PartialOrd + num::Zero,
-    S: DataMut<Elem = A> + DataOwned,
+    S: Data<Elem = A>,
     D: Dimension,
 {
     type Output = Array<A, D>;
@@ -21,8 +22,8 @@ where
 
 impl<A, S, D> Sigmoid for ArrayBase<S, D>
 where
-    A: NdFloat,
-    S: DataMut<Elem = A> + DataOwned,
+    A: Float + 'static,
+    S: Data<Elem = A>,
     D: Dimension,
 {
     type Output = Array<A, D>;
@@ -37,8 +38,8 @@ where
 
 impl<A, S, D> Softmax for ArrayBase<S, D>
 where
-    A: NdFloat,
-    S: DataMut<Elem = A> + DataOwned,
+    A: Float + ScalarOperand,
+    S: Data<Elem = A>,
     D: Dimension,
 {
     type Output = Array<A, D>;
@@ -51,8 +52,8 @@ where
 
 impl<A, S, D> Tanh for ArrayBase<S, D>
 where
-    A: NdFloat,
-    S: DataMut<Elem = A> + DataOwned,
+    A: Float + 'static,
+    S: Data<Elem = A>,
     D: Dimension,
 {
     type Output = Array<A, D>;

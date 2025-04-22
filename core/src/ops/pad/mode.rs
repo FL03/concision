@@ -14,7 +14,7 @@ use num::Zero;
     Ord,
     PartialEq,
     PartialOrd,
-    scsys::VariantConstructors,
+    scsys_derive::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumCount,
