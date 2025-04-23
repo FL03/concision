@@ -6,14 +6,14 @@
 pub trait ApplyGradient<Grad, A> {
     type Output;
 
-    fn apply_gradient(&mut self, grad: &Grad, lr: A) -> crate::Result<Self::Output>;
+    fn apply_gradient(&mut self, grad: &Grad, lr: A) -> crate::CncResult<Self::Output>;
 
     fn apply_gradient_with_decay(
         &mut self,
         grad: &Grad,
         lr: A,
         decay: A,
-    ) -> crate::Result<Self::Output>;
+    ) -> crate::CncResult<Self::Output>;
 }
 
 /// This trait extends the [ApplyGradient] trait by allowing for momentum-based optimization
@@ -26,7 +26,7 @@ pub trait ApplyGradientExt<Grad, A>: ApplyGradient<Grad, A> {
         lr: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output>;
+    ) -> crate::CncResult<Self::Output>;
 
     fn apply_gradient_with_decay_and_momentum(
         &mut self,
@@ -35,7 +35,7 @@ pub trait ApplyGradientExt<Grad, A>: ApplyGradient<Grad, A> {
         decay: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output>;
+    ) -> crate::CncResult<Self::Output>;
 }
 
 /// A simple trait denoting a single backward pass through a layer of a neural network; the
@@ -49,16 +49,21 @@ pub trait Backward<X, Y> {
         input: &X,
         delta: &Y,
         gamma: Self::HParam,
-    ) -> crate::Result<Self::Output>;
+    ) -> crate::CncResult<Self::Output>;
 }
 
 /// This trait defines the training process for the network
 pub trait Train<X, Y> {
     type Output;
 
-    fn train(&mut self, input: &X, target: &Y) -> crate::Result<Self::Output>;
+    fn train(&mut self, input: &X, target: &Y) -> crate::CncResult<Self::Output>;
 
-    fn train_for(&mut self, input: &X, target: &Y, epochs: usize) -> crate::Result<Self::Output> {
+    fn train_for(
+        &mut self,
+        input: &X,
+        target: &Y,
+        epochs: usize,
+    ) -> crate::CncResult<Self::Output> {
         let mut output = None;
 
         for _ in 0..epochs {
@@ -87,7 +92,7 @@ where
 {
     type Output = ();
 
-    fn apply_gradient(&mut self, grad: &ArrayBase<T, D>, lr: A) -> crate::Result<Self::Output> {
+    fn apply_gradient(&mut self, grad: &ArrayBase<T, D>, lr: A) -> crate::CncResult<Self::Output> {
         if self.shape() != grad.shape() {
             return Err(crate::error::Error::ShapeMismatch(
                 self.shape().to_vec(),
@@ -108,7 +113,7 @@ where
         grad: &ArrayBase<T, D>,
         lr: A,
         decay: A,
-    ) -> crate::Result<Self::Output> {
+    ) -> crate::CncResult<Self::Output> {
         if self.shape() != grad.shape() {
             return Err(crate::error::Error::ShapeMismatch(
                 self.shape().to_vec(),
@@ -139,7 +144,7 @@ where
         lr: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output> {
+    ) -> crate::CncResult<Self::Output> {
         if self.shape() != grad.shape() {
             return Err(crate::error::Error::ShapeMismatch(
                 self.shape().to_vec(),
@@ -163,7 +168,7 @@ where
         decay: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output> {
+    ) -> crate::CncResult<Self::Output> {
         if self.shape() != grad.shape() {
             return Err(crate::error::Error::ShapeMismatch(
                 self.shape().to_vec(),

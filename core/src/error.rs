@@ -4,7 +4,7 @@
 */
 
 /// a type alias for a [Result] with a [Error]
-pub(crate) type Result<T = ()> = core::result::Result<T, Error>;
+pub type CncResult<T = ()> = core::result::Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -26,6 +26,8 @@ pub enum Error {
     NaNError,
     #[error(transparent)]
     MathError(#[from] concision_math::MathematicalError),
+    #[error(transparent)]
+    PadError(#[from] crate::ops::pad::error::PadError),
     #[error(transparent)]
     ParamError(#[from] crate::params::error::ParamsError),
     #[error("Training Failed")]

@@ -7,6 +7,8 @@
 #![crate_name = "concision_neural"]
 #![crate_type = "lib"]
 
+extern crate concision_core as cnc;
+
 #[allow(unused_imports)]
 #[doc(inline)]
 pub use self::{error::*, traits::*, types::*, utils::*};

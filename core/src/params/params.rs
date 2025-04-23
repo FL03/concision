@@ -98,7 +98,7 @@ where
         &mut self.weights
     }
     /// perform a single backpropagation step
-    pub fn backward<X, Y, Z>(&mut self, input: &X, grad: &Y, lr: A) -> crate::Result<Z>
+    pub fn backward<X, Y, Z>(&mut self, input: &X, grad: &Y, lr: A) -> crate::CncResult<Z>
     where
         A: Clone,
         S: Data,
@@ -107,7 +107,7 @@ where
         <Self as crate::Backward<X, Y>>::backward(self, input, grad, lr)
     }
     /// forward propagation
-    pub fn forward<X, Y>(&self, input: &X) -> crate::Result<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> crate::CncResult<Y>
     where
         A: Clone,
         S: Data,
@@ -207,7 +207,7 @@ where
     pub fn to_shape<Sh>(
         &self,
         shape: Sh,
-    ) -> crate::Result<ParamsBase<ndarray::CowRepr<'_, A>, Sh::Dim>>
+    ) -> crate::CncResult<ParamsBase<ndarray::CowRepr<'_, A>, Sh::Dim>>
     where
         A: Clone,
         S: DataOwned,

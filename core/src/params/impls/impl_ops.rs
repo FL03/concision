@@ -28,7 +28,7 @@ where
         bias + weights
     }
 
-    pub fn apply_gradient<Grad, Z>(&mut self, grad: &Grad, lr: A) -> crate::Result<Z>
+    pub fn apply_gradient<Grad, Z>(&mut self, grad: &Grad, lr: A) -> crate::CncResult<Z>
     where
         S: DataMut,
         Self: ApplyGradient<Grad, A, Output = Z>,
@@ -41,7 +41,7 @@ where
         grad: &Grad,
         lr: A,
         decay: A,
-    ) -> crate::Result<Z>
+    ) -> crate::CncResult<Z>
     where
         S: DataMut,
         Self: ApplyGradient<Grad, A, Output = Z>,
@@ -55,7 +55,7 @@ where
         lr: A,
         momentum: A,
         velocity: &mut V,
-    ) -> crate::Result<Z>
+    ) -> crate::CncResult<Z>
     where
         S: DataMut,
         Self: ApplyGradientExt<Grad, A, Output = Z, Velocity = V>,
@@ -72,7 +72,7 @@ where
         decay: A,
         momentum: A,
         velocity: &mut V,
-    ) -> crate::Result<Z>
+    ) -> crate::CncResult<Z>
     where
         S: DataMut,
         Self: ApplyGradientExt<Grad, A, Output = Z, Velocity = V>,
@@ -92,7 +92,7 @@ where
 {
     type Output = ();
 
-    fn apply_gradient(&mut self, grad: &ParamsBase<T, D>, lr: A) -> crate::Result<Self::Output> {
+    fn apply_gradient(&mut self, grad: &ParamsBase<T, D>, lr: A) -> crate::CncResult<Self::Output> {
         // apply the bias gradient
         self.bias.apply_gradient(grad.bias(), lr)?;
         // apply the weight gradient
@@ -105,7 +105,7 @@ where
         grad: &ParamsBase<T, D>,
         lr: A,
         decay: A,
-    ) -> crate::Result<Self::Output> {
+    ) -> crate::CncResult<Self::Output> {
         // apply the bias gradient
         self.bias
             .apply_gradient_with_decay(grad.bias(), lr, decay)?;
@@ -131,7 +131,7 @@ where
         lr: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<()> {
+    ) -> crate::CncResult<()> {
         // apply the bias gradient
         self.bias
             .apply_gradient_with_momentum(grad.bias(), lr, momentum, velocity.bias_mut())?;
@@ -152,7 +152,7 @@ where
         decay: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<()> {
+    ) -> crate::CncResult<()> {
         // apply the bias gradient
         self.bias.apply_gradient_with_decay_and_momentum(
             grad.bias(),
@@ -187,7 +187,7 @@ where
         input: &ArrayBase<S, Ix2>,
         delta: &ArrayBase<T, Ix1>,
         gamma: Self::HParam,
-    ) -> crate::Result<Self::Output> {
+    ) -> crate::CncResult<Self::Output> {
         // compute the weight gradient
         let weight_delta = delta.t().dot(input);
         // update the weights and bias
@@ -212,7 +212,7 @@ where
         input: &ArrayBase<S, Ix1>,
         delta: &ArrayBase<T, Ix0>,
         gamma: Self::HParam,
-    ) -> crate::Result<Self::Output> {
+    ) -> crate::CncResult<Self::Output> {
         // compute the weight gradient
         let weight_delta = input * delta;
         // update the weights and bias
@@ -237,7 +237,7 @@ where
         input: &ArrayBase<S, Ix1>,
         delta: &ArrayBase<T, Ix1>,
         gamma: Self::HParam,
-    ) -> crate::Result<Self::Output> {
+    ) -> crate::CncResult<Self::Output> {
         // compute the weight gradient
         let dw = &self.weights * delta.t().dot(input);
         // update the weights and bias
@@ -262,7 +262,7 @@ where
         input: &ArrayBase<S, Ix2>,
         delta: &ArrayBase<T, Ix2>,
         gamma: Self::HParam,
-    ) -> crate::Result<Self::Output> {
+    ) -> crate::CncResult<Self::Output> {
         // compute the weight gradient
         let weight_delta = input.dot(&delta.t());
         // compute the bias gradient
@@ -285,7 +285,7 @@ where
 {
     type Output = Z;
 
-    fn forward(&self, input: &X) -> crate::Result<Self::Output> {
+    fn forward(&self, input: &X) -> crate::CncResult<Self::Output> {
         let output = input.dot(&self.weights) + &self.bias;
         Ok(output)
     }

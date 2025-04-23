@@ -20,7 +20,7 @@ authors = [
     "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)",
 ]
 categories = [ "science" ]
-description = "Concision is a toolkit for building powerful machine-learning models in Rust."
+description = "Concision is a toolkit for designing machine-learning models in Rust."
 edition = "2024"
 homepage = "https://github.com/FL03/concision/wiki"
 keywords = [ "data-science", "scsys", "toolkit", "machine-learning" ]
