@@ -14,40 +14,30 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = [ "std" ]
+default = ["std"]
 
-full = [ "approx", "default", "serde", "tracing" ]
+full = ["approx", "default", "serde", "tracing"]
 
 # ********* [FF] Dependencies *********
-alloc = [
-    "num/alloc",
-    "scsys/alloc",
-    "serde?/alloc",
-]
+alloc = ["num/alloc", "serde?/alloc"]
 
-approx = [ "dep:approx", "ndarray/approx" ]
+approx = ["dep:approx", "ndarray/approx"]
 
-blas = [ "ndarray/blas" ]
+blas = ["ndarray/blas"]
 
-rand = [ "num/rand" ]
+rand = ["num/rand"]
 
-rayon = [ "dep:rayon", "ndarray/rayon" ]
+rayon = ["dep:rayon", "ndarray/rayon"]
 
-serde = [
-    "dep:serde",
-    "dep:serde_derive",
-    "ndarray/serde",
-    "num/serde",
-    "scsys/serde",
-]
+serde = ["dep:serde", "dep:serde_derive", "ndarray/serde", "num/serde"]
 
-tracing = [ "dep:tracing" ]
+tracing = ["dep:tracing"]
 
 # ********* [FF] Environments *********
-std = [ "alloc", "ndarray/std", "num/std", "scsys/std", "serde/std", "strum/std" ]
+std = ["alloc", "ndarray/std", "num-complex/std", "num-traits/std", "num/std", "scsys/std", "serde/std", "strum/std", "thiserror/std"]
 
 [lib]
-crate-type = [ "cdylib", "rlib" ]
+crate-type = ["cdylib", "rlib"]
 doctest = true
 test = true
 
@@ -55,11 +45,14 @@ test = true
 
 [dependencies]
 scsys = { workspace = true }
+scsys-derive = { workspace = true }
 
 # Shared dependencies
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
 num = { workspace = true }
+num-complex = { workspace = true }
+num-traits = { workspace = true }
 rayon = { optional = true, workspace = true }
 serde = { default-features = false, optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
@@ -73,4 +66,4 @@ lazy_static = { workspace = true }
 [[test]]
 name = "fft"
 path = "tests/fft.rs"
-required-features = [ "approx", "std" ]
+required-features = ["approx", "std"]

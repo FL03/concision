@@ -2,7 +2,7 @@
     Appellation: mlp <module>
     Contrib: @FL03
 */
-use concision_core::ModelFeatures;
+use crate::ModelFeatures;
 use concision_core::params::Params;
 
 /// This struct helps isolate the parameters of a deep neural network model providing common

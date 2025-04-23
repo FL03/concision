@@ -25,9 +25,10 @@ pub mod traits {}
 
 pub mod types {
     #[doc(inline)]
-    pub use self::dropout::*;
+    pub use self::{dropout::*, features::*};
 
     pub(crate) mod dropout;
+    pub(crate) mod features;
 }
 
 #[allow(unused_imports)]

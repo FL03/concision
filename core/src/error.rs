@@ -24,8 +24,10 @@ pub enum Error {
     ShapeMismatch(Vec<usize>, Vec<usize>),
     #[error("NaN Error")]
     NaNError,
-    #[error("Parameter Error")]
-    ParameterError,
+    #[error(transparent)]
+    MathError(#[from] concision_math::MathematicalError),
+    #[error(transparent)]
+    ParamError(#[from] crate::params::error::ParamsError),
     #[error("Training Failed")]
     TrainingFailed(String),
     #[error(transparent)]

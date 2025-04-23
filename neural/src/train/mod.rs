@@ -8,6 +8,11 @@ pub use self::trainer::Trainer;
 
 pub mod trainer;
 
+pub(crate) mod impls {
+    pub mod impl_config;
+    pub mod impl_trainer;
+}
+
 pub(crate) mod prelude {
     pub use super::trainer::*;
 }

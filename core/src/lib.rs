@@ -65,10 +65,10 @@ pub mod traits {
 }
 
 pub mod types {
-    #[doc(inline)]
-    pub use self::features::*;
+    // #[doc(inline)]
+    // pub use self::features::*;
 
-    pub(crate) mod features;
+    // pub(crate) mod features;
 }
 
 pub mod utils {

@@ -2,15 +2,23 @@
     Appellation: params <module>
     Contrib: @FL03
 */
+//! Parameters for constructing neural network models. This module implements parameters using
+//! the [ParamsBase] struct and its associated types. The [ParamsBase] struct provides:
+//!
+//! - An (n) dimensional weight tensor as [ArrayBase](ndarray::ArrayBase)
+//! - An (n-1) dimensional bias tensor as [ArrayBase](ndarray::ArrayBase)
+//!
+//! The associated types follow suite with the [`ndarray`] crate, each of which defines a
+//! different style of representation for the parameters.
 #[doc(inline)]
 pub use self::params::ParamsBase;
 
+pub mod error;
 pub mod iter;
 pub mod params;
 
 mod impls {
     pub(crate) mod impl_ops;
-    pub(crate) mod impl_repr;
 }
 
 pub(crate) mod prelude {

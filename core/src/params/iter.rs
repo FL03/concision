@@ -6,6 +6,11 @@ use ndarray::Dimension;
 use ndarray::iter::AxisIter;
 use ndarray::iter::Iter as NdIter;
 
+pub type ItemMut<'a, A, D> = (
+    <AxisIter<'a, A, <D as Dimension>::Smaller> as Iterator>::Item,
+    &'a mut A,
+);
+
 pub struct Iter<'a, A, D>
 where
     D: Dimension,
@@ -37,5 +42,14 @@ where
             (Some(w), Some(b)) => Some((w, b)),
             _ => None,
         }
+    }
+}
+
+impl<'a, A, D> ExactSizeIterator for Iter<'a, A, D>
+where
+    D: Dimension,
+{
+    fn len(&self) -> usize {
+        self.weights.len()
     }
 }

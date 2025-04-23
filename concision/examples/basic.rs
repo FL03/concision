@@ -4,16 +4,16 @@
 */
 extern crate concision as cnc;
 
-use ndarray::prelude::*;
+use cnc::prelude::ModelFeatures;
 
-fn add(x: f64, y: f64) -> f64 {
-    x + y
-}
+use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {
     println!("Welcome to concision!");
-    dbg!(add(1.0, 2.0));
-    dbg!(add(3.0, 4.0));
+
+    let features = ModelFeatures::default();
+    println!("Features: {:?}", features);
+
     Ok(())
 }
 

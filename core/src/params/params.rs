@@ -167,7 +167,7 @@ where
     {
         self.weights.iter()
     }
-    /// returns a mutable iterator over the weights
+    /// returns a mutable iterator over the weights; see [`iter_mut`](ArrayBase::iter_mut) for more
     pub fn iter_weights_mut(&mut self) -> ndarray::iter::IterMut<'_, A, D>
     where
         S: DataMut,
