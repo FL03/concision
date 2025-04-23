@@ -22,45 +22,35 @@ permissions: write-all
 jobs:
   workspace:
     strategy:
+      fail-fast: false
       matrix:
+        os:  [ ubuntu-latest ] # [ ubuntu-latest, macos-latest, windows-latest ]
         target: [ x86_64-unknown-linux-gnu, ]
-        toolchain: [ nightly, ]
-    runs-on: ubuntu-latest
+        toolchain: [ stable, nightly, ]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      # - 
-      #   name: rustup
-      #   uses: actions-rust-lang/setup-rust-toolchain@v1
-      #   with:
-      #     cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      #     cache-workspaces: true
-      #     target: ${{ matrix.target }}
-      -
-        name: rustup
-        run: |
-          rustup self update
-          rustup update
-          rustup default ${{ matrix.toolchain }}
       - 
-        name: build
-        run: cargo build -r -v --features full --target ${{ matrix.target }} --workspace
+        name: checkout
+        uses: actions/checkout@v4
       - 
-        name: test
-        run: cargo test -r -v --features full --target ${{ matrix.target }} --workspace
-      - 
-        name: bench
-        if: matrix.toolchain == 'nightly'
-        run: cargo bench -F full -v --workspace
+        name: setup rustup
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          cache-workspaces: true
+          target: ${{ matrix.target }}
+          toolchain: ${{ matrix.toolchain }}
       - 
         name: cache
-        uses: actions/cache@v4
+        uses: Swatinem/rust-cache@v2
         with:
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-
-            ${{ runner.os }}-
+          prefix-key: "v0.1-${{ github.sha }}"
+      - 
+        name: build
+        run: cargo build -r -v --workspace --features full --target ${{ matrix.target }}
+      - 
+        name: test
+        run: cargo test -r -v --workspace --features full --target ${{ matrix.target }}
+      - 
+        name: bench
+        run: cargo bench -v --workspace --features full

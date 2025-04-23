@@ -2,7 +2,7 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
-use crate::Params;
+use concision_core::{Params, activate};
 
 pub struct Layer<A> {
     pub activation: Box<dyn Fn(A) -> A>,
@@ -27,6 +27,6 @@ where
     where
         A: num_traits::Float,
     {
-        Self::new(crate::activate::sigmoid, params)
+        Self::new(activate::sigmoid, params)
     }
 }

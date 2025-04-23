@@ -2,14 +2,19 @@
     Appellation: concision-core <library>
     Contrib: @FL03
 */
-//! the core modules 
+//! Core abstractions and utilities for machine learning.
+//!
+//!
 #![crate_name = "concision_core"]
 #![crate_type = "lib"]
 
 #[doc(inline)]
+pub use concision_math as math;
+
+#[doc(inline)]
 pub use self::{
-    activate::prelude::*, error::*, ops::prelude::*, params::prelude::*, traits::*,
-    types::*, utils::prelude::*,
+    activate::prelude::*, error::*, ops::prelude::*, params::prelude::*, traits::*, types::*,
+    utils::prelude::*,
 };
 
 #[allow(unused)]
@@ -23,7 +28,6 @@ pub mod activate;
 pub mod data;
 pub mod error;
 pub mod init;
-pub mod nn;
 pub mod params;
 
 pub mod ops {

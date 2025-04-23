@@ -1,0 +1,67 @@
+[package]
+name = "concision-neural"
+
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[features]
+default = []
+
+full = ["approx", "default", "rand", "serde", "tracing"]
+
+# ********* [FF] Dependencies *********
+approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
+
+blas = ["concision-core/blas", "ndarray/blas"]
+
+rand = ["concision-core/rand", "num/rand"]
+
+rayon = ["concision-core/rayon", "dep:rayon", "ndarray/rayon"]
+
+serde = ["concision-core/serde", "dep:serde", "dep:serde_derive", "ndarray/serde", "num/serde"]
+
+tracing = ["concision-core/tracing", "dep:tracing"]
+
+[lib]
+bench = false
+crate-type = ["cdylib", "rlib"]
+doctest = false
+test = true
+
+[build-dependencies]
+
+[dependencies]
+concision-core = { workspace = true }
+scsys-derive = { workspace = true }
+
+# Shared dependencies
+approx = { optional = true, workspace = true }
+ndarray = { features = ["std"], workspace = true }
+num = { features = ["std"], workspace = true }
+num-traits = { features = ["std"], workspace = true }
+rayon = { optional = true, workspace = true }
+serde = { features = ["std"], optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+strum = { features = ["std"], workspace = true }
+thiserror = { features = ["std"], workspace = true }
+tracing = { optional = true, workspace = true }
+
+[dev-dependencies]
+lazy_static = { workspace = true }
+
+# ********* Unit tests *********
+[[test]]
+name = "default"
+required-features = ["default"]
+
+[[test]]
+name = "dropout"
+required-features = ["rand"]

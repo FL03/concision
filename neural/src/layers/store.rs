@@ -2,19 +2,19 @@
     Appellation: mlp <module>
     Contrib: @FL03
 */
-use crate::ModelFeatures;
-use crate::params::Params;
+use concision_core::ModelFeatures;
+use concision_core::params::Params;
 
 /// This struct helps isolate the parameters of a deep neural network model providing common
 /// creation and initialization routines
 #[derive(Clone, Debug)]
-pub struct LayeredParams<A = f64> {
+pub struct ModelParams<A = f64> {
     pub(crate) input: Params<A>,
     pub(crate) hidden: Vec<Params<A>>,
     pub(crate) output: Params<A>,
 }
 
-impl<A> LayeredParams<A> {
+impl<A> ModelParams<A> {
     /// create a new instance of the model;
     /// all parameters are initialized to their defaults (i.e., zero)
     pub fn default(features: ModelFeatures) -> Self
@@ -22,7 +22,7 @@ impl<A> LayeredParams<A> {
         A: Clone + Default,
     {
         let input = Params::default(features.d_input());
-        let hidden = (0..features.layers)
+        let hidden = (0..features.layers())
             .map(|_| Params::default(features.d_hidden()))
             .collect::<Vec<_>>();
         let output = Params::default(features.d_output());
@@ -39,7 +39,7 @@ impl<A> LayeredParams<A> {
         A: Clone + num_traits::One,
     {
         let input = Params::ones(features.d_input());
-        let hidden = (0..features.layers)
+        let hidden = (0..features.layers())
             .map(|_| Params::ones(features.d_hidden()))
             .collect::<Vec<_>>();
         let output = Params::ones(features.d_output());
@@ -56,7 +56,7 @@ impl<A> LayeredParams<A> {
         A: Clone + num_traits::Zero,
     {
         let input = Params::zeros(features.d_input());
-        let hidden = (0..features.layers)
+        let hidden = (0..features.layers())
             .map(|_| Params::zeros(features.d_hidden()))
             .collect::<Vec<_>>();
         let output = Params::zeros(features.d_output());

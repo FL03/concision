@@ -27,23 +27,18 @@ jobs:
       - uses: actions/checkout@v4
       - 
         name: rustup
-        run: |
-          rustup self update
-          rustup update
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          cache-workspaces: true
       - 
         name: publish (features)
         run: |
           cargo publish --all-features -v -p concision-math
           cargo publish --all-features -v -p concision-core
 
-          cargo publish --all-features -v -p concision-data
           cargo publish --all-features -v -p concision-derive
           cargo publish --all-features -v -p concision-macros
-          cargo publish --all-features -v -p concision-kan
-          cargo publish --all-features -v -p concision-gnn
-          cargo publish --all-features -v -p concision-linear
-          cargo publish --all-features -v -p concision-s4
-          cargo publish --all-features -v -p concision-transformers
 
           cargo publish --all-features -v -p concision
       - 

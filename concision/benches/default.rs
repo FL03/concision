@@ -1,7 +1,3 @@
-
-
-
-
 mod fib {
     /// fibonacci(n) returns the nth fibonacci number
     /// This function uses the definition of Fibonacci where:
@@ -81,9 +77,10 @@ fn bench_fib(c: &mut Criterion) {
     c.bench_function("fibonacci", |b| b.iter(|| fib::fibonacci(black_box(20))));
 }
 
-
 fn bench_recursive_fib(c: &mut Criterion) {
-    c.bench_function("recursive_fib", |b| b.iter(|| fib::recursive_fibonacci(black_box(20))));
+    c.bench_function("recursive_fib", |b| {
+        b.iter(|| fib::recursive_fibonacci(black_box(20)))
+    });
 }
 
 fn bench_iter_fib(c: &mut Criterion) {
@@ -92,20 +89,15 @@ fn bench_iter_fib(c: &mut Criterion) {
     group.sample_size(50);
 
     for &n in &[10, 50, 100, 500, 1000] {
-        group.bench_with_input(
-            BenchmarkId::new("iter_fibonacci", n),
-            &n,
-            |b, &count| {
-                b.iter_batched(
-                    fib::Fibonacci::new,
-                    |fib| {
-
-                        black_box(fib.take(count as usize).collect::<Vec<u32>>());
-                    },
-                    criterion::BatchSize::SmallInput,
-                );
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("iter_fibonacci", n), &n, |b, &count| {
+            b.iter_batched(
+                fib::Fibonacci::new,
+                |fib| {
+                    black_box(fib.take(count as usize).collect::<Vec<u32>>());
+                },
+                criterion::BatchSize::SmallInput,
+            );
+        });
     }
 
     group.finish();

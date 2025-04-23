@@ -12,75 +12,58 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = [ "std" ]
-full = [
-    "approx",
-    "default",
-    "derive",
-    "macros",
-    "rand",
-    "serde",
-    "tracing",
-]
+default = ["neural", "std"]
+full = ["approx", "default", "derive", "macros", "rand", "serde", "tracing"]
 
-derive = [ "dep:concision-derive" ]
+derive = ["dep:concision-derive"]
 
-macros = [ "dep:concision-macros" ]
+macros = ["dep:concision-macros"]
+
+neural = ["dep:concision-neural"]
 
 # ********* [FF] Dependencies *********
+alloc = ["concision-core/alloc"]
 
-approx = [
-    "concision-core/approx",
-]
+approx = ["concision-core/approx", "concision-neural/approx"]
 
-rand = [
-    "concision-core/rand",
-]
+rand = ["concision-core/rand", "concision-neural/rand"]
 
-rayon = ["concision-core/rayon"]
+rayon = ["concision-core/rayon", "concision-neural/rayon"]
 
-serde = [
-    "concision-core/serde",
-]
+serde = ["concision-core/serde", "concision-neural/serde"]
 
-tracing = [
-    "concision-core/tracing",
-]
+tracing = ["concision-core/tracing", "concision-neural/tracing"]
 
 # ********* [FF] Environment(s) *********
 
-std = [
-    "concision-core/std",
-]
+std = ["alloc", "concision-core/std"]
 
 # ********* [FF] Blas *********
-blas = [
-    "concision-core/blas",
-]
+blas = ["concision-core/blas", "concision-neural/blas"]
 
-intel-mkl-system = [ "blas" ]
+intel-mkl-system = ["blas"]
 
-intel-mkl-static = [ "blas" ]
+intel-mkl-static = ["blas"]
 
-netlib-system = [ "blas" ]
+netlib-system = ["blas"]
 
-netlib-static = [ "blas" ]
+netlib-static = ["blas"]
 
-openblas-system = [ "blas" ]
+openblas-system = ["blas"]
 
-openblas-static = [ "blas" ]
+openblas-static = ["blas"]
 
 [lib]
 bench = true
-crate-type = [ "cdylib", "rlib" ]
+crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
-
 [dependencies]
-concision-core = { path = "../core", version = "0.1.16" }
-concision-derive = { optional = true, path = "../derive", version = "0.1.16" }
-concision-macros = { optional = true, path = "../macros", version = "0.1.16" }
+concision-core = { workspace = true }
+concision-derive = { optional = true, workspace = true }
+concision-macros = { optional = true, workspace = true }
+concision-neural = { optional = true, workspace = true }
 
 [dev-dependencies]
 anyhow = { workspace = true }
@@ -88,13 +71,13 @@ approx = { workspace = true }
 criterion = { version = "0.5" }
 lazy_static = { workspace = true }
 ndarray = { workspace = true }
-num = { features = [ "rand", "serde" ], workspace = true }
+num = { features = ["rand", "serde"], workspace = true }
 tracing = { workspace = true }
-tracing-subscriber  = { workspace = true }
+tracing-subscriber = { workspace = true }
 
 [package.metadata.docs.rs]
 all-features = true
-rustc-args = [ "--cfg", "docsrs" ]
+rustc-args = ["--cfg", "docsrs"]
 
 [package.metadata.release]
 no-dev-version = true

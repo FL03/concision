@@ -1,11 +1,12 @@
 extern crate concision_core as cnc;
+extern crate concision_neural as neural;
 
 use cnc::Forward;
-use cnc::nn::Dropout;
 use ndarray::prelude::*;
+use neural::Dropout;
 
 #[test]
-fn test_dropout() -> Result<(), cnc::Error> {
+fn test_dropout() -> Result<(), neural::NeuralError> {
     let shape = (512, 2048);
     let arr = Array2::<f64>::ones(shape);
     let dropout = Dropout::new(0.5);

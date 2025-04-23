@@ -4,8 +4,7 @@
 */
 extern crate concision as cnc;
 
-use cnc::ops::pad;
-use ndarray::prelude::Array;
+use ndarray::prelude::*;
 
 fn add(x: f64, y: f64) -> f64 {
     x + y
@@ -19,6 +18,7 @@ fn main() -> anyhow::Result<()> {
 }
 
 pub fn sample_padding(samples: usize) -> anyhow::Result<()> {
+    use cnc::ops::pad;
     let arr = Array::range(0.0, (samples * samples) as f64, 1.0);
     let arr = arr.to_shape((samples, samples))?;
     let padded = pad(&arr, &[[0, 8]], 0.0.into());

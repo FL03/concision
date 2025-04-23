@@ -2,7 +2,7 @@
     Appellation: dropout <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::DropOut;
+use concision_core::DropOut;
 
 /// The [Dropout] layer is randomly zeroizes inputs with a given probability (`p`).
 /// This regularization technique is often used to prevent overfitting.
@@ -41,7 +41,7 @@ impl Default for Dropout {
 mod impls {
     use super::*;
 
-    use crate::Forward;
+    use concision_core::{Forward, init::InitializeExt};
     use ndarray::{Array, ArrayBase, DataOwned, Dimension, ScalarOperand};
     use num::traits::Num;
 
@@ -51,7 +51,6 @@ mod impls {
         D: Dimension,
         S: DataOwned<Elem = A>,
     {
-        use crate::init::InitializeExt;
         // Create a mask of the same shape as the input array
         let mask: ndarray::Array<bool, D> =
             ndarray::Array::bernoulli(array.dim(), p).expect("Failed to create mask");
@@ -80,7 +79,7 @@ mod impls {
     {
         type Output = Array<A, D>;
 
-        fn forward(&self, input: &ArrayBase<S, D>) -> crate::Result<Self::Output> {
+        fn forward(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, concision_core::Error> {
             let res = input.dropout(self.p);
             Ok(res)
         }
