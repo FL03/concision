@@ -85,6 +85,7 @@ concision-macros = { optional = true, path = "../macros", version = "0.1.16" }
 [dev-dependencies]
 anyhow = { workspace = true }
 approx = { workspace = true }
+criterion = { version = "0.5" }
 lazy_static = { workspace = true }
 ndarray = { workspace = true }
 num = { features = [ "rand", "serde" ], workspace = true }
@@ -99,5 +100,13 @@ rustc-args = [ "--cfg", "docsrs" ]
 no-dev-version = true
 tag-name = "{{version}}"
 
+# ********* benches *********
+[[bench]]
+harness = false
+name = "default"
+path = "benches/default.rs"
+required-features = ["std"]
+
+# ********* examples *********
 [[example]]
 name = "basic"
