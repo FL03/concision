@@ -93,3 +93,7 @@ required-features = ["std"]
 # ********* examples *********
 [[example]]
 name = "basic"
+
+[[example]]
+name = "neural"
+required-features = ["approx", "neural", "rand", "std", "tracing"]

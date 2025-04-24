@@ -6,7 +6,7 @@
 #[derive(Debug, thiserror::Error)]
 pub enum MathematicalError {
     #[error("Dimension Error: {0}")]
-    DimensionalError(String),
+    DimensionalError(&'static str),
     #[error("Infinity Error")]
     InfinityError,
     #[error("NaN Error")]

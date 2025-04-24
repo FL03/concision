@@ -44,6 +44,7 @@ scsys-derive = { workspace = true }
 
 # Shared dependencies
 approx = { optional = true, workspace = true }
+either = { workspace = true }
 ndarray = { features = ["std"], workspace = true }
 num = { features = ["std"], workspace = true }
 num-traits = { features = ["std"], workspace = true }
@@ -66,3 +67,7 @@ required-features = ["default"]
 [[test]]
 name = "dropout"
 required-features = ["rand"]
+
+[[test]]
+name="model"
+required-features = ["default", "approx", "rand"]

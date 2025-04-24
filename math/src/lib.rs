@@ -7,6 +7,9 @@
 
 pub use self::{error::*, traits::prelude::*, utils::prelude::*};
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 #[macro_use]
 pub(crate) mod macros;
 

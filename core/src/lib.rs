@@ -88,8 +88,6 @@ pub mod utils {
 }
 
 pub mod prelude {
-    #[doc(inline)]
-    pub use concision_math::prelude::*;
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
     #[doc(no_inline)]
@@ -102,4 +100,6 @@ pub mod prelude {
     pub use crate::traits::*;
     #[doc(no_inline)]
     pub use crate::utils::prelude::*;
+    #[doc(inline)]
+    pub use concision_math::prelude::*;
 }

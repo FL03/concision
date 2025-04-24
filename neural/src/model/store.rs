@@ -1,12 +1,17 @@
 /*
-    Appellation: mlp <module>
+    Appellation: store <module>
     Contrib: @FL03
 */
 use crate::ModelFeatures;
 use concision_core::params::Params;
 
-/// This struct helps isolate the parameters of a deep neural network model providing common
-/// creation and initialization routines
+/// This object is an abstraction over the parameters of a deep neural network model. This is
+/// done to isolate the necessary parameters from the specific logic within a model allowing us
+/// to easily create additional stores for tracking velocities, gradients, and other metrics
+/// we may need.
+///
+/// Additionally, this provides us with a way to introduce common creation routines for
+/// initializing neural networks.
 #[derive(Clone, Debug)]
 pub struct ModelParams<A = f64> {
     pub(crate) input: Params<A>,
@@ -147,5 +152,17 @@ impl<A> ModelParams<A> {
 
     pub fn dim_output(&self) -> (usize, usize) {
         self.output.dim()
+    }
+
+    pub fn forward<X, Y>(&self, input: &X) -> cnc::CncResult<Y>
+    where
+        A: Clone,
+        Params<A>: cnc::Forward<X, Output = Y> + cnc::Forward<Y, Output = Y>,
+    {
+        let mut output = self.input.forward(input)?;
+        for layer in &self.hidden {
+            output = layer.forward(&output)?;
+        }
+        self.output.forward(&output)
     }
 }

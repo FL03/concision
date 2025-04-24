@@ -114,7 +114,10 @@ macro_rules! impl_summary {
     };
 }
 
-impl_summary!(Vec<T>, [T]);
+impl_summary!([T]);
+
+#[cfg(feature = "alloc")]
+impl_summary!(alloc::vec::Vec<T>);
 
 impl<A, S, D> SummaryStatistics for ArrayBase<S, D>
 where

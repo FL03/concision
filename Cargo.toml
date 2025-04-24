@@ -41,6 +41,7 @@ scsys-derive = { default-features = false, version = "0.2.3" }
 
 anyhow = { default-features = false, version = "1" }
 approx = "0.5"
+either = { version = "1"}
 itertools = "0.14"
 lazy_static = "1"
 ndarray = { default-features = false, version = "0.16" }
