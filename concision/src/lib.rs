@@ -2,10 +2,23 @@
    Appellation: concision <library>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # Concision
-//!
-//! Concision focuses on providing useful abstractions for building advanced neural network
-//! models in pure rust.
+//! `concision` aims to be a complete machine-learning toolkit written in Rust. The framework 
+//! is designed to be performant, extensible, and easy to use while offering a wide range of 
+//! features for building and training machine learning models.
+//! 
+//! ## Features
+//! 
+//! - `ndarray`: extensive support for multi-dimensional arrays, enabling efficient data 
+//!   manipulation.
+//! 
+//! ### Long term goals
+//! 
+//! - **DSL**: Create a pseudo-DSL for defining machine learning models and training processes.
+//! - **GPU**: Support for GPU acceleration to speed up training and inference.
+//! - **Interoperability**: Integrate with other libraries and frameworks (TensorFlow, PyTorch)
+//! - **Visualization**: Utilities for visualizing model architectures and training progress
+//! - **WASM**: Native support for WebAssembly enabling models to be run in web browsers.
+//! 
 #![allow(unused_imports)]
 #![crate_name = "concision"]
 

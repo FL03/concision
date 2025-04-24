@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use crate::ModelFeatures;
-use concision_core::params::Params;
+use cnc::params::Params;
 
 /// This object is an abstraction over the parameters of a deep neural network model. This is
 /// done to isolate the necessary parameters from the specific logic within a model allowing us
@@ -20,6 +20,17 @@ pub struct ModelParams<A = f64> {
 }
 
 impl<A> ModelParams<A> {
+    pub fn new(
+        input: Params<A>,
+        hidden: Vec<Params<A>>,
+        output: Params<A>,
+    ) -> Self {
+        Self {
+            input,
+            hidden,
+            output,
+        }
+    }
     /// create a new instance of the model;
     /// all parameters are initialized to their defaults (i.e., zero)
     pub fn default(features: ModelFeatures) -> Self
