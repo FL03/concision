@@ -14,18 +14,19 @@ pub(crate) mod prelude {
     pub use super::store::*;
 }
 
-use crate::ModelFeatures;
+use crate::{ModelFeatures, NetworkConfig};
 use cnc::data::Dataset;
 
 /// This trait defines the base interface for all models, providing access to the models
 /// configuration, layout, and learned parameters.
 pub trait Model<T = f32> {
+    type Config: NetworkConfig<T>;
     /// returns an immutable reference to the models configuration; this is typically used to
     /// access the models hyperparameters (i.e. learning rate, momentum, etc.) and other
     /// related control parameters.
-    fn config(&self) -> &StandardModelConfig<T>;
+    fn config(&self) -> &Self::Config;
     /// returns a mutable reference to the models configuration; useful for setting hyperparams
-    fn config_mut(&mut self) -> &mut StandardModelConfig<T>;
+    fn config_mut(&mut self) -> &mut Self::Config;
     /// returns a copy of the models features (or layout); this is used to define the structure
     /// of the model and its consituents.
     fn features(&self) -> ModelFeatures;
@@ -40,6 +41,13 @@ pub trait Model<T = f32> {
     /// By default, the trait simply passes each output from one layer to the next, however,
     /// custom models will likely override this method to inject activation methods and other
     /// related logic
+    fn predict<U, V>(&self, inputs: &U) -> cnc::Result<V>
+    where
+        Self: cnc::Forward<U, Output = V>,
+    {
+        <Self as cnc::Forward<U>>::forward(self, inputs)
+    }
+    #[deprecated(since = "0.1.17", note = "use predict instead")]
     fn forward<U, V>(&self, inputs: &U) -> cnc::Result<V>
     where
         Self: cnc::Forward<U, Output = V>,

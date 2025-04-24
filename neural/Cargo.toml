@@ -1,9 +1,9 @@
 [package]
+description = "This library implements various abstractions for designing neural networks."
 name = "concision-neural"
 
 authors.workspace = true
 categories.workspace = true
-description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true

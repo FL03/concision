@@ -11,10 +11,7 @@ use neural::model::{Model, StandardModelConfig};
 use neural::{ModelFeatures, ModelParams};
 use num_traits::Float;
 
-pub struct SimpleModel<T = f64>
-where
-    T: Float,
-{
+pub struct SimpleModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: ModelParams<T>,
@@ -34,10 +31,28 @@ where
     }
 }
 
-impl<T> Model<T> for SimpleModel<T>
+impl<T> cnc::Forward<Array1<T>> for SimpleModel<T>
 where
-    T: Float,
+    T: Float + ndarray::ScalarOperand,
+    Params<T>: cnc::Forward<Array1<T>, Output = Array1<T>>,
 {
+    type Output = Array1<T>;
+
+    fn forward(&self, input: &Array1<T>) -> cnc::Result<Self::Output> {
+        use cnc::activate::{ReLU, Sigmoid};
+        let mut output = self.params().input().forward(input)?.relu();
+
+        for layer in self.params().hidden() {
+            output = layer.forward(&output)?.sigmoid();
+        }
+
+        self.params().output().forward(&output).map(|y| y.relu())
+    }
+}
+
+impl<T> Model<T> for SimpleModel<T> {
+    type Config = StandardModelConfig<T>;
+
     fn config(&self) -> &StandardModelConfig<T> {
         &self.config
     }
@@ -56,25 +71,6 @@ where
 
     fn params_mut(&mut self) -> &mut ModelParams<T> {
         &mut self.params
-    }
-}
-
-impl<T> cnc::Forward<Array1<T>> for SimpleModel<T>
-where
-    T: Float + ndarray::ScalarOperand,
-    Params<T>: cnc::Forward<Array1<T>, Output = Array1<T>>,
-{
-    type Output = Array1<T>;
-
-    fn forward(&self, input: &Array1<T>) -> cnc::Result<Self::Output> {
-        use cnc::activate::{ReLU, Sigmoid};
-        let mut output = self.params().input().forward(input)?.relu();
-
-        for layer in self.params().hidden() {
-            output = layer.forward(&output)?.sigmoid();
-        }
-
-        self.params().output().forward(&output).map(|y| y.relu())
     }
 }
 
@@ -99,7 +95,7 @@ fn test_simple_model() -> cnc::Result<()> {
     // initialize some input data
     let input = Array1::linspace(1.0, 9.0, model.features().input());
     // forward the input through the model
-    let output = model.forward(&input)?;
+    let output = model.predict(&input)?;
     // verify the output shape
     assert_eq!(output.dim(), (features.output()));
     // compare the results to what we expected

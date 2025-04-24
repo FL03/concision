@@ -52,29 +52,6 @@ pub trait Backward<X, Y> {
     ) -> crate::Result<Self::Output>;
 }
 
-/// This trait defines the training process for the network
-pub trait Train<X, Y> {
-    type Output;
-
-    fn train(&mut self, input: &X, target: &Y) -> crate::Result<Self::Output>;
-
-    fn train_for(&mut self, input: &X, target: &Y, epochs: usize) -> crate::Result<Self::Output> {
-        let mut output = None;
-
-        for _ in 0..epochs {
-            output = match self.train(input, target) {
-                Ok(o) => Some(o),
-                Err(e) => {
-                    #[cfg(feature = "tracing")]
-                    tracing::error!("Training failed: {e}");
-                    return Err(e);
-                }
-            }
-        }
-        output.ok_or_else(|| crate::error::Error::TrainingFailed("No output".into()))
-    }
-}
-
 use ndarray::{ArrayBase, Dimension, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 
@@ -89,10 +66,9 @@ where
 
     fn apply_gradient(&mut self, grad: &ArrayBase<T, D>, lr: A) -> crate::Result<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(crate::error::Error::ShapeMismatch(
-                self.shape().to_vec(),
-                grad.shape().to_vec(),
-            ));
+            return Err(
+                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
+            );
         }
         let batch_size = if grad.shape().len() > 0 {
             A::from_usize(self.shape()[0]).unwrap()
@@ -110,10 +86,9 @@ where
         decay: A,
     ) -> crate::Result<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(crate::error::Error::ShapeMismatch(
-                self.shape().to_vec(),
-                grad.shape().to_vec(),
-            ));
+            return Err(
+                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
+            );
         }
         let batch_size = if grad.shape().len() > 0 {
             A::from_usize(self.shape()[0]).unwrap()
@@ -141,10 +116,9 @@ where
         velocity: &mut Self::Velocity,
     ) -> crate::Result<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(crate::error::Error::ShapeMismatch(
-                self.shape().to_vec(),
-                grad.shape().to_vec(),
-            ));
+            return Err(
+                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
+            );
         }
         let batch_size = if grad.shape().len() > 0 {
             A::from_usize(self.shape()[0]).unwrap()
@@ -165,10 +139,9 @@ where
         velocity: &mut Self::Velocity,
     ) -> crate::Result<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(crate::error::Error::ShapeMismatch(
-                self.shape().to_vec(),
-                grad.shape().to_vec(),
-            ));
+            return Err(
+                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
+            );
         }
         let batch_size = if grad.shape().len() > 0 {
             A::from_usize(self.shape()[0]).unwrap()

@@ -2,9 +2,14 @@
     Appellation: concision-core <library>
     Contrib: @FL03
 */
-//! Core abstractions and utilities for machine learning.
+//! This library provides the core abstractions and utilities for the Concision framework.
 //!
-//!
+//! ## Features
+//! 
+//! - [ParamsBase]: A structure for defining the parameters within a neural network.
+//! - [Backward]: This trait denotes a single backward pass through a layer of a neural network.
+//! - [Forward]: This trait denotes a single forward pass through a layer of a neural network.
+//! 
 #![crate_name = "concision_core"]
 #![crate_type = "lib"]
 
@@ -13,7 +18,7 @@ pub use concision_math as math;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, error::*, ops::prelude::*, params::prelude::*, traits::*,
+    activate::prelude::*, error::*, ops::prelude::*, params::prelude::*, traits::prelude::*,
     utils::prelude::*,
 };
 
@@ -52,16 +57,35 @@ pub mod ops {
 }
 pub mod traits {
     #[doc(inline)]
-    pub use self::{clip::*, create::*, init::*, loss::*, mask::*, norm::*, predict::*, train::*};
+    pub use self::prelude::*;
 
-    pub(crate) mod clip;
-    pub(crate) mod create;
-    pub(crate) mod init;
-    pub(crate) mod loss;
-    pub(crate) mod mask;
-    pub(crate) mod norm;
-    pub(crate) mod predict;
-    pub(crate) mod train;
+    pub mod clip;
+    pub mod create;
+    pub mod init;
+    pub mod loss;
+    pub mod mask;
+    pub mod norm;
+    pub mod predict;
+    pub mod train;
+
+    pub(crate) mod prelude {
+        #[doc(inline)]
+        pub use super::clip::*;
+        #[doc(inline)]
+        pub use super::create::*;
+        #[doc(inline)]
+        pub use super::init::*;
+        #[doc(inline)]
+        pub use super::loss::*;
+        #[doc(inline)]
+        pub use super::mask::*;
+        #[doc(inline)]
+        pub use super::norm::*;
+        #[doc(inline)]
+        pub use super::predict::*;
+        #[doc(inline)]
+        pub use super::train::*;
+    }
 }
 
 pub mod types {
@@ -81,8 +105,11 @@ pub mod utils {
     pub mod tensor;
 
     pub(crate) mod prelude {
+        #[doc(inline)]
         pub use super::gradient::*;
+        #[doc(inline)]
         pub use super::patterns::*;
+        #[doc(inline)]
         pub use super::tensor::*;
     }
 }
@@ -97,7 +124,7 @@ pub mod prelude {
     #[doc(no_inline)]
     pub use crate::params::prelude::*;
     #[doc(no_inline)]
-    pub use crate::traits::*;
+    pub use crate::traits::prelude::*;
     #[doc(no_inline)]
     pub use crate::utils::prelude::*;
     #[doc(inline)]
