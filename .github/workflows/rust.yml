@@ -36,15 +36,12 @@ jobs:
         name: setup rustup
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           cache-workspaces: true
           target: ${{ matrix.target }}
           toolchain: ${{ matrix.toolchain }}
       - 
         name: cache
         uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: "v0.1-${{ github.sha }}"
       - 
         name: build
         run: cargo build -r -v --workspace --features full --target ${{ matrix.target }}
