@@ -20,11 +20,7 @@ pub struct ModelParams<A = f64> {
 }
 
 impl<A> ModelParams<A> {
-    pub fn new(
-        input: Params<A>,
-        hidden: Vec<Params<A>>,
-        output: Params<A>,
-    ) -> Self {
+    pub fn new(input: Params<A>, hidden: Vec<Params<A>>, output: Params<A>) -> Self {
         Self {
             input,
             hidden,
@@ -42,11 +38,7 @@ impl<A> ModelParams<A> {
             .map(|_| Params::default(features.d_hidden()))
             .collect::<Vec<_>>();
         let output = Params::default(features.d_output());
-        Self {
-            input,
-            hidden,
-            output,
-        }
+        Self::new(input, hidden, output)
     }
     /// create a new instance of the model;
     /// all parameters are initialized to zero
@@ -59,11 +51,7 @@ impl<A> ModelParams<A> {
             .map(|_| Params::ones(features.d_hidden()))
             .collect::<Vec<_>>();
         let output = Params::ones(features.d_output());
-        Self {
-            input,
-            hidden,
-            output,
-        }
+        Self::new(input, hidden, output)
     }
     /// create a new instance of the model;
     /// all parameters are initialized to zero
@@ -76,11 +64,7 @@ impl<A> ModelParams<A> {
             .map(|_| Params::zeros(features.d_hidden()))
             .collect::<Vec<_>>();
         let output = Params::zeros(features.d_output());
-        Self {
-            input,
-            hidden,
-            output,
-        }
+        Self::new(input, hidden, output)
     }
     /// returns true if the stack is shallow
     pub fn is_shallow(&self) -> bool {
@@ -158,7 +142,7 @@ impl<A> ModelParams<A> {
 
     pub fn dim_hidden(&self) -> (usize, usize) {
         assert!(self.hidden.iter().all(|p| p.dim() == self.hidden[0].dim()));
-        self.hidden[0].dim()
+        self.hidden()[0].dim()
     }
 
     pub fn dim_output(&self) -> (usize, usize) {
