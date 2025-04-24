@@ -1,52 +1,105 @@
 /*
-   Appellation: core <library>
-   Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: concision-core <library>
+    Contrib: @FL03
 */
-#![cfg_attr(not(feature = "std"), no_std)]
+//! Core abstractions and utilities for machine learning.
+//!
+//!
 #![crate_name = "concision_core"]
+#![crate_type = "lib"]
 
-#[cfg(feature = "alloc")]
-extern crate alloc;
-extern crate ndarray as nd;
-#[cfg(feature = "rand")]
-extern crate ndarray_rand as ndrand;
+#[doc(inline)]
+pub use concision_math as math;
 
-pub use self::error::{Error, Errors, PredictError};
-pub use self::func::Activate;
-pub use self::nn::Module;
-pub use self::{primitives::*, traits::prelude::*, types::prelude::*, utils::prelude::*};
+#[doc(inline)]
+pub use self::{
+    activate::prelude::*, error::*, ops::prelude::*, params::prelude::*, traits::*,
+    utils::prelude::*,
+};
 
-#[cfg(feature = "rand")]
-pub use self::init::{Initialize, InitializeExt};
-
+#[allow(unused)]
 #[macro_use]
 pub(crate) mod macros;
-pub(crate) mod primitives;
+#[allow(unused)]
+#[macro_use]
+pub(crate) mod seal;
 
+pub mod activate;
+pub mod data;
 pub mod error;
-pub mod func;
 pub mod init;
-pub mod math;
-pub mod nn;
-pub mod ops;
+pub mod params;
 
-pub mod traits;
-pub mod types;
-pub mod utils;
+pub mod ops {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod fill;
+    pub mod pad;
+    pub mod reshape;
+    pub mod tensor;
+
+    pub(crate) mod prelude {
+        #[doc(inline)]
+        pub use super::fill::*;
+        #[doc(inline)]
+        pub use super::pad::*;
+        #[doc(inline)]
+        pub use super::reshape::*;
+        #[doc(inline)]
+        pub use super::tensor::*;
+    }
+}
+pub mod traits {
+    #[doc(inline)]
+    pub use self::{clip::*, create::*, init::*, loss::*, mask::*, norm::*, predict::*, train::*};
+
+    pub(crate) mod clip;
+    pub(crate) mod create;
+    pub(crate) mod init;
+    pub(crate) mod loss;
+    pub(crate) mod mask;
+    pub(crate) mod norm;
+    pub(crate) mod predict;
+    pub(crate) mod train;
+}
+
+pub mod types {
+    // #[doc(inline)]
+    // pub use self::features::*;
+
+    // pub(crate) mod features;
+}
+
+pub mod utils {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod gradient;
+    pub mod norm;
+    pub mod patterns;
+    pub mod tensor;
+
+    pub(crate) mod prelude {
+        pub use super::gradient::*;
+        pub use super::patterns::*;
+        pub use super::tensor::*;
+    }
+}
 
 pub mod prelude {
-    #[allow(unused_imports)]
-    pub(crate) use super::primitives::rust::*;
-
-    pub use super::error::prelude::*;
-    pub use super::func::prelude::*;
-    #[cfg(feature = "rand")]
-    pub use super::init::prelude::*;
-    pub use super::math::prelude::*;
-    pub use super::nn::prelude::*;
-    pub use super::ops::prelude::*;
-    pub use super::primitives::*;
-    pub use super::traits::prelude::*;
-    pub use super::types::prelude::*;
-    pub use super::utils::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::activate::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::error::*;
+    #[doc(no_inline)]
+    pub use crate::ops::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::params::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::traits::*;
+    #[doc(no_inline)]
+    pub use crate::utils::prelude::*;
+    #[doc(inline)]
+    pub use concision_math::prelude::*;
 }

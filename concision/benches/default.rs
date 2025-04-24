@@ -1,40 +1,3 @@
-// bench.rs
-#![feature(test)]
-
-extern crate test;
-
-use test::Bencher;
-
-// bench: find the `BENCH_SIZE` first terms of the fibonacci sequence
-const BENCH_SIZE: u32 = 20;
-
-#[bench]
-fn fibonacci(b: &mut Bencher) {
-    // exact code to benchmark must be passed as a closure to the iter
-    // method of Bencher
-    b.iter(|| (0..BENCH_SIZE).map(fib::fibonacci).collect::<Vec<u128>>())
-}
-
-#[bench]
-fn iter_fibonacci(b: &mut Bencher) {
-    b.iter(|| {
-        fib::Fibonacci::new()
-            .take(BENCH_SIZE as usize)
-            .collect::<Vec<u32>>()
-    })
-}
-
-#[bench]
-fn recursive_fibonacci(b: &mut Bencher) {
-    // exact code to benchmark must be passed as a closure to the iter
-    // method of Bencher
-    b.iter(|| {
-        (0..BENCH_SIZE)
-            .map(fib::recursive_fibonacci)
-            .collect::<Vec<u128>>()
-    })
-}
-
 mod fib {
     /// fibonacci(n) returns the nth fibonacci number
     /// This function uses the definition of Fibonacci where:
@@ -78,10 +41,19 @@ mod fib {
         curr: u32,
         next: u32,
     }
-
+    #[allow(unused)]
     impl Fibonacci {
         pub fn new() -> Fibonacci {
             Fibonacci { curr: 0, next: 1 }
+        }
+
+        pub fn reset(&mut self) {
+            self.curr = 0;
+            self.next = 1;
+        }
+
+        fn compute_next(&self) -> u32 {
+            self.curr + self.next
         }
     }
 
@@ -90,10 +62,46 @@ mod fib {
 
         fn next(&mut self) -> Option<u32> {
             use core::mem::replace;
-            let new_next = self.curr + self.next;
+            let new_next = self.compute_next();
             let new_curr = replace(&mut self.next, new_next);
 
             Some(replace(&mut self.curr, new_curr))
         }
     }
 }
+
+use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
+use std::time::Duration;
+
+fn bench_fib(c: &mut Criterion) {
+    c.bench_function("fibonacci", |b| b.iter(|| fib::fibonacci(black_box(20))));
+}
+
+fn bench_recursive_fib(c: &mut Criterion) {
+    c.bench_function("recursive_fib", |b| {
+        b.iter(|| fib::recursive_fibonacci(black_box(20)))
+    });
+}
+
+fn bench_iter_fib(c: &mut Criterion) {
+    let mut group = c.benchmark_group("Fibonacci Iter");
+    group.measurement_time(Duration::from_secs(10));
+    group.sample_size(50);
+
+    for &n in &[10, 50, 100, 500, 1000] {
+        group.bench_with_input(BenchmarkId::new("iter_fibonacci", n), &n, |b, &count| {
+            b.iter_batched(
+                fib::Fibonacci::new,
+                |fib| {
+                    black_box(fib.take(count as usize).collect::<Vec<u32>>());
+                },
+                criterion::BatchSize::SmallInput,
+            );
+        });
+    }
+
+    group.finish();
+}
+
+criterion_group!(benches, bench_fib, bench_iter_fib, bench_recursive_fib,);
+criterion_main!(benches);

@@ -9,30 +9,29 @@
 //! prevents the vanishing and exploding gradient problems. The initialization technique
 //! manifests into two distributions: [XavierNormal] and [XavierUniform].
 // #76
-use num::Float;
+use num_traits::{Float, FromPrimitive};
 use rand::Rng;
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Distribution, Normal, NormalError, StandardNormal};
 
 pub(crate) fn std_dev<F>(inputs: usize, outputs: usize) -> F
 where
-    F: Float,
+    F: Float + FromPrimitive,
 {
-    (F::from(2).unwrap() / F::from(inputs + outputs).unwrap()).sqrt()
+    (F::from_usize(2).unwrap() / F::from_usize(inputs + outputs).unwrap()).sqrt()
 }
 
 pub(crate) fn boundary<F>(inputs: usize, outputs: usize) -> F
 where
-    F: Float,
+    F: Float + FromPrimitive,
 {
-    (F::from(6).unwrap() / F::from(inputs + outputs).unwrap()).sqrt()
+    (F::from_usize(6).unwrap() / F::from_usize(inputs + outputs).unwrap()).sqrt()
 }
 /// Normal Xavier initializers leverage a normal distribution with a mean of 0 and a standard deviation (`σ`)
 /// computed by the formula: `σ = sqrt(2/(d_in + d_out))`
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct XavierNormal<F>
 where
-    F: Float,
     StandardNormal: Distribution<F>,
 {
     std: F,
@@ -43,7 +42,10 @@ where
     F: Float,
     StandardNormal: Distribution<F>,
 {
-    pub fn new(inputs: usize, outputs: usize) -> Self {
+    pub fn new(inputs: usize, outputs: usize) -> Self
+    where
+        F: FromPrimitive,
+    {
         Self {
             std: std_dev(inputs, outputs),
         }
@@ -73,34 +75,27 @@ where
 
 /// Uniform Xavier initializers use a uniform distribution to initialize the weights of a neural network
 /// within a given range.
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct XavierUniform<X>
 where
-    X: SampleUniform,
+    X: Float + SampleUniform,
 {
-    boundary: X,
+    distr: Uniform<X>,
 }
 
 impl<X> XavierUniform<X>
 where
     X: Float + SampleUniform,
 {
-    pub fn new(inputs: usize, outputs: usize) -> Self {
-        Self {
-            boundary: boundary(inputs, outputs),
-        }
-    }
-
-    pub fn boundary(&self) -> X {
-        self.boundary
-    }
-
-    pub fn distr(&self) -> Uniform<X>
+    pub fn new(inputs: usize, outputs: usize) -> Result<Uniform<X>, rand_distr::uniform::Error>
     where
-        X: Float,
+        X: FromPrimitive,
     {
-        let bnd = self.boundary();
-        Uniform::new(-bnd, bnd)
+        let limit = boundary::<X>(inputs, outputs);
+        Uniform::new(-limit, limit)
+    }
+
+    pub const fn distr(&self) -> &Uniform<X> {
+        &self.distr
     }
 }
 

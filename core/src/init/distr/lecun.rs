@@ -2,8 +2,8 @@
     Appellation: lecun <distr>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::init::distr::TruncatedNormal;
-use num::Float;
+use super::TruncatedNormal;
+use num_traits::Float;
 use rand::Rng;
 use rand_distr::{Distribution, NormalError, StandardNormal};
 

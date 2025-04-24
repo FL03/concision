@@ -2,9 +2,9 @@
     Appellation: tensor <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{gen::*, stack::*};
-use nd::*;
-use num::traits::{NumAssign, Zero};
+pub use self::{generators::*, stack::*};
+use ndarray::*;
+use num_traits::{NumAssign, Zero};
 
 /// Creates an n-dimensional array from an iterator of n dimensional arrays.
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
@@ -91,9 +91,9 @@ where
     out
 }
 
-pub(crate) mod gen {
-    use nd::{Array, Array1, Dimension, IntoDimension, ShapeError};
-    use num::traits::{Float, NumCast};
+pub(crate) mod generators {
+    use ndarray::{Array, Array1, Dimension, IntoDimension, ShapeError};
+    use num_traits::{Float, NumCast};
 
     pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
         Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
@@ -106,13 +106,15 @@ pub(crate) mod gen {
     {
         let dim = dim.into_dimension();
         let n = dim.size();
-        Array::linspace(A::zero(), A::from(n - 1).unwrap(), n).into_shape(dim)
+        Array::linspace(A::zero(), A::from(n - 1).unwrap(), n)
+            .to_shape(dim)
+            .map(|x| x.to_owned())
     }
 }
 
 pub(crate) mod stack {
-    use nd::{s, Array1, Array2};
-    use num::Num;
+    use ndarray::{Array1, Array2, s};
+    use num_traits::Num;
     /// Creates a larger array from an iterator of smaller arrays.
     pub fn stack_iter<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
     where
