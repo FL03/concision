@@ -22,43 +22,36 @@ permissions:
 
 jobs:
   features:
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        feature: [ "math", "core", "neural", "derive", "macros" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - 
         name: rustup
         uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          cache-workspaces: true
       - 
         name: cache
         uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: "${{ github.ref_name }}"
       - 
-        name: publish (features)
-        run: |
-          cargo publish --all-features -v -p concision-math
-          cargo publish --all-features -v -p concision-core
-
-          cargo public --all-features -v -p concision-neural
-
-          cargo publish --all-features -v -p concision-derive
-          cargo publish --all-features -v -p concision-macros
-
-          cargo publish --all-features -v -p concision
+        name: publish (${{ matrix.feature }})
+        run: cargo publish --all-features -v -p concision-${{ matrix.feature }}
+  root:
+    needs: [features]
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: checkout
+        uses: actions/checkout@v4
+      - 
+        name: rustup
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - 
         name: cache
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-
-            ${{ runner.os }}-
-
+        uses: Swatinem/rust-cache@v2
+      - 
+        name: publish
+        run: cargo publish --all-features -v -p concision
