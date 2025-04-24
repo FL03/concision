@@ -38,31 +38,80 @@ cargo test --workspace -F full
 
 ## Usage
 
-### Example: Linear Model (biased)
+### Example: Creating a simple Model
 
 ```rust
     extern crate concision as cnc;
 
-    use cnc::prelude::{linarr, Linear, Result, Sigmoid};
-    use ndarray::Ix2;
+    use cnc::activate::{ReLU, Sigmoid};
+    use cnc::nn::{Model, ModelFeatures, ModelParams, StandardModelConfig};
+    use ndarray::{Array1, ScalarOperand};
+    use num::Float;
 
-    fn main() -> Result<()> {
-        tracing_subscriber::fmt::init();
-        tracing::info!("Starting linear model example");
+    pub struct SimpleModel<T = f64> {
+        pub config: StandardModelConfig<T>,
+        pub features: ModelFeatures,
+        pub params: ModelParams<T>,
+    }
 
-        let (samples, d_in, d_out) = (20, 5, 3);
-        let data = linarr::<f64, Ix2>((samples, d_in)).unwrap();
+    impl<T> SimpleModel<T> {
+        pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self 
+        where 
+            T: Clone + num::Zero
+        {
+            let params = ModelParams::zeros(features);
+            SimpleModel {
+                config,
+                features,
+                params,
+            }
+        }
+    }
 
-        let model = Linear::<f64>::from_features(d_in, d_out).uniform();
-        // let model = Linear::<f64, cnc::linear::Unbiased>::from_features(d_in, d_out).uniform();
+    impl<T> cnc::Forward<Array1<T>> for SimpleModel<T>
+    where
+        T: Float + ScalarOperand,
+        cnc::Params<T>: cnc::Forward<Array1<T>, Output = Array1<T>>,
+    {
+        type Output = Array1<T>;
 
-        assert!(model.is_biased());
+        fn forward(&self, input: &Array1<T>) -> Result<Self::Output, cnc::Error>
+        where
+            T: Clone,
+        {
+            let mut output = self.params().input().forward(input)?.relu();
 
-        let y = model.activate(&data, Sigmoid::sigmoid).unwrap();
-        assert_eq!(y.dim(), (samples, d_out));
-        println!("Predictions:\n{:?}", &y);
+            for layer in self.params().hidden() {
+                output = layer.forward(&output)?.sigmoid();
+            }
 
-        Ok(())
+            let res = self.params().output().forward(&output)?;
+            Ok(res.relu())
+        }
+    }
+
+    impl<T> Model<T> for SimpleModel<T> {
+        type Config = StandardModelConfig<T>;
+
+        fn config(&self) -> &StandardModelConfig<T> {
+            &self.config
+        }
+
+        fn config_mut(&mut self) -> &mut StandardModelConfig<T> {
+            &mut self.config
+        }
+
+        fn features(&self) -> ModelFeatures {
+            self.features
+        }
+
+        fn params(&self) -> &ModelParams<T> {
+            &self.params
+        }
+
+        fn params_mut(&mut self) -> &mut ModelParams<T> {
+            &mut self.params
+        }
     }
 ```
 
