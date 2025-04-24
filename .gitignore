@@ -68,7 +68,7 @@
 **/*.bk
 **/*.bk.*
 
-**/Cargo.lock
+!Cargo.lock
 
 ## Node
 **/build/

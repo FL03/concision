@@ -1,11 +1,11 @@
 version: 2
 
 updates:
-  - package-ecosystem: cargo
+  - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
-  - package-ecosystem: github-actions
+  - package-ecosystem: cargo
     directory: /
     schedule:
       interval: monthly
@@ -15,10 +15,6 @@ updates:
       interval: monthly
   - package-ecosystem: cargo
     directory: /core
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /data
     schedule:
       interval: monthly
   - package-ecosystem: cargo
@@ -34,22 +30,6 @@ updates:
     schedule:
       interval: monthly
   - package-ecosystem: cargo
-    directory: /models/gnn
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /models/kan
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /models/linear
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /models/s4
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /models/transformer
+    directory: /neural
     schedule:
       interval: monthly

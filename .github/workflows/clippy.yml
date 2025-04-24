@@ -33,6 +33,11 @@ jobs:
           cache-workspaces: true
           components: clippy, rustfmt
       - 
+        name: cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "${{ github.ref_name }}"
+      - 
         name: setup cargo
         run: cargo install clippy-sarif sarif-fmt
       - 

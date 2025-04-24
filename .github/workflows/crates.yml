@@ -32,10 +32,17 @@ jobs:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           cache-workspaces: true
       - 
+        name: cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "${{ github.ref_name }}"
+      - 
         name: publish (features)
         run: |
           cargo publish --all-features -v -p concision-math
           cargo publish --all-features -v -p concision-core
+
+          cargo public --all-features -v -p concision-neural
 
           cargo publish --all-features -v -p concision-derive
           cargo publish --all-features -v -p concision-macros
