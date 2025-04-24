@@ -154,7 +154,7 @@ impl<A> ModelParams<A> {
         self.output.dim()
     }
 
-    pub fn forward<X, Y>(&self, input: &X) -> cnc::CncResult<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         A: Clone,
         Params<A>: cnc::Forward<X, Output = Y> + cnc::Forward<Y, Output = Y>,

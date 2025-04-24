@@ -9,28 +9,32 @@
 
 extern crate concision_core as cnc;
 
-#[allow(unused_imports)]
 #[doc(inline)]
 pub use self::{
     error::*,
-    layer::Layer,
-    model::{Model, ModelConfig, ModelParams},
+    model::{Model, ModelParams, StandardModelConfig},
+    train::Trainer,
     traits::*,
     types::*,
-    utils::*,
 };
 
-#[allow(unused_macros)]
 #[macro_use]
 pub(crate) mod macros;
 
 pub mod error;
+#[doc(hidden)]
 pub mod layer;
 pub mod model;
 pub mod train;
 pub mod utils;
 
-pub mod traits {}
+pub mod traits {
+    #[doc(inline)]
+    pub use self::{activate::*, config::*};
+
+    pub(crate) mod activate;
+    pub(crate) mod config;
+}
 
 pub mod types {
     #[doc(inline)]
@@ -41,12 +45,15 @@ pub mod types {
     pub(crate) mod hyperparameters;
 }
 
-#[allow(unused_imports)]
 pub mod prelude {
+    #[doc(hidden)]
     pub use crate::layer::prelude::*;
+    #[doc(no_inline)]
     pub use crate::model::prelude::*;
+    #[doc(no_inline)]
     pub use crate::train::prelude::*;
+    #[doc(no_inline)]
     pub use crate::traits::*;
+    #[doc(no_inline)]
     pub use crate::types::*;
-    pub use crate::utils::*;
 }

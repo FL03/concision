@@ -5,19 +5,17 @@
 
 use crate::Hyperparameters::*;
 
-pub type ModelConfigMap<T> = std::collections::HashMap<String, T>;
+pub(crate) type ModelConfigMap<T> = std::collections::HashMap<String, T>;
 
-pub struct ModelConfigBuilder<T = f32> {
-    pub learning_rate: Option<T>,
-}
-
-pub struct ModelConfig<T> {
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde_derive::Deserialize, serde::Serialize))]
+pub struct StandardModelConfig<T> {
     pub(crate) batch_size: usize,
     pub(crate) epochs: usize,
     pub(crate) hyperparameters: ModelConfigMap<T>,
 }
 
-impl<T> ModelConfig<T> {
+impl<T> StandardModelConfig<T> {
     pub fn new() -> Self {
         Self {
             batch_size: 0,

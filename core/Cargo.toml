@@ -133,7 +133,6 @@ getrandom = { default-features = false, optional = true, version = "0.3" }
 rand = { default-features = false, optional = true, workspace = true }
 rand_distr = { default-features = false, optional = true, workspace = true }
 rayon = { optional = true, workspace = true }
-rustfft = { features = [], version = "6" }
 serde = { default-features = false, optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }

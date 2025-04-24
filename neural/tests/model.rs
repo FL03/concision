@@ -7,7 +7,7 @@ extern crate concision_neural as neural;
 
 use cnc::Params;
 use ndarray::prelude::*;
-use neural::model::{Model, ModelConfig};
+use neural::model::{Model, StandardModelConfig};
 use neural::{ModelFeatures, ModelParams};
 use num_traits::Float;
 
@@ -15,7 +15,7 @@ pub struct SimpleModel<T = f64>
 where
     T: Float,
 {
-    pub config: ModelConfig<T>,
+    pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: ModelParams<T>,
 }
@@ -24,7 +24,7 @@ impl<T> SimpleModel<T>
 where
     T: Float,
 {
-    pub fn new(config: ModelConfig<T>, features: ModelFeatures) -> Self {
+    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self {
         let params = ModelParams::zeros(features);
         SimpleModel {
             config,
@@ -38,11 +38,11 @@ impl<T> Model<T> for SimpleModel<T>
 where
     T: Float,
 {
-    fn config(&self) -> &ModelConfig<T> {
+    fn config(&self) -> &StandardModelConfig<T> {
         &self.config
     }
 
-    fn config_mut(&mut self) -> &mut ModelConfig<T> {
+    fn config_mut(&mut self) -> &mut StandardModelConfig<T> {
         &mut self.config
     }
 
@@ -66,7 +66,7 @@ where
 {
     type Output = Array1<T>;
 
-    fn forward(&self, input: &Array1<T>) -> cnc::CncResult<Self::Output> {
+    fn forward(&self, input: &Array1<T>) -> cnc::Result<Self::Output> {
         use cnc::activate::{ReLU, Sigmoid};
         let mut output = self.params().input().forward(input)?.relu();
 
@@ -79,8 +79,10 @@ where
 }
 
 #[test]
-fn test_simple_model() -> cnc::CncResult<()> {
-    let mut config = ModelConfig::new().with_epochs(1000).with_batch_size(32);
+fn test_simple_model() -> cnc::Result<()> {
+    let mut config = StandardModelConfig::new()
+        .with_epochs(1000)
+        .with_batch_size(32);
     config.set_learning_rate(0.01);
     config.set_momentum(0.9);
     config.set_decay(0.0001);

@@ -12,30 +12,8 @@ pub(crate) mod prelude {
     pub use super::layer::*;
 }
 
+use crate::Activate;
 use cnc::ParamsBase;
-
-pub trait BinaryAction<A, B = A> {
-    type Output;
-
-    fn activate(lhs: A, rhs: B) -> Self::Output;
-}
-
-pub trait Activate<Rhs = Self> {
-    type Output;
-
-    fn activate(&self, rhs: Rhs) -> Self::Output;
-}
-
-impl<X, Y, F> Activate<X> for F
-where
-    F: Fn(X) -> Y,
-{
-    type Output = Y;
-
-    fn activate(&self, rhs: X) -> Self::Output {
-        self(rhs)
-    }
-}
 
 use ndarray::{Dimension, Ix2, RawData};
 pub trait Layer<S, D = Ix2>
@@ -52,7 +30,7 @@ where
 
     fn rho<A, B>(&self) -> &Self::Rho<A, B>;
     ///
-    fn forward<X, Y>(&self, input: &X) -> cnc::CncResult<Y>
+    fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         S::Elem: Clone,
         S: ndarray::Data,

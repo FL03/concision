@@ -1,7 +1,7 @@
 extern crate concision as cnc;
 
 use cnc::activate::{ReLU, Sigmoid};
-use cnc::nn::{Model, ModelConfig, ModelFeatures, ModelParams};
+use cnc::nn::{Model, ModelFeatures, ModelParams, StandardModelConfig};
 use ndarray::{Array1, ScalarOperand};
 use num::Float;
 
@@ -14,11 +14,15 @@ fn main() -> anyhow::Result<()> {
     tracing::info!("Setting up the model...");
     // define the models features
     let features = ModelFeatures::new(3, 9, 9, 2);
+    tracing::debug!("Model Features: {features:?}");
     // initialize the models configuration
-    let mut config = ModelConfig::new().with_epochs(1000).with_batch_size(32);
+    let mut config = StandardModelConfig::new()
+        .with_epochs(1000)
+        .with_batch_size(32);
     config.set_learning_rate(0.01);
     config.set_momentum(0.9);
     config.set_decay(0.0001);
+    tracing::debug!("Model Config: {config:?}");
     // initialize the model
     let model = SimpleModel::<f64>::new(config, features);
     // verify the model configuration
@@ -41,7 +45,7 @@ pub struct SimpleModel<T = f64>
 where
     T: Float,
 {
-    pub config: ModelConfig<T>,
+    pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: ModelParams<T>,
 }
@@ -50,7 +54,7 @@ impl<T> SimpleModel<T>
 where
     T: Float,
 {
-    pub fn new(config: ModelConfig<T>, features: ModelFeatures) -> Self {
+    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self {
         let params = ModelParams::zeros(features);
         SimpleModel {
             config,
@@ -64,11 +68,11 @@ impl<T> Model<T> for SimpleModel<T>
 where
     T: Float,
 {
-    fn config(&self) -> &ModelConfig<T> {
+    fn config(&self) -> &StandardModelConfig<T> {
         &self.config
     }
 
-    fn config_mut(&mut self) -> &mut ModelConfig<T> {
+    fn config_mut(&mut self) -> &mut StandardModelConfig<T> {
         &mut self.config
     }
 
