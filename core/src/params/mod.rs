@@ -11,7 +11,7 @@
 //! The associated types follow suite with the [`ndarray`] crate, each of which defines a
 //! different style of representation for the parameters.
 #[doc(inline)]
-pub use self::params::ParamsBase;
+pub use self::{error::ParamsError, params::ParamsBase};
 
 pub mod error;
 pub mod iter;
@@ -22,9 +22,8 @@ mod impls {
 }
 
 pub(crate) mod prelude {
-    #[doc(inline)]
+    pub use super::error::ParamsError;
     pub use super::params::ParamsBase;
-    #[doc(inline)]
     pub use super::{Params, ParamsView, ParamsViewMut};
 }
 

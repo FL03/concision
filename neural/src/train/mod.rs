@@ -14,10 +14,9 @@ pub(crate) mod impls {
 }
 
 pub(crate) mod prelude {
-    pub use super::trainer::*;
     pub use super::Train;
+    pub use super::trainer::*;
 }
-
 
 /// This trait defines the training process for the network
 pub trait Train<X, Y> {

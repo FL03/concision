@@ -18,7 +18,7 @@ default = []
 full = ["approx", "default", "rand", "serde", "tracing"]
 
 attention = [
-    "dep:rustfft"
+    "rustfft"
 ]
 
 # ********* [FF] Dependencies *********
@@ -29,6 +29,8 @@ blas = ["concision-core/blas", "ndarray/blas"]
 rand = ["concision-core/rand", "num/rand"]
 
 rayon = ["concision-core/rayon", "dep:rayon", "ndarray/rayon"]
+
+rustfft = ["dep:rustfft"]
 
 serde = ["concision-core/serde", "dep:serde", "dep:serde_derive", "ndarray/serde", "num/serde"]
 
@@ -68,6 +70,10 @@ lazy_static = { workspace = true }
 [[test]]
 name = "default"
 required-features = ["default"]
+
+[[test]]
+name="attention"
+required-features = ["default", "attention", "approx", "rand"]
 
 [[test]]
 name = "dropout"

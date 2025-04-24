@@ -2,7 +2,6 @@
     Appellation: dropout <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision_core::DropOut;
 
 /// The [Dropout] layer is randomly zeroizes inputs with a given probability (`p`).
 /// This regularization technique is often used to prevent overfitting.
@@ -39,26 +38,11 @@ impl Default for Dropout {
 
 #[cfg(feature = "rand")]
 mod impls {
-    use super::*;
+    use super::Dropout;
 
     use concision_core::{Forward, init::InitializeExt};
     use ndarray::{Array, ArrayBase, DataOwned, Dimension, ScalarOperand};
     use num::traits::Num;
-
-    pub(crate) fn _dropout<S, A, D>(array: &ArrayBase<S, D>, p: f64) -> Array<A, D>
-    where
-        A: Num + ScalarOperand,
-        D: Dimension,
-        S: DataOwned<Elem = A>,
-    {
-        // Create a mask of the same shape as the input array
-        let mask: ndarray::Array<bool, D> =
-            ndarray::Array::bernoulli(array.dim(), p).expect("Failed to create mask");
-        let mask = mask.mapv(|x| if x { A::zero() } else { A::one() });
-
-        // Element-wise multiplication to apply dropout
-        array.to_owned() * mask
-    }
 
     impl Dropout {
         pub fn apply<A, S, D>(&self, input: &ArrayBase<S, D>) -> Array<A, D>
@@ -67,7 +51,17 @@ mod impls {
             D: Dimension,
             S: DataOwned<Elem = A>,
         {
-            _dropout(input, self.p)
+            let Dropout { p } = *self;
+            let dim = input.dim();
+
+            // Create a mask of the same shape as the input array
+            let mask = {
+                let tmp = Array::<bool, D>::bernoulli(dim, p).expect("Failed to create mask");
+                tmp.mapv(|x| if x { A::zero() } else { A::one() })
+            };
+
+            // Element-wise multiplication to apply dropout
+            input.to_owned() * mask
         }
     }
 
@@ -79,8 +73,8 @@ mod impls {
     {
         type Output = Array<A, D>;
 
-        fn forward(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, concision_core::Error> {
-            let res = input.dropout(self.p);
+        fn forward(&self, input: &ArrayBase<S, D>) -> cnc::Result<Self::Output> {
+            let res = self.apply(input);
             Ok(res)
         }
     }

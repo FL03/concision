@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use cnc::Forward;
-use ndarray::{Array1, Array2, ArrayBase, Data, ScalarOperand};
+use ndarray::{Array1, Array2, ArrayBase, Data, Ix1, Ix2, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 use rustfft::num_complex::Complex;
 use rustfft::{FftNum, FftPlanner};
@@ -87,7 +87,7 @@ impl<A> FftAttention<A> {
             level = "trace",
         )
     )]
-    pub fn forward<X, Y>(&self, input: &X) -> crate::Result<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         Self: Forward<X, Output = Y>,
     {
@@ -104,19 +104,19 @@ where
     }
 }
 
-impl<A, S> Forward<ArrayBase<S, ndarray::Ix1>> for FftAttention<A>
+impl<A, S> Forward<ArrayBase<S, Ix1>> for FftAttention<A>
 where
     A: FftNum + Float + FromPrimitive + ScalarOperand,
     S: Data<Elem = A>,
 {
-    type Output = ndarray::Array1<A>;
+    type Output = Array1<A>;
 
-    fn forward(&self, input: &ArrayBase<S, ndarray::Ix1>) -> crate::Result<Self::Output> {
+    fn forward(&self, input: &ArrayBase<S, Ix1>) -> cnc::Result<Self::Output> {
         let seq_len = input.dim();
         let n = A::from_usize(seq_len).unwrap();
 
         if seq_len == 0 {
-            return Err(crate::SurfaceError::InvalidInputShape);
+            return Err(cnc::params::ParamsError::InvalidInputShape.into());
         }
 
         // Create FFT planner
@@ -211,21 +211,21 @@ where
     }
 }
 
-impl<A, S> Forward<ArrayBase<S, ndarray::Ix2>> for FftAttention<A>
+impl<A, S> Forward<ArrayBase<S, Ix2>> for FftAttention<A>
 where
     A: FftNum + Float + FromPrimitive + ScalarOperand,
     S: Data<Elem = A>,
 {
-    type Output = ndarray::Array2<A>;
+    type Output = Array2<A>;
 
-    fn forward(&self, input: &ArrayBase<S, ndarray::Ix2>) -> crate::Result<Self::Output> {
+    fn forward(&self, input: &ArrayBase<S, Ix2>) -> cnc::Result<Self::Output> {
         use rustfft::FftPlanner;
         use rustfft::num_complex::Complex;
 
         let (seq_len, feature_dim) = input.dim();
 
         if seq_len == 0 {
-            return Err(crate::SurfaceError::InvalidInputShape);
+            return Err(cnc::params::ParamsError::InvalidInputShape.into());
         }
 
         // Create FFT planner

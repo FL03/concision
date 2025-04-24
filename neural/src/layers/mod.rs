@@ -16,7 +16,6 @@ pub(crate) mod prelude {
 }
 
 use crate::Activate;
-use cnc::ParamsBase;
 
 use ndarray::{Dimension, Ix2, RawData};
 pub trait Layer<S, D = Ix2>
@@ -24,20 +23,19 @@ where
     D: Dimension,
     S: RawData,
 {
-    /// returns an immutable reference to the parameters of the layer
-    fn params(&self) -> &ParamsBase<S, D>;
-    /// returns a mutable reference to the parameters of the layer
-    fn params_mut(&mut self) -> &mut ParamsBase<S, D>;
-
     type Rho<U, V>: Activate<U, Output = V>;
-
+    /// returns an immutable reference to the parameters of the layer
+    fn params(&self) -> &cnc::ParamsBase<S, D>;
+    /// returns a mutable reference to the parameters of the layer
+    fn params_mut(&mut self) -> &mut cnc::ParamsBase<S, D>;
+    /// returns an immutable reference to the activation function of the layer
     fn rho<A, B>(&self) -> &Self::Rho<A, B>;
     ///
     fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         S::Elem: Clone,
         S: ndarray::Data,
-        ParamsBase<S, D>: cnc::Forward<X, Output = Y>,
+        cnc::ParamsBase<S, D>: cnc::Forward<X, Output = Y>,
     {
         self.params().forward(input).map(|y| self.rho().activate(y))
     }

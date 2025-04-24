@@ -3,10 +3,11 @@
     Contrib: @FL03
 */
 //! The neural network abstractions used to create and train models.
-//! 
-//! This library provides a 
+//!
+//! This library provides a
 
-#![crate_name = "concision_neural"]#![crate_type = "lib"]
+#![crate_name = "concision_neural"]
+#![crate_type = "lib"]
 
 extern crate concision_core as cnc;
 

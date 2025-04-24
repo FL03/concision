@@ -5,11 +5,11 @@
 //! This library provides the core abstractions and utilities for the Concision framework.
 //!
 //! ## Features
-//! 
+//!
 //! - [ParamsBase]: A structure for defining the parameters within a neural network.
 //! - [Backward]: This trait denotes a single backward pass through a layer of a neural network.
 //! - [Forward]: This trait denotes a single forward pass through a layer of a neural network.
-//! 
+//!
 #![crate_name = "concision_core"]
 #![crate_type = "lib"]
 

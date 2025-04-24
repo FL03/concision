@@ -76,7 +76,6 @@ impl<T> StandardModelConfig<T> {
     }
 }
 
-
 impl<T> crate::NetworkConfig<T> for StandardModelConfig<T> {
     fn get<K>(&self, key: K) -> Option<&T>
     where
