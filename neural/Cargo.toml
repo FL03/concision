@@ -17,6 +17,10 @@ default = []
 
 full = ["approx", "default", "rand", "serde", "tracing"]
 
+attention = [
+    "dep:rustfft"
+]
+
 # ********* [FF] Dependencies *********
 approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
 
@@ -50,6 +54,7 @@ num = { features = ["std"], workspace = true }
 num-traits = { features = ["std"], workspace = true }
 paste = { workspace = true }
 rayon = { optional = true, workspace = true }
+rustfft = { optional = true, workspace = true }
 serde = { features = ["std"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 strum = { features = ["std"], workspace = true }

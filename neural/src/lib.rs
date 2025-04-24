@@ -24,7 +24,7 @@ pub(crate) mod macros;
 
 pub mod error;
 #[doc(hidden)]
-pub mod layer;
+pub mod layers;
 pub mod model;
 pub mod train;
 pub mod utils;
@@ -48,7 +48,7 @@ pub mod types {
 
 pub mod prelude {
     #[doc(hidden)]
-    pub use crate::layer::prelude::*;
+    pub use crate::layers::prelude::*;
     #[doc(no_inline)]
     pub use crate::model::prelude::*;
     #[doc(no_inline)]

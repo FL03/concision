@@ -2,11 +2,14 @@
     Appellation: layers <module>
     Contrib: @FL03
 */
-//!
+//! This module implments various layers for a neural network
 #[doc(inline)]
 pub use self::layer::LayerBase;
 
 pub(crate) mod layer;
+
+#[cfg(feature = "attention")]
+pub mod attention;
 
 pub(crate) mod prelude {
     pub use super::layer::*;
