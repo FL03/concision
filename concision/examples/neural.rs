@@ -34,17 +34,14 @@ fn main() -> anyhow::Result<()> {
     // initialize some input data
     let input = Array1::linspace(1.0, 9.0, model.features().input());
     // propagate the input through the model
-    let output = model.forward(&input)?;
+    let output = model.predict(&input)?;
     tracing::info!("output: {:?}", output);
     // verify the output shape
     assert_eq!(output.dim(), (model.features().output()));
     Ok(())
 }
 
-pub struct SimpleModel<T = f64>
-where
-    T: Float,
-{
+pub struct SimpleModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: ModelParams<T>,
@@ -61,31 +58,6 @@ where
             features,
             params,
         }
-    }
-}
-
-impl<T> Model<T> for SimpleModel<T>
-where
-    T: Float,
-{
-    fn config(&self) -> &StandardModelConfig<T> {
-        &self.config
-    }
-
-    fn config_mut(&mut self) -> &mut StandardModelConfig<T> {
-        &mut self.config
-    }
-
-    fn features(&self) -> ModelFeatures {
-        self.features
-    }
-
-    fn params(&self) -> &ModelParams<T> {
-        &self.params
-    }
-
-    fn params_mut(&mut self) -> &mut ModelParams<T> {
-        &mut self.params
     }
 }
 
@@ -108,5 +80,29 @@ where
 
         let res = self.params().output().forward(&output)?;
         Ok(res.relu())
+    }
+}
+
+impl<T> Model<T> for SimpleModel<T> {
+    type Config = StandardModelConfig<T>;
+
+    fn config(&self) -> &StandardModelConfig<T> {
+        &self.config
+    }
+
+    fn config_mut(&mut self) -> &mut StandardModelConfig<T> {
+        &mut self.config
+    }
+
+    fn features(&self) -> ModelFeatures {
+        self.features
+    }
+
+    fn params(&self) -> &ModelParams<T> {
+        &self.params
+    }
+
+    fn params_mut(&mut self) -> &mut ModelParams<T> {
+        &mut self.params
     }
 }

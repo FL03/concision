@@ -75,3 +75,55 @@ impl<T> StandardModelConfig<T> {
         self.get(Decay)
     }
 }
+
+
+impl<T> crate::NetworkConfig<T> for StandardModelConfig<T> {
+    fn get<K>(&self, key: K) -> Option<&T>
+    where
+        K: AsRef<str>,
+    {
+        self.hyperparameters.get(key.as_ref())
+    }
+
+    fn get_mut<K>(&mut self, key: K) -> Option<&mut T>
+    where
+        K: AsRef<str>,
+    {
+        self.hyperparameters.get_mut(key.as_ref())
+    }
+
+    fn set<K>(&mut self, key: K, value: T) -> Option<T>
+    where
+        K: AsRef<str>,
+    {
+        self.hyperparameters.insert(key.as_ref().to_string(), value)
+    }
+
+    fn remove<K>(&mut self, key: K) -> Option<T>
+    where
+        K: AsRef<str>,
+    {
+        self.hyperparameters.remove(key.as_ref())
+    }
+
+    fn contains<K>(&self, key: K) -> bool
+    where
+        K: AsRef<str>,
+    {
+        self.hyperparameters.contains_key(key.as_ref())
+    }
+
+    fn keys(&self) -> Vec<String> {
+        self.hyperparameters.keys().cloned().collect()
+    }
+}
+
+impl<T> crate::TrainingConfiguration<T> for StandardModelConfig<T> {
+    fn epochs(&self) -> usize {
+        self.epochs
+    }
+
+    fn batch_size(&self) -> usize {
+        self.batch_size
+    }
+}
