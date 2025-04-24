@@ -83,7 +83,7 @@ fn test_simple_model() -> cnc::CncResult<()> {
     let mut config = ModelConfig::new().with_epochs(1000).with_batch_size(32);
     config.set_learning_rate(0.01);
     config.set_momentum(0.9);
-    config.set_weight_decay(0.0001);
+    config.set_decay(0.0001);
     // define the model features
     let features = ModelFeatures::new(3, 9, 9, 1);
     // initialize the model
