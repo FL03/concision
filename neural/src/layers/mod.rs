@@ -17,7 +17,9 @@ pub(crate) mod prelude {
     pub use super::layer::*;
 }
 
-use cnc::{Activate, ActivateGradient, Backward, Forward, ParamsBase, traits::tensor::Tensor};
+use cnc::{Activate, ActivateGradient, Backward, Forward, Tensor};
+use cnc::params::ParamsBase;
+
 use ndarray::{Data, Dimension, RawData};
 
 /// A layer within a neural-network containing a set of parameters and an activation function.
@@ -92,20 +94,48 @@ where
 }
 
 
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd,)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Sigmoid;
 
 impl<U> Activate<U> for Sigmoid
+where
+    U: cnc::Sigmoid,
+{
+    type Output = U::Output;
+
+    fn activate(&self, x: U) -> Self::Output {
+        cnc::Sigmoid::sigmoid(&x)
+    }
+}
+
+impl<U> ActivateGradient<U> for Sigmoid
+where
+    U: cnc::Sigmoid,
+{
+    type Input = U;
+    type Delta = U::Output;
+
+    fn activate_gradient(&self, x: U) -> Self::Delta {
+        
+        cnc::Sigmoid::sigmoid(&x)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct Tanh;
+impl<U> Activate<U> for Tanh
 where
     U: num_traits::Float,
 {
     type Output = U;
 
     fn activate(&self, x: U) -> Self::Output {
-        U::one() / (U::one() + (-x).exp())
+        x.tanh()
     }
 }
-
-impl<U> ActivateGradient<U> for Sigmoid
+impl<U> ActivateGradient<U> for Tanh
 where
     U: num_traits::Float,
 {
@@ -114,6 +144,6 @@ where
 
     fn activate_gradient(&self, inputs: U) -> Self::Delta {
         let y = self.activate(inputs);
-        y * (U::one() - y)
+        U::one() - y * y
     }
 }
