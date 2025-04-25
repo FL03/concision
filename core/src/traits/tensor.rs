@@ -108,7 +108,6 @@ where
 
     fn pow2(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
     where
-        Self: Sized,
         Self::Scalar: Scalar,
     {
         let two = Self::Scalar::from_usize(2).unwrap();
@@ -117,7 +116,6 @@ where
 
     fn abs(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
     where
-        Self: Sized,
         Self::Scalar: Signed,
     {
         self.apply(|x| x.abs())
@@ -125,7 +123,6 @@ where
 
     fn neg(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
     where
-        Self: Sized,
         Self::Scalar: core::ops::Neg<Output = Self::Scalar>,
     {
         self.apply(|x| -x)

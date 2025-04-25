@@ -5,40 +5,35 @@
 use ndarray::{Array, Dimension};
 use num::complex::Complex;
 use num::{Float, Num, Signed, Zero};
-
-pub trait ComplexNum<T = f64> {
-    type Real: Sized;
-}
-/// Trait for converting a type into a complex number.
 pub trait AsComplex<T> {
-    type Complex: ComplexNum<T>;
+    type Complex<A>;
 
-    fn as_complex(&self, real: bool) -> Self::Complex;
+    fn as_complex(&self, real: bool) -> Self::Complex<T>;
 
-    fn as_re(&self) -> Self::Complex {
+    fn as_re(&self) -> Self::Complex<T> {
         self.as_complex(true)
     }
 
-    fn as_im(&self) -> Self::Complex {
+    fn as_im(&self) -> Self::Complex<T> {
         self.as_complex(false)
     }
 }
 /// Trait for converting a type into a complex number.
 pub trait IntoComplex<T> {
-    type Complex: ComplexNum<T>;
+    type Complex<A>;
 
-    fn into_complex(self, real: bool) -> Self::Complex
+    fn into_complex(self, real: bool) -> Self::Complex<T>
     where
         Self: Sized;
 
-    fn into_re(self) -> Self::Complex
+    fn into_re(self) -> Self::Complex<T>
     where
         Self: Sized,
     {
         self.into_complex(true)
     }
 
-    fn into_im(self) -> Self::Complex
+    fn into_im(self) -> Self::Complex<T>
     where
         Self: Sized,
     {
@@ -65,25 +60,12 @@ pub trait RoundTo {
 /*
  ********* Implementations *********
 */
-impl<T> ComplexNum<T> for Complex<T>
-where
-    T: Num,
-{
-    type Real = T;
-}
-
-impl<T> ComplexNum<T> for T
-where
-    T: Num,
-{
-    type Real = T;
-}
 
 impl<T> AsComplex<T> for T
 where
     T: Clone + Num,
 {
-    type Complex = Complex<T>;
+    type Complex<A> = Complex<A>;
 
     fn as_complex(&self, real: bool) -> Complex<T> {
         match real {
@@ -97,9 +79,9 @@ impl<T> IntoComplex<T> for T
 where
     T: Num,
 {
-    type Complex = Complex<T>;
+    type Complex<A> = Complex<A>;
 
-    fn into_complex(self, real: bool) -> Self::Complex
+    fn into_complex(self, real: bool) -> Self::Complex<T>
     where
         Self: Sized,
     {
