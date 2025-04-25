@@ -3,6 +3,8 @@
     Contrib: @FL03
 */
 #![allow(unused)]
+use crate::ActivateGradient;
+
 use super::{Activate, Layer};
 use cnc::{Forward, ParamsBase, activate};
 use ndarray::{Dimension, Ix2, RawData};
@@ -109,23 +111,46 @@ where
     }
 }
 
-// impl<A, B, S, D> super::Layer<S, D> for LayerBase<Box<dyn Activate<A, Output = B> + 'static>, S, D>
-// where
-//     D: Dimension,
-//     S: RawData<Elem = A>,
-// {
-//     type Scalar = A;
-//     type Rho<U> = Box<dyn Activate<U, Output = U> + 'static>;
+impl<F, H, S, D> Activate<H> for LayerBase<F, S, D>
+where
+    F: Activate<H>,
+    D: Dimension,
+    S: RawData,
+{
+    type Output = F::Output;
 
-//     fn params(&self) -> &ParamsBase<S, D> {
-//         &self.params
-//     }
+    fn activate(&self, x: H) -> Self::Output {
+        self.rho.activate(x)
+    }
+}
 
-//     fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
-//         &mut self.params
-//     }
+impl<A, F, S, D> ActivateGradient<A> for LayerBase<F, S, D>
+where
+    F: ActivateGradient<A>,
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
+    type Input = F::Input;
+    type Delta = F::Delta;
 
-//     fn rho<V>(&self) -> &Self::Rho<V> {
-//         &self.rho
-//     }
-// }
+    fn activate_gradient(&self, x: &A) -> Self::Delta {
+        self.rho.activate_gradient(x)
+    }
+}
+
+impl<A, B, S, D> super::Layer<S, D> for LayerBase<Box<dyn Activate<A, Output = B> + 'static>, S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
+    type Scalar = A;
+    type Rho<U> = Box<dyn Activate<U, Output = U> + 'static>;
+
+    fn params(&self) -> &ParamsBase<S, D> {
+        &self.params
+    }
+
+    fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
+        &mut self.params
+    }
+}
