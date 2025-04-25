@@ -79,14 +79,14 @@ where
     }
     /// set the input layer of the model
     pub fn set_input(&mut self, input: ParamsBase<S, D>) {
-        self.input = input;
+        *self.input_mut() = input;
     }
     /// set the hidden layers of the model
     pub fn set_hidden<I>(&mut self, iter: I)
     where
         I: IntoIterator<Item = ParamsBase<S, D>>,
     {
-        self.hidden = Vec::from_iter(iter);
+        *self.hidden_mut() = Vec::from_iter(iter);
     }
     /// set the output layer of the model
     pub fn set_output(&mut self, output: ParamsBase<S, D>) {
