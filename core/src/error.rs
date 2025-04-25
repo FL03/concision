@@ -8,6 +8,8 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Unknown Error: {0}")]
+    Unknown(&'static str),
     #[error(transparent)]
     MathError(#[from] concision_math::MathematicalError),
     #[error(transparent)]
@@ -16,9 +18,31 @@ pub enum Error {
     ParamError(#[from] crate::params::error::ParamsError),
     #[error(transparent)]
     ShapeError(#[from] ndarray::ShapeError),
+    #[cfg(feature = "alloc")]
+    #[error(transparent)]
+    BoxError(#[from] alloc::boxed::Box<dyn core::error::Error + Send + Sync + 'static>),
     #[cfg(feature = "anyhow")]
     #[error(transparent)]
     Other(#[from] anyhow::Error),
-    #[error("Unknown Error: {0}")]
-    Unknown(String),
+    #[cfg(feature = "serde")]
+    #[error(transparent)]
+    DeserializeError(#[from] serde::de::value::Error),
+    #[cfg(feature = "std")]
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
+    #[cfg(feature = "rand")]
+    #[error(transparent)]
+    UniformError(#[from] rand_distr::uniform::Error),
+}
+
+impl From<String> for Error {
+    fn from(value: String) -> Self {
+        Self::Unknown(Box::leak(value.into_boxed_str()))
+    }
+}
+
+impl From<&'static str> for Error {
+    fn from(value: &'static str) -> Self {
+        Self::Unknown(value)
+    }
 }

@@ -13,6 +13,9 @@
 #![crate_name = "concision_core"]
 #![crate_type = "lib"]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 #[doc(inline)]
 pub use concision_math as math;
 
@@ -67,6 +70,7 @@ pub mod traits {
     pub mod mask;
     pub mod norm;
     pub mod propagation;
+    pub mod scalar;
 
     pub(crate) mod prelude {
         #[doc(inline)]
@@ -85,6 +89,8 @@ pub mod traits {
         pub use super::norm::*;
         #[doc(inline)]
         pub use super::propagation::*;
+        #[doc(inline)]
+        pub use super::scalar::*;
     }
 }
 

@@ -22,8 +22,11 @@ pub mod distr {
     pub mod xavier;
 
     pub(crate) mod prelude {
+        #[doc(inline)]
         pub use super::lecun::*;
+        #[doc(inline)]
         pub use super::trunc::*;
+        #[doc(inline)]
         pub use super::xavier::*;
     }
 }
@@ -39,6 +42,6 @@ pub use rand_distr;
 #[allow(unused_imports)]
 pub(crate) mod prelude {
     pub use super::distr::prelude::*;
-    pub use super::initialize::{Initialize, InitializeExt};
+    pub use super::initialize::*;
     pub use super::utils::*;
 }

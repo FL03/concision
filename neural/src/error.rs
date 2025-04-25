@@ -20,6 +20,4 @@ pub enum NeuralError {
     TrainingFailed(String),
     #[error(transparent)]
     CoreError(#[from] concision_core::error::Error),
-    #[error("Unknown Error: {0}")]
-    Unknown(String),
 }

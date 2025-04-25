@@ -50,7 +50,7 @@ fn test_params_forward() {
 #[cfg(feature = "rand")]
 #[test]
 fn test_params_init() {
-    use cnc::init::InitializeExt;
+    use cnc::init::Initialize;
 
     let lecun = Params::<f64>::lecun_normal((3, 4));
     assert_eq!(lecun.dim(), (3, 4));
