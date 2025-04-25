@@ -12,7 +12,6 @@ pub trait Numerical:
     + Send
     + Sync
     + core::fmt::Debug
-    + core::fmt::Display
     + core::ops::Add
     + core::ops::AddAssign
     + core::ops::Div
@@ -23,7 +22,6 @@ pub trait Numerical:
     + core::ops::RemAssign
     + core::ops::Sub
     + core::ops::SubAssign
-    + core::iter::Sum
 {
     private!();
 }
@@ -32,6 +30,8 @@ pub trait Scalar
 where
     Self: Numerical
         + 'static
+        + core::fmt::Display
+        + core::iter::Sum
         + core::ops::Neg
         + num_traits::One
         + num_traits::Zero
@@ -167,4 +167,14 @@ impl_scalar! {
     i64,
     i128,
     isize
+}
+
+impl<A, S, D> Numerical for ndarray::ArrayBase<S, D>
+where
+    A: Numerical + Scalar,
+    S: ndarray::DataOwned<Elem = A>,
+    D: ndarray::Dimension,
+    ndarray::ArrayBase<S, D>: Numerical,
+{
+    seal!();
 }

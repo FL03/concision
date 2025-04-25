@@ -24,7 +24,9 @@ approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
 
 blas = ["concision-core/blas", "ndarray/blas"]
 
-rand = ["concision-core/rand", "num/rand"]
+rand = ["concision-core/rand", "num/rand", "rng"]
+
+rng = ["concision-core/rng"]
 
 rayon = ["concision-core/rayon", "dep:rayon", "ndarray/rayon"]
 
@@ -70,13 +72,13 @@ name = "default"
 required-features = ["default"]
 
 [[test]]
-name="attention"
-required-features = ["default", "attention", "approx", "rand"]
+name = "attention"
+required-features = ["approx", "attention", "default", "rand"]
 
 [[test]]
 name = "dropout"
 required-features = ["rand"]
 
 [[test]]
-name="model"
-required-features = ["default", "approx", "rand"]
+name = "model"
+required-features = ["approx", "default", "rand"]

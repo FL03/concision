@@ -71,6 +71,7 @@ pub mod traits {
     pub mod norm;
     pub mod propagation;
     pub mod scalar;
+    pub mod tensor;
 
     pub(crate) mod prelude {
         #[doc(inline)]

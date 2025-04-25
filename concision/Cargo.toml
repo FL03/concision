@@ -13,6 +13,7 @@ version.workspace = true
 
 [features]
 default = ["neural", "std"]
+
 full = ["approx", "default", "derive", "macros", "rand", "serde", "tracing"]
 
 derive = ["dep:concision-derive"]
@@ -28,7 +29,11 @@ approx = ["concision-core/approx", "concision-neural/approx"]
 
 rand = ["concision-core/rand", "concision-neural/rand"]
 
+rng = ["concision-core/rng", "concision-neural/rng"]
+
 rayon = ["concision-core/rayon", "concision-neural/rayon"]
+
+rustfft = ["concision-neural/rustfft"]
 
 serde = ["concision-core/serde", "concision-neural/serde"]
 
@@ -56,7 +61,7 @@ openblas-static = ["blas"]
 [lib]
 bench = true
 crate-type = ["cdylib", "rlib"]
-doctest = false
+doctest = true
 test = true
 
 [dependencies]
