@@ -6,7 +6,7 @@
 /// a type alias for a [Result] with a [NeuralError]
 pub type NeuralResult<T = ()> = core::result::Result<T, NeuralError>;
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, scsys_derive::VariantConstructors, thiserror::Error)]
 pub enum NeuralError {
     #[error("Invalid Batch Size")]
     InvalidBatchSize,
@@ -17,7 +17,9 @@ pub enum NeuralError {
     #[error("Parameter Error")]
     ParameterError,
     #[error("Training Failed")]
-    TrainingFailed(String),
+    TrainingFailed,
+    #[error("Training Error: {0}")]
+    TrainingError(String),
     #[error(transparent)]
     CoreError(#[from] concision_core::error::Error),
 }
