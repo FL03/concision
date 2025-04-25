@@ -15,7 +15,7 @@ pub trait L2Norm {
     fn l2_norm(&self) -> Self::Output;
 }
 
-/// The [Norm] trait serves as a unified interface for various normalization routnines. At the 
+/// The [Norm] trait serves as a unified interface for various normalization routnines. At the
 /// moment, the trait provides L1 and L2 techniques.
 pub trait Norm {
     type Output;

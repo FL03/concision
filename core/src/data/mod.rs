@@ -20,7 +20,7 @@ pub trait DataPoint {
     fn label(&self) -> &Self::Label;
 }
 
-/// This trait generically defines the basic type of dataset that can be used throughout the 
+/// This trait generically defines the basic type of dataset that can be used throughout the
 /// framework.
 pub trait Records {
     type Inputs;
