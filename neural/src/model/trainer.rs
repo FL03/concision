@@ -11,6 +11,7 @@ where
     M: Model<T>,
     R: Records,
 {
+
     /// the training dataset
     pub(crate) dataset: Dataset<R::Inputs, R::Targets>,
     pub(crate) model: &'a mut M,
@@ -52,6 +53,7 @@ where
     }
     #[cfg_attr(feature = "tracing", tracing::instrument(skip(self)))]
     pub fn begin(&self) -> &Self {
+        
         todo!("Define a generic training loop...")
     }
 }

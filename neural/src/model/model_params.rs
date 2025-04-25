@@ -230,3 +230,39 @@ where
         )
     }
 }
+
+impl<A, S, D> core::ops::Index<usize> for ModelParamsBase<S, D>
+where
+    A: Clone,
+    D: Dimension,
+    S: ndarray::Data<Elem = A>,
+{
+    type Output = ParamsBase<S, D>;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        if index == 0 {
+            &self.input
+        } else if index == self.hidden.len() + 1 {
+            &self.output
+        } else {
+            &self.hidden[index - 1]
+        }
+    }
+}
+
+impl<A, S, D> core::ops::IndexMut<usize> for ModelParamsBase<S, D>
+where
+    A: Clone,
+    D: Dimension,
+    S: ndarray::Data<Elem = A>,
+{
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        if index == 0 {
+            &mut self.input
+        } else if index == self.hidden.len() + 1 {
+            &mut self.output
+        } else {
+            &mut self.hidden[index - 1]
+        }
+    }
+}

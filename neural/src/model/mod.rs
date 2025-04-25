@@ -5,16 +5,16 @@
 //! This module provides the scaffolding for creating models and layers in a neural network.
 
 #[doc(inline)]
-pub use self::{config::StandardModelConfig, store::ModelParams, trainer::Trainer};
+pub use self::{config::StandardModelConfig, model_params::ModelParams, trainer::Trainer};
 
 pub mod config;
-pub mod store;
+pub mod model_params;
 pub mod trainer;
 
 pub(crate) mod prelude {
     pub use super::Model;
     pub use super::config::*;
-    pub use super::store::*;
+    pub use super::model_params::*;
     pub use super::trainer::*;
 }
 
