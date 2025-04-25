@@ -41,17 +41,6 @@ where
     fn set_params(&mut self, params: ParamsBase<S, D>) {
         *self.params_mut() = params;
     }
-    /// returns an immutable reference to the activation function of the layer
-    fn rho<U>(&self) -> &Self::Rho<U>;
-    ///
-    fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
-    where
-        Y: Tensor<S, D, Scalar = Self::Scalar>,
-        ParamsBase<S, D>: Forward<X, Output = Y>,
-    {
-        self.params()
-            .forward_then(input, |y| self.rho().activate(y))
-    }
     /// backward propagate error through the layer
     fn backward<X, Y, Z, Delta>(
         &mut self,
@@ -60,14 +49,23 @@ where
         gamma: Self::Scalar,
     ) -> cnc::Result<Z>
     where
-        ParamsBase<S, D>: Backward<X, Delta, HParam = Self::Scalar, Output = Z>,
-        Self::Rho<Y>: ActivateGradient<Y, Input = X, Delta = Delta>,
-        Self::Scalar: Clone,
         S: Data,
+        Self: ActivateGradient<Y, Delta = Delta>,
+        Self::Scalar: Clone,
+        ParamsBase<S, D>: Backward<X, Delta, HParam = Self::Scalar, Output = Z>,
     {
         // compute the delta using the activation function
-        let delta = self.rho().activate_gradient(error);
+        let delta = self.activate_gradient(error);
         // apply the backward function of the inherited layer
         self.params_mut().backward(input, &delta, gamma)
+    }
+    ///
+    fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
+    where
+        Y: Tensor<S, D, Scalar = Self::Scalar>,
+        ParamsBase<S, D>: Forward<X, Output = Y>,
+        Self: Activate<Y, Output = Y>,
+    {
+        self.params().forward_then(input, |y| self.activate(y))
     }
 }
