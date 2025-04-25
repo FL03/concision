@@ -5,11 +5,15 @@
 
 impl<'a, T> crate::activate::LinearActivation for &'a T
 where
-    T: Clone,
+    T: Clone + Default,
 {
     type Output = T;
 
     fn linear(self) -> Self::Output {
         self.clone()
+    }
+
+    fn linear_derivative(self) -> Self::Output {
+        <T>::default()
     }
 }

@@ -16,18 +16,28 @@ macro_rules! unary {
             unary!(@impl $name::$call($($rest)*));
         )*
     };
+        
     (@impl $name:ident::$call:ident(self)) => {
-        pub trait $name {
-            type Output;
+        paste::paste! {
+            pub trait $name {
+                type Output;
 
-            fn $call(self) -> Self::Output;
+                fn $call(self) -> Self::Output;
+
+                fn [<$call _derivative>](self) -> Self::Output;
+            }
         }
+        
     };
     (@impl $name:ident::$call:ident(&self)) => {
-        pub trait $name {
-            type Output;
+        paste::paste! {
+            pub trait $name {
+                type Output;
 
-            fn $call(&self) -> Self::Output;
+                fn $call(&self) -> Self::Output;
+
+                fn [<$call _derivative>](&self) -> Self::Output;
+            }
         }
     };
 }

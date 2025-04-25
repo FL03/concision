@@ -2,14 +2,17 @@
     Appellation: sigmoid <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::activate::{ReLU, Sigmoid, Softmax, Tanh};
+use crate::{
+    activate::{ReLU, Sigmoid, Softmax, Tanh},
+    sigmoid_derivative,
+};
 
 use ndarray::{Array, ArrayBase, Data, Dimension, ScalarOperand};
-use num_traits::Float;
+use num_traits::{Float, One, Zero};
 
 impl<A, S, D> ReLU for ArrayBase<S, D>
 where
-    A: Copy + core::cmp::PartialOrd + num::Zero,
+    A: Copy + PartialOrd + Zero + One,
     S: Data<Elem = A>,
     D: Dimension,
 {
@@ -17,6 +20,10 @@ where
 
     fn relu(&self) -> Self::Output {
         self.map(|&i| if i > A::zero() { i } else { A::zero() })
+    }
+
+    fn relu_derivative(&self) -> Self::Output {
+        self.map(|&i| if i > A::zero() { A::one() } else { A::zero() })
     }
 }
 
@@ -34,6 +41,10 @@ where
 
         (ones + self.map(|&i| i.neg().exp())).recip()
     }
+
+    fn sigmoid_derivative(&self) -> Self::Output {
+        self.mapv(|i| sigmoid_derivative(i))
+    }
 }
 
 impl<A, S, D> Softmax for ArrayBase<S, D>
@@ -48,6 +59,15 @@ where
         let e = self.exp();
         &e / e.sum()
     }
+
+    fn softmax_derivative(&self) -> Self::Output {
+        let e = self.exp();
+        let sum = e.sum();
+        let softmax = &e / sum;
+
+        let ones = Array::<A, D>::ones(self.dim());
+        &softmax * (&ones - &softmax)
+    }
 }
 
 impl<A, S, D> Tanh for ArrayBase<S, D>
@@ -60,5 +80,9 @@ where
 
     fn tanh(&self) -> Self::Output {
         self.map(|i| i.tanh())
+    }
+
+    fn tanh_derivative(&self) -> Self::Output {
+        self.map(|i| A::one() - i.tanh().powi(2))
     }
 }
