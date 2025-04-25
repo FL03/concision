@@ -18,8 +18,8 @@ pub use concision_math as math;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, error::*, ops::prelude::*, params::prelude::*, traits::prelude::*,
-    utils::prelude::*,
+    activate::prelude::*, data::Dataset, error::*, ops::prelude::*, params::prelude::*,
+    traits::prelude::*, utils::prelude::*,
 };
 
 #[allow(unused)]
@@ -117,6 +117,8 @@ pub mod utils {
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::data::prelude::*;
     #[doc(no_inline)]
     pub use crate::error::*;
     #[doc(no_inline)]

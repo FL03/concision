@@ -7,8 +7,8 @@ use super::Records;
 #[derive(Clone, Copy, Default, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Dataset<U, V> {
-    pub(crate) records: U,
-    pub(crate) targets: V,
+    pub records: U,
+    pub targets: V,
 }
 
 impl<U, V> Dataset<U, V> {

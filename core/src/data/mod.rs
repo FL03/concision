@@ -2,17 +2,15 @@
     Appellation: data <module>
     Contrib: @FL03
 */
-//! this module implements a dataset abstraction for machine learning tasks.
-//!
-//!
+//! Standard datasets to train the models on.
 #[doc(inline)]
 pub use self::dataset::Dataset;
 
 pub mod dataset;
 
-#[allow(unused_imports)]
 pub(crate) mod prelude {
     pub use super::dataset::Dataset;
+    pub use super::{AsDataset, IntoDataset, Records};
 }
 
 pub trait DataPoint {
@@ -22,6 +20,8 @@ pub trait DataPoint {
     fn label(&self) -> &Self::Label;
 }
 
+/// This trait generically defines the basic type of dataset that can be used throughout the 
+/// framework.
 pub trait Records {
     type Inputs;
     type Targets;
@@ -33,6 +33,14 @@ pub trait Records {
     fn targets(&self) -> &Self::Targets;
 
     fn targets_mut(&mut self) -> &mut Self::Targets;
+
+    fn set_inputs(&mut self, inputs: Self::Inputs) {
+        *self.inputs_mut() = inputs;
+    }
+
+    fn set_targets(&mut self, targets: Self::Targets) {
+        *self.targets_mut() = targets;
+    }
 }
 
 pub trait AsDataset<U, V> {
