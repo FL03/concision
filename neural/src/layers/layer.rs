@@ -2,10 +2,8 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
-#![allow(unused)]
-
 use super::Layer;
-use cnc::{Activate, ActivateGradient, Forward, ParamsBase, activate};
+use cnc::{Activate, ActivateGradient, Forward, ParamsBase};
 use ndarray::{Dimension, Ix2, RawData};
 
 pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activate<A, Output = A> + 'static>, S, D>;
@@ -15,10 +13,10 @@ where
     D: Dimension,
     S: RawData,
 {
+    /// the activation function of the layer
     pub(crate) rho: F,
     pub(crate) params: ParamsBase<S, D>,
 }
-
 
 impl<S, D> LayerBase<super::Linear, S, D>
 where
@@ -143,7 +141,7 @@ where
     }
 }
 
-impl<A, B, S, D> super::Layer<S, D> for LayerBase<Box<dyn Activate<A, Output = B> + 'static>, S, D>
+impl<A, B, S, D> Layer<S, D> for LayerBase<Box<dyn Activate<A, Output = B> + 'static>, S, D>
 where
     D: Dimension,
     S: RawData<Elem = A>,
