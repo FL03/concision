@@ -19,36 +19,28 @@ where
     pub(crate) params: ParamsBase<S, D>,
 }
 
-pub struct Linear;
 
-impl<U> Activate<U> for Linear {
-    type Output = U;
-
-    fn activate(&self, x: U) -> Self::Output {
-        x
-    }
-}
-
-impl<U> ActivateGradient<U> for Linear
-where
-    U: num_traits::One,
-{
-    type Input = U;
-    type Delta = U;
-
-    fn activate_gradient(&self, _inputs: U) -> Self::Delta {
-        U::one()
-    }
-}
-
-impl<S, D> LayerBase<Linear, S, D>
+impl<S, D> LayerBase<super::Linear, S, D>
 where
     D: Dimension,
     S: RawData<Elem = f32>,
 {
     pub fn linear(params: ParamsBase<S, D>) -> Self {
         Self {
-            rho: Linear,
+            rho: super::Linear,
+            params,
+        }
+    }
+}
+
+impl<S, D> LayerBase<super::Sigmoid, S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = f32>,
+{
+    pub fn linear(params: ParamsBase<S, D>) -> Self {
+        Self {
+            rho: super::Sigmoid,
             params,
         }
     }
@@ -157,7 +149,6 @@ where
     S: RawData<Elem = A>,
 {
     type Scalar = A;
-    type Rho<U> = Box<dyn Activate<U, Output = U> + 'static>;
 
     fn params(&self) -> &ParamsBase<S, D> {
         &self.params

@@ -30,7 +30,6 @@ where
     S: RawData<Elem = Self::Scalar>,
 {
     type Scalar;
-    type Rho<U>: Activate<U, Output = U>;
 
     /// returns an immutable reference to the parameters of the layer
     fn params(&self) -> &ParamsBase<S, D>;
@@ -66,5 +65,55 @@ where
         Self: Activate<Y, Output = Y>,
     {
         self.params().forward_then(input, |y| self.activate(y))
+    }
+}
+
+
+pub struct Linear;
+
+impl<U> Activate<U> for Linear {
+    type Output = U;
+
+    fn activate(&self, x: U) -> Self::Output {
+        x
+    }
+}
+
+impl<U> ActivateGradient<U> for Linear
+where
+    U: num_traits::One,
+{
+    type Input = U;
+    type Delta = U;
+
+    fn activate_gradient(&self, _inputs: U) -> Self::Delta {
+        U::one()
+    }
+}
+
+
+pub struct Sigmoid;
+
+impl<U> Activate<U> for Sigmoid
+where
+    U: num_traits::Float,
+{
+    type Output = U;
+
+    fn activate(&self, x: U) -> Self::Output {
+        U::one() / (U::one() + (-x).exp())
+    }
+}
+
+impl<U> ActivateGradient<U> for Sigmoid
+where
+    U: num_traits::Float,
+{
+    type Input = U;
+    type Delta = U;
+
+    fn activate_gradient(&self, inputs: U) -> Self::Delta {
+        let y = self.activate(inputs);
+        y * (U::one() - y)
     }
 }
