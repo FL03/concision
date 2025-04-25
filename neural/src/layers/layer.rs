@@ -3,10 +3,9 @@
     Contrib: @FL03
 */
 #![allow(unused)]
-use crate::ActivateGradient;
 
-use super::{Activate, Layer};
-use cnc::{Forward, ParamsBase, activate};
+use super::Layer;
+use cnc::{Activate, ActivateGradient, Forward, ParamsBase, activate};
 use ndarray::{Dimension, Ix2, RawData};
 
 pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activate<A, Output = A> + 'static>, S, D>;
@@ -27,6 +26,18 @@ impl<U> Activate<U> for Linear {
 
     fn activate(&self, x: U) -> Self::Output {
         x
+    }
+}
+
+impl<U> ActivateGradient<U> for Linear
+where
+    U: num_traits::One,
+{
+    type Input = U;
+    type Delta = U;
+
+    fn activate_gradient(&self, _inputs: U) -> Self::Delta {
+        U::one()
     }
 }
 
@@ -113,30 +124,30 @@ where
     }
 }
 
-impl<F, H, S, D> Activate<H> for LayerBase<F, S, D>
+impl<U, V, F, S, D> Activate<U> for LayerBase<F, S, D>
 where
-    F: Activate<H>,
+    F: Activate<U, Output = V>,
     D: Dimension,
     S: RawData,
 {
-    type Output = F::Output;
+    type Output = V;
 
-    fn activate(&self, x: H) -> Self::Output {
-        self.rho.activate(x)
+    fn activate(&self, x: U) -> Self::Output {
+        self.rho().activate(x)
     }
 }
 
-impl<A, F, S, D> ActivateGradient<A> for LayerBase<F, S, D>
+impl<U, F, S, D> ActivateGradient<U> for LayerBase<F, S, D>
 where
-    F: ActivateGradient<A>,
+    F: ActivateGradient<U>,
     D: Dimension,
-    S: RawData<Elem = A>,
+    S: RawData,
 {
     type Input = F::Input;
     type Delta = F::Delta;
 
-    fn activate_gradient(&self, x: &A) -> Self::Delta {
-        self.rho.activate_gradient(x)
+    fn activate_gradient(&self, inputs: U) -> F::Delta {
+        self.rho().activate_gradient(inputs)
     }
 }
 

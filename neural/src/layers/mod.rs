@@ -17,8 +17,7 @@ pub(crate) mod prelude {
     pub use super::layer::*;
 }
 
-use crate::{Activate, ActivateGradient};
-use cnc::{Backward, Forward, ParamsBase, traits::tensor::Tensor};
+use cnc::{Activate, ActivateGradient, Backward, Forward, ParamsBase, traits::tensor::Tensor};
 use ndarray::{Data, Dimension, RawData};
 
 /// A layer within a neural-network containing a set of parameters and an activation function.
@@ -44,8 +43,8 @@ where
     /// backward propagate error through the layer
     fn backward<X, Y, Z, Delta>(
         &mut self,
-        input: &X,
-        error: &Y,
+        input: X,
+        error: Y,
         gamma: Self::Scalar,
     ) -> cnc::Result<Z>
     where
@@ -57,7 +56,7 @@ where
         // compute the delta using the activation function
         let delta = self.activate_gradient(error);
         // apply the backward function of the inherited layer
-        self.params_mut().backward(input, &delta, gamma)
+        self.params_mut().backward(&input, &delta, gamma)
     }
     ///
     fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>

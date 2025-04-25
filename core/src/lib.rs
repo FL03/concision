@@ -62,6 +62,7 @@ pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
+    pub mod activate;
     pub mod apply;
     pub mod clip;
     pub mod entropy;
@@ -74,6 +75,8 @@ pub mod traits {
     pub mod tensor;
 
     pub(crate) mod prelude {
+        #[doc(inline)]
+        pub use super::activate::*;
         #[doc(inline)]
         pub use super::apply::*;
         #[doc(inline)]
@@ -92,6 +95,8 @@ pub mod traits {
         pub use super::propagation::*;
         #[doc(inline)]
         pub use super::scalar::*;
+        #[doc(inline)]
+        pub use super::tensor::*;
     }
 }
 
