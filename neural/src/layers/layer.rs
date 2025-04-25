@@ -20,6 +20,7 @@ pub struct Linear;
 
 impl<U> Activate<U> for Linear {
     type Output = U;
+
     fn activate(&self, x: U) -> Self::Output {
         x
     }
@@ -107,3 +108,24 @@ where
         &mut self.params
     }
 }
+
+// impl<A, B, S, D> super::Layer<S, D> for LayerBase<Box<dyn Activate<A, Output = B> + 'static>, S, D>
+// where
+//     D: Dimension,
+//     S: RawData<Elem = A>,
+// {
+//     type Scalar = A;
+//     type Rho<U> = Box<dyn Activate<U, Output = U> + 'static>;
+
+//     fn params(&self) -> &ParamsBase<S, D> {
+//         &self.params
+//     }
+
+//     fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
+//         &mut self.params
+//     }
+
+//     fn rho<V>(&self) -> &Self::Rho<V> {
+//         &self.rho
+//     }
+// }
