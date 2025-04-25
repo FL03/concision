@@ -55,6 +55,7 @@ rand = [
     "dep:rand",
     "dep:rand_distr",
     "num/rand",
+    "num-complex/rand",
     "rng",
 ]
 

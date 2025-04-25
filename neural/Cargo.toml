@@ -13,9 +13,11 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = ["attention"]
 
-full = ["approx", "default", "rand", "serde", "tracing"]
+full = ["approx", "default", "rand", "rustfft", "serde", "tracing"]
+
+attention = []
 
 # ********* [FF] Dependencies *********
 approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
@@ -25,6 +27,8 @@ blas = ["concision-core/blas", "ndarray/blas"]
 rand = ["concision-core/rand", "num/rand"]
 
 rayon = ["concision-core/rayon", "dep:rayon", "ndarray/rayon"]
+
+rustfft = ["dep:rustfft"]
 
 serde = ["concision-core/serde", "dep:serde", "dep:serde_derive", "ndarray/serde", "num/serde"]
 
@@ -50,6 +54,7 @@ num = { features = ["std"], workspace = true }
 num-traits = { features = ["std"], workspace = true }
 paste = { workspace = true }
 rayon = { optional = true, workspace = true }
+rustfft = { optional = true, workspace = true }
 serde = { features = ["std"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 strum = { features = ["std"], workspace = true }
@@ -63,6 +68,10 @@ lazy_static = { workspace = true }
 [[test]]
 name = "default"
 required-features = ["default"]
+
+[[test]]
+name="attention"
+required-features = ["default", "attention", "approx", "rand"]
 
 [[test]]
 name = "dropout"

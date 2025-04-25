@@ -5,21 +5,26 @@
 //! This module provides the scaffolding for creating models and layers in a neural network.
 
 #[doc(inline)]
-pub use self::{config::StandardModelConfig, store::ModelParams};
+pub use self::{config::StandardModelConfig, store::ModelParams, trainer::Trainer};
 
 pub mod config;
 pub mod store;
+pub mod trainer;
 
 pub(crate) mod prelude {
+    pub use super::Model;
+    pub use super::config::*;
     pub use super::store::*;
+    pub use super::trainer::*;
 }
 
-use crate::{ModelFeatures, NetworkConfig};
-use cnc::data::Dataset;
+use crate::{ModelFeatures, NetworkConfig, Train};
+use cnc::Dataset;
 
 /// This trait defines the base interface for all models, providing access to the models
 /// configuration, layout, and learned parameters.
 pub trait Model<T = f32> {
+    /// The configuration type for the model
     type Config: NetworkConfig<T>;
     /// returns an immutable reference to the models configuration; this is typically used to
     /// access the models hyperparameters (i.e. learning rate, momentum, etc.) and other
@@ -47,6 +52,7 @@ pub trait Model<T = f32> {
     {
         <Self as cnc::Forward<U>>::forward(self, inputs)
     }
+    #[doc(hidden)]
     #[deprecated(since = "0.1.17", note = "use predict instead")]
     fn forward<U, V>(&self, inputs: &U) -> cnc::Result<V>
     where
@@ -54,17 +60,22 @@ pub trait Model<T = f32> {
     {
         <Self as cnc::Forward<U>>::forward(self, inputs)
     }
+    /// a convience method that trains the model using the provided dataset; this method
+    /// requires that the model implements the [`Train`] trait and that the dataset
+    fn train<U, V, W>(&mut self, dataset: &Dataset<U, V>) -> crate::NeuralResult<W>
+    where
+        Self: Train<U, V, Output = W>,
+    {
+        <Self as Train<U, V>>::train(self, dataset.records(), dataset.targets())
+    }
     /// returns a model trainer prepared to train the model; this is a convenience method
     /// that creates a new trainer instance and returns it. Trainers are lazily evaluated
     /// meaning that the training process won't begin until the user calls the `begin` method.
-    fn train<U, V>(
-        &mut self,
-        dataset: Dataset<U, V>,
-    ) -> crate::train::trainer::Trainer<'_, Self, T, Dataset<U, V>>
+    fn trainer<U, V>(&mut self, dataset: Dataset<U, V>) -> Trainer<'_, Self, T, Dataset<U, V>>
     where
         Self: Sized,
         T: Default,
     {
-        crate::train::trainer::Trainer::new(self, dataset)
+        Trainer::new(self, dataset)
     }
 }

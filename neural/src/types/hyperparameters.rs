@@ -2,6 +2,8 @@
     Appellation: hyperparameters <module>
     Contrib: @FL03
 */
+
+#[doc(hidden)]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct KeyValue<K = String, V = f64> {
@@ -24,6 +26,8 @@ pub struct KeyValue<K = String, V = f64> {
     strum::Display,
     strum::EnumCount,
     strum::EnumIs,
+    strum::EnumIter,
+    strum::EnumString,
     strum::VariantArray,
     strum::VariantNames,
 )]
@@ -35,21 +39,30 @@ pub struct KeyValue<K = String, V = f64> {
 #[strum(serialize_all = "snake_case")]
 pub enum Hyperparameters {
     Decay,
+    Dropout,
     #[default]
     LearningRate,
     Momentum,
-    BatchSize,
+    Temperature,
+    WeightDecay,
+
 }
 
-impl core::str::FromStr for Hyperparameters {
-    type Err = strum::ParseError;
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use core::str::FromStr;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "decay" => Ok(Hyperparameters::Decay),
-            "learning_rate" => Ok(Hyperparameters::LearningRate),
-            "momentum" => Ok(Hyperparameters::Momentum),
-            _ => Err(strum::ParseError::VariantNotFound),
+    #[test]
+    fn test_hyper() {
+        use strum::IntoEnumIterator;
+
+        assert_eq!(Hyperparameters::from_str("learning_rate"), Ok(Hyperparameters::LearningRate));
+
+        for variant in Hyperparameters::iter() {
+            let name = variant.as_ref();
+            let parsed = Hyperparameters::from_str(name);
+            assert_eq!(parsed, Ok(variant));
         }
     }
 }

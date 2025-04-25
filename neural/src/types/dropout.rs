@@ -2,7 +2,6 @@
     Appellation: dropout <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision_core::DropOut;
 
 /// The [Dropout] layer is randomly zeroizes inputs with a given probability (`p`).
 /// This regularization technique is often used to prevent overfitting.
@@ -16,10 +15,6 @@ use concision_core::DropOut;
 pub struct Dropout {
     pub(crate) p: f64,
 }
-
-/*
- ************* Implementations *************
-*/
 
 impl Dropout {
     pub fn new(p: f64) -> Self {
@@ -38,50 +33,13 @@ impl Default for Dropout {
 }
 
 #[cfg(feature = "rand")]
-mod impls {
-    use super::*;
+impl<U> cnc::Forward<U> for Dropout
+where
+    U: cnc::DropOut,
+{
+    type Output = <U as cnc::DropOut>::Output;
 
-    use concision_core::{Forward, init::InitializeExt};
-    use ndarray::{Array, ArrayBase, DataOwned, Dimension, ScalarOperand};
-    use num::traits::Num;
-
-    pub(crate) fn _dropout<S, A, D>(array: &ArrayBase<S, D>, p: f64) -> Array<A, D>
-    where
-        A: Num + ScalarOperand,
-        D: Dimension,
-        S: DataOwned<Elem = A>,
-    {
-        // Create a mask of the same shape as the input array
-        let mask: ndarray::Array<bool, D> =
-            ndarray::Array::bernoulli(array.dim(), p).expect("Failed to create mask");
-        let mask = mask.mapv(|x| if x { A::zero() } else { A::one() });
-
-        // Element-wise multiplication to apply dropout
-        array.to_owned() * mask
-    }
-
-    impl Dropout {
-        pub fn apply<A, S, D>(&self, input: &ArrayBase<S, D>) -> Array<A, D>
-        where
-            A: Num + ScalarOperand,
-            D: Dimension,
-            S: DataOwned<Elem = A>,
-        {
-            _dropout(input, self.p)
-        }
-    }
-
-    impl<A, S, D> Forward<ArrayBase<S, D>> for Dropout
-    where
-        A: Num + ScalarOperand,
-        D: Dimension,
-        S: DataOwned<Elem = A>,
-    {
-        type Output = Array<A, D>;
-
-        fn forward(&self, input: &ArrayBase<S, D>) -> Result<Self::Output, concision_core::Error> {
-            let res = input.dropout(self.p);
-            Ok(res)
-        }
+    fn forward(&self, input: &U) -> cnc::Result<Self::Output> {
+        Ok(input.dropout(self.p))
     }
 }

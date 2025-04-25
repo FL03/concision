@@ -5,11 +5,11 @@
 //! This library provides the core abstractions and utilities for the Concision framework.
 //!
 //! ## Features
-//! 
+//!
 //! - [ParamsBase]: A structure for defining the parameters within a neural network.
 //! - [Backward]: This trait denotes a single backward pass through a layer of a neural network.
 //! - [Forward]: This trait denotes a single forward pass through a layer of a neural network.
-//! 
+//!
 #![crate_name = "concision_core"]
 #![crate_type = "lib"]
 
@@ -18,8 +18,8 @@ pub use concision_math as math;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, error::*, ops::prelude::*, params::prelude::*, traits::prelude::*,
-    utils::prelude::*,
+    activate::prelude::*, data::Dataset, error::*, ops::prelude::*, params::prelude::*,
+    traits::prelude::*, utils::prelude::*,
 };
 
 #[allow(unused)]
@@ -59,32 +59,32 @@ pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
+    pub mod apply;
     pub mod clip;
-    pub mod create;
+    pub mod entropy;
     pub mod init;
-    pub mod loss;
+    pub mod like;
     pub mod mask;
     pub mod norm;
-    pub mod predict;
-    pub mod train;
+    pub mod propagation;
 
     pub(crate) mod prelude {
         #[doc(inline)]
+        pub use super::apply::*;
+        #[doc(inline)]
         pub use super::clip::*;
         #[doc(inline)]
-        pub use super::create::*;
+        pub use super::entropy::*;
         #[doc(inline)]
         pub use super::init::*;
         #[doc(inline)]
-        pub use super::loss::*;
+        pub use super::like::*;
         #[doc(inline)]
         pub use super::mask::*;
         #[doc(inline)]
         pub use super::norm::*;
         #[doc(inline)]
-        pub use super::predict::*;
-        #[doc(inline)]
-        pub use super::train::*;
+        pub use super::propagation::*;
     }
 }
 
@@ -117,6 +117,8 @@ pub mod utils {
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::data::prelude::*;
     #[doc(no_inline)]
     pub use crate::error::*;
     #[doc(no_inline)]
