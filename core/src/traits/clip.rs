@@ -3,8 +3,12 @@
     Contrib: @FL03
 */
 
+/// A trait denoting objects capable of being _clipped_ between some minimum and some maximum.
 pub trait Clip<T> {
-    fn clip(&self, min: T, max: T) -> Self;
+    /// the type output produced by the operation
+    type Output;
+    /// limits the values within an object to a range between `min` and `max`
+    fn clip(&self, min: T, max: T) -> Self::Output;
 }
 
 /// This trait enables tensor clipping; it is implemented for `ArrayBase`
@@ -35,13 +39,26 @@ pub trait ClipMut<T = f32> {
  ************* Implementations *************
 */
 use super::{L1Norm, L2Norm};
-use ndarray::{ArrayBase, DataMut, Dimension, ScalarOperand};
+use ndarray::{ArrayBase, Dimension, ScalarOperand};
 use num_traits::Float;
+
+impl<A, S, D> Clip<A> for ArrayBase<S, D>
+where
+    A: 'static + Clone + PartialOrd,
+    S: ndarray::Data<Elem = A>,
+    D: Dimension,
+{
+    type Output = ndarray::Array<A, D>;
+
+    fn clip(&self, min: A, max: A) -> Self::Output {
+        self.clamp(min, max)
+    }
+}
 
 impl<A, S, D> ClipMut<A> for ArrayBase<S, D>
 where
     A: Float + ScalarOperand,
-    S: DataMut<Elem = A>,
+    S: ndarray::DataMut<Elem = A>,
     D: Dimension,
 {
     fn clip_between(&mut self, min: A, max: A) {

@@ -59,32 +59,32 @@ pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
+    pub mod apply;
     pub mod clip;
-    pub mod create;
+    pub mod entropy;
     pub mod init;
-    pub mod loss;
+    pub mod like;
     pub mod mask;
     pub mod norm;
-    pub mod predict;
-    pub mod train;
+    pub mod propagation;
 
     pub(crate) mod prelude {
         #[doc(inline)]
+        pub use super::apply::*;
+        #[doc(inline)]
         pub use super::clip::*;
         #[doc(inline)]
-        pub use super::create::*;
+        pub use super::entropy::*;
         #[doc(inline)]
         pub use super::init::*;
         #[doc(inline)]
-        pub use super::loss::*;
+        pub use super::like::*;
         #[doc(inline)]
         pub use super::mask::*;
         #[doc(inline)]
         pub use super::norm::*;
         #[doc(inline)]
-        pub use super::predict::*;
-        #[doc(inline)]
-        pub use super::train::*;
+        pub use super::propagation::*;
     }
 }
 

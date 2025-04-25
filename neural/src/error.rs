@@ -3,9 +3,8 @@
     Contrib: @FL03
 */
 
-#[allow(dead_code)]
 /// a type alias for a [Result] with a [NeuralError]
-pub(crate) type Result<T = ()> = core::result::Result<T, NeuralError>;
+pub type NeuralResult<T = ()> = core::result::Result<T, NeuralError>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum NeuralError {

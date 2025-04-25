@@ -5,13 +5,17 @@
 //! This module provides the scaffolding for creating models and layers in a neural network.
 
 #[doc(inline)]
-pub use self::{config::StandardModelConfig, store::ModelParams};
+pub use self::{config::StandardModelConfig, store::ModelParams, trainer::Trainer};
 
 pub mod config;
 pub mod store;
+pub mod trainer;
 
 pub(crate) mod prelude {
+    pub use super::Model;
+    pub use super::config::*;
     pub use super::store::*;
+    pub use super::trainer::*;
 }
 
 use crate::{ModelFeatures, NetworkConfig};
@@ -47,6 +51,7 @@ pub trait Model<T = f32> {
     {
         <Self as cnc::Forward<U>>::forward(self, inputs)
     }
+    #[doc(hidden)]
     #[deprecated(since = "0.1.17", note = "use predict instead")]
     fn forward<U, V>(&self, inputs: &U) -> cnc::Result<V>
     where
@@ -57,14 +62,11 @@ pub trait Model<T = f32> {
     /// returns a model trainer prepared to train the model; this is a convenience method
     /// that creates a new trainer instance and returns it. Trainers are lazily evaluated
     /// meaning that the training process won't begin until the user calls the `begin` method.
-    fn train<U, V>(
-        &mut self,
-        dataset: Dataset<U, V>,
-    ) -> crate::train::trainer::Trainer<'_, Self, T, Dataset<U, V>>
+    fn train<U, V>(&mut self, dataset: Dataset<U, V>) -> Trainer<'_, Self, T, Dataset<U, V>>
     where
         Self: Sized,
         T: Default,
     {
-        crate::train::trainer::Trainer::new(self, dataset)
+        Trainer::new(self, dataset)
     }
 }

@@ -38,20 +38,6 @@ pub trait ApplyGradientExt<Grad, A>: ApplyGradient<Grad, A> {
     ) -> crate::Result<Self::Output>;
 }
 
-/// A simple trait denoting a single backward pass through a layer of a neural network; the
-/// trait
-pub trait Backward<X, Y> {
-    type HParam;
-    type Output;
-
-    fn backward(
-        &mut self,
-        input: &X,
-        delta: &Y,
-        gamma: Self::HParam,
-    ) -> crate::Result<Self::Output>;
-}
-
 use ndarray::{ArrayBase, Dimension, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 

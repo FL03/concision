@@ -22,12 +22,11 @@
 //!  Transform (FFT) to compute the attention scores more efficiently. It is particularly
 //!  useful for long sequences where the standard attention mechanism can be computationally
 //!  expensive.
+#![cfg(feature = "attention")]
+#[doc(inline)]
+pub use self::{multi_head::MultiHeadAttention, qkv::QkvParams, scaled::ScaledDotProductAttention};
 
-pub use self::{
-    fft::FftAttention, multi_head::MultiHeadAttention, qkv::QkvParams,
-    scaled::ScaledDotProductAttention,
-};
-
+#[cfg(feature = "rustfft")]
 pub mod fft;
 pub mod multi_head;
 pub mod qkv;
@@ -38,4 +37,15 @@ pub trait Attention<T> {
     /// scales them by the square root of the dimension of the key vectors, and applies a softmax
     /// function to obtain the attention weights.
     fn attention(&self, query: T, key: T, value: T) -> T;
+}
+
+pub(crate) mod prelude {
+    #[cfg(feature = "rustfft")]
+    pub use super::fft::FftAttention;
+    #[doc(inline)]
+    pub use super::multi_head::MultiHeadAttention;
+    #[doc(inline)]
+    pub use super::qkv::QkvParams;
+    #[doc(inline)]
+    pub use super::scaled::ScaledDotProductAttention;
 }

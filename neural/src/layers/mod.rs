@@ -12,6 +12,8 @@ pub(crate) mod layer;
 pub mod attention;
 
 pub(crate) mod prelude {
+    #[cfg(feature = "attention")]
+    pub use super::attention::prelude::*;
     pub use super::layer::*;
 }
 

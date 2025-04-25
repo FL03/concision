@@ -15,4 +15,10 @@ pub enum ParamsError {
     InvalidInputShape,
     #[error("Invalid output shape")]
     InvalidOutputShape,
+    #[error("Invalid parameter: {0}")]
+    InvalidParameter(String),
+    #[error("Invalid parameter type")]
+    InvalidParameterType,
+    #[error("Invalid parameter value")]
+    InvalidParameterValue,
 }

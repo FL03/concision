@@ -13,13 +13,11 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = ["attention"]
 
-full = ["approx", "default", "rand", "serde", "tracing"]
+full = ["approx", "default", "rand", "rustfft", "serde", "tracing"]
 
-attention = [
-    "rustfft"
-]
+attention = []
 
 # ********* [FF] Dependencies *********
 approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]

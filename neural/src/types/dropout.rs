@@ -16,10 +16,6 @@ pub struct Dropout {
     pub(crate) p: f64,
 }
 
-/*
- ************* Implementations *************
-*/
-
 impl Dropout {
     pub fn new(p: f64) -> Self {
         Self { p }
@@ -37,45 +33,13 @@ impl Default for Dropout {
 }
 
 #[cfg(feature = "rand")]
-mod impls {
-    use super::Dropout;
+impl<U> cnc::Forward<U> for Dropout
+where
+    U: cnc::DropOut,
+{
+    type Output = <U as cnc::DropOut>::Output;
 
-    use concision_core::{Forward, init::InitializeExt};
-    use ndarray::{Array, ArrayBase, DataOwned, Dimension, ScalarOperand};
-    use num::traits::Num;
-
-    impl Dropout {
-        pub fn apply<A, S, D>(&self, input: &ArrayBase<S, D>) -> Array<A, D>
-        where
-            A: Num + ScalarOperand,
-            D: Dimension,
-            S: DataOwned<Elem = A>,
-        {
-            let Dropout { p } = *self;
-            let dim = input.dim();
-
-            // Create a mask of the same shape as the input array
-            let mask = {
-                let tmp = Array::<bool, D>::bernoulli(dim, p).expect("Failed to create mask");
-                tmp.mapv(|x| if x { A::zero() } else { A::one() })
-            };
-
-            // Element-wise multiplication to apply dropout
-            input.to_owned() * mask
-        }
-    }
-
-    impl<A, S, D> Forward<ArrayBase<S, D>> for Dropout
-    where
-        A: Num + ScalarOperand,
-        D: Dimension,
-        S: DataOwned<Elem = A>,
-    {
-        type Output = Array<A, D>;
-
-        fn forward(&self, input: &ArrayBase<S, D>) -> cnc::Result<Self::Output> {
-            let res = self.apply(input);
-            Ok(res)
-        }
+    fn forward(&self, input: &U) -> cnc::Result<Self::Output> {
+        Ok(input.dropout(self.p))
     }
 }

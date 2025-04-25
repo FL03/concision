@@ -1,5 +1,5 @@
 /*
-   Appellation: create <module>
+   Appellation: like <module>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use ndarray::{ArrayBase, DataOwned, Dimension, Ix2, ShapeBuilder};
