@@ -46,7 +46,7 @@ where
         + num_traits::FromPrimitive
         + num_traits::ToPrimitive
         + num_traits::Signed
-        + num_traits::Pow<Self, Output = Self>
+        + num_traits::Pow<Self, Output = Self>,
 {
     private!();
 }

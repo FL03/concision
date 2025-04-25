@@ -8,7 +8,6 @@ pub trait Activate<Rhs = Self> {
     type Output;
 
     fn activate(&self, rhs: Rhs) -> Self::Output;
-
 }
 
 pub trait ActivateGradient<Rhs = Self>: Activate<Self::Input> {
@@ -18,8 +17,7 @@ pub trait ActivateGradient<Rhs = Self>: Activate<Self::Input> {
     fn activate_gradient(&self, rhs: &Rhs) -> Self::Delta;
 }
 
-impl<X, Y> Activate<X> for Box<dyn Activate<X, Output = Y>>
-{
+impl<X, Y> Activate<X> for Box<dyn Activate<X, Output = Y>> {
     type Output = Y;
 
     fn activate(&self, rhs: X) -> Self::Output {
@@ -37,4 +35,3 @@ where
         self(rhs)
     }
 }
-

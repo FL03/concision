@@ -9,6 +9,8 @@ use super::{Activate, Layer};
 use cnc::{Forward, ParamsBase, activate};
 use ndarray::{Dimension, Ix2, RawData};
 
+pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activate<A, Output = A> + 'static>, S, D>;
+
 pub struct LayerBase<F, S, D = Ix2>
 where
     D: Dimension,

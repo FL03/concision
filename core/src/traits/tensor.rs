@@ -7,7 +7,7 @@ use ndarray::{
     ArrayBase, Axis, DataMut, DataOwned, Dimension, OwnedRepr, RawData, RemoveAxis, ShapeBuilder,
 };
 use num::Signed;
-use num_traits::{FromPrimitive, One, Zero, Pow};
+use num_traits::{FromPrimitive, One, Pow, Zero};
 
 pub trait Tensor<S, D>
 where
@@ -127,8 +127,6 @@ where
     {
         self.apply(|x| -x)
     }
-    
-
 }
 
 impl<A, S, D> Tensor<S, D> for ArrayBase<S, D>

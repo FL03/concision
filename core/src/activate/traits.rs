@@ -16,7 +16,7 @@ macro_rules! unary {
             unary!(@impl $name::$call($($rest)*));
         )*
     };
-        
+
     (@impl $name:ident::$call:ident(self)) => {
         paste::paste! {
             pub trait $name {
@@ -27,7 +27,7 @@ macro_rules! unary {
                 fn [<$call _derivative>](self) -> Self::Output;
             }
         }
-        
+
     };
     (@impl $name:ident::$call:ident(&self)) => {
         paste::paste! {
