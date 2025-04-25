@@ -3,8 +3,11 @@
     Contrib: @FL03
 */
 use crate::traits::Scalar;
-use ndarray::{ArrayBase, DataOwned, Dimension, RawData, ShapeBuilder};
-use num_traits::{One, Zero};
+use ndarray::{
+    ArrayBase, Axis, DataMut, DataOwned, Dimension, OwnedRepr, RawData, RemoveAxis, ShapeBuilder,
+};
+use num::Signed;
+use num_traits::{FromPrimitive, One, Zero, Pow};
 
 pub trait Tensor<S, D>
 where
@@ -66,6 +69,69 @@ where
         *self.data_mut() = data;
         self
     }
+    /// returns a new tensor with the same shape as the object and the given function applied
+    /// to each element
+    fn apply<F, B>(&self, f: F) -> Self::Container<OwnedRepr<B>, D>
+    where
+        F: FnMut(Self::Scalar) -> B;
+    /// returns a new tensor with the same shape as the object and the given function applied
+    fn apply_mut<F>(&mut self, f: F)
+    where
+        S: DataMut,
+        F: FnMut(Self::Scalar) -> Self::Scalar;
+
+    fn axis_iter(&self, axis: usize) -> ndarray::iter::AxisIter<'_, Self::Scalar, D::Smaller>
+    where
+        D: RemoveAxis;
+
+    fn iter(&self) -> ndarray::iter::Iter<'_, Self::Scalar, D>;
+
+    fn iter_mut(&mut self) -> ndarray::iter::IterMut<'_, Self::Scalar, D>
+    where
+        S: DataMut;
+
+    fn mean(&self) -> Self::Scalar
+    where
+        Self::Scalar: Scalar,
+    {
+        let sum = self.sum();
+        let count = self.iter().count();
+        sum / Self::Scalar::from_usize(count).unwrap()
+    }
+
+    fn sum(&self) -> Self::Scalar
+    where
+        Self::Scalar: Clone + core::iter::Sum,
+    {
+        self.iter().cloned().sum()
+    }
+
+    fn pow2(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
+    where
+        Self: Sized,
+        Self::Scalar: Scalar,
+    {
+        let two = Self::Scalar::from_usize(2).unwrap();
+        self.apply(|x| x.pow(two))
+    }
+
+    fn abs(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
+    where
+        Self: Sized,
+        Self::Scalar: Signed,
+    {
+        self.apply(|x| x.abs())
+    }
+
+    fn neg(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
+    where
+        Self: Sized,
+        Self::Scalar: core::ops::Neg<Output = Self::Scalar>,
+    {
+        self.apply(|x| -x)
+    }
+    
+
 }
 
 impl<A, S, D> Tensor<S, D> for ArrayBase<S, D>
@@ -112,5 +178,36 @@ where
 
     fn shape(&self) -> &[usize] {
         self.shape()
+    }
+
+    fn apply<F, B>(&self, f: F) -> Self::Container<OwnedRepr<B>, D>
+    where
+        F: FnMut(Self::Scalar) -> B,
+    {
+        self.mapv(f)
+    }
+
+    fn apply_mut<F>(&mut self, f: F)
+    where
+        F: FnMut(Self::Scalar) -> Self::Scalar,
+        S: DataMut,
+    {
+        self.mapv_inplace(f)
+    }
+
+    fn iter(&self) -> ndarray::iter::Iter<'_, Self::Scalar, D> {
+        self.iter()
+    }
+    fn iter_mut(&mut self) -> ndarray::iter::IterMut<'_, Self::Scalar, D>
+    where
+        S: DataMut,
+    {
+        self.iter_mut()
+    }
+    fn axis_iter(&self, axis: usize) -> ndarray::iter::AxisIter<'_, Self::Scalar, D::Smaller>
+    where
+        D: RemoveAxis,
+    {
+        self.axis_iter(Axis(axis))
     }
 }

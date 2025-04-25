@@ -31,6 +31,7 @@ where
     Self: Numerical
         + 'static
         + core::fmt::Display
+        + core::iter::Product
         + core::iter::Sum
         + core::ops::Neg
         + num_traits::One
@@ -44,7 +45,8 @@ where
         + num_traits::NumRef
         + num_traits::FromPrimitive
         + num_traits::ToPrimitive
-        + num_traits::Signed,
+        + num_traits::Signed
+        + num_traits::Pow<Self, Output = Self>
 {
     private!();
 }
@@ -154,19 +156,19 @@ impl_scalar! {
     u32,
     u64,
     u128,
-    usize
-}
-
-impl_scalar! {
-    #[scalar]
-    f32,
-    f64,
+    usize,
     i8,
     i16,
     i32,
     i64,
     i128,
     isize
+}
+
+impl_scalar! {
+    #[scalar]
+    f32,
+    f64,
 }
 
 impl<A, S, D> Numerical for ndarray::ArrayBase<S, D>
