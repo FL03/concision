@@ -102,7 +102,7 @@ where
     where
         A: Clone,
         S: Data,
-        Self: crate::Backward<X, Y, HParam = A, Output = Z>,
+        Self: crate::Backward<X, Y, Elem = A, Output = Z>,
     {
         <Self as crate::Backward<X, Y>>::backward(self, input, grad, lr)
     }

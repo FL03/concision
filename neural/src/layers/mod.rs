@@ -52,7 +52,7 @@ where
         S: Data,
         Self: ActivateGradient<Y, Delta = Delta>,
         Self::Scalar: Clone,
-        ParamsBase<S, D>: Backward<X, Delta, HParam = Self::Scalar, Output = Z>,
+        ParamsBase<S, D>: Backward<X, Delta, Elem = Self::Scalar, Output = Z>,
     {
         // compute the delta using the activation function
         let delta = self.activate_gradient(error);

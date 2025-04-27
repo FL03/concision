@@ -52,8 +52,8 @@ serde_json = { default-features = false, version = "1" }
 smart-default = "0.7"
 strum = { default-features = false, features = ["derive"], version = "0.27" }
 thiserror = { default-features = false, version = "2" }
-tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing = { default-features = false, features = ["attributes", "log"], version = "0.1" }
+tracing-subscriber = { default-features = false, features = ["env-filter", "fmt"], version = "0.3" }
 
 # Misc
 humantime = { version = "2" }

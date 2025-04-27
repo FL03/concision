@@ -173,20 +173,33 @@ where
     }
 
     #[cfg(feature = "rand")]
-    pub fn init_rand<Ds>(features: ModelFeatures, distr: Ds) -> Self
+    pub fn init_rand<G, Ds>(features: ModelFeatures, distr: G) -> Self
     where
+        G: Fn((usize, usize)) -> Ds,
         Ds: Clone + cnc::init::rand_distr::Distribution<A>,
         S: ndarray::DataOwned,
     {
         use cnc::init::Initialize;
-        let input = ParamsBase::rand(features.d_input(), distr.clone());
+        let input = ParamsBase::rand(features.d_input(), distr(features.d_input()));
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::rand(features.d_hidden(), distr.clone()))
+            .map(|_| ParamsBase::rand(features.d_hidden(), distr(features.d_hidden())))
             .collect::<Vec<_>>();
 
-        let output = ParamsBase::rand(features.d_output(), distr);
+        let output = ParamsBase::rand(features.d_output(), distr(features.d_output()));
 
         Self::new(input, hidden, output)
+    }
+
+    #[cfg(feature = "rand")]
+    pub fn glorot_normal(features: ModelFeatures) -> Self
+    where
+        cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
+        S: ndarray::DataOwned,
+        S::Elem: num_traits::Float + num_traits::FromPrimitive,
+    {
+        Self::init_rand(features, |(rows, cols)| {
+            cnc::init::XavierNormal::new(rows, cols)
+        })
     }
 
     pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>

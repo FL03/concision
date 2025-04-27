@@ -6,38 +6,45 @@ use ndarray::{Array, ArrayBase, Data, Dimension};
 use num::complex::{Complex, ComplexFloat};
 use num::traits::Signed;
 
-unary!(
+unary! {
     Abs::abs(self),
     Cos::cos(self),
     Cosh::cosh(self),
     Exp::exp(self),
     Sine::sin(self),
     Sinh::sinh(self),
-    Squared::sqrd(self),
+    Tan::tan(self),
+    Tanh::tanh(self),
+    Squared::pow2(self),
+    Cubed::pow3(self),
     SquareRoot::sqrt(self)
-);
+}
+
+unary! {
+    Conjugate::conj(&self),
+}
 
 /*
  ********* Implementations *********
 */
 
 macro_rules! unary_impl {
-    ($name:ident::$method:ident<[$($T:ty),* $(,)?]>) => {
-        unary_impl!(@loop $name::$method<[$($T),*]>);
-    };
-    ($($name:ident::$method:ident<$T:ty$(, Output = $O:ty)?>),* $(,)?) => {
+    ($($name:ident<$T:ty$(, Output = $O:ty)?>::$method:ident),* $(,)?) => {
         $(unary_impl!(@impl $name::$method<$T$(, Output = $O>)?);)*
     };
-    ($($name:ident::$method:ident<$T:ty, Output = $O:ty>),* $(,)?) => {
+    ($($name:ident::<$T:ty, Output = $O:ty>::$method:ident),* $(,)?) => {
         $(unary_impl!(@impl $name::$method<$T, Output = $O>);)*
     };
-    (@loop $name:ident::$method:ident<[$($T:ty),* $(,)?]>) => {
-        $(unary_impl!(@impl $name::$method<$T>);)*
+    ($($name:ident::<[$($T:ty),*]>::$method:ident),* $(,)?) => {
+        $(unary_impl!(@loop $name::$method<[$($T),*]>);)*
     };
-    (@impl $name:ident::$method:ident<$T:ty>) => {
-        unary_impl!(@impl $name::$method<$T, Output = $T>);
+    (@loop $name:ident::<[$($T:ty),* $(,)?]>::$method:ident) => {
+        $(unary_impl!(@impl $name::<$T>::$method);)*
     };
-    (@impl $name:ident::$method:ident<$T:ty, Output = $O:ty>) => {
+    (@impl $name:ident::<$T:ty>::$method:ident) => {
+        unary_impl!(@impl $name::<$T, Output = $T>::$method);
+    };
+    (@impl $name:ident::<$T:ty, Output = $O:ty>::$method:ident) => {
         impl $name for $T {
             type Output = $O;
 
@@ -49,20 +56,67 @@ macro_rules! unary_impl {
 }
 
 macro_rules! unary_impls {
-    ($($name:ident::$method:ident<[$($T:ty),* $(,)?]>),* $(,)?) => {
-        $(unary_impl!(@loop $name::$method<[$($T),*]>);)*
+    ($($name:ident::<[$($T:ty),* $(,)?]>::$method:ident),* $(,)?) => {
+        $(unary_impl!(@loop $name::<[$($T),*]>::$method);)*
     };
 }
 
-unary_impls!(
-    Abs::abs<[f32, f64]>,
-    Cosh::cosh<[f32, f64, Complex<f32>, Complex<f64>]>,
-    Cos::cos<[f32, f64, Complex<f32>, Complex<f64>]>,
-    Exp::exp<[f32, f64, Complex<f32>, Complex<f64>]>,
-    Sinh::sinh<[f32, f64, Complex<f32>, Complex<f64>]>,
-    Sine::sin<[f32, f64, Complex<f32>, Complex<f64>]>,
-    SquareRoot::sqrt<[f32, f64]>
-);
+unary_impls! {
+    Abs::<[f32, f64]>::abs,
+    Cos::<[f32, f64, Complex<f32>, Complex<f64>]>::cos,
+    Cosh::<[f32, f64, Complex<f32>, Complex<f64>]>::cosh,
+    Exp::<[f32, f64, Complex<f32>, Complex<f64>]>::exp,
+    Sinh::<[f32, f64, Complex<f32>, Complex<f64>]>::sinh,
+    Sine::<[f32, f64, Complex<f32>, Complex<f64>]>::sin,
+    Tan::<[f32, f64, Complex<f32>, Complex<f64>]>::tan,
+    Tanh::<[f32, f64, Complex<f32>, Complex<f64>]>::tanh,
+    SquareRoot::<[f32, f64]>::sqrt
+}
+
+/*
+ ************* macro implementations *************
+*/
+
+macro_rules! impl_conj {
+    ($($t:ident<$res:ident>),*) => {
+        $(
+            impl_conj!(@impl $t<$res>);
+        )*
+    };
+    (@impl $t:ident<$res:ident>) => {
+        impl Conjugate for $t {
+            type Output = $res<$t>;
+
+            fn conj(&self) -> Self::Output {
+                Complex { re: *self, im: num_traits::Zero::zero() }
+            }
+        }
+    };
+}
+
+impl_conj!(f32<Complex>, f64<Complex>);
+
+impl<T> Conjugate for Complex<T>
+where
+    T: Clone + Signed,
+{
+    type Output = Complex<T>;
+
+    fn conj(&self) -> Self {
+        Complex::<T>::conj(self)
+    }
+}
+
+impl<T, D> Conjugate for Array<T, D>
+where
+    D: Dimension,
+    T: Clone + num::complex::ComplexFloat,
+{
+    type Output = Array<T, D>;
+    fn conj(&self) -> Self::Output {
+        self.mapv(|x| x.conj())
+    }
+}
 
 impl<A, S, D> Abs for ArrayBase<S, D>
 where
@@ -96,7 +150,7 @@ where
 {
     type Output = A;
 
-    fn sqrd(self) -> Self::Output {
+    fn pow2(self) -> Self::Output {
         self.clone() * self
     }
 }

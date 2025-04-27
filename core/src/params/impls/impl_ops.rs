@@ -181,14 +181,14 @@ where
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
-    type HParam = A;
+    type Elem = A;
     type Output = A;
 
     fn backward(
         &mut self,
         input: &ArrayBase<S, Ix2>,
         delta: &ArrayBase<T, Ix1>,
-        gamma: Self::HParam,
+        gamma: Self::Elem,
     ) -> crate::Result<Self::Output> {
         // compute the weight gradient
         let weight_delta = delta.t().dot(input);
@@ -206,14 +206,14 @@ where
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
-    type HParam = A;
+    type Elem = A;
     type Output = A;
 
     fn backward(
         &mut self,
         input: &ArrayBase<S, Ix1>,
         delta: &ArrayBase<T, Ix0>,
-        gamma: Self::HParam,
+        gamma: Self::Elem,
     ) -> crate::Result<Self::Output> {
         // compute the weight gradient
         let weight_delta = input * delta;
@@ -231,14 +231,14 @@ where
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
-    type HParam = A;
+    type Elem = A;
     type Output = A;
 
     fn backward(
         &mut self,
         input: &ArrayBase<S, Ix1>,
         delta: &ArrayBase<T, Ix1>,
-        gamma: Self::HParam,
+        gamma: Self::Elem,
     ) -> crate::Result<Self::Output> {
         // compute the weight gradient
         let dw = &self.weights * delta.t().dot(input);
@@ -256,14 +256,14 @@ where
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
-    type HParam = A;
+    type Elem = A;
     type Output = A;
 
     fn backward(
         &mut self,
         input: &ArrayBase<S, Ix2>,
         delta: &ArrayBase<T, Ix2>,
-        gamma: Self::HParam,
+        gamma: Self::Elem,
     ) -> crate::Result<Self::Output> {
         // compute the weight gradient
         let weight_delta = input.dot(&delta.t());

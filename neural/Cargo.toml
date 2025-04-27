@@ -61,7 +61,7 @@ serde = { features = ["std"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 strum = { features = ["std"], workspace = true }
 thiserror = { features = ["std"], workspace = true }
-tracing = { optional = true, workspace = true }
+tracing = { features = ["std"], optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static = { workspace = true }
