@@ -3,37 +3,38 @@
     Contrib: @FL03
 */
 /// A trait declaring basic gradient-related routines for a neural network
-pub trait ApplyGradient<Grad, A> {
+pub trait ApplyGradient<Delta> {
+    type Elem;
     type Output;
 
-    fn apply_gradient(&mut self, grad: &Grad, lr: A) -> crate::Result<Self::Output>;
+    fn apply_gradient(&mut self, grad: &Delta, lr: Self::Elem) -> crate::Result<Self::Output>;
 
     fn apply_gradient_with_decay(
         &mut self,
-        grad: &Grad,
-        lr: A,
-        decay: A,
+        grad: &Delta,
+        lr: Self::Elem,
+        decay: Self::Elem,
     ) -> crate::Result<Self::Output>;
 }
 
 /// This trait extends the [ApplyGradient] trait by allowing for momentum-based optimization
-pub trait ApplyGradientExt<Grad, A>: ApplyGradient<Grad, A> {
+pub trait ApplyGradientExt<Delta>: ApplyGradient<Delta> {
     type Velocity;
 
     fn apply_gradient_with_momentum(
         &mut self,
-        grad: &Grad,
-        lr: A,
-        momentum: A,
+        grad: &Delta,
+        lr: Self::Elem,
+        momentum: Self::Elem,
         velocity: &mut Self::Velocity,
     ) -> crate::Result<Self::Output>;
 
     fn apply_gradient_with_decay_and_momentum(
         &mut self,
-        grad: &Grad,
-        lr: A,
-        decay: A,
-        momentum: A,
+        grad: &Delta,
+        lr: Self::Elem,
+        decay: Self::Elem,
+        momentum: Self::Elem,
         velocity: &mut Self::Velocity,
     ) -> crate::Result<Self::Output>;
 }
@@ -41,13 +42,14 @@ pub trait ApplyGradientExt<Grad, A>: ApplyGradient<Grad, A> {
 use ndarray::{ArrayBase, Dimension, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 
-impl<A, S, T, D> ApplyGradient<ArrayBase<T, D>, A> for ArrayBase<S, D>
+impl<A, S, T, D> ApplyGradient<ArrayBase<T, D>> for ArrayBase<S, D>
 where
     A: Float + FromPrimitive + ScalarOperand,
     S: ndarray::DataMut<Elem = A>,
     T: ndarray::Data<Elem = A>,
     D: Dimension,
 {
+    type Elem = A;
     type Output = ();
 
     fn apply_gradient(&mut self, grad: &ArrayBase<T, D>, lr: A) -> crate::Result<Self::Output> {
@@ -85,7 +87,7 @@ where
         Ok(())
     }
 }
-impl<A, S, T, D> ApplyGradientExt<ArrayBase<T, D>, A> for ArrayBase<S, D>
+impl<A, S, T, D> ApplyGradientExt<ArrayBase<T, D>> for ArrayBase<S, D>
 where
     A: Float + FromPrimitive + ScalarOperand,
     S: ndarray::DataMut<Elem = A>,

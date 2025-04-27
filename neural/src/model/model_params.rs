@@ -172,6 +172,23 @@ where
         Self::new(input, hidden, output)
     }
 
+    #[cfg(feature = "rand")]
+    pub fn init_rand<Ds>(features: ModelFeatures, distr: Ds) -> Self
+    where
+        Ds: Clone + cnc::init::rand_distr::Distribution<A>,
+        S: ndarray::DataOwned,
+    {
+        use cnc::init::Initialize;
+        let input = ParamsBase::rand(features.d_input(), distr.clone());
+        let hidden = (0..features.layers())
+            .map(|_| ParamsBase::rand(features.d_hidden(), distr.clone()))
+            .collect::<Vec<_>>();
+
+        let output = ParamsBase::rand(features.d_output(), distr);
+
+        Self::new(input, hidden, output)
+    }
+
     pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         A: Clone,

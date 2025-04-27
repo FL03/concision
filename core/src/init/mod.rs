@@ -31,17 +31,17 @@ pub mod distr {
     }
 }
 
-type UniformResult<T = ()> = Result<T, rand_distr::uniform::Error>;
-
 #[doc(hidden)]
 #[doc(no_inline)]
 pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
-#[allow(unused_imports)]
 pub(crate) mod prelude {
+    pub use super::UniformResult;
     pub use super::distr::prelude::*;
     pub use super::initialize::*;
     pub use super::utils::*;
 }
+
+pub type UniformResult<T = ()> = Result<T, rand_distr::uniform::Error>;

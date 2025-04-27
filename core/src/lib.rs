@@ -133,6 +133,9 @@ pub mod prelude {
     pub use crate::data::prelude::*;
     #[doc(no_inline)]
     pub use crate::error::*;
+    #[cfg(feature = "rand")]
+    #[doc(no_inline)]
+    pub use crate::init::prelude::*;
     #[doc(no_inline)]
     pub use crate::ops::prelude::*;
     #[doc(no_inline)]
