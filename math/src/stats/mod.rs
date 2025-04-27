@@ -2,8 +2,7 @@
     Appellation: stats <module>
     Contrib: @FL03
 */
-//! Statistical functions and utilities for calculating summary statistics.
-//!
+//! Statistical primitives and utilities commonly used in machine learning.
 pub use self::summary::SummaryStatistics;
 
 pub mod summary;

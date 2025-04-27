@@ -4,6 +4,7 @@
 */
 use crate::activate::{Heavyside, utils::heavyside};
 use ndarray::{Array, ArrayBase, Data, Dimension};
+use num_traits::{One, Zero};
 
 macro_rules! impl_heavyside {
     ($($ty:ty),* $(,)*) => {
@@ -15,6 +16,14 @@ macro_rules! impl_heavyside {
 
             fn heavyside(self) -> Self::Output {
                 heavyside(self)
+            }
+
+            fn heavyside_derivative(self) -> Self::Output {
+                if self > <$ty>::zero() {
+                    <$ty>::one()
+                } else {
+                    <$ty>::zero()
+                }
             }
         }
     };
@@ -35,6 +44,10 @@ where
     fn heavyside(self) -> Self::Output {
         self.mapv(Heavyside::heavyside)
     }
+
+    fn heavyside_derivative(self) -> Self::Output {
+        self.mapv(Heavyside::heavyside_derivative)
+    }
 }
 
 impl<'a, A, B, S, D> Heavyside for &'a ArrayBase<S, D>
@@ -47,5 +60,9 @@ where
 
     fn heavyside(self) -> Self::Output {
         self.mapv(Heavyside::heavyside)
+    }
+
+    fn heavyside_derivative(self) -> Self::Output {
+        self.mapv(Heavyside::heavyside_derivative)
     }
 }

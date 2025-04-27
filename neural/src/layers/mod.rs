@@ -17,28 +17,159 @@ pub(crate) mod prelude {
     pub use super::layer::*;
 }
 
-use crate::Activate;
+use cnc::params::ParamsBase;
+use cnc::{Activate, ActivateGradient, Backward, Forward, Tensor};
 
-use ndarray::{Dimension, Ix2, RawData};
-pub trait Layer<S, D = Ix2>
+use ndarray::{Data, Dimension, RawData};
+
+/// A layer within a neural-network containing a set of parameters and an activation function.
+/// Here, this manifests as a wrapper around the parameters of the layer with a generic
+/// activation function and corresponding traits to denote desired behaviors.
+///
+pub trait Layer<S, D>
 where
     D: Dimension,
-    S: RawData,
+    S: RawData<Elem = Self::Scalar>,
 {
-    type Rho<U, V>: Activate<U, Output = V>;
+    type Scalar;
+
     /// returns an immutable reference to the parameters of the layer
-    fn params(&self) -> &cnc::ParamsBase<S, D>;
+    fn params(&self) -> &ParamsBase<S, D>;
     /// returns a mutable reference to the parameters of the layer
-    fn params_mut(&mut self) -> &mut cnc::ParamsBase<S, D>;
-    /// returns an immutable reference to the activation function of the layer
-    fn rho<A, B>(&self) -> &Self::Rho<A, B>;
+    fn params_mut(&mut self) -> &mut ParamsBase<S, D>;
+    /// update the layer parameters
+    fn set_params(&mut self, params: ParamsBase<S, D>) {
+        *self.params_mut() = params;
+    }
+    /// backward propagate error through the layer
+    fn backward<X, Y, Z, Delta>(
+        &mut self,
+        input: X,
+        error: Y,
+        gamma: Self::Scalar,
+    ) -> cnc::Result<Z>
+    where
+        S: Data,
+        Self: ActivateGradient<Y, Delta = Delta>,
+        Self::Scalar: Clone,
+        ParamsBase<S, D>: Backward<X, Delta, Elem = Self::Scalar, Output = Z>,
+    {
+        // compute the delta using the activation function
+        let delta = self.activate_gradient(error);
+        // apply the backward function of the inherited layer
+        self.params_mut().backward(&input, &delta, gamma)
+    }
     ///
     fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
-        S::Elem: Clone,
-        S: ndarray::Data,
-        cnc::ParamsBase<S, D>: cnc::Forward<X, Output = Y>,
+        Y: Tensor<S, D, Scalar = Self::Scalar>,
+        ParamsBase<S, D>: Forward<X, Output = Y>,
+        Self: Activate<Y, Output = Y>,
     {
-        self.params().forward(input).map(|y| self.rho().activate(y))
+        self.params().forward_then(input, |y| self.activate(y))
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct Linear;
+
+impl<U> Activate<U> for Linear {
+    type Output = U;
+
+    fn activate(&self, x: U) -> Self::Output {
+        x
+    }
+}
+
+impl<U> ActivateGradient<U> for Linear
+where
+    U: cnc::LinearActivation,
+{
+    type Input = U;
+    type Delta = U::Output;
+
+    fn activate_gradient(&self, _inputs: U) -> Self::Delta {
+        _inputs.linear_derivative()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct Sigmoid;
+
+impl<U> Activate<U> for Sigmoid
+where
+    U: cnc::Sigmoid,
+{
+    type Output = U::Output;
+
+    fn activate(&self, x: U) -> Self::Output {
+        cnc::Sigmoid::sigmoid(&x)
+    }
+}
+
+impl<U> ActivateGradient<U> for Sigmoid
+where
+    U: cnc::Sigmoid,
+{
+    type Input = U;
+    type Delta = U::Output;
+
+    fn activate_gradient(&self, x: U) -> Self::Delta {
+        cnc::Sigmoid::sigmoid(&x)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct Tanh;
+
+impl<U> Activate<U> for Tanh
+where
+    U: cnc::Tanh,
+{
+    type Output = U::Output;
+
+    fn activate(&self, x: U) -> Self::Output {
+        x.tanh()
+    }
+}
+impl<U> ActivateGradient<U> for Tanh
+where
+    U: cnc::Tanh,
+{
+    type Input = U;
+    type Delta = U::Output;
+
+    fn activate_gradient(&self, inputs: U) -> Self::Delta {
+        inputs.tanh_derivative()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct ReLU;
+
+impl<U> Activate<U> for ReLU
+where
+    U: cnc::ReLU,
+{
+    type Output = U::Output;
+
+    fn activate(&self, x: U) -> Self::Output {
+        x.relu()
+    }
+}
+
+impl<U> ActivateGradient<U> for ReLU
+where
+    U: cnc::ReLU,
+{
+    type Input = U;
+    type Delta = U::Output;
+
+    fn activate_gradient(&self, inputs: U) -> Self::Delta {
+        inputs.relu_derivative()
     }
 }

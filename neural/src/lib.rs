@@ -42,14 +42,11 @@ pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod activate;
     pub mod config;
     pub mod predict;
     pub mod train;
 
     pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::activate::*;
         #[doc(inline)]
         pub use super::config::*;
         #[doc(inline)]

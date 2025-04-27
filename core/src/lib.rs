@@ -13,6 +13,9 @@
 #![crate_name = "concision_core"]
 #![crate_type = "lib"]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 #[doc(inline)]
 pub use concision_math as math;
 
@@ -59,6 +62,7 @@ pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
+    pub mod activate;
     pub mod apply;
     pub mod clip;
     pub mod entropy;
@@ -67,8 +71,12 @@ pub mod traits {
     pub mod mask;
     pub mod norm;
     pub mod propagation;
+    pub mod scalar;
+    pub mod tensor;
 
     pub(crate) mod prelude {
+        #[doc(inline)]
+        pub use super::activate::*;
         #[doc(inline)]
         pub use super::apply::*;
         #[doc(inline)]
@@ -85,6 +93,10 @@ pub mod traits {
         pub use super::norm::*;
         #[doc(inline)]
         pub use super::propagation::*;
+        #[doc(inline)]
+        pub use super::scalar::*;
+        #[doc(inline)]
+        pub use super::tensor::*;
     }
 }
 
@@ -121,6 +133,9 @@ pub mod prelude {
     pub use crate::data::prelude::*;
     #[doc(no_inline)]
     pub use crate::error::*;
+    #[cfg(feature = "rand")]
+    #[doc(no_inline)]
+    pub use crate::init::prelude::*;
     #[doc(no_inline)]
     pub use crate::ops::prelude::*;
     #[doc(no_inline)]

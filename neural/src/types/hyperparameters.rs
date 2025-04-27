@@ -45,7 +45,6 @@ pub enum Hyperparameters {
     Momentum,
     Temperature,
     WeightDecay,
-
 }
 
 #[cfg(test)]
@@ -57,7 +56,10 @@ mod tests {
     fn test_hyper() {
         use strum::IntoEnumIterator;
 
-        assert_eq!(Hyperparameters::from_str("learning_rate"), Ok(Hyperparameters::LearningRate));
+        assert_eq!(
+            Hyperparameters::from_str("learning_rate"),
+            Ok(Hyperparameters::LearningRate)
+        );
 
         for variant in Hyperparameters::iter() {
             let name = variant.as_ref();

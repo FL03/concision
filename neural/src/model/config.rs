@@ -4,6 +4,7 @@
 */
 
 use crate::Hyperparameters::*;
+use crate::traits::{NetworkConfig, TrainingConfiguration};
 
 pub(crate) type ModelConfigMap<T> = std::collections::HashMap<String, T>;
 
@@ -40,8 +41,24 @@ impl<T> StandardModelConfig<T> {
         Self { epochs, ..self }
     }
 
+    pub fn hyperparameters(&self) -> &ModelConfigMap<T> {
+        &self.hyperparameters
+    }
+
+    pub fn hyperparameters_mut(&mut self) -> &mut ModelConfigMap<T> {
+        &mut self.hyperparameters
+    }
+
     pub fn insert_hyperparameter(&mut self, key: impl ToString, value: T) -> Option<T> {
-        self.hyperparameters.insert(key.to_string(), value)
+        self.hyperparameters_mut().insert(key.to_string(), value)
+    }
+
+    pub fn hyperparam<Q>(&mut self, key: Q) -> std::collections::hash_map::Entry<'_, String, T> where Q: ToString  {
+        self.hyperparameters_mut().entry(key.to_string())
+    }
+
+    pub fn remove_hyperparameter(&mut self, key: impl ToString) -> Option<T> {
+        self.hyperparameters_mut().remove(&key.to_string())
     }
 
     pub fn set_decay(&mut self, decay: T) -> Option<T> {
@@ -60,7 +77,7 @@ impl<T> StandardModelConfig<T> {
     }
 
     pub fn get(&self, key: impl ToString) -> Option<&T> {
-        self.hyperparameters.get(&key.to_string())
+        self.hyperparameters().get(&key.to_string())
     }
 
     pub fn learning_rate(&self) -> Option<&T> {
@@ -74,9 +91,13 @@ impl<T> StandardModelConfig<T> {
     pub fn decay(&self) -> Option<&T> {
         self.get(Decay)
     }
+
+    pub fn weight_decay(&self) -> Option<&T> {
+        self.get("weight_decay")
+    }
 }
 
-impl<T> crate::NetworkConfig<T> for StandardModelConfig<T> {
+impl<T> NetworkConfig<T> for StandardModelConfig<T> {
     fn get<K>(&self, key: K) -> Option<&T>
     where
         K: AsRef<str>,
@@ -117,7 +138,7 @@ impl<T> crate::NetworkConfig<T> for StandardModelConfig<T> {
     }
 }
 
-impl<T> crate::TrainingConfiguration<T> for StandardModelConfig<T> {
+impl<T> TrainingConfiguration<T> for StandardModelConfig<T> {
     fn epochs(&self) -> usize {
         self.epochs
     }

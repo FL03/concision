@@ -20,7 +20,7 @@ where
     type Output = ndarray::Array<A, D>;
 
     fn dropout(&self, p: f64) -> Self::Output {
-        pub use crate::init::InitializeExt;
+        pub use crate::init::Initialize;
         use ndarray::Array;
         let dim = self.dim();
         // Create a mask of the same shape as the input array

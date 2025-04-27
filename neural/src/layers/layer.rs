@@ -2,37 +2,69 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
-#![allow(unused)]
-use super::{Activate, Layer};
-use cnc::{Forward, ParamsBase, activate};
+use super::Layer;
+use cnc::{Activate, ActivateGradient, Forward, ParamsBase};
 use ndarray::{Dimension, Ix2, RawData};
+
+pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activate<A, Output = A> + 'static>, S, D>;
 
 pub struct LayerBase<F, S, D = Ix2>
 where
     D: Dimension,
     S: RawData,
 {
+    /// the activation function of the layer
     pub(crate) rho: F,
     pub(crate) params: ParamsBase<S, D>,
 }
 
-pub struct Linear;
-
-impl<U> Activate<U> for Linear {
-    type Output = U;
-    fn activate(&self, x: U) -> Self::Output {
-        x
-    }
-}
-
-impl<S, D> LayerBase<Linear, S, D>
+impl<S, D> LayerBase<super::Linear, S, D>
 where
     D: Dimension,
     S: RawData<Elem = f32>,
 {
     pub fn linear(params: ParamsBase<S, D>) -> Self {
         Self {
-            rho: Linear,
+            rho: super::Linear,
+            params,
+        }
+    }
+}
+
+impl<S, D> LayerBase<super::Sigmoid, S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = f32>,
+{
+    pub fn sigmoid(params: ParamsBase<S, D>) -> Self {
+        Self {
+            rho: super::Sigmoid,
+            params,
+        }
+    }
+}
+
+impl<S, D> LayerBase<super::Tanh, S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = f32>,
+{
+    pub fn tanh(params: ParamsBase<S, D>) -> Self {
+        Self {
+            rho: super::Tanh,
+            params,
+        }
+    }
+}
+
+impl<S, D> LayerBase<super::ReLU, S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = f32>,
+{
+    pub fn relu(params: ParamsBase<S, D>) -> Self {
+        Self {
+            rho: super::ReLU,
             params,
         }
     }
@@ -104,6 +136,50 @@ where
     S: RawData,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.params
+    }
+}
+
+impl<U, V, F, S, D> Activate<U> for LayerBase<F, S, D>
+where
+    F: Activate<U, Output = V>,
+    D: Dimension,
+    S: RawData,
+{
+    type Output = V;
+
+    fn activate(&self, x: U) -> Self::Output {
+        self.rho().activate(x)
+    }
+}
+
+impl<U, F, S, D> ActivateGradient<U> for LayerBase<F, S, D>
+where
+    F: ActivateGradient<U>,
+    D: Dimension,
+    S: RawData,
+{
+    type Input = F::Input;
+    type Delta = F::Delta;
+
+    fn activate_gradient(&self, inputs: U) -> F::Delta {
+        self.rho().activate_gradient(inputs)
+    }
+}
+
+impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D>
+where
+    F: ActivateGradient<A>,
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
+    type Scalar = A;
+
+    fn params(&self) -> &ParamsBase<S, D> {
+        &self.params
+    }
+
+    fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
         &mut self.params
     }
 }

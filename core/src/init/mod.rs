@@ -22,13 +22,14 @@ pub mod distr {
     pub mod xavier;
 
     pub(crate) mod prelude {
+        #[doc(inline)]
         pub use super::lecun::*;
+        #[doc(inline)]
         pub use super::trunc::*;
+        #[doc(inline)]
         pub use super::xavier::*;
     }
 }
-
-type UniformResult<T = ()> = Result<T, rand_distr::uniform::Error>;
 
 #[doc(hidden)]
 #[doc(no_inline)]
@@ -36,9 +37,11 @@ pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
-#[allow(unused_imports)]
 pub(crate) mod prelude {
+    pub use super::UniformResult;
     pub use super::distr::prelude::*;
-    pub use super::initialize::{Initialize, InitializeExt};
+    pub use super::initialize::*;
     pub use super::utils::*;
 }
+
+pub type UniformResult<T = ()> = Result<T, rand_distr::uniform::Error>;

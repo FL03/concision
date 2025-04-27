@@ -3,12 +3,9 @@
     Contrib: @FL03
 */
 
-use super::utils::*;
-
 use ndarray::prelude::*;
 use ndarray::{Data, DataMut, RemoveAxis, ScalarOperand};
 use num::complex::ComplexFloat;
-use num_traits::{Float, One, Zero};
 
 macro_rules! unary {
     ($($name:ident::$call:ident($($rest:tt)*)),* $(,)?) => {
@@ -16,18 +13,28 @@ macro_rules! unary {
             unary!(@impl $name::$call($($rest)*));
         )*
     };
-    (@impl $name:ident::$call:ident(self)) => {
-        pub trait $name {
-            type Output;
 
-            fn $call(self) -> Self::Output;
+    (@impl $name:ident::$call:ident(self)) => {
+        paste::paste! {
+            pub trait $name {
+                type Output;
+
+                fn $call(self) -> Self::Output;
+
+                fn [<$call _derivative>](self) -> Self::Output;
+            }
         }
+
     };
     (@impl $name:ident::$call:ident(&self)) => {
-        pub trait $name {
-            type Output;
+        paste::paste! {
+            pub trait $name {
+                type Output;
 
-            fn $call(&self) -> Self::Output;
+                fn $call(&self) -> Self::Output;
+
+                fn [<$call _derivative>](&self) -> Self::Output;
+            }
         }
     };
 }
@@ -56,71 +63,64 @@ where
     where
         F: Fn(A) -> B;
 
-    fn linear(&self) -> Array<A, D>
+    fn linear(&self) -> Array<A::Output, D>
     where
-        A: Clone,
+        A: LinearActivation,
     {
-        self.activate(|x| x.clone())
+        self.activate(|x| x.linear())
     }
 
-    fn linear_derivative(&self) -> Array<A, D>
+    fn linear_derivative(&self) -> Array<A::Output, D>
     where
-        A: One,
+        A: LinearActivation,
     {
-        self.activate(|_| A::one())
+        self.activate(|x| x.linear_derivative())
     }
 
-    fn heavyside(&self) -> Array<A, D>
+    fn heavyside(&self) -> Array<A::Output, D>
     where
-        A: One + PartialOrd + Zero,
+        A: Heavyside,
     {
-        self.activate(heavyside)
+        self.activate(|x| x.heavyside())
     }
 
-    fn relu(&self) -> Array<A, D>
+    fn heavyside_derivative(&self) -> Array<A::Output, D>
     where
-        A: PartialOrd + Zero,
+        A: Heavyside,
     {
-        self.activate(relu)
+        self.activate(|x| x.heavyside_derivative())
     }
 
-    fn relu_derivative(&self) -> Array<A, D>
+    fn relu(&self) -> Array<A::Output, D>
     where
-        A: PartialOrd + One + Zero,
+        A: ReLU,
     {
-        self.activate(relu_derivative)
+        self.activate(|x| x.relu())
+    }
+
+    fn relu_derivative(&self) -> Array<A::Output, D>
+    where
+        A: ReLU,
+    {
+        self.activate(|x| x.relu_derivative())
     }
     ///
-    fn sigmoid(&self) -> Array<A, D>
+    fn sigmoid(&self) -> Array<A::Output, D>
     where
-        A: Float,
+        A: Sigmoid,
     {
-        self.activate(sigmoid)
+        self.activate(|x| x.sigmoid())
     }
     ///
-    fn sigmoid_derivative(&self) -> Array<A, D>
+    fn sigmoid_derivative(&self) -> Array<A::Output, D>
     where
-        A: Float,
+        A: Sigmoid,
     {
-        self.activate(sigmoid_derivative)
+        self.activate(|x| x.sigmoid_derivative())
     }
-
-    fn sigmoid_complex(&self) -> Array<A, D>
-    where
-        A: ComplexFloat,
-    {
-        self.activate(|x| A::one() / (A::one() + (-x).exp()))
-    }
-    fn sigmoid_complex_derivative(&self) -> Array<A, D>
-    where
-        A: ComplexFloat,
-    {
-        self.activate(|x| {
-            let s = A::one() / (A::one() + (-x).exp());
-            s * (A::one() - s)
-        })
-    }
-
+    /// Softmax activation function
+    /// The softmax function is defined as:
+    /// $$ \sigma(x_i) = \frac{e^{x_i}}{\sum_{j=1}^{n} e^{x_j}} $$
     fn softmax(&self) -> Array<A, D>
     where
         A: ComplexFloat,
@@ -139,18 +139,51 @@ where
         &exp / &exp.sum_axis(axis)
     }
 
-    fn tanh(&self) -> Array<A, D>
+    fn tanh(&self) -> Array<A::Output, D>
     where
-        A: ComplexFloat,
+        A: Tanh,
     {
-        self.activate(A::tanh)
+        self.activate(|x| x.tanh())
     }
 
-    fn tanh_derivative(&self) -> Array<A, D>
+    fn tanh_derivative(&self) -> Array<A::Output, D>
+    where
+        A: Tanh,
+    {
+        self.activate(|x| x.tanh_derivative())
+    }
+
+    fn sigmoid_complex(&self) -> Array<A, D>
     where
         A: ComplexFloat,
     {
-        self.activate(|i| A::one() - A::tanh(i) * A::tanh(i))
+        self.activate(|x| A::one() / (A::one() + (-x).exp()))
+    }
+
+    fn sigmoid_complex_derivative(&self) -> Array<A, D>
+    where
+        A: ComplexFloat,
+    {
+        self.activate(|x| {
+            let s = A::one() / (A::one() + (-x).exp());
+            s * (A::one() - s)
+        })
+    }
+
+    fn tanh_complex(&self) -> Array<A, D>
+    where
+        A: ComplexFloat,
+    {
+        self.activate(|x| x.tanh())
+    }
+    fn tanh_complex_derivative(&self) -> Array<A, D>
+    where
+        A: ComplexFloat,
+    {
+        self.activate(|x| {
+            let s = x.tanh();
+            A::one() - s * s
+        })
     }
 }
 

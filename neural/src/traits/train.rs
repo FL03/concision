@@ -27,6 +27,6 @@ pub trait Train<X, Y> {
                 }
             }
         }
-        output.ok_or_else(|| crate::error::NeuralError::TrainingFailed("No output".into()))
+        output.ok_or_else(|| crate::error::NeuralError::training_failed().into())
     }
 }

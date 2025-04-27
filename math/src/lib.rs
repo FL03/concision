@@ -13,7 +13,8 @@
 //!
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use self::{error::*, traits::prelude::*, utils::prelude::*};
+#[doc(inline)]
+pub use self::{error::*, ops::prelude::*, traits::prelude::*, utils::prelude::*};
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -27,31 +28,49 @@ pub mod signal;
 pub mod stats;
 pub mod utils;
 
-pub mod traits {
+pub mod ops {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod num;
-    pub mod root;
     pub mod unary;
 
     pub(crate) mod prelude {
         #[doc(inline)]
-        pub use super::num::*;
+        pub use super::unary::*;
+    }
+}
+pub mod traits {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    #[cfg(feature = "complex")]
+    pub mod complex;
+    pub mod difference;
+    pub mod precision;
+    pub mod root;
+
+    pub(crate) mod prelude {
+        #[cfg(feature = "complex")]
+        #[doc(inline)]
+        pub use super::complex::*;
+        #[doc(inline)]
+        pub use super::difference::*;
+        #[doc(inline)]
+        pub use super::precision::*;
         #[doc(inline)]
         pub use super::root::*;
-        #[doc(inline)]
-        pub use super::unary::*;
     }
 }
 #[allow(unused_imports)]
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::error::*;
-    #[doc(hidden)]
+    #[doc(no_inline)]
     pub use crate::signal::prelude::*;
+    #[doc(no_inline)]
     pub use crate::stats::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::prelude::*;
+    #[doc(no_inline)]
     pub use crate::utils::prelude::*;
 }

@@ -4,7 +4,8 @@
 */
 use crate::ModelFeatures;
 use cnc::params::ParamsBase;
-use ndarray::{Dimension, Ix2, RawData};
+use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
+use num_traits::{Float, FromPrimitive, One, Zero};
 
 pub type ModelParams<A = f64, D = Ix2> = ModelParamsBase<ndarray::OwnedRepr<A>, D>;
 
@@ -134,7 +135,7 @@ where
     pub fn default(features: ModelFeatures) -> Self
     where
         A: Clone + Default,
-        S: ndarray::DataOwned,
+        S: DataOwned,
     {
         let input = ParamsBase::default(features.d_input());
         let hidden = (0..features.layers())
@@ -147,8 +148,8 @@ where
     /// all parameters are initialized to zero
     pub fn ones(features: ModelFeatures) -> Self
     where
-        A: Clone + num_traits::One,
-        S: ndarray::DataOwned,
+        A: Clone + One,
+        S: DataOwned,
     {
         let input = ParamsBase::ones(features.d_input());
         let hidden = (0..features.layers())
@@ -161,8 +162,8 @@ where
     /// all parameters are initialized to zero
     pub fn zeros(features: ModelFeatures) -> Self
     where
-        A: Clone + num_traits::Zero,
-        S: ndarray::DataOwned,
+        A: Clone + Zero,
+        S: DataOwned,
     {
         let input = ParamsBase::zeros(features.d_input());
         let hidden = (0..features.layers())
@@ -172,10 +173,58 @@ where
         Self::new(input, hidden, output)
     }
 
+    #[cfg(feature = "rand")]
+    pub fn init_rand<G, Ds>(features: ModelFeatures, distr: G) -> Self
+    where
+        G: Fn((usize, usize)) -> Ds,
+        Ds: Clone + cnc::init::rand_distr::Distribution<A>,
+        S: DataOwned,
+    {
+        use cnc::init::Initialize;
+        let input = ParamsBase::rand(features.d_input(), distr(features.d_input()));
+        let hidden = (0..features.layers())
+            .map(|_| ParamsBase::rand(features.d_hidden(), distr(features.d_hidden())))
+            .collect::<Vec<_>>();
+
+        let output = ParamsBase::rand(features.d_output(), distr(features.d_output()));
+
+        Self::new(input, hidden, output)
+    }
+
+    #[cfg(feature = "rand")]
+    pub fn glorot_normal(features: ModelFeatures) -> Self
+    where
+        cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
+        S: DataOwned,
+        S::Elem: Float + FromPrimitive,
+    {
+        Self::init_rand(features, |(rows, cols)| {
+            cnc::init::XavierNormal::new(rows, cols)
+        })
+    }
+
+    #[cfg(feature = "rand")]
+    pub fn glorot_uniform(features: ModelFeatures) -> Self
+    where
+        S: ndarray::DataOwned,
+        A: Clone
+            + num_traits::Float
+            + num_traits::FromPrimitive
+            + cnc::init::rand_distr::uniform::SampleUniform,
+        <S::Elem as cnc::init::rand_distr::uniform::SampleUniform>::Sampler: Clone,
+        cnc::init::rand_distr::Uniform<S::Elem>: cnc::init::rand_distr::Distribution<S::Elem>,
+    {
+        Self::init_rand(features, |(rows, cols)| {
+            cnc::init::XavierUniform::new(rows, cols).expect("failed to create distribution")
+        })
+    }
+
+    
+
     pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         A: Clone,
-        S: ndarray::Data,
+        S: Data,
         ParamsBase<S, Ix2>: cnc::Forward<X, Output = Y> + cnc::Forward<Y, Output = Y>,
     {
         let mut output = self.input.forward(input)?;
@@ -228,5 +277,41 @@ where
             "{{ input: {:?}, hidden: {:?}, output: {:?} }}",
             self.input, self.hidden, self.output
         )
+    }
+}
+
+impl<A, S, D> core::ops::Index<usize> for ModelParamsBase<S, D>
+where
+    A: Clone,
+    D: Dimension,
+    S: ndarray::Data<Elem = A>,
+{
+    type Output = ParamsBase<S, D>;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        if index == 0 {
+            &self.input
+        } else if index == self.hidden.len() + 1 {
+            &self.output
+        } else {
+            &self.hidden[index - 1]
+        }
+    }
+}
+
+impl<A, S, D> core::ops::IndexMut<usize> for ModelParamsBase<S, D>
+where
+    A: Clone,
+    D: Dimension,
+    S: ndarray::Data<Elem = A>,
+{
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        if index == 0 {
+            &mut self.input
+        } else if index == self.hidden.len() + 1 {
+            &mut self.output
+        } else {
+            &mut self.hidden[index - 1]
+        }
     }
 }
