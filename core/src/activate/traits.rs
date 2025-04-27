@@ -159,7 +159,7 @@ where
     {
         self.activate(|x| A::one() / (A::one() + (-x).exp()))
     }
-    
+
     fn sigmoid_complex_derivative(&self) -> Array<A, D>
     where
         A: ComplexFloat,

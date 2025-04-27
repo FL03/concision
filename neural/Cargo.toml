@@ -76,7 +76,7 @@ name = "attention"
 required-features = ["approx", "attention", "default", "rand"]
 
 [[test]]
-name = "dropout"
+name = "masks"
 required-features = ["rand"]
 
 [[test]]

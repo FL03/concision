@@ -1,0 +1,37 @@
+[package]
+authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"]
+description = "A simple model"
+edition = "2024"
+name = "simple"
+publish = false
+version = "0.1.0"
+
+[features]
+
+default = ["concision/std", "concision/neural"]
+
+full = ["concision/full"]
+
+
+blas = ["concision/blas"]
+
+rand = ["concision/rand", "ndarray/rand"]
+
+rayon = ["concision/rayon", "ndarray/rayon"]
+
+serde = ["concision/serde"]
+
+tracing = ["concision/tracing"]
+
+[lib]
+bench = false
+crate-type = ["cdylib"]
+doctest = false
+name = "simple-model"
+path = "model.rs"
+test = false
+
+[dependencies]
+concision = { features = ["neural", "std"], path = "../concision", version = "0.1.19" }
+ndarray = { version = "0.16" }
+num-traits = { default-features = false, version = "0.2" }

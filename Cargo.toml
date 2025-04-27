@@ -1,7 +1,7 @@
 [workspace]
 default-members = ["concision"]
 
-exclude = [".artifacts/**/*"]
+exclude = [".artifacts/**/*", "models/**/*"]
 
 members = ["concision", "core", "derive", "macros", "math", "neural"]
 
