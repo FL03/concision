@@ -17,14 +17,14 @@ keywords = ["data-science", "machine-learning", "scsys", "toolkit"]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
-version = "0.1.19"
+version = "0.1.20"
 
 [workspace.dependencies]
-concision-core = { default-features = false, path = "core", version = "0.1.19" }
-concision-derive = { default-features = false, path = "derive", version = "0.1.19" }
-concision-macros = { default-features = false, path = "macros", version = "0.1.19" }
-concision-math = { default-features = false, path = "math", version = "0.1.19" }
-concision-neural = { default-features = false, path = "neural", version = "0.1.19" }
+concision-core = { default-features = false, path = "core", version = "0.1.20" }
+concision-derive = { default-features = false, path = "derive", version = "0.1.20" }
+concision-macros = { default-features = false, path = "macros", version = "0.1.20" }
+concision-math = { default-features = false, path = "math", version = "0.1.20" }
+concision-neural = { default-features = false, path = "neural", version = "0.1.20" }
 
 scsys = { default-features = false, features = ["derive"], version = "0.2.3" }
 scsys-derive = { default-features = false, version = "0.2.3" }

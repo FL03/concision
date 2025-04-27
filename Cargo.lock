@@ -185,7 +185,7 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
 name = "concision"
-version = "0.1.19"
+version = "0.1.20"
 dependencies = [
  "anyhow",
  "approx",
@@ -203,7 +203,7 @@ dependencies = [
 
 [[package]]
 name = "concision-core"
-version = "0.1.19"
+version = "0.1.20"
 dependencies = [
  "anyhow",
  "approx",
@@ -230,7 +230,7 @@ dependencies = [
 
 [[package]]
 name = "concision-derive"
-version = "0.1.19"
+version = "0.1.20"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -239,7 +239,7 @@ dependencies = [
 
 [[package]]
 name = "concision-macros"
-version = "0.1.19"
+version = "0.1.20"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -248,7 +248,7 @@ dependencies = [
 
 [[package]]
 name = "concision-math"
-version = "0.1.19"
+version = "0.1.20"
 dependencies = [
  "approx",
  "getrandom 0.3.2",
@@ -270,7 +270,7 @@ dependencies = [
 
 [[package]]
 name = "concision-neural"
-version = "0.1.19"
+version = "0.1.20"
 dependencies = [
  "approx",
  "concision-core",
