@@ -17,8 +17,8 @@ pub(crate) mod prelude {
     pub use super::layer::*;
 }
 
-use cnc::{Activate, ActivateGradient, Backward, Forward, Tensor};
 use cnc::params::ParamsBase;
+use cnc::{Activate, ActivateGradient, Backward, Forward, Tensor};
 
 use ndarray::{Data, Dimension, RawData};
 
@@ -70,7 +70,8 @@ where
     }
 }
 
-
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Linear;
 
 impl<U> Activate<U> for Linear {
@@ -83,18 +84,17 @@ impl<U> Activate<U> for Linear {
 
 impl<U> ActivateGradient<U> for Linear
 where
-    U: num_traits::One,
+    U: cnc::LinearActivation,
 {
     type Input = U;
-    type Delta = U;
+    type Delta = U::Output;
 
     fn activate_gradient(&self, _inputs: U) -> Self::Delta {
-        U::one()
+        _inputs.linear_derivative()
     }
 }
 
-
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd,)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Sigmoid;
 
@@ -117,7 +117,6 @@ where
     type Delta = U::Output;
 
     fn activate_gradient(&self, x: U) -> Self::Delta {
-        
         cnc::Sigmoid::sigmoid(&x)
     }
 }
@@ -125,11 +124,12 @@ where
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Tanh;
+
 impl<U> Activate<U> for Tanh
 where
-    U: num_traits::Float,
+    U: cnc::Tanh,
 {
-    type Output = U;
+    type Output = U::Output;
 
     fn activate(&self, x: U) -> Self::Output {
         x.tanh()
@@ -137,13 +137,39 @@ where
 }
 impl<U> ActivateGradient<U> for Tanh
 where
-    U: num_traits::Float,
+    U: cnc::Tanh,
 {
     type Input = U;
-    type Delta = U;
+    type Delta = U::Output;
 
     fn activate_gradient(&self, inputs: U) -> Self::Delta {
-        let y = self.activate(inputs);
-        U::one() - y * y
+        inputs.tanh_derivative()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct ReLU;
+
+impl<U> Activate<U> for ReLU
+where
+    U: cnc::ReLU,
+{
+    type Output = U::Output;
+
+    fn activate(&self, x: U) -> Self::Output {
+        x.relu()
+    }
+}
+
+impl<U> ActivateGradient<U> for ReLU
+where
+    U: cnc::ReLU,
+{
+    type Input = U;
+    type Delta = U::Output;
+
+    fn activate_gradient(&self, inputs: U) -> Self::Delta {
+        inputs.relu_derivative()
     }
 }

@@ -36,9 +36,35 @@ where
     D: Dimension,
     S: RawData<Elem = f32>,
 {
-    pub fn linear(params: ParamsBase<S, D>) -> Self {
+    pub fn sigmoid(params: ParamsBase<S, D>) -> Self {
         Self {
             rho: super::Sigmoid,
+            params,
+        }
+    }
+}
+
+impl<S, D> LayerBase<super::Tanh, S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = f32>,
+{
+    pub fn tanh(params: ParamsBase<S, D>) -> Self {
+        Self {
+            rho: super::Tanh,
+            params,
+        }
+    }
+}
+
+impl<S, D> LayerBase<super::ReLU, S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = f32>,
+{
+    pub fn relu(params: ParamsBase<S, D>) -> Self {
+        Self {
+            rho: super::ReLU,
             params,
         }
     }
@@ -141,8 +167,9 @@ where
     }
 }
 
-impl<A, B, S, D> Layer<S, D> for LayerBase<Box<dyn Activate<A, Output = B> + 'static>, S, D>
+impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D>
 where
+    F: ActivateGradient<A>,
     D: Dimension,
     S: RawData<Elem = A>,
 {
