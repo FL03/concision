@@ -39,9 +39,10 @@ pub mod ops {
     }
 }
 
-pub mod traits {
-    #[doc(inline)]
-    pub use self::prelude::*;
+pub(crate) mod traits {
+    #[doc(inline)]    
+    #[allow(unused_imports)]
+    pub(crate) use self::prelude::*;
 
     #[cfg(feature = "complex")]
     pub mod complex;
@@ -62,10 +63,10 @@ pub mod traits {
     }
 }
 
-pub mod utils {
+pub(crate) mod utils {
     //! utilties supporting various mathematical routines for machine learning tasks.
-    #[doc(inline)]
-    pub use self::prelude::*;
+    #[allow(unused_imports)]
+    pub(crate) use self::prelude::*;
 
     pub mod activate;
     pub mod arith;
