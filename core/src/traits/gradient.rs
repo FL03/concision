@@ -3,60 +3,60 @@
     Contrib: @FL03
 */
 /// A trait declaring basic gradient-related routines for a neural network
-pub trait ApplyGradient<Delta> {
-    type Elem;
+pub trait ApplyGradient<Delta, T> {
     type Output;
 
-    fn apply_gradient(&mut self, grad: &Delta, lr: Self::Elem) -> crate::Result<Self::Output>;
+    fn apply_gradient(&mut self, grad: &Delta, lr: T) -> crate::Result<Self::Output>;
 
     fn apply_gradient_with_decay(
         &mut self,
         grad: &Delta,
-        lr: Self::Elem,
-        decay: Self::Elem,
+        lr: T,
+        decay: T,
     ) -> crate::Result<Self::Output>;
 }
 
 /// This trait extends the [ApplyGradient] trait by allowing for momentum-based optimization
-pub trait ApplyGradientExt<Delta>: ApplyGradient<Delta> {
+pub trait ApplyGradientExt<Delta, T>: ApplyGradient<Delta, T> {
     type Velocity;
 
     fn apply_gradient_with_momentum(
         &mut self,
         grad: &Delta,
-        lr: Self::Elem,
-        momentum: Self::Elem,
+        lr: T,
+        momentum: T,
         velocity: &mut Self::Velocity,
     ) -> crate::Result<Self::Output>;
 
     fn apply_gradient_with_decay_and_momentum(
         &mut self,
         grad: &Delta,
-        lr: Self::Elem,
-        decay: Self::Elem,
-        momentum: Self::Elem,
+        lr: T,
+        decay: T,
+        momentum: T,
         velocity: &mut Self::Velocity,
     ) -> crate::Result<Self::Output>;
 }
 
-use ndarray::{ArrayBase, Dimension, ScalarOperand};
+/*
+ ************* Implementations *************
+*/
+
+use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand, ShapeError};
 use num_traits::{Float, FromPrimitive};
 
-impl<A, S, T, D> ApplyGradient<ArrayBase<T, D>> for ArrayBase<S, D>
+impl<A, S, T, D> ApplyGradient<ArrayBase<T, D>, A> for ArrayBase<S, D>
 where
     A: Float + FromPrimitive + ScalarOperand,
-    S: ndarray::DataMut<Elem = A>,
-    T: ndarray::Data<Elem = A>,
+    S: DataMut<Elem = A>,
+    T: Data<Elem = A>,
     D: Dimension,
 {
-    type Elem = A;
     type Output = ();
 
     fn apply_gradient(&mut self, grad: &ArrayBase<T, D>, lr: A) -> crate::Result<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(
-                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
-            );
+            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
         }
         let batch_size = if grad.shape().len() > 0 {
             A::from_usize(self.shape()[0]).unwrap()
@@ -74,9 +74,7 @@ where
         decay: A,
     ) -> crate::Result<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(
-                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
-            );
+            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
         }
         let batch_size = if grad.shape().len() > 0 {
             A::from_usize(self.shape()[0]).unwrap()
@@ -87,14 +85,15 @@ where
         Ok(())
     }
 }
-impl<A, S, T, D> ApplyGradientExt<ArrayBase<T, D>> for ArrayBase<S, D>
+
+impl<A, S, T, D> ApplyGradientExt<ArrayBase<T, D>, A> for ArrayBase<S, D>
 where
     A: Float + FromPrimitive + ScalarOperand,
-    S: ndarray::DataMut<Elem = A>,
-    T: ndarray::Data<Elem = A>,
+    S: DataMut<Elem = A>,
+    T: Data<Elem = A>,
     D: Dimension,
 {
-    type Velocity = ndarray::Array<A, D>;
+    type Velocity = Array<A, D>;
 
     fn apply_gradient_with_momentum(
         &mut self,
@@ -104,9 +103,7 @@ where
         velocity: &mut Self::Velocity,
     ) -> crate::Result<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(
-                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
-            );
+            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
         }
         let batch_size = if grad.shape().len() > 0 {
             A::from_usize(self.shape()[0]).unwrap()

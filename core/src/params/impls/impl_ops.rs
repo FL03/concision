@@ -32,9 +32,9 @@ where
     pub fn apply_gradient<Delta, Z>(&mut self, grad: &Delta, lr: A) -> crate::Result<Z>
     where
         S: DataMut,
-        Self: ApplyGradient<Delta, Elem = A, Output = Z>,
+        Self: ApplyGradient<Delta, A, Output = Z>,
     {
-        <Self as ApplyGradient<Delta>>::apply_gradient(self, grad, lr)
+        <Self as ApplyGradient<Delta, A>>::apply_gradient(self, grad, lr)
     }
 
     pub fn apply_gradient_with_decay<Grad, Z>(
@@ -45,9 +45,9 @@ where
     ) -> crate::Result<Z>
     where
         S: DataMut,
-        Self: ApplyGradient<Grad, Elem = A, Output = Z>,
+        Self: ApplyGradient<Grad, A, Output = Z>,
     {
-        <Self as ApplyGradient<Grad>>::apply_gradient_with_decay(self, grad, lr, decay)
+        <Self as ApplyGradient<Grad, A>>::apply_gradient_with_decay(self, grad, lr, decay)
     }
 
     pub fn apply_gradient_with_momentum<Grad, V, Z>(
@@ -59,9 +59,9 @@ where
     ) -> crate::Result<Z>
     where
         S: DataMut,
-        Self: ApplyGradientExt<Grad, Elem = A, Output = Z, Velocity = V>,
+        Self: ApplyGradientExt<Grad, A, Output = Z, Velocity = V>,
     {
-        <Self as ApplyGradientExt<Grad>>::apply_gradient_with_momentum(
+        <Self as ApplyGradientExt<Grad, A>>::apply_gradient_with_momentum(
             self, grad, lr, momentum, velocity,
         )
     }
@@ -76,22 +76,21 @@ where
     ) -> crate::Result<Z>
     where
         S: DataMut,
-        Self: ApplyGradientExt<Grad, Elem = A, Output = Z, Velocity = V>,
+        Self: ApplyGradientExt<Grad, A, Output = Z, Velocity = V>,
     {
-        <Self as ApplyGradientExt<Grad>>::apply_gradient_with_decay_and_momentum(
+        <Self as ApplyGradientExt<Grad, A>>::apply_gradient_with_decay_and_momentum(
             self, grad, lr, decay, momentum, velocity,
         )
     }
 }
 
-impl<A, S, T, D> ApplyGradient<ParamsBase<T, D>> for ParamsBase<S, D>
+impl<A, S, T, D> ApplyGradient<ParamsBase<T, D>, A> for ParamsBase<S, D>
 where
     A: Float + FromPrimitive + ScalarOperand,
     S: DataMut<Elem = A>,
     T: Data<Elem = A>,
     D: Dimension,
 {
-    type Elem = A;
     type Output = ();
 
     fn apply_gradient(&mut self, grad: &ParamsBase<T, D>, lr: A) -> crate::Result<Self::Output> {
@@ -118,7 +117,7 @@ where
     }
 }
 
-impl<A, S, T, D> ApplyGradientExt<ParamsBase<T, D>> for ParamsBase<S, D>
+impl<A, S, T, D> ApplyGradientExt<ParamsBase<T, D>, A> for ParamsBase<S, D>
 where
     A: Float + FromPrimitive + ScalarOperand,
     S: DataMut<Elem = A>,

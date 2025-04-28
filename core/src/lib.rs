@@ -62,10 +62,9 @@ pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod activate;
-    pub mod apply;
     pub mod clip;
     pub mod entropy;
+    pub mod gradient;
     pub mod init;
     pub mod like;
     pub mod mask;
@@ -76,13 +75,11 @@ pub mod traits {
 
     pub(crate) mod prelude {
         #[doc(inline)]
-        pub use super::activate::*;
-        #[doc(inline)]
-        pub use super::apply::*;
-        #[doc(inline)]
         pub use super::clip::*;
         #[doc(inline)]
         pub use super::entropy::*;
+        #[doc(inline)]
+        pub use super::gradient::*;
         #[doc(inline)]
         pub use super::init::*;
         #[doc(inline)]
