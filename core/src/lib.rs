@@ -100,14 +100,9 @@ pub mod traits {
     }
 }
 
-pub mod types {
-    // #[doc(inline)]
-    // pub use self::features::*;
-
-    // pub(crate) mod features;
-}
-
 pub mod prelude {
+    #[doc(inline)]
+    pub use concision_utils::prelude::*;
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
     #[doc(no_inline)]
@@ -123,6 +118,4 @@ pub mod prelude {
     pub use crate::params::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::prelude::*;
-    #[doc(inline)]
-    pub use concision_utils::prelude::*;
 }

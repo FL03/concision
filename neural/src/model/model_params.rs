@@ -124,6 +124,19 @@ where
     pub fn dim_output(&self) -> <D as Dimension>::Pattern {
         self.output.dim()
     }
+
+    pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
+    where
+        A: Clone,
+        S: Data,
+        ParamsBase<S, D>: cnc::Forward<X, Output = Y> + cnc::Forward<Y, Output = Y>,
+    {
+        let mut output = self.input().forward(input)?;
+        for layer in self.hidden() {
+            output = layer.forward(&output)?;
+        }
+        self.output().forward(&output)
+    }
 }
 
 impl<A, S> ModelParamsBase<S>
@@ -219,18 +232,7 @@ where
         })
     }
 
-    pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
-    where
-        A: Clone,
-        S: Data,
-        ParamsBase<S, Ix2>: cnc::Forward<X, Output = Y> + cnc::Forward<Y, Output = Y>,
-    {
-        let mut output = self.input.forward(input)?;
-        for layer in &self.hidden {
-            output = layer.forward(&output)?;
-        }
-        self.output.forward(&output)
-    }
+
 }
 
 impl<A, S, D> Clone for ModelParamsBase<S, D>
