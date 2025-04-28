@@ -65,6 +65,7 @@ pub mod traits {
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::error::*;
+    #[cfg(feature = "signal")]
     #[doc(no_inline)]
     pub use crate::signal::prelude::*;
     #[doc(no_inline)]
