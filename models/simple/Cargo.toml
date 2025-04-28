@@ -1,37 +1,42 @@
 [package]
-authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"]
-description = "A simple model"
-edition = "2024"
-name = "simple"
-publish = false
+name = "simple-model"
 version = "0.1.0"
 
-[features]
-
-default = ["concision/std", "concision/neural"]
-
-full = ["concision/full"]
-
-
-blas = ["concision/blas"]
-
-rand = ["concision/rand", "ndarray/rand"]
-
-rayon = ["concision/rayon", "ndarray/rayon"]
-
-serde = ["concision/serde"]
-
-tracing = ["concision/tracing"]
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
 
 [lib]
-bench = false
-crate-type = ["cdylib"]
-doctest = false
-name = "simple-model"
-path = "model.rs"
-test = false
+crate-type = ["cdylib", "rlib"]
+name = "simple"
+
+[features]
+default = ["concision/neural", "concision/std"]
+
+full = ["rand", "serde", "tracing"]
+
+# ********* [FF] Dependencies *********
+blas = ["concision-core/blas", "concision-neural/blas", "ndarray/blas"]
+
+rand = ["concision-core/rand", "concision-neural/rand", "ndarray/rand"]
+
+rayon = ["concision-core/rayon", "concision-neural/rayon", "ndarray/rayon"]
+
+serde = ["concision-core/serde", "concision-neural/serde"]
+
+tracing = ["concision-core/tracing", "concision-neural/tracing"]
+
+
 
 [dependencies]
-concision = { features = ["neural", "std"], path = "../concision", version = "0.1.19" }
-ndarray = { version = "0.16" }
-num-traits = { default-features = false, version = "0.2" }
+concision-core = { features = ["std"], workspace = true }
+concision-neural = { workspace = true }
+
+ndarray = { features = ["std"], workspace = true }
+num-traits = { workspace = true  }

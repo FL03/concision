@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use super::FftPlan;
-use crate::AsComplex;
+use crate::traits::AsComplex;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::{Float, FloatConst, NumAssignOps, NumCast, NumOps};
 

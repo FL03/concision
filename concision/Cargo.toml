@@ -71,6 +71,8 @@ concision-macros = { optional = true, workspace = true }
 concision-neural = { optional = true, workspace = true }
 
 [dev-dependencies]
+# concision-models = { features = ["simple"], workspace = true }
+
 anyhow = { workspace = true }
 approx = { workspace = true }
 criterion = { version = "0.5" }

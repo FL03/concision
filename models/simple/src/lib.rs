@@ -1,9 +1,11 @@
 
-extern crate concision as cnc;
-use cnc::nn::model::{Model, ModelFeatures, ModelParams, StandardModelConfig};
-use cnc::activate::{ReLU, Sigmoid};
-use cnc::{Backward, Forward, Params};
-use ndarray::{Array1, Array2, ScalarOperand};
+extern crate concision_core as cnc;
+
+use concision_core::activate::{ReLU, Sigmoid};
+use concision_core::{Backward, Forward, Params};
+use concision_neural::model::{Model, ModelFeatures, ModelParams, StandardModelConfig};
+
+use ndarray::{Array1, Array2, ScalarOperand, ShapeError};
 use num_traits::Float;
 
 pub struct SimpleModel<T = f64> {
@@ -41,7 +43,6 @@ where
         delta: &Array1<T>,
         gamma: T,
     ) -> cnc::Result<Self::Output> {
-        use cnc::activate::{ReLU, Sigmoid};
         let mut loss = T::zero();
         let mut history = Vec::new();
 
@@ -81,7 +82,7 @@ where
 
 impl<T> Backward<Array2<T>, Array2<T>> for SimpleModel<T>
 where
-    T: Float + ndarray::ScalarOperand + core::ops::AddAssign,
+    T: Float + ScalarOperand + core::ops::AddAssign,
     Params<T>: Backward<Array1<T>, Array1<T>, Elem = T, Output = T>
         + Forward<Array1<T>, Output = Array1<T>>,
 {
@@ -96,7 +97,7 @@ where
     ) -> cnc::Result<Self::Output> {
         if input.nrows() != delta.nrows() {
             return Err(
-                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
+                ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
             );
         }
 
