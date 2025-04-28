@@ -5,10 +5,10 @@
 
 
 #[cfg(feature = "simple")]
-pub mod simple;
+pub use simple as simple;
 
 
-pub mod prelude [
+pub mod prelude {
     #[cfg(feature = "simple")]
-    pub use simple::prelude::*;
-]
+    pub use simple::SimpleModel;
+}

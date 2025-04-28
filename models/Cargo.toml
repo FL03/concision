@@ -19,7 +19,7 @@ doctest = false
 test = true
 
 [features]
-default = []
+default = ["simple"]
 
 simple = ["dep:simple-model"]
 
@@ -34,4 +34,4 @@ serde = ["simple-model?/serde"]
 tracing = ["simple-model?/tracing"]
 
 [dependencies]
-simple-model = { optional = true, path = "../simple", version = "0.1.0" }
+simple-model = { optional = true, path = "simple", version = "0.1.0" }

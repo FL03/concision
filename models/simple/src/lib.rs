@@ -3,7 +3,8 @@ extern crate concision_core as cnc;
 
 use concision_core::activate::{ReLU, Sigmoid};
 use concision_core::{Backward, Forward, Params};
-use concision_neural::model::{Model, ModelFeatures, ModelParams, StandardModelConfig};
+use concision_neural::model::{Model, ModelParams, StandardModelConfig};
+use concision_neural::ModelFeatures;
 
 use ndarray::{Array1, Array2, ScalarOperand, ShapeError};
 use num_traits::Float;
