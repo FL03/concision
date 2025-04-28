@@ -106,6 +106,7 @@ where
     }
 }
 
+/// implement the [`Predict`] trait for the [SimpleModel] to define a forward pass on 1D input
 impl<A> Predict<Array1<A>> for SimpleModel<A>
 where
     A: Float + FromPrimitive + ScalarOperand,
@@ -146,7 +147,7 @@ where
         Ok((prediction, confidence))
     }
 }
-
+/// implement the [`Predict`] trait for the [SimpleModel] to define a forward pass on 2D input
 impl<A> Predict<Array2<A>> for SimpleModel<A>
 where
     A: Float + FromPrimitive + ScalarOperand,

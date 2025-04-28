@@ -19,11 +19,11 @@ pub(crate) mod prelude {
 }
 
 use crate::{ModelFeatures, NetworkConfig, Predict, Train};
-use concision_data::Dataset;
+use concision_data::DatasetBase;
 
 /// The base interface for all models; each model provides access to a configuration object
-/// defined as the associated type [`Config`](Model::Config). The configuration object is used 
-/// to provide hyperparameters and other control related parameters. In addition, the model's 
+/// defined as the associated type [`Config`](Model::Config). The configuration object is used
+/// to provide hyperparameters and other control related parameters. In addition, the model's
 /// layout is defined by the [`features`](Model::features) method which aptly returns a copy of
 /// its [ModelFeatures] object.
 pub trait Model<T = f32> {
@@ -57,7 +57,7 @@ pub trait Model<T = f32> {
     }
     /// a convience method that trains the model using the provided dataset; this method
     /// requires that the model implements the [`Train`] trait and that the dataset
-    fn train<U, V, W>(&mut self, dataset: &Dataset<U, V>) -> crate::NeuralResult<W>
+    fn train<U, V, W>(&mut self, dataset: &DatasetBase<U, V>) -> crate::NeuralResult<W>
     where
         Self: Train<U, V, Output = W>,
     {
@@ -66,7 +66,10 @@ pub trait Model<T = f32> {
     /// returns a model trainer prepared to train the model; this is a convenience method
     /// that creates a new trainer instance and returns it. Trainers are lazily evaluated
     /// meaning that the training process won't begin until the user calls the `begin` method.
-    fn trainer<U, V>(&mut self, dataset: Dataset<U, V>) -> Trainer<'_, Self, T, Dataset<U, V>>
+    fn trainer<U, V>(
+        &mut self,
+        dataset: DatasetBase<U, V>,
+    ) -> Trainer<'_, Self, T, DatasetBase<U, V>>
     where
         Self: Sized,
         T: Default,

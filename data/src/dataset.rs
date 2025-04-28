@@ -4,14 +4,16 @@
 */
 use super::Records;
 
+/// A dataset is a collection of records and targets along with various other attributes useful
+/// for machine learning tasks
 #[derive(Clone, Copy, Default, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Dataset<U, V> {
+pub struct DatasetBase<U, V> {
     pub records: U,
     pub targets: V,
 }
 
-impl<U, V> Dataset<U, V> {
+impl<U, V> DatasetBase<U, V> {
     pub fn new(records: U, targets: V) -> Self {
         Self { records, targets }
     }
@@ -33,7 +35,7 @@ impl<U, V> Dataset<U, V> {
     }
 }
 
-impl<U, V> core::fmt::Display for Dataset<U, V>
+impl<U, V> core::fmt::Display for DatasetBase<U, V>
 where
     U: core::fmt::Display,
     V: core::fmt::Display,
@@ -47,7 +49,7 @@ where
     }
 }
 
-impl<U, V> Records for Dataset<U, V> {
+impl<U, V> Records for DatasetBase<U, V> {
     type Inputs = U;
     type Targets = V;
 

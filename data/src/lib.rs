@@ -10,7 +10,7 @@
 extern crate alloc;
 
 #[doc(inline)]
-pub use self::{dataset::Dataset, traits::prelude::*};
+pub use self::{dataset::DatasetBase, traits::prelude::*};
 
 pub mod dataset;
 #[cfg(feature = "loader")]
