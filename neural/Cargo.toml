@@ -24,7 +24,7 @@ approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
 
 blas = ["concision-core/blas", "ndarray/blas"]
 
-complex = ["concision-core/complex", "num/complex", "dep:num-complex"]
+complex = ["concision-core/complex", "dep:num-complex"]
 
 json = ["concision-core/json", "dep:serde_json", "serde_json?/alloc"]
 
