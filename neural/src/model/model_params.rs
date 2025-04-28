@@ -231,8 +231,6 @@ where
             cnc::init::XavierUniform::new(rows, cols).expect("failed to create distribution")
         })
     }
-
-
 }
 
 impl<A, S, D> Clone for ModelParamsBase<S, D>

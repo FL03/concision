@@ -4,24 +4,26 @@
 */
 extern crate concision as cnc;
 
-use cnc::prelude::ModelFeatures;
+use cnc::init::Initialize;
+use cnc::params::Params;
 
 use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {
-    println!("Welcome to concision!");
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .with_target(false)
+        .init();
+    tracing::info!("Initializing basic example...");
+    let (m, n) = (8, 9);
+    // initialize a 2-dimensional parameter set with 8 samples and 9 features
+    let mut params = Params::<f64>::default((m, n));
+    // validate the shape of the parameters
+    assert_eq!(params.weights().shape(), &[m, n]);
+    assert_eq!(params.bias().shape(), &[n]);
+    // initialize the parameters with random values
+    params.assign_weights(&Array2::glorot_normal((m, n), m, n));
+    params.assign_bias(&Array1::glorot_normal((n,), n, m));
 
-    let features = ModelFeatures::default();
-    println!("Features: {:?}", features);
-
-    Ok(())
-}
-
-pub fn sample_padding(samples: usize) -> anyhow::Result<()> {
-    use cnc::ops::pad;
-    let arr = Array::range(0.0, (samples * samples) as f64, 1.0);
-    let arr = arr.to_shape((samples, samples))?;
-    let padded = pad(&arr, &[[0, 8]], 0.0.into());
-    println!("{:?}", &padded);
     Ok(())
 }

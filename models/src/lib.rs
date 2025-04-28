@@ -4,9 +4,11 @@
 */
 
 #[cfg(feature = "simple")]
-pub use simple;
+pub mod simple;
+#[cfg(feature = "transformer")]
+pub use transformer;
 
 pub mod prelude {
     #[cfg(feature = "simple")]
-    pub use simple::SimpleModel;
+    pub use crate::simple::SimpleModel;
 }

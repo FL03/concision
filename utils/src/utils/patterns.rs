@@ -2,6 +2,8 @@
     Appellation: similarity <module>
     Contrib: @FL03
 */
+#[cfg(feature = "alloc")]
+use alloc::vec::Vec;
 use num_traits::{Float, FromPrimitive};
 
 /// Calculate similarity between two patterns
@@ -24,6 +26,19 @@ where
     let max_diff = T::from_usize(pattern1.len() * 3).unwrap();
     T::one() - (total_diff / max_diff)
 }
+/// Check if two patterns are similar enough to be considered duplicates
+pub fn is_similar_pattern<T>(pattern1: &[[T; 3]], pattern2: &[[T; 3]]) -> bool
+where
+    T: core::iter::Sum + Float + FromPrimitive,
+{
+    if pattern1.len() != pattern2.len() {
+        return false;
+    }
+
+    calculate_pattern_similarity(pattern1, pattern2) > T::from_f32(0.9).unwrap()
+}
+
+#[cfg(feature = "alloc")]
 /// Extract common patterns from historical sequences
 pub fn extract_patterns<T>(history: &[Vec<[T; 3]>], min_length: usize) -> Vec<Vec<[T; 3]>>
 where
@@ -114,16 +129,4 @@ where
     }
 
     unique_patterns
-}
-
-/// Check if two patterns are similar enough to be considered duplicates
-pub fn is_similar_pattern<T>(pattern1: &[[T; 3]], pattern2: &[[T; 3]]) -> bool
-where
-    T: core::iter::Sum + Float + FromPrimitive,
-{
-    if pattern1.len() != pattern2.len() {
-        return false;
-    }
-
-    calculate_pattern_similarity(pattern1, pattern2) > T::from_f32(0.9).unwrap()
 }

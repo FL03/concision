@@ -97,6 +97,41 @@ where
     pub fn weights_mut(&mut self) -> &mut ArrayBase<S, D> {
         &mut self.weights
     }
+
+    /// assign the bias
+    pub fn assign_bias(&mut self, bias: &ArrayBase<S, D::Smaller>) -> &mut Self
+    where
+        A: Clone,
+        S: DataMut,
+    {
+        self.bias_mut().assign(&bias);
+        self
+    }
+    /// assign the weights
+    pub fn assign_weights(&mut self, weights: &ArrayBase<S, D>) -> &mut Self
+    where
+        A: Clone,
+        S: DataMut,
+    {
+        self.weights_mut().assign(&weights);
+        self
+    }
+    /// replace the bias and return the previous state; uses [replace](core::mem::replace)
+    pub fn replace_bias(&mut self, bias: ArrayBase<S, D::Smaller>) -> ArrayBase<S, D::Smaller> {
+        core::mem::replace(&mut self.bias, bias)
+    }
+    /// replace the weights and return the previous state; uses [replace](core::mem::replace)
+    pub fn replace_weights(&mut self, weights: ArrayBase<S, D>) -> ArrayBase<S, D> {
+        core::mem::replace(&mut self.weights, weights)
+    }
+    /// set the bias
+    pub fn set_bias(&mut self, bias: ArrayBase<S, D::Smaller>) {
+        *self.bias_mut() = bias;
+    }
+    /// set the weights
+    pub fn set_weights(&mut self, weights: ArrayBase<S, D>) {
+        *self.weights_mut() = weights;
+    }
     /// perform a single backpropagation step
     pub fn backward<X, Y, Z>(&mut self, input: &X, grad: &Y, lr: A) -> crate::Result<Z>
     where

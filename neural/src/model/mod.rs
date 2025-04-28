@@ -18,11 +18,14 @@ pub(crate) mod prelude {
     pub use super::trainer::*;
 }
 
-use crate::{ModelFeatures, NetworkConfig, Train};
-use cnc::Dataset;
+use crate::{ModelFeatures, NetworkConfig, Predict, Train};
+use concision_data::Dataset;
 
-/// This trait defines the base interface for all models, providing access to the models
-/// configuration, layout, and learned parameters.
+/// The base interface for all models; each model provides access to a configuration object
+/// defined as the associated type [`Config`](Model::Config). The configuration object is used 
+/// to provide hyperparameters and other control related parameters. In addition, the model's 
+/// layout is defined by the [`features`](Model::features) method which aptly returns a copy of
+/// its [ModelFeatures] object.
 pub trait Model<T = f32> {
     /// The configuration type for the model
     type Config: NetworkConfig<T>;
@@ -46,19 +49,11 @@ pub trait Model<T = f32> {
     /// By default, the trait simply passes each output from one layer to the next, however,
     /// custom models will likely override this method to inject activation methods and other
     /// related logic
-    fn predict<U, V>(&self, inputs: &U) -> cnc::Result<V>
+    fn predict<U, V>(&self, inputs: &U) -> crate::NeuralResult<V>
     where
-        Self: cnc::Forward<U, Output = V>,
+        Self: Predict<U, Output = V>,
     {
-        <Self as cnc::Forward<U>>::forward(self, inputs)
-    }
-    #[doc(hidden)]
-    #[deprecated(since = "0.1.17", note = "use predict instead")]
-    fn forward<U, V>(&self, inputs: &U) -> cnc::Result<V>
-    where
-        Self: cnc::Forward<U, Output = V>,
-    {
-        <Self as cnc::Forward<U>>::forward(self, inputs)
+        Predict::predict(self, inputs)
     }
     /// a convience method that trains the model using the provided dataset; this method
     /// requires that the model implements the [`Train`] trait and that the dataset
@@ -66,7 +61,7 @@ pub trait Model<T = f32> {
     where
         Self: Train<U, V, Output = W>,
     {
-        <Self as Train<U, V>>::train(self, dataset.records(), dataset.targets())
+        Train::train(self, dataset.records(), dataset.targets())
     }
     /// returns a model trainer prepared to train the model; this is a convenience method
     /// that creates a new trainer instance and returns it. Trainers are lazily evaluated
@@ -77,5 +72,14 @@ pub trait Model<T = f32> {
         T: Default,
     {
         Trainer::new(self, dataset)
+    }
+
+    #[doc(hidden)]
+    #[deprecated(since = "0.1.17", note = "use predict instead")]
+    fn forward<U, V>(&self, inputs: &U) -> cnc::Result<V>
+    where
+        Self: cnc::Forward<U, Output = V>,
+    {
+        <Self as cnc::Forward<U>>::forward(self, inputs)
     }
 }

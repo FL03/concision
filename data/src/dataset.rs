@@ -16,9 +16,20 @@ impl<U, V> Dataset<U, V> {
         Self { records, targets }
     }
 
-    gsw! {
-        records: &U,
-        targets: &V,
+    pub const fn records(&self) -> &U {
+        &self.records
+    }
+    #[inline]
+    pub const fn records_mut(&mut self) -> &mut U {
+        &mut self.records
+    }
+
+    pub const fn targets(&self) -> &V {
+        &self.targets
+    }
+    #[inline]
+    pub const fn targets_mut(&mut self) -> &mut V {
+        &mut self.targets
     }
 }
 

@@ -4,7 +4,7 @@
 */
 
 use crate::Model;
-use cnc::data::{Dataset, IntoDataset, Records};
+use concision_data::{Dataset, IntoDataset, Records};
 
 pub struct Trainer<'a, M, T, R>
 where

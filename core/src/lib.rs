@@ -21,7 +21,7 @@ pub use concision_utils as utils;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, data::Dataset, error::*, ops::prelude::*, params::prelude::*,
+    activate::prelude::*, error::*, loss::prelude::*, ops::prelude::*, params::prelude::*,
     traits::prelude::*, utils::prelude::*,
 };
 
@@ -33,9 +33,9 @@ pub(crate) mod macros;
 pub(crate) mod seal;
 
 pub mod activate;
-pub mod data;
 pub mod error;
 pub mod init;
+pub mod loss;
 pub mod params;
 
 pub mod ops {
@@ -63,7 +63,7 @@ pub mod traits {
     pub use self::prelude::*;
 
     pub mod clip;
-    pub mod entropy;
+    pub mod codex;
     pub mod gradient;
     pub mod init;
     pub mod like;
@@ -77,7 +77,7 @@ pub mod traits {
         #[doc(inline)]
         pub use super::clip::*;
         #[doc(inline)]
-        pub use super::entropy::*;
+        pub use super::codex::*;
         #[doc(inline)]
         pub use super::gradient::*;
         #[doc(inline)]
@@ -98,21 +98,21 @@ pub mod traits {
 }
 
 pub mod prelude {
-    #[doc(inline)]
-    pub use concision_utils::prelude::*;
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::data::prelude::*;
     #[doc(no_inline)]
     pub use crate::error::*;
     #[cfg(feature = "rand")]
     #[doc(no_inline)]
     pub use crate::init::prelude::*;
     #[doc(no_inline)]
+    pub use crate::loss::prelude::*;
+    #[doc(no_inline)]
     pub use crate::ops::prelude::*;
     #[doc(no_inline)]
     pub use crate::params::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::prelude::*;
+    #[doc(inline)]
+    pub use concision_utils::prelude::*;
 }

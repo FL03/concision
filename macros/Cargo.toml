@@ -1,5 +1,4 @@
 [package]
-build = "build.rs"
 name = "concision-macros"
 
 authors.workspace = true
@@ -13,21 +12,14 @@ readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
-[features]
-default = [
-    "std"
-]
-
-alloc = []
-
-std = [
-    "alloc"
-]
 
 [lib]
 bench = false
 proc-macro = true
 test = false
+
+[features]
+default = []
 
 [dependencies]
 proc-macro2 = "1"
@@ -37,7 +29,3 @@ syn = { features = ["full"], version = "2" }
 [package.metadata.docs.rs]
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
-
-[target.wasm32-unknown-unknown]
-
-[target.wasm32-wasi]

@@ -118,6 +118,7 @@ std = [
     "serde/std",
     "strum/std",
     "thiserror/std",
+    "tracing?/std",
 ]
 
 [lib]

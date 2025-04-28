@@ -1,0 +1,127 @@
+[package]
+build = "build.rs"
+name = "concision-data"
+
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["std"]
+
+full = [
+    "anyhow",
+    "approx",
+    "complex",
+    "default",
+    "json",
+    "rand",
+    "serde",
+    "tracing",
+]
+
+loader = ["json", "reqwest"]
+
+
+# ********* [FF] Dependencies *********
+alloc = [
+    "concision-core/alloc",
+    "num/alloc",
+    "serde?/alloc"
+]
+
+anyhow = ["dep:anyhow", "concision-core/anyhow"]
+
+approx = [
+    "concision-core/approx",
+    "dep:approx",
+    "ndarray/approx",
+]
+
+blas = [
+    "concision-core/blas",
+    "ndarray/blas",
+]
+
+complex = [
+    "dep:num-complex",
+    "concision-core/complex",
+]
+
+json = [
+    "alloc",
+    "dep:serde_json",
+    "concision-core/json",
+    "reqwest?/json",
+]
+
+rayon = [
+    "concision-core/rayon",
+    "dep:rayon",
+]
+
+rand = ["concision-core/rand", "rng"]
+
+rng = ["concision-core/rng"]
+
+reqwest = [
+    "dep:reqwest",
+]
+
+serde = [
+    "dep:serde",
+    "concision-core/serde",
+    "ndarray/serde",
+    "num/serde",
+    "num-complex?/serde",
+]
+
+tracing = [
+    "concision-core/tracing",
+    "dep:tracing",
+]
+
+std = [
+    "alloc",
+    "concision-core/std",
+    "ndarray/std",
+    "num/std",
+    "num-complex?/std",
+    "serde?/std",
+    "serde_json?/std",
+    "tracing?/std",
+]
+
+[dependencies]
+concision-core = { workspace = true }
+
+anyhow = { optional = true, workspace = true }
+approx = { optional = true, workspace = true }
+ndarray = { workspace = true }
+num = { workspace = true }
+num-traits = { workspace = true }
+num-complex = { optional = true, workspace = true }
+rayon = { optional = true, workspace = true }
+reqwest = { optional = true, workspace = true }
+serde = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
+thiserror = { workspace = true }
+tracing = { optional = true, workspace = true }
+
+
+[[test]]
+name = "default"
+
+[[test]]
+name = "loader"
+required-features = ["loader"]

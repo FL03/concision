@@ -113,6 +113,8 @@ pub(crate) mod generators {
 }
 
 pub(crate) mod stack {
+    #[cfg(feature = "alloc")]
+    use alloc::vec::Vec;
     use ndarray::{Array1, Array2, s};
     use num_traits::Num;
     /// Creates a larger array from an iterator of smaller arrays.
@@ -130,6 +132,7 @@ pub(crate) mod stack {
         }
         res
     }
+    #[cfg(feature = "alloc")]
     ///
     pub fn hstack<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
     where
@@ -142,6 +145,8 @@ pub(crate) mod stack {
         }
         res
     }
+    #[cfg(feature = "alloc")]
+
     ///
     pub fn vstack<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
     where

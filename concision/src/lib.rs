@@ -19,13 +19,17 @@
 //! - **Visualization**: Utilities for visualizing model architectures and training progress
 //! - **WASM**: Native support for WebAssembly enabling models to be run in web browsers.
 //!
-#![allow(unused_imports)]
 #![crate_name = "concision"]
 
 #[doc(inline)]
 pub use concision_core::*;
+#[doc(inline)]
+#[cfg(feature = "data")]
+pub use concision_data as data;
+#[doc(inline)]
 #[cfg(feature = "derive")]
 pub use concision_derive::*;
+#[doc(inline)]
 #[cfg(feature = "macros")]
 pub use concision_macros::*;
 #[doc(inline)]
@@ -33,11 +37,18 @@ pub use concision_macros::*;
 pub use concision_neural as nn;
 
 pub mod prelude {
+    #[doc(inline)]
     pub use concision_core::prelude::*;
+    #[doc(inline)]
+    #[cfg(feature = "data")]
+    pub use concision_data::prelude::*;
+    #[doc(inline)]
     #[cfg(feature = "derive")]
     pub use concision_derive::*;
+    #[doc(inline)]
     #[cfg(feature = "macros")]
     pub use concision_macros::*;
+    #[doc(inline)]
     #[cfg(feature = "neural")]
     pub use concision_neural::prelude::*;
 }

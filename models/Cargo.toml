@@ -1,5 +1,6 @@
 [package]
 name = "concision-models"
+publish = false
 
 authors.workspace = true
 categories.workspace = true
@@ -21,17 +22,75 @@ test = true
 [features]
 default = ["simple"]
 
-simple = ["dep:simple-model"]
+full = [
+    "default", 
+    "models",
+    "rand", 
+    "serde", 
+    "tracing"
+]
 
-blas = ["simple-model?/blas"]
+models = [
+    "simple", 
+    "transformer"
+]
 
-rand = ["simple-model?/rand"]
+simple = []
 
-rayon = ["simple-model?/rayon"]
+transformer = ["dep:concision-transformer"]
 
-serde = ["simple-model?/serde"]
+# ********* [FF] Dependencies *********
+blas = [
+    "concision-core/blas", 
+    "concision-neural/blas", 
+    "ndarray/blas",
+    "concision-transformer?/blas",
+]
 
-tracing = ["simple-model?/tracing"]
+rand = [
+    "concision-core/rand", 
+    "concision-neural/rand",
+    "concision-transformer?/rand",
+]
+
+rayon = [
+    "concision-core/rayon", 
+    "concision-neural/rayon", 
+    "ndarray/rayon",
+    "concision-transformer?/rayon",
+]
+
+serde = [
+    "concision-core/serde", 
+    "concision-neural/serde",
+    "concision-transformer?/serde",
+]
+
+tracing = [
+    "concision-core/tracing", 
+    "concision-neural/tracing", 
+    "dep:tracing",
+    "concision-transformer?/tracing",
+]
 
 [dependencies]
-simple-model = { optional = true, path = "simple", version = "0.1.0" }
+concision-core = { features = ["std"], workspace = true }
+concision-neural = { workspace = true }
+
+concision-transformer = { optional = true, path = "lib/transformer", version = "0.1.0" }
+
+ndarray = { features = ["std"], workspace = true }
+num-traits = { workspace = true }
+tracing = { optional = true, version = "0.1" }
+
+[dev-dependencies]
+concision = { features = ["full"], workspace = true }
+
+# ********* Examples *********
+[[example]]
+name = "simple"
+required-features = ["approx", "rand", "std", "tracing"]
+
+[[test]]
+name = "simple"
+required-features = ["approx", "rand"]
