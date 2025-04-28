@@ -114,7 +114,7 @@ where
     indices.sort_by(|&i, &j| {
         pattern_scores[j]
             .partial_cmp(&pattern_scores[i])
-            .unwrap_or(std::cmp::Ordering::Equal)
+            .unwrap_or(core::cmp::Ordering::Equal)
     });
 
     for &idx in indices.iter().take(5) {

@@ -306,13 +306,15 @@ dependencies = [
 name = "concision-models"
 version = "0.1.22"
 dependencies = [
- "concision",
+ "anyhow",
  "concision-core",
  "concision-neural",
  "concision-transformer",
+ "lazy_static",
  "ndarray",
  "num-traits",
  "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

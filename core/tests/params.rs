@@ -55,11 +55,10 @@ fn test_params_init() {
     let lecun = Params::<f64>::lecun_normal((3, 4));
     assert_eq!(lecun.dim(), (3, 4));
 
-    let glorot_norm = Params::<f64>::glorot_normal((3, 4), 3, 4);
+    let glorot_norm = Params::<f64>::glorot_normal((3, 4));
     assert_eq!(glorot_norm.dim(), (3, 4));
     assert_ne!(lecun, glorot_norm);
-    let glorot_uniform =
-        Params::<f64>::glorot_uniform((3, 4), 3, 4).expect("glorot_uniform failed");
+    let glorot_uniform = Params::<f64>::glorot_uniform((3, 4)).expect("glorot_uniform failed");
     assert_eq!(glorot_uniform.dim(), (3, 4));
     assert_ne!(lecun, glorot_uniform);
     assert_ne!(glorot_norm, glorot_uniform);

@@ -35,6 +35,8 @@ pub trait BinaryAction<A, B = A> {
     fn activate(&self, lhs: A, rhs: B) -> Self::Output;
 }
 
+/// The [Activate] trait enables the definition of new activation functions often implemented
+/// as _fieldless_ structs.
 pub trait Activate<Rhs = Self> {
     type Output;
 

@@ -127,7 +127,7 @@ where
     pub fn dim_output(&self) -> <D as Dimension>::Pattern {
         self.output.dim()
     }
-    /// sequentially forwards the input through the model without any activations or other 
+    /// sequentially forwards the input through the model without any activations or other
     /// complexities in-between. not overly usefuly, but it is here for completeness
     pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where

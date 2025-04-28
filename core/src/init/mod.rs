@@ -10,6 +10,10 @@
 #[doc(inline)]
 pub use self::{distr::prelude::*, initialize::*, utils::*};
 
+///
+#[doc(inline)]
+pub use crate::traits::init::*;
+
 pub(crate) mod initialize;
 pub(crate) mod utils;
 

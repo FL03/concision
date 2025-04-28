@@ -6,13 +6,14 @@ pub use self::{generators::*, stack::*};
 use ndarray::*;
 use num_traits::{NumAssign, Zero};
 
+#[cfg(feature = "alloc")]
 /// Creates an n-dimensional array from an iterator of n dimensional arrays.
 pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
 where
     D: RemoveAxis,
     T: Clone,
 {
-    let mut arr = iter.into_iter().collect::<Vec<_>>();
+    let mut arr = iter.into_iter().collect::<alloc::vec::Vec<_>>();
     let mut out = arr.pop().unwrap();
     for i in arr {
         out = concatenate!(Axis(axis), out, i);

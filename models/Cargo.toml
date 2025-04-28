@@ -84,7 +84,9 @@ num-traits = { workspace = true }
 tracing = { optional = true, version = "0.1" }
 
 [dev-dependencies]
-concision = { features = ["full"], workspace = true }
+anyhow = "1"
+lazy_static = "1"
+tracing-subscriber = { features = ["std"], workspace = true }
 
 # ********* Examples *********
 [[example]]

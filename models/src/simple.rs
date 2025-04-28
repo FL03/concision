@@ -1,4 +1,3 @@
-
 use concision_core::activate::{ReLU, Sigmoid};
 use concision_core::{Forward, Norm, Params};
 use concision_neural::model::{Model, ModelParams, StandardModelConfig};

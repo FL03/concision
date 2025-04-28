@@ -26,8 +26,8 @@ fn main() -> anyhow::Result<()> {
     assert_eq!(params.weights().shape(), &[m, n]);
     assert_eq!(params.bias().shape(), &[n]);
     // initialize the parameters with random values
-    params.assign_weights(&Array2::glorot_normal((m, n), m, n));
-    params.assign_bias(&Array1::glorot_normal((n,), m, n));
+    params.assign_weights(&Array2::glorot_normal((m, n)));
+    params.assign_bias(&Array1::glorot_normal((n,)));
     // validate the shape of the parameters
     assert_eq!(params.weights().shape(), &[m, n]);
     assert_eq!(params.bias().shape(), &[n]);
