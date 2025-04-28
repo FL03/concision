@@ -3,7 +3,7 @@ default-members = ["concision"]
 
 exclude = [".artifacts/**/*", "models/**/*"]
 
-members = ["concision", "core", "derive", "macros", "math", "neural", "models"]
+members = ["concision", "core", "derive", "macros", "models", "neural", "utils",]
 
 resolver = "3"
 
@@ -23,8 +23,8 @@ version = "0.1.22"
 concision-core = { default-features = false, path = "core", version = "0.1.22" }
 concision-derive = { default-features = false, path = "derive", version = "0.1.22" }
 concision-macros = { default-features = false, path = "macros", version = "0.1.22" }
-concision-math = { default-features = false, path = "math", version = "0.1.22" }
 concision-neural = { default-features = false, path = "neural", version = "0.1.22" }
+concision-utils = { default-features = false, path = "utils", version = "0.1.22" }
 
 concision-models = { default-features = false, path = "models/models", version = "0.1.20" }
 

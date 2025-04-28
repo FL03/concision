@@ -11,7 +11,7 @@ pub enum Error {
     #[error("Unknown Error: {0}")]
     Unknown(&'static str),
     #[error(transparent)]
-    MathError(#[from] concision_math::MathematicalError),
+    MathError(#[from] concision_utils::MathematicalError),
     #[error(transparent)]
     PadError(#[from] crate::ops::pad::error::PadError),
     #[error(transparent)]

@@ -1,6 +1,6 @@
 [package]
 build = "build.rs"
-name = "concision-math"
+name = "concision-utils"
 
 authors.workspace = true
 categories.workspace = true
@@ -88,6 +88,17 @@ rand = { optional = true, workspace = true }
 lazy_static = { workspace = true }
 
 [[test]]
+name = "default"
+required-features = []
+
+[[test]]
 name = "fft"
-path = "tests/fft.rs"
 required-features = ["approx", "std"]
+
+[[test]]
+name = "tensor"
+required-features = ["approx", "std", "complex"]
+
+[[test]]
+name = "traits"
+required-features = ["approx", "std", "complex"]

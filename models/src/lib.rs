@@ -3,10 +3,8 @@
     Contrib: @FL03
 */
 
-
 #[cfg(feature = "simple")]
-pub use simple as simple;
-
+pub use simple;
 
 pub mod prelude {
     #[cfg(feature = "simple")]

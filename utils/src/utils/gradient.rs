@@ -2,7 +2,6 @@
     Appellation: gradient <module>
     Contrib: @FL03
 */
-use crate::traits::L2Norm;
 use ndarray::{Array, Dimension, ScalarOperand};
 use num_traits::Float;
 
@@ -12,11 +11,7 @@ where
     A: Float + ScalarOperand,
     D: Dimension,
 {
-    let norm = gradient.l2_norm();
-    if norm > threshold {
-        let scale = threshold / norm;
-        gradient.mapv_inplace(|x| x * scale);
-    }
+    gradient.clamp(-threshold, threshold);
 }
 
 pub fn clip_inf_nan<A, D>(gradient: &mut Array<A, D>, threshold: A)
@@ -24,7 +19,7 @@ where
     A: Float + ScalarOperand,
     D: Dimension,
 {
-    let norm = gradient.l2_norm();
+    let norm = gradient.pow2().sum().sqrt();
     gradient.mapv_inplace(|x| {
         if x.is_nan() {
             A::one() / norm

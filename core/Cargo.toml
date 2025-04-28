@@ -28,12 +28,12 @@ full = [
 
 signal =[
     "complex",
-    "concision-math/signal"
+    "concision-utils/signal"
 ]
 
 # ********* [FF] Dependencies *********
 alloc = [
-    "concision-math/alloc",
+    "concision-utils/alloc",
     "num/alloc",
     "serde?/alloc"
 ]
@@ -41,19 +41,19 @@ alloc = [
 anyhow = ["dep:anyhow"]
 
 approx = [
-    "concision-math/approx",
+    "concision-utils/approx",
     "dep:approx",
     "ndarray/approx",
 ]
 
 blas = [
-    "concision-math/blas",
+    "concision-utils/blas",
     "ndarray/blas",
 ]
 
 complex = [
     "dep:num-complex",
-    "concision-math/complex",
+    "concision-utils/complex",
 ]
 
 json = [
@@ -63,7 +63,7 @@ json = [
 ]
 
 rand = [
-    "concision-math/rand",
+    "concision-utils/rand",
     "dep:rand",
     "dep:rand_distr",
     "num/rand",
@@ -73,23 +73,23 @@ rand = [
 
 rayon = [
     "dep:rayon",
-    "concision-math/rayon",
+    "concision-utils/rayon",
     "ndarray/rayon",
 ]
 
 rng = [
     "dep:getrandom",
-    "concision-math/rng",
+    "concision-utils/rng",
     "rand?/small_rng",
     "rand?/thread_rng",
 ]
 
 rustfft = [
-    "concision-math/rustfft",
+    "concision-utils/rustfft",
 ]
 
 serde = [
-    "concision-math/serde",
+    "concision-utils/serde",
     "dep:serde",
     "dep:serde_derive",
     "ndarray/serde",
@@ -100,7 +100,7 @@ serde = [
 ]
 
 tracing = [
-    "concision-math/tracing",
+    "concision-utils/tracing",
     "dep:tracing",
 ]
 
@@ -108,7 +108,7 @@ tracing = [
 std = [
     "alloc",
     "anyhow?/std",
-    "concision-math/std",
+    "concision-utils/std",
     "ndarray/std",
     "num/std",
     "num-complex?/std",
@@ -134,7 +134,7 @@ lazy_static.workspace = true
 
 [dependencies]
 # custom / local
-concision-math = { workspace = true }
+concision-utils = { workspace = true }
 scsys-derive = { workspace = true }
 # standard deps
 anyhow = { optional = true, workspace = true }
@@ -175,8 +175,3 @@ required-features = ["rand", "std"]
 [[test]]
 name = "traits"
 required-features = ["std"]
-
-[[test]]
-name = "utils"
-required-features = ["std"]
-

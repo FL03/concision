@@ -219,8 +219,6 @@ where
         })
     }
 
-    
-
     pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         A: Clone,

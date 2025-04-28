@@ -26,7 +26,7 @@ updates:
     schedule:
       interval: monthly
   - package-ecosystem: cargo
-    directory: /math
+    directory: /utils
     schedule:
       interval: monthly
   - package-ecosystem: cargo

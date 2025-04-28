@@ -17,7 +17,7 @@
 extern crate alloc;
 
 #[doc(inline)]
-pub use concision_math as math;
+pub use concision_utils as utils;
 
 #[doc(inline)]
 pub use self::{
@@ -107,25 +107,6 @@ pub mod types {
     // pub(crate) mod features;
 }
 
-pub mod utils {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    pub mod gradient;
-    pub mod norm;
-    pub mod patterns;
-    pub mod tensor;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::gradient::*;
-        #[doc(inline)]
-        pub use super::patterns::*;
-        #[doc(inline)]
-        pub use super::tensor::*;
-    }
-}
-
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
@@ -142,8 +123,6 @@ pub mod prelude {
     pub use crate::params::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::utils::prelude::*;
     #[doc(inline)]
-    pub use concision_math::prelude::*;
+    pub use concision_utils::prelude::*;
 }

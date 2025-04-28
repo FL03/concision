@@ -1,10 +1,9 @@
-
 extern crate concision_core as cnc;
 
 use concision_core::activate::{ReLU, Sigmoid};
 use concision_core::{Backward, Forward, Params};
-use concision_neural::model::{Model, ModelParams, StandardModelConfig};
 use concision_neural::ModelFeatures;
+use concision_neural::model::{Model, ModelParams, StandardModelConfig};
 
 use ndarray::{Array1, Array2, ScalarOperand, ShapeError};
 use num_traits::Float;
@@ -97,9 +96,7 @@ where
         gamma: T,
     ) -> cnc::Result<Self::Output> {
         if input.nrows() != delta.nrows() {
-            return Err(
-                ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
-            );
+            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
         }
 
         let mut loss = T::zero();

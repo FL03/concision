@@ -1,8 +1,8 @@
 /*
-    Appellation: concision-math <library>
+    Appellation: concision-utils <library>
     Contrib: @FL03
 */
-//! A suite of mathematical tool and utilities tailored toward neural networks.
+//! A suite of utilities tailored toward neural networks.
 //!
 //! Our focus revolves around the following areas:
 //!
@@ -26,7 +26,6 @@ pub mod error;
 #[cfg(feature = "signal")]
 pub mod signal;
 pub mod stats;
-pub mod utils;
 
 pub mod ops {
     #[doc(inline)]
@@ -39,6 +38,7 @@ pub mod ops {
         pub use super::unary::*;
     }
 }
+
 pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
@@ -61,6 +61,35 @@ pub mod traits {
         pub use super::root::*;
     }
 }
+
+pub mod utils {
+    //! utilties supporting various mathematical routines for machine learning tasks.
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod activate;
+    pub mod arith;
+    pub mod gradient;
+    pub mod norm;
+    pub mod patterns;
+    pub mod tensor;
+
+    pub(crate) mod prelude {
+        #[doc(inline)]
+        pub use super::activate::*;
+        #[doc(inline)]
+        pub use super::arith::*;
+        #[doc(inline)]
+        pub use super::gradient::*;
+        #[doc(inline)]
+        pub use super::norm::*;
+        #[doc(inline)]
+        pub use super::patterns::*;
+        #[doc(inline)]
+        pub use super::tensor::*;
+    }
+}
+
 #[allow(unused_imports)]
 pub mod prelude {
     #[doc(no_inline)]

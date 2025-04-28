@@ -17,7 +17,6 @@
 pub use self::prelude::*;
 
 pub(crate) mod traits;
-pub(crate) mod utils;
 
 mod impls {
     mod impl_binary;
@@ -27,5 +26,4 @@ mod impls {
 
 pub(crate) mod prelude {
     pub use super::traits::*;
-    pub use super::utils::*;
 }

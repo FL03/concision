@@ -1,8 +1,4 @@
-/*
-   Appellation: traits <test>
-   Contrib: FL03 <jo3mccain@icloud.com>
-*/
-extern crate concision_math as cnc;
+extern crate concision_utils as cnc;
 
 use ndarray::prelude::*;
 use num::Complex;

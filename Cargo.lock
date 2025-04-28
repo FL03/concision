@@ -207,7 +207,7 @@ version = "0.1.22"
 dependencies = [
  "anyhow",
  "approx",
- "concision-math",
+ "concision-utils",
  "getrandom 0.3.2",
  "lazy_static",
  "ndarray",
@@ -247,29 +247,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "concision-math"
-version = "0.1.22"
-dependencies = [
- "approx",
- "getrandom 0.3.2",
- "lazy_static",
- "ndarray",
- "num",
- "num-complex",
- "num-traits",
- "rand 0.9.1",
- "rayon",
- "rustfft",
- "scsys",
- "scsys-derive",
- "serde",
- "serde_derive",
- "strum 0.27.1",
- "thiserror",
- "tracing",
-]
-
-[[package]]
 name = "concision-models"
 version = "0.1.22"
 dependencies = [
@@ -295,6 +272,29 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_json",
+ "strum 0.27.1",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "concision-utils"
+version = "0.1.22"
+dependencies = [
+ "approx",
+ "getrandom 0.3.2",
+ "lazy_static",
+ "ndarray",
+ "num",
+ "num-complex",
+ "num-traits",
+ "rand 0.9.1",
+ "rayon",
+ "rustfft",
+ "scsys",
+ "scsys-derive",
+ "serde",
+ "serde_derive",
  "strum 0.27.1",
  "thiserror",
  "tracing",

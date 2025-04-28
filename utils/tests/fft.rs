@@ -2,7 +2,7 @@
     Appellation: fft <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-extern crate concision_math as concision;
+extern crate concision_utils as concision;
 
 use approx::assert_abs_diff_eq;
 use concision::signal::fourier::*;
