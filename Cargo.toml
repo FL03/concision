@@ -57,7 +57,7 @@ paste = "1"
 rand = { default-features = false, version = "0.9" }
 rand_distr = { default-features = false, version = "0.5" }
 rayon = { default-features = false, version = "1" }
-reqwest = { default-features = false, version = "0.11" }
+reqwest = { default-features = false, version = "0.12" }
 rustfft = { features = [], version = "6" }
 serde = { default-features = false, features = ["derive"], version = "1" }
 serde_derive = { default-features = false, version = "1" }
@@ -67,7 +67,7 @@ strum = { default-features = false, features = ["derive"], version = "0.27" }
 thiserror = { default-features = false, version = "2" }
 tokio = { default-features = false, version = "1" }
 tracing = { default-features = false, features = ["attributes", "log"], version = "0.1" }
-tracing-subscriber = { default-features = false, features = ["env-filter", "fmt"], version = "0.3" }
+tracing-subscriber = { default-features = false, features = ["ansi", "env-filter", "fmt"], version = "0.3" }
 
 # Misc
 humantime = { version = "2" }

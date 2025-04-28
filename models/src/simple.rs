@@ -1,4 +1,3 @@
-extern crate concision_core as cnc;
 
 use concision_core::activate::{ReLU, Sigmoid};
 use concision_core::{Forward, Norm, Params};
