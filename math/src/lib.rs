@@ -23,7 +23,7 @@ extern crate alloc;
 pub(crate) mod macros;
 
 pub mod error;
-#[doc(hidden)]
+#[cfg(feature = "signal")]
 pub mod signal;
 pub mod stats;
 pub mod utils;

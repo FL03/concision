@@ -16,7 +16,9 @@ version.workspace = true
 [features]
 default = ["std"]
 
-full = ["approx", "default", "serde", "tracing"]
+full = ["approx", "complex", "default", "serde", "signal", "tracing"]
+
+signal = ["complex", "rustfft"]
 
 # ********* [FF] Dependencies *********
 alloc = ["num/alloc", "rand?/alloc", "serde?/alloc"]
@@ -32,6 +34,8 @@ rand = ["dep:rand", "num-complex?/rand", "num/rand", "rng"]
 rayon = ["dep:rayon", "ndarray/rayon"]
 
 rng = ["dep:getrandom", "rand?/small_rng"]
+
+rustfft = ["dep:rustfft"]
 
 serde = ["dep:serde", "dep:serde_derive", "ndarray/serde", "num-complex?/serde", "num/serde"]
 
@@ -70,6 +74,7 @@ num = { workspace = true }
 num-complex = { optional = true, workspace = true }
 num-traits = { workspace = true }
 rayon = { optional = true, workspace = true }
+rustfft = { optional = true, workspace = true }
 serde = { default-features = false, optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 strum = { workspace = true }
