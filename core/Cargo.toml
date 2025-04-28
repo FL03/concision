@@ -26,6 +26,11 @@ full = [
     "tracing",
 ]
 
+signal =[
+    "complex",
+    "concision-math/signal"
+]
+
 # ********* [FF] Dependencies *********
 alloc = [
     "concision-math/alloc",
@@ -77,6 +82,10 @@ rng = [
     "concision-math/rng",
     "rand?/small_rng",
     "rand?/thread_rng",
+]
+
+rustfft = [
+    "concision-math/rustfft",
 ]
 
 serde = [

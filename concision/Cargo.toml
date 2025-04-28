@@ -27,13 +27,17 @@ alloc = ["concision-core/alloc"]
 
 approx = ["concision-core/approx", "concision-neural/approx"]
 
+complex = ["concision-core/complex", "concision-neural/complex"]
+
+json = ["concision-core/json", "concision-neural/json"]
+
 rand = ["concision-core/rand", "concision-neural/rand"]
 
 rng = ["concision-core/rng", "concision-neural/rng"]
 
 rayon = ["concision-core/rayon", "concision-neural/rayon"]
 
-rustfft = ["concision-neural/rustfft"]
+rustfft = ["concision-core/rustfft", "concision-neural/rustfft"]
 
 serde = ["concision-core/serde", "concision-neural/serde"]
 

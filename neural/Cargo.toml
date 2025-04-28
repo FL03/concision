@@ -15,7 +15,7 @@ version.workspace = true
 [features]
 default = ["attention"]
 
-full = ["approx", "default", "rand", "rustfft", "serde", "tracing"]
+full = ["approx", "complex", "default", "rand", "rustfft", "serde", "tracing"]
 
 attention = []
 
@@ -24,13 +24,17 @@ approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
 
 blas = ["concision-core/blas", "ndarray/blas"]
 
+complex = ["concision-core/complex", "num/complex", "dep:num-complex"]
+
+json = ["concision-core/json", "dep:serde_json", "serde_json?/alloc"]
+
 rand = ["concision-core/rand", "num/rand", "rng"]
 
 rng = ["concision-core/rng"]
 
 rayon = ["concision-core/rayon", "dep:rayon", "ndarray/rayon"]
 
-rustfft = ["dep:rustfft"]
+rustfft = ["dep:rustfft", "concision-core/rustfft"]
 
 serde = ["concision-core/serde", "dep:serde", "dep:serde_derive", "ndarray/serde", "num/serde"]
 
@@ -54,11 +58,13 @@ either = { workspace = true }
 ndarray = { features = ["std"], workspace = true }
 num = { features = ["std"], workspace = true }
 num-traits = { features = ["std"], workspace = true }
+num-complex = { features = ["std"], optional = true, workspace = true }
 paste = { workspace = true }
 rayon = { optional = true, workspace = true }
 rustfft = { optional = true, workspace = true }
 serde = { features = ["std"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
+serde_json = { features = ["std"], optional = true, workspace = true }
 strum = { features = ["std"], workspace = true }
 thiserror = { features = ["std"], workspace = true }
 tracing = { features = ["std"], optional = true, workspace = true }
