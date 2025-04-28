@@ -13,11 +13,11 @@
 //!
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[doc(inline)]
-pub use self::{error::*, ops::prelude::*, traits::prelude::*, utils::prelude::*};
-
 #[cfg(feature = "alloc")]
 extern crate alloc;
+
+#[doc(inline)]
+pub use self::{error::*, ops::prelude::*, traits::prelude::*, utils::prelude::*};
 
 #[macro_use]
 pub(crate) mod macros;
@@ -90,7 +90,6 @@ pub mod utils {
     }
 }
 
-#[allow(unused_imports)]
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::error::*;
