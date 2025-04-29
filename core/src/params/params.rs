@@ -125,12 +125,14 @@ where
         core::mem::replace(&mut self.weights, weights)
     }
     /// set the bias
-    pub fn set_bias(&mut self, bias: ArrayBase<S, D::Smaller>) {
+    pub fn set_bias(&mut self, bias: ArrayBase<S, D::Smaller>) -> &mut Self {
         *self.bias_mut() = bias;
+        self
     }
     /// set the weights
-    pub fn set_weights(&mut self, weights: ArrayBase<S, D>) {
+    pub fn set_weights(&mut self, weights: ArrayBase<S, D>) -> &mut Self {
         *self.weights_mut() = weights;
+        self
     }
     /// perform a single backpropagation step
     pub fn backward<X, Y, Z>(&mut self, input: &X, grad: &Y, lr: A) -> crate::Result<Z>
@@ -152,7 +154,7 @@ where
     }
     /// returns the dimensions of the weights
     pub fn dim(&self) -> D::Pattern {
-        self.weights.dim()
+        self.weights().dim()
     }
     /// an iterator of the parameters; the created iterator zips together an axis iterator over
     /// the columns of the weights and an iterator over the bias
@@ -162,8 +164,8 @@ where
         S: Data,
     {
         super::iter::Iter {
-            bias: self.bias.iter(),
-            weights: self.weights.axis_iter(Axis(1)),
+            bias: self.bias().iter(),
+            weights: self.weights().axis_iter(Axis(1)),
         }
     }
     /// a mutable iterator of the parameters
@@ -186,45 +188,45 @@ where
     where
         S: Data,
     {
-        self.bias.iter()
+        self.bias().iter()
     }
     /// returns a mutable iterator over the bias
     pub fn iter_bias_mut(&mut self) -> ndarray::iter::IterMut<'_, A, D::Smaller>
     where
         S: DataMut,
     {
-        self.bias.iter_mut()
+        self.bias_mut().iter_mut()
     }
     /// returns an iterator over the weights
     pub fn iter_weights(&self) -> ndarray::iter::Iter<'_, A, D>
     where
         S: Data,
     {
-        self.weights.iter()
+        self.weights().iter()
     }
     /// returns a mutable iterator over the weights; see [`iter_mut`](ArrayBase::iter_mut) for more
     pub fn iter_weights_mut(&mut self) -> ndarray::iter::IterMut<'_, A, D>
     where
         S: DataMut,
     {
-        self.weights.iter_mut()
+        self.weights_mut().iter_mut()
     }
     /// the total number of elements within the weight tensor
     pub fn len(&self) -> usize {
-        self.weights.len()
+        self.weights().len()
     }
     /// returns the raw dimensions of the weights;
     pub fn raw_dim(&self) -> D {
-        self.weights.raw_dim()
+        self.weights().raw_dim()
     }
     /// returns the shape of the parameters; uses the shape of the weight tensor
     pub fn shape(&self) -> &[usize] {
-        self.weights.shape()
+        self.weights().shape()
     }
     /// returns the shape of the bias tensor; the shape should be equivalent to that of the
     /// weight tensor minus the "zero-th" axis
     pub fn shape_bias(&self) -> &[usize] {
-        self.bias.shape()
+        self.bias().shape()
     }
     /// returns an owned instance of the parameters
     pub fn to_owned(&self) -> ParamsBase<ndarray::OwnedRepr<A>, D>
@@ -233,8 +235,8 @@ where
         S: DataOwned,
     {
         ParamsBase {
-            bias: self.bias.to_owned(),
-            weights: self.weights.to_owned(),
+            bias: self.bias().to_owned(),
+            weights: self.weights().to_owned(),
         }
     }
     /// change the shape of the parameters; the shape of the bias parameters is determined by
@@ -251,8 +253,8 @@ where
     {
         let shape = shape.into_shape_with_order();
         let dim = shape.raw_dim().clone();
-        let bias = self.bias.to_shape(dim.remove_axis(Axis(0)))?;
-        let weights = self.weights.to_shape(dim)?;
+        let bias = self.bias().to_shape(dim.remove_axis(Axis(0)))?;
+        let weights = self.weights().to_shape(dim)?;
         Ok(ParamsBase { bias, weights })
     }
     /// returns a "view" of the parameters; see [view](ArrayBase::view) for more information
@@ -261,8 +263,8 @@ where
         S: Data,
     {
         ParamsBase {
-            bias: self.bias.view(),
-            weights: self.weights.view(),
+            bias: self.bias().view(),
+            weights: self.weights().view(),
         }
     }
     /// returns mutable view of the parameters; see [view_mut](ArrayBase::view_mut) for more information
