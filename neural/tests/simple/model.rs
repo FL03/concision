@@ -1,9 +1,9 @@
 extern crate concision_core as cnc;
 
-use concision_core::activate::{ReLU, Sigmoid};
-use concision_core::{Forward, Norm, Params};
-use concision_neural::model::{Model, ModelParams, StandardModelConfig};
-use concision_neural::{ModelFeatures, NeuralError, Predict, Train};
+use concision_core::{Forward, Norm, Params, ReLU, Sigmoid};
+use concision_neural::{
+    Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train,
+};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
@@ -53,111 +53,30 @@ impl<T> Model<T> for SimpleModel<T> {
     }
 }
 
-impl<T> Forward<Array1<T>> for SimpleModel<T>
+impl<A, S, D> Forward<ArrayBase<S, D>> for SimpleModel<A>
 where
-    T: Float + ScalarOperand,
-    Params<T>: Forward<Array1<T>, Output = Array1<T>>,
+    A: Float + FromPrimitive + ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+    Params<A>: Forward<Array<A, D>, Output = Array<A, D>>,
 {
-    type Output = Array1<T>;
+    type Output = Array<A, D>;
 
-    fn forward(&self, input: &Array1<T>) -> cnc::Result<Self::Output> {
-        let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
+    fn forward(&self, input: &ArrayBase<S, D>) -> cnc::Result<Self::Output> {
+        let mut output = self
+            .params()
+            .input()
+            .forward_then(&input.to_owned(), |y| y.relu())?;
 
         for layer in self.params().hidden() {
             output = layer.forward_then(&output, |y| y.relu())?;
         }
 
-        self.params()
+        let y = self
+            .params()
             .output()
-            .forward_then(&output, |y| y.sigmoid())
-    }
-}
-
-impl<A, S, T> Predict<ArrayBase<S, Ix1>> for SimpleModel<A>
-where
-    A: Float + FromPrimitive + ScalarOperand,
-    S: Data<Elem = A>,
-    T: Data<Elem = A>,
-    Self: Forward<ArrayBase<S, Ix1>, Output = ArrayBase<T, Ix1>>,
-{
-    type Confidence = A;
-    type Output = <Self as Forward<ArrayBase<S, Ix1>>>::Output;
-
-    fn predict(&self, input: &ArrayBase<S, Ix1>) -> Result<Self::Output, NeuralError> {
-        let y = Forward::<ArrayBase<S, Ix1>>::forward(self, input)?;
+            .forward_then(&output, |y| y.sigmoid())?;
         Ok(y)
-    }
-
-    fn predict_with_confidence(
-        &self,
-        input: &ArrayBase<S, Ix1>,
-    ) -> Result<
-        (
-            <Self as Predict<ArrayBase<S, Ix1>>>::Output,
-            Self::Confidence,
-        ),
-        NeuralError,
-    > {
-        // Get the base prediction
-        let prediction = Forward::<ArrayBase<S, Ix1>>::forward(self, input)?;
-        // Calculate confidence as the inverse of the variance of the output
-        // For each sample, compute the variance across the output dimensions
-        let variance = prediction.var(A::one());
-
-        // Average variance across the batch
-        let avg_variance = variance / A::from_usize(prediction.len()).unwrap();
-        // Confidence: inverse of variance (clipped to avoid division by zero)
-        let confidence = (A::one() + avg_variance).recip();
-
-        Ok((prediction, confidence))
-    }
-}
-
-impl<A, S, T> Predict<ArrayBase<S, Ix2>> for SimpleModel<A>
-where
-    A: Float + FromPrimitive + ScalarOperand,
-    S: Data<Elem = A>,
-    T: Data<Elem = A>,
-    Self: Forward<ArrayBase<S, Ix2>, Output = ArrayBase<T, Ix2>>,
-{
-    type Confidence = A;
-    type Output = <Self as Forward<ArrayBase<S, Ix2>>>::Output;
-
-    fn predict(&self, input: &ArrayBase<S, Ix2>) -> Result<Self::Output, NeuralError> {
-        let y = Forward::<ArrayBase<S, Ix2>>::forward(self, input)?;
-        Ok(y)
-    }
-
-    fn predict_with_confidence(
-        &self,
-        input: &ArrayBase<S, Ix2>,
-    ) -> Result<
-        (
-            <Self as Predict<ArrayBase<S, Ix2>>>::Output,
-            Self::Confidence,
-        ),
-        NeuralError,
-    > {
-        // Get the base prediction
-        let prediction = Forward::<ArrayBase<S, Ix2>>::forward(self, input)?;
-        // Calculate confidence as the inverse of the variance of the output
-        // For each sample, compute the variance across the output dimensions
-        let batch_size = prediction.shape()[0];
-        let mut variance_sum = A::zero();
-
-        for i in 0..batch_size {
-            let sample = prediction.row(i);
-            // Compute variance
-            let variance = sample.var(A::one());
-            variance_sum = variance_sum + variance;
-        }
-
-        // Average variance across the batch
-        let avg_variance = variance_sum / A::from_usize(batch_size).unwrap();
-        // Confidence: inverse of variance (clipped to avoid division by zero)
-        let confidence = (A::one() + avg_variance).recip();
-
-        Ok((prediction, confidence))
     }
 }
 
