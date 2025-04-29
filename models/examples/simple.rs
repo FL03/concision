@@ -1,5 +1,5 @@
-use concision::nn::{ModelFeatures, Predict, StandardModelConfig, Train};
 use concision_models::simple::SimpleModel;
+use concision_neural::{ModelFeatures, Predict, StandardModelConfig, Train};
 use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {

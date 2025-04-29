@@ -40,6 +40,15 @@ simple = []
 transformer = ["dep:concision-transformer"]
 
 # ********* [FF] Dependencies *********
+
+approx = [
+    "dep:approx",
+    "concision-core/approx", 
+    "concision-neural/approx", 
+    "ndarray/approx",
+    "concision-transformer?/approx",
+]
+
 blas = [
     "concision-core/blas", 
     "concision-neural/blas", 
@@ -79,6 +88,7 @@ concision-neural = { workspace = true }
 
 concision-transformer = { optional = true, path = "lib/transformer", version = "0.1.0" }
 
+approx = { optional = true, workspace = true }
 ndarray = { features = ["std"], workspace = true }
 num-traits = { workspace = true }
 tracing = { optional = true, version = "0.1" }
@@ -91,7 +101,7 @@ tracing-subscriber = { features = ["std"], workspace = true }
 # ********* Examples *********
 [[example]]
 name = "simple"
-required-features = ["approx", "rand", "std", "tracing"]
+required-features = ["approx", "rand", "tracing"]
 
 [[test]]
 name = "simple"

@@ -40,7 +40,7 @@ pub mod ops {
 }
 
 pub(crate) mod traits {
-    #[doc(inline)]    
+    #[doc(inline)]
     #[allow(unused_imports)]
     pub(crate) use self::prelude::*;
 

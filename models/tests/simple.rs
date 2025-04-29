@@ -1,11 +1,7 @@
-extern crate concision_core as cnc;
-extern crate concision_models as models;
-extern crate concision_neural as neural;
+use concision_models::simple::SimpleModel;
+use concision_neural::{Model, ModelFeatures, StandardModelConfig};
 
-use concision_neural::ModelFeatures;
-use concision_neural::model::{Model, StandardModelConfig};
 use ndarray::prelude::*;
-use simple::SimpleModel;
 
 #[test]
 fn test_standard_model_config() {
@@ -40,12 +36,12 @@ fn test_simple_model() -> anyhow::Result<()> {
     let model = SimpleModel::<f64>::new(config, features);
     // initialize some input data
     let input = Array1::linspace(1.0, 9.0, model.features().input());
-
-    let expected = Array1::from_elem((model.features().output()), 0.5);
+    // generate an array filled with expected values
+    let expected = Array1::from_elem(model.features().output(), 0.5);
     // forward the input through the model
     let y = model.predict(&input)?;
     // verify the output shape
-    assert_eq!(y.dim(), (features.output()));
+    assert_eq!(y.shape(), &[features.output()]);
     // compare the results to what we expected
     assert_eq!(y, expected);
 

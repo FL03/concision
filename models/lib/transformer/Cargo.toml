@@ -28,6 +28,13 @@ full = [
 ]
 
 # ********* [FF] Dependencies *********
+approx = [
+    "dep:approx",
+    "concision-core/approx", 
+    "concision-neural/approx", 
+    "ndarray/approx",
+]
+
 blas = [
     "concision-core/blas", 
     "concision-neural/blas", 
@@ -60,6 +67,7 @@ tracing = [
 concision-core = { features = ["std"], path = "../../../core" }
 concision-neural = { path = "../../../neural" }
 
+approx = { optional = true, version = "0.5" }
 ndarray = { features = ["std"], version = "0.16" }
 num-traits = { version = "0.2" }
 tracing = { optional = true, version = "0.1" }

@@ -24,7 +24,7 @@
 //!  expensive.
 #![cfg(feature = "attention")]
 #[doc(inline)]
-pub use self::{multi_head::MultiHeadAttention, qkv::QkvParams, scaled::ScaledDotProductAttention};
+pub use self::{multi_head::MultiHeadAttention, qkv::*, scaled::ScaledDotProductAttention};
 
 #[cfg(feature = "rustfft")]
 pub mod fft;
@@ -45,7 +45,7 @@ pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::multi_head::MultiHeadAttention;
     #[doc(inline)]
-    pub use super::qkv::QkvParams;
+    pub use super::qkv::QkvParamsBase;
     #[doc(inline)]
     pub use super::scaled::ScaledDotProductAttention;
 }

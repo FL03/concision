@@ -307,6 +307,7 @@ name = "concision-models"
 version = "0.1.22"
 dependencies = [
  "anyhow",
+ "approx",
  "concision-core",
  "concision-neural",
  "concision-transformer",
@@ -348,6 +349,7 @@ name = "concision-transformer"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "approx",
  "concision-core",
  "concision-neural",
  "ndarray",
