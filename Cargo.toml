@@ -25,18 +25,18 @@ keywords = [
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/concision"
-version = "0.1.22"
+version = "0.1.23"
 
 [workspace.dependencies]
-concision = { default-features = false, path = "concision", version = "0.1.22" }
+concision = { default-features = false, path = "concision", version = "0.1.23" }
 
-concision-core = { default-features = false, path = "core", version = "0.1.22" }
-concision-data = { default-features = false, path = "data", version = "0.1.22" }
-concision-neural = { default-features = false, path = "neural", version = "0.1.22" }
-concision-utils = { default-features = false, path = "utils", version = "0.1.22" }
+concision-core = { default-features = false, path = "core", version = "0.1.23" }
+concision-data = { default-features = false, path = "data", version = "0.1.23" }
+concision-neural = { default-features = false, path = "neural", version = "0.1.23" }
+concision-utils = { default-features = false, path = "utils", version = "0.1.23" }
 
-concision-derive = { default-features = false, path = "derive", version = "0.1.22" }
-concision-macros = { default-features = false, path = "macros", version = "0.1.22" }
+concision-derive = { default-features = false, path = "derive", version = "0.1.23" }
+concision-macros = { default-features = false, path = "macros", version = "0.1.23" }
 
 scsys = { default-features = false, features = ["derive"], version = "0.2.3" }
 scsys-derive = { default-features = false, version = "0.2.3" }
