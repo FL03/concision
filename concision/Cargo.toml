@@ -1,4 +1,6 @@
 [package]
+name = "concision"
+
 authors.workspace = true
 categories.workspace = true
 description.workspace = true
@@ -6,49 +8,96 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
-default = ["neural", "std"]
+default = ["data", "neural", "std"]
 
-full = ["approx", "default", "derive", "macros", "rand", "serde", "tracing"]
+full = ["approx", "data", "default", "derive", "macros", "rand", "serde", "tracing"]
 
 derive = ["dep:concision-derive"]
 
 macros = ["dep:concision-macros"]
 
+data = ["dep:concision-data"]
+
 neural = ["dep:concision-neural"]
 
 # ********* [FF] Dependencies *********
-alloc = ["concision-core/alloc"]
+alloc = [
+    "concision-core/alloc",
+    "concision-data?/alloc",
+]
 
-approx = ["concision-core/approx", "concision-neural/approx"]
+approx = [
+    "concision-core/approx", 
+    "concision-data?/approx", 
+    "concision-neural?/approx"
+]
 
-complex = ["concision-core/complex", "concision-neural/complex"]
+complex = [
+    "concision-core/complex", 
+    "concision-data?/complex", 
+    "concision-neural?/complex"
+]
 
-json = ["concision-core/json", "concision-neural/json"]
+json = [
+    "concision-core/json", 
+    "concision-data?/json", 
+    "concision-neural?/json"
+]
 
-rand = ["concision-core/rand", "concision-neural/rand"]
+rand = [
+    "concision-core/rand", 
+    "concision-data?/rand", 
+    "concision-neural?/rand"
+]
 
-rng = ["concision-core/rng", "concision-neural/rng"]
+rng = [
+    "concision-core/rng", 
+    "concision-data?/rng", 
+    "concision-neural?/rng"
+]
 
-rayon = ["concision-core/rayon", "concision-neural/rayon"]
+rayon = [
+    "concision-core/rayon", 
+    "concision-data?/rayon", 
+    "concision-neural?/rayon"
+]
 
-rustfft = ["concision-core/rustfft", "concision-neural/rustfft"]
+rustfft = [
+    "concision-core/rustfft", 
+    "concision-neural?/rustfft"
+]
 
-serde = ["concision-core/serde", "concision-neural/serde"]
+serde = [
+    "concision-core/serde", 
+    "concision-data?/serde", 
+    "concision-neural?/serde"
+]
 
-tracing = ["concision-core/tracing", "concision-neural/tracing"]
+tracing = [
+    "concision-core/tracing", 
+    "concision-data?/tracing", 
+    "concision-neural?/tracing"
+]
 
 # ********* [FF] Environment(s) *********
 
-std = ["alloc", "concision-core/std"]
+std = [
+    "alloc", 
+    "concision-core/std", 
+    "concision-data?/std"
+]
 
 # ********* [FF] Blas *********
-blas = ["concision-core/blas", "concision-neural/blas"]
+blas = [
+    "concision-core/blas", 
+    "concision-data?/blas", 
+    "concision-neural?/blas"
+]
 
 intel-mkl-system = ["blas"]
 
@@ -70,13 +119,12 @@ test = true
 
 [dependencies]
 concision-core = { workspace = true }
+concision-data = { optional = true, workspace = true }
 concision-derive = { optional = true, workspace = true }
 concision-macros = { optional = true, workspace = true }
 concision-neural = { optional = true, workspace = true }
 
 [dev-dependencies]
-# concision-models = { features = ["simple"], workspace = true }
-
 anyhow = { workspace = true }
 approx = { workspace = true }
 criterion = { version = "0.5" }
@@ -105,7 +153,4 @@ required-features = ["std"]
 # ********* examples *********
 [[example]]
 name = "basic"
-
-[[example]]
-name = "neural"
-required-features = ["approx", "neural", "rand", "std", "tracing"]
+required-features = ["approx", "rand", "std", "tracing"]

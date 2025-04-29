@@ -20,25 +20,25 @@ full = ["approx", "complex", "default", "rand", "rustfft", "serde", "tracing"]
 attention = []
 
 # ********* [FF] Dependencies *********
-approx = ["concision-core/approx", "dep:approx", "ndarray/approx"]
+approx = ["concision-core/approx", "concision-data/approx", "dep:approx", "ndarray/approx"]
 
-blas = ["concision-core/blas", "ndarray/blas"]
+blas = ["concision-core/blas", "concision-data/blas", "ndarray/blas"]
 
-complex = ["concision-core/complex", "dep:num-complex"]
+complex = ["concision-core/complex", "concision-data/complex", "dep:num-complex"]
 
-json = ["concision-core/json", "dep:serde_json", "serde_json?/alloc"]
+json = ["concision-core/json", "concision-data/json", "dep:serde_json", "serde_json?/alloc"]
 
-rand = ["concision-core/rand", "num/rand", "rng"]
+rand = ["concision-core/rand", "concision-data/rand", "num/rand", "rng"]
 
-rng = ["concision-core/rng"]
+rng = ["concision-core/rng", "concision-data/rng",]
 
-rayon = ["concision-core/rayon", "dep:rayon", "ndarray/rayon"]
+rayon = ["concision-core/rayon", "concision-data/rayon", "dep:rayon", "ndarray/rayon"]
 
 rustfft = ["dep:rustfft", "concision-core/rustfft"]
 
-serde = ["concision-core/serde", "dep:serde", "dep:serde_derive", "ndarray/serde", "num/serde"]
+serde = ["concision-core/serde", "concision-data/serde", "dep:serde", "dep:serde_derive", "ndarray/serde", "num/serde"]
 
-tracing = ["concision-core/tracing", "dep:tracing"]
+tracing = ["concision-core/tracing", "concision-data/tracing", "dep:tracing"]
 
 [lib]
 bench = false
@@ -50,6 +50,7 @@ test = true
 
 [dependencies]
 concision-core = { workspace = true }
+concision-data = { workspace = true }
 scsys-derive = { workspace = true }
 
 # Shared dependencies
@@ -70,6 +71,7 @@ thiserror = { features = ["std"], workspace = true }
 tracing = { features = ["std"], optional = true, workspace = true }
 
 [dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
 lazy_static = { workspace = true }
 
 # ********* Unit tests *********
@@ -86,5 +88,6 @@ name = "masks"
 required-features = ["rand"]
 
 [[test]]
-name = "model"
+name = "simple"
+path = "tests/simple/main.rs"
 required-features = ["approx", "default", "rand"]

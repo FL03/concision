@@ -1,0 +1,77 @@
+[package]
+authors = [
+    "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", 
+    "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"
+]
+edition = "2024"
+license = "Apache-2.0"
+name = "concision-transformer"
+readme = "README.md"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "transformer"
+path = "model.rs"
+
+[features]
+default = [
+    "concision-core/std", 
+    "concision-neural/default"
+]
+
+full = [
+    "default", 
+    "rand", 
+    "serde", 
+    "tracing"
+]
+
+# ********* [FF] Dependencies *********
+approx = [
+    "dep:approx",
+    "concision-core/approx", 
+    "concision-neural/approx", 
+    "ndarray/approx",
+]
+
+blas = [
+    "concision-core/blas", 
+    "concision-neural/blas", 
+    "ndarray/blas"
+]
+
+rand = [
+    "concision-core/rand", 
+    "concision-neural/rand"
+]
+
+rayon = [
+    "concision-core/rayon", 
+    "concision-neural/rayon", 
+    "ndarray/rayon"
+]
+
+serde = [
+    "concision-core/serde", 
+    "concision-neural/serde"
+]
+
+tracing = [
+    "concision-core/tracing", 
+    "concision-neural/tracing", 
+    "dep:tracing"
+]
+
+[dependencies]
+concision-core = { features = ["std"], path = "../../../core" }
+concision-neural = { path = "../../../neural" }
+
+approx = { optional = true, version = "0.5" }
+ndarray = { features = ["std"], version = "0.16" }
+num-traits = { version = "0.2" }
+tracing = { optional = true, version = "0.1" }
+
+[dev-dependencies]
+anyhow = "1"
+

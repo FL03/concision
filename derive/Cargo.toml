@@ -1,5 +1,4 @@
 [package]
-build = "build.rs"
 name = "concision-derive"
 
 authors.workspace = true
@@ -13,19 +12,15 @@ readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
-[features]
-default = [ "std" ]
-full = [ "default" ]
-
-# ********* [FF] Dependencies *********
-alloc = [  ]
-
-std = [ "alloc" ]
-
 [lib]
 bench = false
 proc-macro = true
 test = false
+
+[features]
+default = [ ]
+
+full = [ "default" ]
 
 [dependencies]
 proc-macro2 = "1"
@@ -38,7 +33,3 @@ rustc-args = [
   "--cfg",
   "docsrs",
 ]
-
-[target.wasm32-unknown-unknown]
-
-[target.wasm32-wasi]

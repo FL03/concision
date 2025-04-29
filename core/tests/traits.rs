@@ -17,6 +17,16 @@ fn test_affine() {
 }
 
 #[test]
+fn test_inverse() {
+    use cnc::Inverse;
+    let a = array![[1.0, 2.0], [3.0, 4.0]];
+    let b = array![[1.0, 2.0, 3.0,], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]];
+    let exp = array![[-2.0, 1.0], [1.5, -0.5]];
+    assert_eq!(Some(exp), a.inverse());
+    assert_eq!(None, b.inverse());
+}
+
+#[test]
 fn test_masked_fill() {
     use cnc::MaskFill;
     let shape = (2, 2);

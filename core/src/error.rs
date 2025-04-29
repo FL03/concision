@@ -8,10 +8,12 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Invalid Shape: {0}")]
+    InvalidShape(&'static str),
     #[error("Unknown Error: {0}")]
     Unknown(&'static str),
     #[error(transparent)]
-    MathError(#[from] concision_math::MathematicalError),
+    MathError(#[from] concision_utils::UtilityError),
     #[error(transparent)]
     PadError(#[from] crate::ops::pad::error::PadError),
     #[error(transparent)]
@@ -35,9 +37,10 @@ pub enum Error {
     UniformError(#[from] rand_distr::uniform::Error),
 }
 
-impl From<String> for Error {
-    fn from(value: String) -> Self {
-        Self::Unknown(Box::leak(value.into_boxed_str()))
+#[cfg(feature = "alloc")]
+impl From<alloc::string::String> for Error {
+    fn from(value: alloc::string::String) -> Self {
+        Self::Unknown(alloc::boxed::Box::leak(value.into_boxed_str()))
     }
 }
 

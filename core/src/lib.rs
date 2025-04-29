@@ -17,11 +17,11 @@
 extern crate alloc;
 
 #[doc(inline)]
-pub use concision_math as math;
+pub use concision_utils as utils;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, data::Dataset, error::*, ops::prelude::*, params::prelude::*,
+    activate::prelude::*, error::*, loss::prelude::*, ops::prelude::*, params::prelude::*,
     traits::prelude::*, utils::prelude::*,
 };
 
@@ -33,9 +33,9 @@ pub(crate) mod macros;
 pub(crate) mod seal;
 
 pub mod activate;
-pub mod data;
 pub mod error;
 pub mod init;
+pub mod loss;
 pub mod params;
 
 pub mod ops {
@@ -62,10 +62,9 @@ pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod activate;
-    pub mod apply;
     pub mod clip;
-    pub mod entropy;
+    pub mod codex;
+    pub mod gradient;
     pub mod init;
     pub mod like;
     pub mod mask;
@@ -76,13 +75,11 @@ pub mod traits {
 
     pub(crate) mod prelude {
         #[doc(inline)]
-        pub use super::activate::*;
-        #[doc(inline)]
-        pub use super::apply::*;
-        #[doc(inline)]
         pub use super::clip::*;
         #[doc(inline)]
-        pub use super::entropy::*;
+        pub use super::codex::*;
+        #[doc(inline)]
+        pub use super::gradient::*;
         #[doc(inline)]
         pub use super::init::*;
         #[doc(inline)]
@@ -100,50 +97,22 @@ pub mod traits {
     }
 }
 
-pub mod types {
-    // #[doc(inline)]
-    // pub use self::features::*;
-
-    // pub(crate) mod features;
-}
-
-pub mod utils {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    pub mod gradient;
-    pub mod norm;
-    pub mod patterns;
-    pub mod tensor;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::gradient::*;
-        #[doc(inline)]
-        pub use super::patterns::*;
-        #[doc(inline)]
-        pub use super::tensor::*;
-    }
-}
-
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::data::prelude::*;
     #[doc(no_inline)]
     pub use crate::error::*;
     #[cfg(feature = "rand")]
     #[doc(no_inline)]
     pub use crate::init::prelude::*;
     #[doc(no_inline)]
+    pub use crate::loss::prelude::*;
+    #[doc(no_inline)]
     pub use crate::ops::prelude::*;
     #[doc(no_inline)]
     pub use crate::params::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::utils::prelude::*;
     #[doc(inline)]
-    pub use concision_math::prelude::*;
+    pub use concision_utils::prelude::*;
 }

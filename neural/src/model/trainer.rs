@@ -4,7 +4,7 @@
 */
 
 use crate::Model;
-use cnc::data::{Dataset, IntoDataset, Records};
+use concision_data::{DatasetBase, IntoDataset, Records};
 
 pub struct Trainer<'a, M, T, R>
 where
@@ -12,7 +12,7 @@ where
     R: Records,
 {
     /// the training dataset
-    pub(crate) dataset: Dataset<R::Inputs, R::Targets>,
+    pub(crate) dataset: DatasetBase<R::Inputs, R::Targets>,
     pub(crate) model: &'a mut M,
     /// the accumulated loss
     pub(crate) loss: T,
@@ -43,11 +43,11 @@ where
         &mut self.loss
     }
     /// returns an immutable reference to the training session's dataset
-    pub const fn dataset(&self) -> &Dataset<R::Inputs, R::Targets> {
+    pub const fn dataset(&self) -> &DatasetBase<R::Inputs, R::Targets> {
         &self.dataset
     }
     /// returns a mutable reference to the training session's dataset
-    pub fn dataset_mut(&mut self) -> &mut Dataset<R::Inputs, R::Targets> {
+    pub fn dataset_mut(&mut self) -> &mut DatasetBase<R::Inputs, R::Targets> {
         &mut self.dataset
     }
     #[cfg_attr(feature = "tracing", tracing::instrument(skip(self)))]

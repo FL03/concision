@@ -12,6 +12,16 @@ use rand::{Rng, SeedableRng};
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, NormalError, StandardNormal};
 
+fn _extract_xy_from_shape<D>(dim: &D, x: usize, y: usize) -> (usize, usize)
+where
+    D: Dimension,
+{
+    let tmp = dim.as_array_view();
+    let a = tmp.get(x).copied().unwrap_or(1_usize);
+    let b = tmp.get(y).copied().unwrap_or(1_usize);
+    (a, b)
+}
+
 /// This trait provides the base methods required for initializing tensors with random values.
 /// The trait is similar to the `RandomExt` trait provided by the `ndarray_rand` crate,
 /// however, it is designed to be more generic, extensible, and optimized for neural network
@@ -46,24 +56,27 @@ where
         Ok(Self::rand(shape, dist))
     }
     /// Initialize the object according to the Glorot Initialization scheme.
-    fn glorot_normal<Sh>(shape: Sh, inputs: usize, outputs: usize) -> Self
+    fn glorot_normal<Sh: ShapeBuilder<Dim = D>>(shape: Sh) -> Self
     where
-        S::Elem: Float + FromPrimitive,
         StandardNormal: Distribution<S::Elem>,
         S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
+        S::Elem: Float + FromPrimitive,
     {
+        let shape = shape.into_shape_with_order();
+        let (inputs, outputs) = _extract_xy_from_shape(shape.raw_dim(), 0, 1);
         let distr = XavierNormal::new(inputs, outputs);
         Self::rand(shape, distr)
     }
     /// Initialize the object according to the Glorot Initialization scheme.
-    fn glorot_uniform<Sh>(shape: Sh, inputs: usize, outputs: usize) -> super::UniformResult<Self>
+    fn glorot_uniform<Sh>(shape: Sh) -> super::UniformResult<Self>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
         S::Elem: Float + FromPrimitive + SampleUniform,
         <S::Elem as SampleUniform>::Sampler: Clone,
     {
+        let shape = shape.into_shape_with_order();
+        let (inputs, outputs) = _extract_xy_from_shape(shape.raw_dim(), 0, 1);
         let distr = XavierUniform::new(inputs, outputs)?;
         Ok(Self::rand(shape, distr))
     }

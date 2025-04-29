@@ -53,7 +53,10 @@ impl<T> StandardModelConfig<T> {
         self.hyperparameters_mut().insert(key.to_string(), value)
     }
 
-    pub fn hyperparam<Q>(&mut self, key: Q) -> std::collections::hash_map::Entry<'_, String, T> where Q: ToString  {
+    pub fn hyperparam<Q>(&mut self, key: Q) -> std::collections::hash_map::Entry<'_, String, T>
+    where
+        Q: ToString,
+    {
         self.hyperparameters_mut().entry(key.to_string())
     }
 

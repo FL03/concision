@@ -15,11 +15,21 @@ pub enum NeuralError {
     #[error("Invalid Output Shape")]
     InvalidOutputShape,
     #[error("Parameter Error")]
-    ParameterError,
+    ParameterError(String),
     #[error("Training Failed")]
     TrainingFailed,
-    #[error("Training Error: {0}")]
-    TrainingError(String),
+    #[error(transparent)]
+    TrainingError(#[from] TrainingError),
+    #[error(transparent)]
+    CoreError(#[from] concision_core::error::Error),
+}
+
+#[derive(Debug, scsys_derive::VariantConstructors, thiserror::Error)]
+pub enum TrainingError {
+    #[error("Invalid Training Data")]
+    InvalidTrainingData,
+    #[error("Training Failed")]
+    TrainingFailed,
     #[error(transparent)]
     CoreError(#[from] concision_core::error::Error),
 }

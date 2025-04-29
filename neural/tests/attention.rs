@@ -1,20 +1,20 @@
+#![allow(unused_imports)]
+
 extern crate concision_core as cnc;
-extern crate concision_neural as neural;
+extern crate concision_neural as nn;
+
+use nn::layers::attention::{Qkv, ScaledDotProductAttention};
+
+use ndarray::prelude::*;
 
 #[test]
-#[ignore = "Not setup yet"]
 fn test_attention() {
-    use ndarray::prelude::*;
-    use neural::layers::attention::ScaledDotProductAttention;
-
-    let shape = (10, 10);
-    let attention = ScaledDotProductAttention::new(shape, 0.1, 1.0);
-
-    let query = Array2::<f32>::zeros((1, 10));
-    let key = Array2::<f32>::zeros((1, 10));
-    let value = Array2::<f32>::zeros((1, 10));
+    let (m, n) = (7, 10);
+    let qkv = Qkv::<f64>::ones((m, n));
+    // initialize the scaled dot-product attention layer
+    let layer = ScaledDotProductAttention::<f64>::new(0.1, 1.0);
     // compute the attention scores
-    let z_score = attention.attention(&query, &key, &value);
-
-    assert_eq!(z_score.shape(), &[1, 10]);
+    let z_score = layer.attention(&qkv);
+    // verify the output dimensions
+    assert_eq!(z_score.shape(), &[m, n]);
 }

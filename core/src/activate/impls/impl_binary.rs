@@ -2,7 +2,8 @@
    Appellation: binary <activate>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::activate::{Heavyside, utils::heavyside};
+use crate::activate::Heavyside;
+use crate::utils::heavyside;
 use ndarray::{Array, ArrayBase, Data, Dimension};
 use num_traits::{One, Zero};
 
