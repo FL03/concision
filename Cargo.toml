@@ -39,7 +39,7 @@ concision-derive = { default-features = false, path = "derive", version = "0.1.2
 concision-macros = { default-features = false, path = "macros", version = "0.1.22" }
 
 scsys = { default-features = false, features = ["derive"], version = "0.2.3" }
-scsys-derive = { default-features = false, version = "0.2.3" }
+scsys-derive = { default-features = false, version = "0.2.4" }
 
 
 

@@ -1594,9 +1594,9 @@ dependencies = [
 
 [[package]]
 name = "scsys-derive"
-version = "0.2.3"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "628374ea00016b4640cb448ffa412a5874e71b077ed0e0ff44742d6049d9bb71"
+checksum = "9182777114022e898fb3b0e46d9ba2f7903c57e90284c36ce01ae63480e54bf0"
 dependencies = [
  "proc-macro2",
  "quote",
