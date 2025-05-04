@@ -1,5 +1,5 @@
 use concision_models::simple::SimpleModel;
-use concision_neural::{Model, ModelFeatures, StandardModelConfig};
+use concision_neural::{ModelFeatures, Predict, StandardModelConfig};
 
 use ndarray::prelude::*;
 
