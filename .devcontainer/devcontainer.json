@@ -1,0 +1,11 @@
+{
+  
+  "name": "rust (cnc)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "NODE_VERSION": "22"
+    }
+  }
+}
