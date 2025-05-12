@@ -42,7 +42,7 @@ macro_rules! unary {
 unary! {
     Heavyside::heavyside(self),
     LinearActivation::linear(self),
-    Sigmoid::sigmoid(&self),
+    Sigmoid::sigmoid(self),
     Softmax::softmax(&self),
     ReLU::relu(&self),
     Tanh::tanh(&self),
