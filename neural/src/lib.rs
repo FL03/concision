@@ -63,16 +63,16 @@ pub mod types {
     pub use self::prelude::*;
 
     pub mod dropout;
-    pub mod features;
     pub mod hyperparameters;
+    pub mod layout;
 
     pub(crate) mod prelude {
         #[doc(inline)]
         pub use super::dropout::*;
         #[doc(inline)]
-        pub use super::features::*;
-        #[doc(inline)]
         pub use super::hyperparameters::*;
+        #[doc(inline)]
+        pub use super::layout::*;
     }
 }
 

@@ -18,7 +18,7 @@ pub(crate) mod prelude {
     pub use super::trainer::*;
 }
 
-use crate::{ModelFeatures, NetworkConfig, Predict, Train};
+use crate::{ModelLayout, NetworkConfig, Predict, Train};
 use concision_data::DatasetBase;
 
 /// The base interface for all models; each model provides access to a configuration object
@@ -37,7 +37,7 @@ pub trait Model<T = f32> {
     fn config_mut(&mut self) -> &mut Self::Config;
     /// returns a copy of the models features (or layout); this is used to define the structure
     /// of the model and its consituents.
-    fn features(&self) -> ModelFeatures;
+    fn features(&self) -> ModelLayout;
     /// returns an immutable reference to the model parameters
     fn params(&self) -> &ModelParams<T>;
     /// returns a mutable reference to the model's parameters

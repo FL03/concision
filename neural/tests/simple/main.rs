@@ -1,7 +1,7 @@
 extern crate concision_core as cnc;
 extern crate concision_neural as neural;
 
-use concision_neural::ModelFeatures;
+use concision_neural::ModelLayout;
 use concision_neural::model::{Model, StandardModelConfig};
 use ndarray::prelude::*;
 
@@ -36,7 +36,7 @@ fn test_simple_model() -> anyhow::Result<()> {
     config.set_momentum(0.9);
     config.set_decay(0.0001);
     // define the model features
-    let features = ModelFeatures::new(3, 9, 9, 1);
+    let features = ModelLayout::new(3, 9, 9, 1);
     // initialize the model with the given features and configuration
     let model = SimpleModel::<f64>::new(config, features);
     // initialize some input data

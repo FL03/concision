@@ -2,7 +2,7 @@
     Appellation: store <module>
     Contrib: @FL03
 */
-use crate::ModelFeatures;
+use crate::ModelLayout;
 use cnc::params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
 use num_traits::{Float, FromPrimitive, One, Zero};
@@ -149,67 +149,67 @@ where
 {
     /// create a new instance of the model;
     /// all parameters are initialized to their defaults (i.e., zero)
-    pub fn default(features: ModelFeatures) -> Self
+    pub fn default(features: ModelLayout) -> Self
     where
         A: Clone + Default,
         S: DataOwned,
     {
-        let input = ParamsBase::default(features.d_input());
+        let input = ParamsBase::default(features.dim_input());
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::default(features.d_hidden()))
+            .map(|_| ParamsBase::default(features.dim_hidden()))
             .collect::<Vec<_>>();
-        let output = ParamsBase::default(features.d_output());
+        let output = ParamsBase::default(features.dim_output());
         Self::new(input, hidden, output)
     }
     /// create a new instance of the model;
     /// all parameters are initialized to zero
-    pub fn ones(features: ModelFeatures) -> Self
+    pub fn ones(features: ModelLayout) -> Self
     where
         A: Clone + One,
         S: DataOwned,
     {
-        let input = ParamsBase::ones(features.d_input());
+        let input = ParamsBase::ones(features.dim_input());
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::ones(features.d_hidden()))
+            .map(|_| ParamsBase::ones(features.dim_hidden()))
             .collect::<Vec<_>>();
-        let output = ParamsBase::ones(features.d_output());
+        let output = ParamsBase::ones(features.dim_output());
         Self::new(input, hidden, output)
     }
     /// create a new instance of the model;
     /// all parameters are initialized to zero
-    pub fn zeros(features: ModelFeatures) -> Self
+    pub fn zeros(features: ModelLayout) -> Self
     where
         A: Clone + Zero,
         S: DataOwned,
     {
-        let input = ParamsBase::zeros(features.d_input());
+        let input = ParamsBase::zeros(features.dim_input());
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::zeros(features.d_hidden()))
+            .map(|_| ParamsBase::zeros(features.dim_hidden()))
             .collect::<Vec<_>>();
-        let output = ParamsBase::zeros(features.d_output());
+        let output = ParamsBase::zeros(features.dim_output());
         Self::new(input, hidden, output)
     }
 
     #[cfg(feature = "rand")]
-    pub fn init_rand<G, Ds>(features: ModelFeatures, distr: G) -> Self
+    pub fn init_rand<G, Ds>(features: ModelLayout, distr: G) -> Self
     where
         G: Fn((usize, usize)) -> Ds,
         Ds: Clone + cnc::init::rand_distr::Distribution<A>,
         S: DataOwned,
     {
         use cnc::init::Initialize;
-        let input = ParamsBase::rand(features.d_input(), distr(features.d_input()));
+        let input = ParamsBase::rand(features.dim_input(), distr(features.dim_input()));
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::rand(features.d_hidden(), distr(features.d_hidden())))
+            .map(|_| ParamsBase::rand(features.dim_hidden(), distr(features.dim_hidden())))
             .collect::<Vec<_>>();
 
-        let output = ParamsBase::rand(features.d_output(), distr(features.d_output()));
+        let output = ParamsBase::rand(features.dim_output(), distr(features.dim_output()));
 
         Self::new(input, hidden, output)
     }
 
     #[cfg(feature = "rand")]
-    pub fn glorot_normal(features: ModelFeatures) -> Self
+    pub fn glorot_normal(features: ModelLayout) -> Self
     where
         cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
         S: DataOwned,
@@ -221,7 +221,7 @@ where
     }
 
     #[cfg(feature = "rand")]
-    pub fn glorot_uniform(features: ModelFeatures) -> Self
+    pub fn glorot_uniform(features: ModelLayout) -> Self
     where
         S: ndarray::DataOwned,
         A: Clone

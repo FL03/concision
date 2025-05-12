@@ -25,7 +25,6 @@ pub use self::{
     traits::prelude::*, utils::prelude::*,
 };
 
-#[allow(unused)]
 #[macro_use]
 pub(crate) mod macros;
 #[allow(unused)]

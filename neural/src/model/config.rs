@@ -25,20 +25,9 @@ impl<T> StandardModelConfig<T> {
         }
     }
 
-    pub fn batch_size(&self) -> usize {
-        self.batch_size
-    }
-
-    pub fn epochs(&self) -> usize {
-        self.epochs
-    }
-
-    pub fn with_batch_size(self, batch_size: usize) -> Self {
-        Self { batch_size, ..self }
-    }
-
-    pub fn with_epochs(self, epochs: usize) -> Self {
-        Self { epochs, ..self }
+    gsw! {
+        batch_size: usize,
+        epochs: usize,
     }
 
     pub fn hyperparameters(&self) -> &ModelConfigMap<T> {
