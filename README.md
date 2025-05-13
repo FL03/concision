@@ -1,19 +1,16 @@
 # concision (cnc)
 
-[![license](https://img.shields.io/crates/l/concision.svg)](https://choosealicense.com/licenses/apache-2.0/)
-[![crates.io](https://img.shields.io/crates/v/concision.svg)](https://crates.io/crates/concision)
-[![docs.rs](https://docs.rs/concision/badge.svg)](https://docs.rs/concision)
-
-[![clippy](https://github.com/FL03/concision/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/clippy.yml)
-[![rust](https://github.com/FL03/concision/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/concision/actions/workflows/rust.yml)
+![crates.io](https://img.shields.io/crates/v/concision?logo=rust&style=for-the-badge)
+![docs.rs](https://img.shields.io/docsrs/concision?style=for-the-badge&logo=rust)
+![Crates.io License](https://img.shields.io/crates/l/concision?logo=rust&style=for-the-badge)
 
 ***
 
-_**Warning: The library is currently in the early stages of development and is not yet ready for production use.**_
+_**Warning: The library still in development and is not yet ready for production use.**_
 
-Concision is designed to be a complete toolkit for building machine learning models in Rust.
+Welcome to `concision`, a modern machine learning framework for Rust. This library is designed to be a simple and efficient way to build machine learning models in Rust, with a focus on ease of use and flexibility.
 
-Concision is a machine learning library for building powerful models in Rust prioritizing ease-of-use, efficiency, and flexability. The library is built to make use of the both the upcoming `autodiff` experimental feature and increased support for generics in the 2024 edition of Rust.
+Another focus of the library is supporting is the `autodiff` experimental feature being natively introduced into the rust toolchain.
 
 ## Getting Started
 

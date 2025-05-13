@@ -14,38 +14,16 @@ updates:
     schedule:
       interval: monthly
   - package-ecosystem: cargo
-    directory: /
     schedule:
       interval: monthly
-  - package-ecosystem: cargo
-    directory: /concision
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /core
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /derive
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /macros
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /data
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /models
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /neural
-    schedule:
-      interval: monthly
-  - package-ecosystem: cargo
-    directory: /utils
-    schedule:
-      interval: monthly
+    directories: 
+      - /
+      - /concision
+      - /core
+      - /data
+      - /derive
+      - /macros
+      - /models
+      - /neural
+      - /utils
+
