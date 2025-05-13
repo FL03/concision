@@ -4,25 +4,25 @@
 */
 
 /// The `gsw` macro generates getter and setter methods for the fields of a struct.
-/// 
+///
 /// ### Usage
-/// 
+///
 /// ```no_run
 /// #[derive(Clone, Debug, Default)]
-/// pub struct Sample { 
+/// pub struct Sample {
 ///     pub(crate) a: usize,
 ///     pub(crate) b: std::collections::HashMap<String, usize>,
 /// }
-/// 
+///
 /// impl Sample {
-///    gsw! { 
+///    gsw! {
 ///       a: usize,
 ///     }
 ///     gsw! {
 ///         b: &std::collections::HashMap<String, usize>,
 ///     }
 /// }
-/// 
+///
 /// fn _sampler() {
 ///     let mut sample = Sample::default().with_a(10);
 ///     assert_eq!(sample.a(), 10);
@@ -103,5 +103,3 @@ macro_rules! get_set_with {
         }
     };
 }
-
-

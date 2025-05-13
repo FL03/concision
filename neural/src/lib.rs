@@ -64,15 +64,12 @@ pub mod types {
 
     pub mod dropout;
     pub mod hyperparameters;
-    pub mod layout;
 
     pub(crate) mod prelude {
         #[doc(inline)]
         pub use super::dropout::*;
         #[doc(inline)]
         pub use super::hyperparameters::*;
-        #[doc(inline)]
-        pub use super::layout::*;
     }
 }
 

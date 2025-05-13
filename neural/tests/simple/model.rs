@@ -2,7 +2,7 @@ extern crate concision_core as cnc;
 
 use concision_core::{Forward, Norm, Params, ReLU, Sigmoid};
 use concision_neural::{
-    Model, ModelLayout, ModelParams, NeuralError, StandardModelConfig, Train,
+    Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train,
 };
 
 use ndarray::prelude::*;
@@ -11,7 +11,7 @@ use num_traits::{Float, FromPrimitive, NumAssign};
 
 pub struct SimpleModel<T = f64> {
     pub config: StandardModelConfig<T>,
-    pub features: ModelLayout,
+    pub features: ModelFeatures,
     pub params: ModelParams<T>,
 }
 
@@ -19,7 +19,7 @@ impl<T> SimpleModel<T>
 where
     T: Float,
 {
-    pub fn new(config: StandardModelConfig<T>, features: ModelLayout) -> Self {
+    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self {
         let params = ModelParams::zeros(features);
         SimpleModel {
             config,
@@ -32,6 +32,8 @@ where
 impl<T> Model<T> for SimpleModel<T> {
     type Config = StandardModelConfig<T>;
 
+    type Layout = ModelFeatures;
+
     fn config(&self) -> &StandardModelConfig<T> {
         &self.config
     }
@@ -40,7 +42,7 @@ impl<T> Model<T> for SimpleModel<T> {
         &mut self.config
     }
 
-    fn features(&self) -> ModelLayout {
+    fn layout(&self) -> ModelFeatures {
         self.features
     }
 
@@ -102,10 +104,10 @@ where
         input: &ArrayBase<S, Ix1>,
         target: &ArrayBase<T, Ix1>,
     ) -> Result<Self::Output, NeuralError> {
-        if input.len() != self.features().input() {
+        if input.len() != self.layout().input() {
             return Err(NeuralError::InvalidInputShape);
         }
-        if target.len() != self.features().output() {
+        if target.len() != self.layout().output() {
             return Err(NeuralError::InvalidOutputShape);
         }
         // get the learning rate from the model's configuration
@@ -147,7 +149,7 @@ where
             .output_mut()
             .backward(activations.last().unwrap(), &delta, lr)?;
 
-        let num_hidden = self.features().layers();
+        let num_hidden = self.layout().layers();
         // Iterate through hidden layers in reverse order
         for i in (0..num_hidden).rev() {
             // Calculate error for this layer
@@ -206,10 +208,10 @@ where
         if input.nrows() == 0 || target.nrows() == 0 {
             return Err(NeuralError::InvalidBatchSize);
         }
-        if input.ncols() != self.features().input() {
+        if input.ncols() != self.layout().input() {
             return Err(NeuralError::InvalidInputShape);
         }
-        if target.ncols() != self.features().output() || target.nrows() != input.nrows() {
+        if target.ncols() != self.layout().output() || target.nrows() != input.nrows() {
             return Err(NeuralError::InvalidOutputShape);
         }
         let batch_size = input.nrows();

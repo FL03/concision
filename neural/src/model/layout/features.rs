@@ -2,13 +2,14 @@
     Appellation: layout <module>
     Contrib: @FL03
 */
+use super::ModelLayout;
 
-/// The [ModelLayout] provides a common way of defining the layout of a model. This is used to
-/// define the number of input features, the number of hidden layers, the number of hidden
-/// features, and the number of output features.
+/// The [`ModelFeatures`] provides a common way of defining the layout of a model. This is
+/// used to define the number of input features, the number of hidden layers, the number of
+/// hidden features, and the number of output features.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct ModelLayout {
+pub struct ModelFeatures {
     /// the number of input features
     pub(crate) input: usize,
     /// the dimension of hidden layers
@@ -19,7 +20,7 @@ pub struct ModelLayout {
     pub(crate) output: usize,
 }
 
-impl ModelLayout {
+impl ModelFeatures {
     pub fn new(input: usize, hidden: usize, layers: usize, output: usize) -> Self {
         Self {
             input,
@@ -138,7 +139,34 @@ impl ModelLayout {
     }
 }
 
-impl Default for ModelLayout {
+impl ModelLayout for ModelFeatures {
+    fn input(&self) -> usize {
+        self.input()
+    }
+    fn input_mut(&mut self) -> &mut usize {
+        self.input_mut()
+    }
+    fn hidden(&self) -> usize {
+        self.hidden()
+    }
+    fn hidden_mut(&mut self) -> &mut usize {
+        self.hidden_mut()
+    }
+    fn layers(&self) -> usize {
+        self.layers()
+    }
+    fn layers_mut(&mut self) -> &mut usize {
+        self.layers_mut()
+    }
+    fn output(&self) -> usize {
+        self.output()
+    }
+    fn output_mut(&mut self) -> &mut usize {
+        self.output_mut()
+    }
+}
+
+impl Default for ModelFeatures {
     fn default() -> Self {
         Self {
             input: 16,
@@ -149,7 +177,7 @@ impl Default for ModelLayout {
     }
 }
 
-impl core::fmt::Display for ModelLayout {
+impl core::fmt::Display for ModelFeatures {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,

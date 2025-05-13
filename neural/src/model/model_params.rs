@@ -2,7 +2,7 @@
     Appellation: store <module>
     Contrib: @FL03
 */
-use crate::ModelLayout;
+use super::layout::ModelFeatures;
 use cnc::params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
 use num_traits::{Float, FromPrimitive, One, Zero};
@@ -149,7 +149,7 @@ where
 {
     /// create a new instance of the model;
     /// all parameters are initialized to their defaults (i.e., zero)
-    pub fn default(features: ModelLayout) -> Self
+    pub fn default(features: ModelFeatures) -> Self
     where
         A: Clone + Default,
         S: DataOwned,
@@ -163,7 +163,7 @@ where
     }
     /// create a new instance of the model;
     /// all parameters are initialized to zero
-    pub fn ones(features: ModelLayout) -> Self
+    pub fn ones(features: ModelFeatures) -> Self
     where
         A: Clone + One,
         S: DataOwned,
@@ -177,7 +177,7 @@ where
     }
     /// create a new instance of the model;
     /// all parameters are initialized to zero
-    pub fn zeros(features: ModelLayout) -> Self
+    pub fn zeros(features: ModelFeatures) -> Self
     where
         A: Clone + Zero,
         S: DataOwned,
@@ -191,7 +191,7 @@ where
     }
 
     #[cfg(feature = "rand")]
-    pub fn init_rand<G, Ds>(features: ModelLayout, distr: G) -> Self
+    pub fn init_rand<G, Ds>(features: ModelFeatures, distr: G) -> Self
     where
         G: Fn((usize, usize)) -> Ds,
         Ds: Clone + cnc::init::rand_distr::Distribution<A>,
@@ -209,7 +209,7 @@ where
     }
 
     #[cfg(feature = "rand")]
-    pub fn glorot_normal(features: ModelLayout) -> Self
+    pub fn glorot_normal(features: ModelFeatures) -> Self
     where
         cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
         S: DataOwned,
@@ -221,7 +221,7 @@ where
     }
 
     #[cfg(feature = "rand")]
-    pub fn glorot_uniform(features: ModelLayout) -> Self
+    pub fn glorot_uniform(features: ModelFeatures) -> Self
     where
         S: ndarray::DataOwned,
         A: Clone
