@@ -4,7 +4,7 @@
 */
 
 use ndarray::prelude::*;
-use ndarray::{Data, DataMut, RemoveAxis, ScalarOperand};
+use ndarray::{Data, DataMut, ScalarOperand};
 use num::complex::ComplexFloat;
 
 macro_rules! unary {
@@ -52,137 +52,128 @@ pub trait SoftmaxAxis: Softmax {
     fn softmax_axis(self, axis: usize) -> Self::Output;
 }
 
-pub trait NdActivate<A, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-{
-    type Data: Data<Elem = A>;
+/// A trait defining the manner in which a particular entity can be activated.
+pub trait Activate<A> {
+    type Cont<B>;
 
-    fn activate<B, F>(&self, f: F) -> Array<B, D>
+    fn activate<V, F>(&self, f: F) -> Self::Cont<V>
     where
-        F: Fn(A) -> B;
+        F: Fn(A) -> V;
+}
+/// A trait for establishing a common mechanism to activate entities in-place.
+pub trait ActivateMut<A> {
+    type Cont<B>;
 
-    fn linear(&self) -> Array<A::Output, D>
+    fn activate_inplace<'a, F>(&'a mut self, f: F)
     where
-        A: LinearActivation,
+        A: 'a,
+        F: FnMut(A) -> A;
+}
+/// This trait extends the [`Activate`] trait with a number of additional activation functions
+/// and their derivatives. _**Note:**_ this trait is automatically implemented for any type 
+/// that implements the [`Activate`] trait reducing the need to implement it manually.
+pub trait ActivateExt<U>: Activate<U> {
+    fn linear(&self) -> Self::Cont<U::Output>
+    where
+        U: LinearActivation,
     {
         self.activate(|x| x.linear())
     }
 
-    fn linear_derivative(&self) -> Array<A::Output, D>
+    fn linear_derivative(&self) -> Self::Cont<U::Output>
     where
-        A: LinearActivation,
+        U: LinearActivation,
     {
         self.activate(|x| x.linear_derivative())
     }
 
-    fn heavyside(&self) -> Array<A::Output, D>
+    fn heavyside(&self) -> Self::Cont<U::Output>
     where
-        A: Heavyside,
+        U: Heavyside,
     {
         self.activate(|x| x.heavyside())
     }
 
-    fn heavyside_derivative(&self) -> Array<A::Output, D>
+    fn heavyside_derivative(&self) -> Self::Cont<U::Output>
     where
-        A: Heavyside,
+        U: Heavyside,
     {
         self.activate(|x| x.heavyside_derivative())
     }
 
-    fn relu(&self) -> Array<A::Output, D>
+    fn relu(&self) -> Self::Cont<U::Output>
     where
-        A: ReLU,
+        U: ReLU,
     {
         self.activate(|x| x.relu())
     }
 
-    fn relu_derivative(&self) -> Array<A::Output, D>
+    fn relu_derivative(&self) -> Self::Cont<U::Output>
     where
-        A: ReLU,
+        U: ReLU,
     {
         self.activate(|x| x.relu_derivative())
     }
-    ///
-    fn sigmoid(&self) -> Array<A::Output, D>
+
+    fn sigmoid(&self) -> Self::Cont<U::Output>
     where
-        A: Sigmoid,
+        U: Sigmoid,
     {
         self.activate(|x| x.sigmoid())
     }
-    ///
-    fn sigmoid_derivative(&self) -> Array<A::Output, D>
+
+    fn sigmoid_derivative(&self) -> Self::Cont<U::Output>
     where
-        A: Sigmoid,
+        U: Sigmoid,
     {
         self.activate(|x| x.sigmoid_derivative())
     }
-    /// Softmax activation function
-    /// The softmax function is defined as:
-    /// $$ \sigma(x_i) = \frac{e^{x_i}}{\sum_{j=1}^{n} e^{x_j}} $$
-    fn softmax(&self) -> Array<A, D>
-    where
-        A: ComplexFloat,
-    {
-        let exp = self.activate(A::exp);
-        &exp / exp.sum()
-    }
 
-    fn softmax_axis(&self, axis: usize) -> Array<A, D>
+    fn tanh(&self) -> Self::Cont<U::Output>
     where
-        A: ComplexFloat,
-        D: RemoveAxis,
-    {
-        let exp = self.activate(A::exp);
-        let axis = Axis(axis);
-        &exp / &exp.sum_axis(axis)
-    }
-
-    fn tanh(&self) -> Array<A::Output, D>
-    where
-        A: Tanh,
+        U: Tanh,
     {
         self.activate(|x| x.tanh())
     }
 
-    fn tanh_derivative(&self) -> Array<A::Output, D>
+    fn tanh_derivative(&self) -> Self::Cont<U::Output>
     where
-        A: Tanh,
+        U: Tanh,
     {
         self.activate(|x| x.tanh_derivative())
     }
 
-    fn sigmoid_complex(&self) -> Array<A, D>
+    fn sigmoid_complex(&self) -> Self::Cont<U>
     where
-        A: ComplexFloat,
+        U: ComplexFloat,
     {
-        self.activate(|x| A::one() / (A::one() + (-x).exp()))
+        self.activate(|x| U::one() / (U::one() + (-x).exp()))
     }
 
-    fn sigmoid_complex_derivative(&self) -> Array<A, D>
+    fn sigmoid_complex_derivative(&self) -> Self::Cont<U>
     where
-        A: ComplexFloat,
+        U: ComplexFloat,
     {
         self.activate(|x| {
-            let s = A::one() / (A::one() + (-x).exp());
-            s * (A::one() - s)
+            let s = U::one() / (U::one() + (-x).exp());
+            s * (U::one() - s)
         })
     }
 
-    fn tanh_complex(&self) -> Array<A, D>
+    fn tanh_complex(&self) -> Self::Cont<U>
     where
-        A: ComplexFloat,
+        U: ComplexFloat,
     {
         self.activate(|x| x.tanh())
     }
-    fn tanh_complex_derivative(&self) -> Array<A, D>
+
+    fn tanh_complex_derivative(&self) -> Self::Cont<U>
     where
-        A: ComplexFloat,
+        U: ComplexFloat,
     {
         self.activate(|x| {
             let s = x.tanh();
-            A::one() - s * s
+            U::one() - s * s
         })
     }
 }
@@ -193,23 +184,35 @@ where
     D: Dimension,
 {
     type Data: DataMut<Elem = A>;
-
-    fn activate_inplace<'a, F>(&'a mut self, f: F)
-    where
-        A: 'a,
-        F: FnMut(A) -> A;
 }
 /*
  ************* Implementations *************
 */
+impl<U, S> ActivateExt<U> for S where S: Activate<U> {}
 
-impl<A, S, D> NdActivate<A, D> for ArrayBase<S, D>
+impl<A, S, D> Activate<A> for ArrayBase<S, D>
 where
     A: ScalarOperand,
     D: Dimension,
     S: Data<Elem = A>,
 {
-    type Data = S;
+    type Cont<V> = Array<V, D>;
+
+    fn activate<V, F>(&self, f: F) -> Self::Cont<V>
+    where
+        F: Fn(A) -> V,
+    {
+        self.mapv(f)
+    }
+}
+
+impl<'a, A, S, D> Activate<A> for &'a ArrayBase<S, D>
+where
+    A: ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Cont<V> = Array<V, D>;
 
     fn activate<B, F>(&self, f: F) -> Array<B, D>
     where
@@ -219,13 +222,29 @@ where
     }
 }
 
-impl<A, S, D> NdActivateMut<A, D> for ArrayBase<S, D>
+impl<'a, A, S, D> Activate<A> for &'a mut ArrayBase<S, D>
+where
+    A: ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Cont<V> = Array<V, D>;
+
+    fn activate<B, F>(&self, f: F) -> Array<B, D>
+    where
+        F: Fn(A) -> B,
+    {
+        self.mapv(f)
+    }
+}
+
+impl<A, S, D> ActivateMut<A> for ArrayBase<S, D>
 where
     A: ScalarOperand,
     D: Dimension,
     S: DataMut<Elem = A>,
 {
-    type Data = S;
+    type Cont<V> = Array<V, D>;
 
     fn activate_inplace<'a, F>(&'a mut self, f: F)
     where
@@ -236,45 +255,13 @@ where
     }
 }
 
-impl<'a, A, S, D> NdActivate<A, D> for &'a ArrayBase<S, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-    S: Data<Elem = A>,
-{
-    type Data = S;
-
-    fn activate<B, F>(&self, f: F) -> Array<B, D>
-    where
-        F: Fn(A) -> B,
-    {
-        self.mapv(f)
-    }
-}
-
-impl<'a, A, S, D> NdActivate<A, D> for &'a mut ArrayBase<S, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-    S: Data<Elem = A>,
-{
-    type Data = S;
-
-    fn activate<B, F>(&self, f: F) -> Array<B, D>
-    where
-        F: Fn(A) -> B,
-    {
-        self.mapv(f)
-    }
-}
-
-impl<'a, A, S, D> NdActivateMut<A, D> for &'a mut ArrayBase<S, D>
+impl<'a, A, S, D> ActivateMut<A> for &'a mut ArrayBase<S, D>
 where
     A: ScalarOperand,
     D: Dimension,
     S: DataMut<Elem = A>,
 {
-    type Data = S;
+    type Cont<V> = Array<V, D>;
 
     fn activate_inplace<'b, F>(&'b mut self, f: F)
     where
