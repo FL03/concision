@@ -1,7 +1,7 @@
 # concision (cnc)
 
-![crates.io](https://img.shields.io/crates/v/concision?logo=rust&style=for-the-badge)
-![docs.rs](https://img.shields.io/docsrs/concision?style=for-the-badge&logo=rust)
+[![crates.io](https://img.shields.io/crates/v/concision?logo=rust&style=for-the-badge)](https://crates.io/crates/concision)
+[![docs.rs](https://img.shields.io/docsrs/concision?style=for-the-badge&logo=rust)](https://docs.rs/concision)
 ![crate.io (license)](https://img.shields.io/crates/l/concision?logo=rust&style=for-the-badge)
 
 ***
