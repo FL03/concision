@@ -6,13 +6,15 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
 
 on:
   pull_request:
-    branches: [ main, master, ]
-    types: [ opened, synchronize, reopened ]
+    branches: [ main, master ]
+    types: [ opened, reopened, synchronize ]
   push:
-    tags: [ v*, "*-nightly" ]
+    branches: [ main, master ]
+    tags: [ v*.*.*, "*-nightly" ]
   repository_dispatch:
     types: [ rust ]
   workflow_dispatch:
@@ -24,31 +26,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:  [ ubuntu-latest ] # [ ubuntu-latest, macos-latest, windows-latest ]
-        target: [ x86_64-unknown-linux-gnu, ]
-        toolchain: [ stable, nightly, ]
+        os:  [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - 
         name: checkout
         uses: actions/checkout@v4
       - 
-        name: setup rustup
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-workspaces: true
-          target: ${{ matrix.target }}
-          toolchain: ${{ matrix.toolchain }}
-      - 
         name: cache
         uses: Swatinem/rust-cache@v2
       - 
-        name: build
-        run: cargo build -r -v --workspace --features full --target ${{ matrix.target }}
+        name: setup rustup
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: true
+          cache-workspaces: true
       - 
-        name: test
-        run: cargo test -r -v --workspace --features full --target ${{ matrix.target }}
+        name: build (workspace)
+        run: cargo build -r -v --locked --workspace -F full
       - 
-        name: bench
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: cargo bench -v --workspace --features full
+        name: test (workspace)
+        run: cargo test -r -v --locked --workspace -F full
+      - 
+        name: benchmark
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: cargo bench -v --workspace -F full
