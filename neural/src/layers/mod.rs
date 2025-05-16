@@ -105,7 +105,7 @@ where
     type Output = U::Output;
 
     fn activate(&self, x: U) -> Self::Output {
-        cnc::Sigmoid::sigmoid(&x)
+        cnc::Sigmoid::sigmoid(x)
     }
 }
 
@@ -117,7 +117,7 @@ where
     type Delta = U::Output;
 
     fn activate_gradient(&self, x: U) -> Self::Delta {
-        cnc::Sigmoid::sigmoid(&x)
+        cnc::Sigmoid::sigmoid_derivative(x)
     }
 }
 

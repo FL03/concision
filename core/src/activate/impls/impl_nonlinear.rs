@@ -35,14 +35,14 @@ where
 {
     type Output = Array<A, D>;
 
-    fn sigmoid(&self) -> Self::Output {
+    fn sigmoid(self) -> Self::Output {
         let dim = self.dim();
         let ones = Array::<A, D>::ones(dim);
 
         (ones + self.map(|&i| i.neg().exp())).recip()
     }
 
-    fn sigmoid_derivative(&self) -> Self::Output {
+    fn sigmoid_derivative(self) -> Self::Output {
         self.mapv(|i| sigmoid_derivative(i))
     }
 }

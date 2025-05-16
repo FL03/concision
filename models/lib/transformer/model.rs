@@ -1,9 +1,14 @@
-extern crate concision_core as cnc;
+/*
+    Appellation: transformer <module>
+    Contrib: @FL03
+*/
+use concision_core::{Forward, Norm, Params, ReLU, Sigmoid};
 
-use concision_core::activate::{ReLU, Sigmoid};
-use concision_core::{Forward, Norm, Params};
-use concision_neural::model::{Model, ModelParams, StandardModelConfig};
-use concision_neural::{ModelFeatures, NeuralError, Predict, Train};
+#[cfg(feature = "rand")]
+use concision_core::init::rand_distr;
+use concision_neural::{
+    Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train,
+};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
@@ -31,7 +36,7 @@ impl<T> TransformerModel<T> {
     pub fn init(self) -> Self
     where
         T: Float + FromPrimitive,
-        cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<T>,
+        rand_distr::StandardNormal: rand_distr::Distribution<T>,
     {
         let params = ModelParams::glorot_normal(self.features);
         TransformerModel { params, ..self }
@@ -61,6 +66,8 @@ impl<T> TransformerModel<T> {
 impl<T> Model<T> for TransformerModel<T> {
     type Config = StandardModelConfig<T>;
 
+    type Layout = ModelFeatures;
+
     fn config(&self) -> &StandardModelConfig<T> {
         &self.config
     }
@@ -69,7 +76,7 @@ impl<T> Model<T> for TransformerModel<T> {
         &mut self.config
     }
 
-    fn features(&self) -> ModelFeatures {
+    fn layout(&self) -> ModelFeatures {
         self.features
     }
 
@@ -92,7 +99,7 @@ where
 {
     type Output = V;
 
-    fn forward(&self, input: &U) -> cnc::Result<Self::Output> {
+    fn forward(&self, input: &U) -> concision_core::Result<Self::Output> {
         let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
 
         for layer in self.params().hidden() {
@@ -104,96 +111,6 @@ where
             .output()
             .forward_then(&output, |y| y.sigmoid())?;
         Ok(y)
-    }
-}
-
-impl<A> Predict<Array1<A>> for TransformerModel<A>
-where
-    A: Float + FromPrimitive + ScalarOperand,
-    Params<A>: Forward<Array1<A>, Output = Array1<A>>,
-{
-    type Confidence = A;
-    type Output = Array1<A>;
-
-    fn predict(&self, input: &Array1<A>) -> Result<Self::Output, NeuralError> {
-        let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
-
-        for layer in self.params().hidden() {
-            output = layer.forward_then(&output, |y| y.relu())?;
-        }
-
-        let y = self
-            .params()
-            .output()
-            .forward_then(&output, |y| y.sigmoid())?;
-        Ok(y)
-    }
-
-    fn predict_with_confidence(
-        &self,
-        input: &Array1<A>,
-    ) -> Result<(Self::Output, Self::Confidence), NeuralError> {
-        // Get the base prediction
-        let prediction = Predict::predict(self, input)?;
-        // Calculate confidence as the inverse of the variance of the output
-        // For each sample, compute the variance across the output dimensions
-        let variance = prediction.var(A::one());
-
-        // Average variance across the batch
-        let avg_variance = variance / A::from_usize(prediction.len()).unwrap();
-        // Confidence: inverse of variance (clipped to avoid division by zero)
-        let confidence = (A::one() + avg_variance).recip();
-
-        Ok((prediction, confidence))
-    }
-}
-
-impl<A> Predict<Array2<A>> for TransformerModel<A>
-where
-    A: Float + FromPrimitive + ScalarOperand,
-    Params<A>: Forward<Array2<A>, Output = Array2<A>>,
-{
-    type Confidence = A;
-    type Output = Array2<A>;
-
-    fn predict(&self, input: &Array2<A>) -> Result<Self::Output, NeuralError> {
-        let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
-
-        for layer in self.params().hidden() {
-            output = layer.forward_then(&output, |y| y.relu())?;
-        }
-
-        let y = self
-            .params()
-            .output()
-            .forward_then(&output, |y| y.sigmoid())?;
-        Ok(y)
-    }
-
-    fn predict_with_confidence(
-        &self,
-        input: &Array2<A>,
-    ) -> Result<(Self::Output, Self::Confidence), NeuralError> {
-        // Get the base prediction
-        let prediction = Predict::predict(self, input)?;
-        // Calculate confidence as the inverse of the variance of the output
-        // For each sample, compute the variance across the output dimensions
-        let batch_size = prediction.shape()[0];
-        let mut variance_sum = A::zero();
-
-        for i in 0..batch_size {
-            let sample = prediction.row(i);
-            // Compute variance
-            let variance = sample.var(A::one());
-            variance_sum = variance_sum + variance;
-        }
-
-        // Average variance across the batch
-        let avg_variance = variance_sum / A::from_usize(batch_size).unwrap();
-        // Confidence: inverse of variance (clipped to avoid division by zero)
-        let confidence = (A::one() + avg_variance).recip();
-
-        Ok((prediction, confidence))
     }
 }
 

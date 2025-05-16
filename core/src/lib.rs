@@ -25,7 +25,6 @@ pub use self::{
     traits::prelude::*, utils::prelude::*,
 };
 
-#[allow(unused)]
 #[macro_use]
 pub(crate) mod macros;
 #[allow(unused)]
@@ -72,6 +71,7 @@ pub mod traits {
     pub mod propagation;
     pub mod scalar;
     pub mod tensor;
+    pub mod wnb;
 
     pub(crate) mod prelude {
         #[doc(inline)]
@@ -94,6 +94,8 @@ pub mod traits {
         pub use super::scalar::*;
         #[doc(inline)]
         pub use super::tensor::*;
+        #[doc(inline)]
+        pub use super::wnb::*;
     }
 }
 

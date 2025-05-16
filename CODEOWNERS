@@ -1,0 +1,3 @@
+# the default owners of all files and directories within the repository
+# except those that are explicitly assigned to other owners.
+*       @fl03 @scattered-systems

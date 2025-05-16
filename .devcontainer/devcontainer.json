@@ -1,0 +1,18 @@
+// For more information of features, see: https://containers.dev/features
+// For more information on dev containers, see: https://aka.ms/devcontainer
+// For more information on non-default roots, see:  https://aka.ms/dev-containers-non-root
+// For formatting details, see: https://aka.ms/devcontainer.json
+// For config options, see: https://github.com/devcontainers/templates/tree/main/src/rust
+{
+  "name": "rust",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "customizations": {},
+  "forwardPorts": [],
+  "mounts": [],
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {
+      "profile": "minimal",
+      "version": "latest"
+    }
+  }
+}
