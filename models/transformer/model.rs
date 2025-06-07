@@ -2,13 +2,11 @@
     Appellation: transformer <module>
     Contrib: @FL03
 */
-use concision_core::{Forward, Norm, Params, ReLU, Sigmoid};
+use concisione::{Forward, Norm, Params, ReLU, Sigmoid};
 
 #[cfg(feature = "rand")]
-use concision_core::init::rand_distr;
-use concision_neural::{
-    Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train,
-};
+use concision::init::rand_distr;
+use concision::nn::{Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};

@@ -315,6 +315,7 @@ dependencies = [
  "num-traits",
  "rayon",
  "reqwest",
+ "scsys",
  "serde",
  "serde_json",
  "thiserror",
@@ -331,28 +332,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "concision-ext"
+version = "0.1.23"
+dependencies = [
+ "anyhow",
+ "approx",
+ "concision",
+ "concision-transformer",
+ "lazy_static",
+ "ndarray",
+ "num-traits",
+ "scsys",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "concision-macros"
 version = "0.1.23"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "concision-models"
-version = "0.1.23"
-dependencies = [
- "anyhow",
- "approx",
- "concision-core",
- "concision-neural",
- "concision-transformer",
- "lazy_static",
- "ndarray",
- "num-traits",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -388,8 +389,7 @@ version = "0.1.23"
 dependencies = [
  "anyhow",
  "approx",
- "concision-core",
- "concision-neural",
+ "concision",
  "ndarray",
  "num-traits",
  "tracing",

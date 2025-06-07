@@ -85,7 +85,6 @@ full = [
 attention = []
 
 # ************* [FF:Environments] *************
-
 std = [
     "anyhow?/std",
     "concision-core/std",
@@ -100,6 +99,16 @@ std = [
     "strum/std",
     "thiserror/std",
     "tracing?/std",
+]
+
+wasi = [
+    "concision-core/wasi",
+    "scsys/wasi",
+]
+
+wasm = [
+    "concision-core/wasm",
+    "scsys/wasm",
 ]
 
 # ************* [FF:Dependencies] *************
@@ -134,12 +143,14 @@ rand = [
     "concision-core/rand", 
     "concision-data/rand", 
     "num/rand", 
-    "rng"
+    "rng",
+    "scsys/rand",
 ]
 
 rng = [
     "concision-core/rng", 
     "concision-data/rng",
+    "scsys/rng",
 ]
 
 rayon = [
@@ -160,13 +171,17 @@ serde = [
     "dep:serde", 
     "dep:serde_derive", 
     "ndarray/serde", 
-    "num/serde"
+    "num/serde",
+    "scsys/serde",
 ]
 
 serde_json = ["dep:serde_json"]
 
 tracing = [
-    "concision-core/tracing", "concision-data/tracing", "dep:tracing"
+    "dep:tracing",
+    "concision-core/tracing", 
+    "concision-data/tracing",
+    "scsys/tracing",
 ]
 
 # ************* [Unit Tests] *************

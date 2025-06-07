@@ -8,9 +8,11 @@ extern crate concision_core as cnc;
 #[cfg(feature = "simple")]
 pub mod simple;
 #[cfg(feature = "transformer")]
-pub use transformer;
+pub use concicion_transformer as transformer;
 
 pub mod prelude {
     #[cfg(feature = "simple")]
     pub use crate::simple::SimpleModel;
+    #[cfg(feature = "transformer")]
+    pub use concision_transformer::TransformerModel;
 }

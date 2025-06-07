@@ -34,7 +34,8 @@ test = true
 
 [dependencies]
 concision-core = { workspace = true }
-
+# custom
+scsys = { workspace = true }
 # error handling
 anyhow = { optional = true, workspace = true }
 thiserror = { workspace = true }
@@ -55,30 +56,61 @@ serde_json = { optional = true, workspace = true }
 tracing = { optional = true, workspace = true }
 
 [features]
-default = ["std"]
+default = [
+    "std",
+]
 
 full = [
+    "default",
     "anyhow",
     "approx",
     "complex",
-    "default",
     "json",
     "rand",
     "serde",
     "tracing",
 ]
+# ************* [FF:Features] *************
+loader = [
+    "json", 
+    "reqwest",
+]
 
-loader = ["json", "reqwest"]
+# ************* [FF:Environments] *************
+std = [
+    "alloc",
+    "concision-core/std",
+    "ndarray/std",
+    "num/std",
+    "num-complex?/std",
+    "scsys/std",
+    "serde?/std",
+    "serde_json?/std",
+    "tracing?/std",
+]
 
+wasi = [
+    "concision-core/wasi",
+    "scsys/wasi",
+]
 
-# ********* [FF] Dependencies *********
+wasm = [
+    "concision-core/wasm",
+    "scsys/wasm",
+]
+
+# ************* [FF:Dependencies] *************
 alloc = [
     "concision-core/alloc",
     "num/alloc",
     "serde?/alloc"
 ]
 
-anyhow = ["dep:anyhow", "concision-core/anyhow"]
+anyhow = [
+    "dep:anyhow", 
+    "concision-core/anyhow",
+    "scsys/anyhow",
+]
 
 approx = [
     "concision-core/approx",
@@ -98,9 +130,11 @@ complex = [
 
 json = [
     "alloc",
-    "dep:serde_json",
+    "serde",
+    "serde_json",
     "concision-core/json",
     "reqwest?/json",
+    "scsys/json",
 ]
 
 rayon = [
@@ -108,13 +142,18 @@ rayon = [
     "dep:rayon",
 ]
 
-rand = ["concision-core/rand", "rng"]
-
-rng = ["concision-core/rng"]
-
-reqwest = [
-    "dep:reqwest",
+rand = [
+    "concision-core/rand", 
+    "rng",
+    "scsys/rand",
 ]
+
+rng = [
+    "concision-core/rng",
+    "scsys/rng",
+]
+
+reqwest = ["dep:reqwest"]
 
 serde = [
     "dep:serde",
@@ -122,22 +161,15 @@ serde = [
     "ndarray/serde",
     "num/serde",
     "num-complex?/serde",
+    "scsys/serde",
 ]
+
+serde_json = ["dep:serde_json"]
 
 tracing = [
     "concision-core/tracing",
     "dep:tracing",
-]
-
-std = [
-    "alloc",
-    "concision-core/std",
-    "ndarray/std",
-    "num/std",
-    "num-complex?/std",
-    "serde?/std",
-    "serde_json?/std",
-    "tracing?/std",
+    "scsys/tracing",
 ]
 
 # ************* [Unit Tests] *************

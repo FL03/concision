@@ -1,7 +1,6 @@
 [package]
 description = "this crate implements the transformer model using the concision framework"
 name = "concision-transformer"
-publish = false
 
 authors.workspace = true
 categories.workspace = true
@@ -34,16 +33,16 @@ doctest = true
 test = true
 
 [dependencies]
-concision-core = { workspace = true }
-concision-neural = { workspace = true }
-
+# sdk
+concision = { workspace = true }
+# error
+anyhow = { optional = true, workspace = true }
+# mathematics
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
 num-traits = { workspace = true }
+# logging
 tracing = { optional = true, workspace = true }
-
-[dev-dependencies]
-anyhow = { workspace = true }
 
 [features]
 default = [
@@ -59,53 +58,50 @@ full = [
 
 # ************* [FF:Environments] *************
 std = [
-    "concision-core/std",
-    "concision-neural/std",
+    "concision/std",
     "ndarray/std",
     "num-traits/std",
     "tracing/std",
 ]
 
 wasi = [
-    "concision-core/wasi",
+    "concision/wasi",
 ]
 
 wasm = [
-    "concision-core/wasm",
+    "concision/wasm",
 ]
 
 # ************* [FF:Dependencies] *************
+anyhow = [
+    "dep:anyhow",
+    "concision/anyhow", 
+]
 approx = [
     "dep:approx",
-    "concision-core/approx", 
-    "concision-neural/approx", 
+    "concision/approx", 
     "ndarray/approx",
 ]
 
 blas = [
-    "concision-core/blas", 
-    "concision-neural/blas", 
+    "concision/blas", 
     "ndarray/blas"
 ]
 
 rand = [
-    "concision-core/rand", 
-    "concision-neural/rand"
+    "concision/rand", 
 ]
 
 rayon = [
-    "concision-core/rayon", 
-    "concision-neural/rayon", 
+    "concision/rayon", 
     "ndarray/rayon"
 ]
 
 serde = [
-    "concision-core/serde", 
-    "concision-neural/serde"
+    "concision/serde", 
 ]
 
 tracing = [
-    "concision-core/tracing", 
-    "concision-neural/tracing", 
-    "dep:tracing"
+    "dep:tracing",
+    "concision/tracing", 
 ]

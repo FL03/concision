@@ -11,9 +11,10 @@ updates:
       - /data
       - /derive
       - /macros
-      - /models
       - /neural
       - /utils
+      - /ext
+      - /models/*
   - package-ecosystem: devcontainers
     directory: /
     schedule:

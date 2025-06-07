@@ -8,69 +8,14 @@
 
 _**Warning: The library still in development and is not yet ready for production use.**_
 
-Welcome to `concision`, a modern machine learning framework for Rust. This library is designed to be a simple and efficient way to build machine learning models in Rust, with a focus on ease of use and flexibility.
+**Note:** It is important to note that a primary consideration of the `concision` framework is ensuring compatibility in two key areas:
 
-Another focus of the library is supporting is the `autodiff` experimental feature being natively introduced into the rust toolchain.
-
-## Getting Started
-
-### Prerequisites
-
-To use `concision`, you need to have the following installed:
-
-- [Rust](https://www.rust-lang.org/tools/install) (version 1.85 or later)
-
-### Installation
-
-You can install the `rustup` toolchain using the following command:
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-After installing `rustup`, you can install the latest stable version of Rust with:
-
-```bash
-rustup install stable
-```
-
-You can also install the latest nightly version of Rust with:
-
-```bash
-rustup install nightly
-```
-
-### Building from the source
-
-Start by cloning the repository
-
-```bash
-git clone https://github.com/FL03/concision.git
-```
-
-Then, navigate to the `concision` directory:
-
-```bash
-cd concision
-```
-
-#### _Using the `cargo` tool_
-
-To build the crate, you can use the `cargo` tool. The following command will build the crate with all features enabled:
-
-```bash
-cargo build -r --locked --workspace --features full
-```
-
-To run the tests, you can use the following command:
-
-```bash
-cargo test -r --locked --workspace --features full
-```
+- `autodiff`: the upcoming feature enabling rust to natively support automatic differentiation.
+- [`ndarray`](https://docs.rs/ndarray): The crate is designed around the `ndarray` crate, which provides a powerful N-dimensional array type for Rust
 
 ## Usage
 
-### Adding to your projec
+### Adding to your project
 
 To use `concision` in your project, add the following to your `Cargo.toml`:
 
@@ -159,10 +104,65 @@ version = "0.1.x"
     }
 ```
 
+## Getting Started
+
+### Prerequisites
+
+To use `concision`, you need to have the following installed:
+
+- [Rust](https://www.rust-lang.org/tools/install) (version 1.85 or later)
+
+### Installation
+
+You can install the `rustup` toolchain using the following command:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+After installing `rustup`, you can install the latest stable version of Rust with:
+
+```bash
+rustup install stable
+```
+
+You can also install the latest nightly version of Rust with:
+
+```bash
+rustup install nightly
+```
+
+### Building from the source
+
+Start by cloning the repository
+
+```bash
+git clone https://github.com/FL03/concision.git
+```
+
+Then, navigate to the `concision` directory:
+
+```bash
+cd concision
+```
+
+#### _Using the `cargo` tool_
+
+To build the crate, you can use the `cargo` tool. The following command will build the crate with all features enabled:
+
+```bash
+cargo build -r --locked --workspace --features full
+```
+
+To run the tests, you can use the following command:
+
+```bash
+cargo test -r --locked --workspace --features full
+```
+
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
