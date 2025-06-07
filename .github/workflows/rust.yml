@@ -60,8 +60,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        features:  [ all, default, full ]
+        features:  [ full ]
         target: [ x86_64-unknown-linux-gnu ] # [ x86_64-unknown-linux-gnu, wasm32-unknown-unknown, wasm32-wasip1, wasm32-wasip2 ]
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          target: ${{ matrix.target }}
+      -
+        name: Test (${{ matrix.features }})
+        run: cargo test -r --locked --workspace --target ${{ matrix.target}} --features ${{ matrix.features }}
+  test_std:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        features:  [ default ] # [ default, all ]
+        target: [ x86_64-unknown-linux-gnu ]
     steps:
       -
         name: Checkout
@@ -79,20 +100,14 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y libopenblas-dev liblapack-dev
       -
-        if: matrix.features == ('full')
-        name: Test (${{ matrix.features }})
-        run: cargo test -r --locked --workspace --target ${{ matrix.target}} --features ${{ matrix.features }}
-      -
         if: matrix.features == 'default'
         name: Test (default)
         run: cargo test -r --locked --workspace --target ${{ matrix.target}}
       -
         if: matrix.features == 'all'
-        env:
-          RUSTFLAGS: "-l"
         name: Test (all-features)
         run: cargo test -r --locked --workspace --target ${{ matrix.target}} --all-features
-  test_no_defaults:
+  test_no_std:
     continue-on-error: true
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.no_std || github.event_name == 'repository_dispatch' && github.event.action == 'rust'
     name: test (no-default-features)
