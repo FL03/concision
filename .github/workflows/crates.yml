@@ -1,57 +1,60 @@
-name: crates-io
+name: release
 
-concurrency:
+concurrency:   
   cancel-in-progress: false
   group: ${{ github.workflow }}-${{ github.ref }}
 
 env:
-  CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
   CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: full
 
 on:
-  push:
-    tags: [ v*, "*-nightly" ]
+  release:
+    types: [ published ]
   repository_dispatch:
     types: [ crates-io ]
   workflow_dispatch:
+    inputs:
+      environment:
+        default: 'crates-io'
+        description: 'Environment to publish to'
+        required: true
+        type: environment
 
 permissions:
-  contents: read
+  contents: write
   deployments: read
-  packages: write
+  discussions: write
 
 jobs:
-  features:
+  crates-io:
+    env:
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+    environment:
+      name: 'crates-io'
+      url: https://crates.io/crates/${{ github.event.repository.name }}
     strategy:
-      max-parallel: 1
       fail-fast: false
+      max-parallel: 1
       matrix:
-        feature: [ "utils", "core", "data", "neural", "derive", "macros" ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - 
-        name: rustup
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-      - 
-        name: cache
-        uses: Swatinem/rust-cache@v2
-      - 
-        name: publish (${{ matrix.feature }})
-        run: cargo publish --all-features -v -p concision-${{ matrix.feature }}
-  root:
-    needs: [features]
+        package:  
+          - concision-utils
+          - concision-core
+          - concision-data
+          - concision-neural
+          - concision-derive
+          - concision-macros
+          - concision
     runs-on: ubuntu-latest
     steps:
       - 
-        name: checkout
+        name: Checkout
         uses: actions/checkout@v4
       - 
-        name: rustup
+        name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - 
-        name: cache
-        uses: Swatinem/rust-cache@v2
-      - 
-        name: publish
-        run: cargo publish --all-features -v -p concision
+        name: Publish (${{ matrix.package }})
+        run: cargo publish --locked --package ${{ matrix.package }}

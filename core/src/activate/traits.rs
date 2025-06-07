@@ -70,7 +70,7 @@ pub trait ActivateMut<A> {
         F: FnMut(A) -> A;
 }
 /// This trait extends the [`Activate`] trait with a number of additional activation functions
-/// and their derivatives. _**Note:**_ this trait is automatically implemented for any type 
+/// and their derivatives. _**Note:**_ this trait is automatically implemented for any type
 /// that implements the [`Activate`] trait eliminating the need to implement it manually.
 pub trait ActivateExt<U>: Activate<U> {
     fn linear(&self) -> Self::Cont<U::Output>

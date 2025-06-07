@@ -1,23 +1,53 @@
 [package]
-authors = [
-    "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", 
-    "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"
-]
-edition = "2024"
-license = "Apache-2.0"
+description = "this crate implements the transformer model using the concision framework"
 name = "concision-transformer"
-readme = "README.md"
-version = "0.1.0"
+publish = false
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
 
 [lib]
-crate-type = ["cdylib", "rlib"]
-name = "transformer"
+crate-type = [
+    "cdylib",
+    "rlib",
+]
 path = "model.rs"
+bench = false
+doc = true
+doctest = true
+test = true
+
+[dependencies]
+concision-core = { workspace = true }
+concision-neural = { workspace = true }
+
+approx = { optional = true, workspace = true }
+ndarray = { workspace = true }
+num-traits = { workspace = true }
+tracing = { optional = true, workspace = true }
+
+[dev-dependencies]
+anyhow = { workspace = true }
 
 [features]
 default = [
-    "concision-core/std", 
-    "concision-neural/default"
+    "std",
 ]
 
 full = [
@@ -27,7 +57,24 @@ full = [
     "tracing"
 ]
 
-# ********* [FF] Dependencies *********
+# ************* [FF:Environments] *************
+std = [
+    "concision-core/std",
+    "concision-neural/std",
+    "ndarray/std",
+    "num-traits/std",
+    "tracing/std",
+]
+
+wasi = [
+    "concision-core/wasi",
+]
+
+wasm = [
+    "concision-core/wasm",
+]
+
+# ************* [FF:Dependencies] *************
 approx = [
     "dep:approx",
     "concision-core/approx", 
@@ -62,16 +109,3 @@ tracing = [
     "concision-neural/tracing", 
     "dep:tracing"
 ]
-
-[dependencies]
-concision-core = { features = ["std"], path = "../../../core" }
-concision-neural = { path = "../../../neural" }
-
-approx = { optional = true, version = "0.5" }
-ndarray = { features = ["std"], version = "0.16" }
-num-traits = { version = "0.2" }
-tracing = { optional = true, version = "0.1" }
-
-[dev-dependencies]
-anyhow = "1"
-

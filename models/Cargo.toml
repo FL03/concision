@@ -1,28 +1,60 @@
 [package]
+description = "this crate implements additional models using the concision framework"
 name = "concision-models"
 publish = false
 
 authors.workspace = true
 categories.workspace = true
-description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 repository.workspace = true
+rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
+
 [lib]
-bench = true
-crate-type = ["cdylib", "rlib"]
-doctest = false
+crate-type = [
+    "cdylib",
+    "rlib",
+]
+bench = false
+doc = true
+doctest = true
 test = true
 
+[dependencies]
+concision-core = { features = ["std"], workspace = true }
+concision-neural = { workspace = true }
+
+concision-transformer = { optional = true, path = "lib/transformer", version = "0.1.0" }
+
+approx = { optional = true, workspace = true }
+ndarray = { features = ["std"], workspace = true }
+num-traits = { workspace = true }
+tracing = { optional = true, workspace = true }
+
+[dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
+lazy_static ={ workspace = true }
+tracing-subscriber = { features = ["std"], workspace = true }
+
 [features]
-default = ["simple"]
+default = [
+    "simple",
+]
 
 full = [
+    "anyhow",
     "default", 
     "models",
     "rand", 
@@ -30,6 +62,7 @@ full = [
     "tracing"
 ]
 
+# ************* [FF:Features] *************
 models = [
     "simple", 
     "transformer"
@@ -39,7 +72,10 @@ simple = []
 
 transformer = ["dep:concision-transformer"]
 
-# ********* [FF] Dependencies *********
+# ************* [FF:Dependencies] *************
+anyhow = [
+    "concision-core/anyhow",
+]
 
 approx = [
     "dep:approx",
@@ -82,27 +118,12 @@ tracing = [
     "concision-transformer?/tracing",
 ]
 
-[dependencies]
-concision-core = { features = ["std"], workspace = true }
-concision-neural = { workspace = true }
-
-concision-transformer = { optional = true, path = "lib/transformer", version = "0.1.0" }
-
-approx = { optional = true, workspace = true }
-ndarray = { features = ["std"], workspace = true }
-num-traits = { workspace = true }
-tracing = { optional = true, version = "0.1" }
-
-[dev-dependencies]
-anyhow = "1"
-lazy_static = "1"
-tracing-subscriber = { features = ["std"], workspace = true }
-
-# ********* Examples *********
+# ************* [Examples] *************
 [[example]]
 name = "simple"
 required-features = ["approx", "rand", "tracing"]
 
+# ************* [FF:Dependencies] *************
 [[test]]
 name = "simple"
 required-features = ["approx", "rand"]
