@@ -1,20 +1,77 @@
 [package]
 build = "build.rs"
+description = "this crate implements the core modules for the concision framework"
 name = "concision-core"
 
 authors.workspace = true
 categories.workspace = true
-description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 repository.workspace = true
+rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
+
+[lib]
+crate-type = [
+    "cdylib",
+    "rlib",
+]
+bench = false
+doc = true
+doctest = true
+test = true
+
+[dependencies]
+#  local
+concision-utils = { workspace = true }
+# custom
+scsys = { workspace = true }
+scsys-derive = { workspace = true }
+# concurrency & parallelism
+rayon = { optional = true, workspace = true }
+# data & serialization
+serde = { features = ["derive"], optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
+# error-handling
+anyhow = { optional = true, workspace = true }
+thiserror = { workspace = true }
+# logging
+tracing = { optional = true, workspace = true }
+# macros & utilities
+paste = { workspace = true }
+smart-default = { workspace = true }
+strum = { workspace = true }
+# mathematics
+approx = { optional = true, workspace = true }
+ndarray = { workspace = true }
+num = { workspace = true }
+num-complex = { optional = true, workspace = true }
+num-traits = { workspace = true }
+# random
+getrandom = { default-features = false, optional = true, workspace = true }
+rand = { optional = true, workspace = true }
+rand_distr = { optional = true, workspace = true }
+
+[dev-dependencies]
+lazy_static.workspace = true
+
 [features]
-default = [ "std" ]
+default = [ 
+    "std",
+]
+
 full = [
     "anyhow",
     "approx",
@@ -26,19 +83,51 @@ full = [
     "tracing",
 ]
 
+# ************* [FF:Features] *************
 signal =[
     "complex",
     "concision-utils/signal"
 ]
 
-# ********* [FF] Dependencies *********
+# ************* [FF:Dependencies] *************
+std = [
+    "alloc",
+    "anyhow?/std",
+    "concision-utils/std",
+    "ndarray/std",
+    "num/std",
+    "num-complex?/std",
+    "num-traits/std",
+    "rand?/std",
+    "rand?/std_rng",
+    "serde/std",
+    "scsys/std",
+    "strum/std",
+    "thiserror/std",
+    "tracing?/std",
+]
+
+wasi = [
+    "scsys/wasi",
+]
+
+wasm = [
+    "getrandom?/wasm_js",
+    "scsys/wasm",
+]
+# ************* [FF:Dependencies] *************
 alloc = [
     "concision-utils/alloc",
     "num/alloc",
-    "serde?/alloc"
+    "serde?/alloc",
+    "serde_json?/alloc",
+    "scsys/alloc",
 ]
 
-anyhow = ["dep:anyhow"]
+anyhow = [
+    "dep:anyhow",    
+    "scsys/anyhow",
+]
 
 approx = [
     "concision-utils/approx",
@@ -57,9 +146,10 @@ complex = [
 ]
 
 json = [
-    "dep:serde_json",
-    "serde_json?/alloc",
-    "serde"
+    "alloc",
+    "serde",
+    "serde_json",
+    "scsys/json",
 ]
 
 rand = [
@@ -69,6 +159,7 @@ rand = [
     "num/rand",
     "num-complex?/rand",
     "rng",
+    "scsys/rand",
 ]
 
 rayon = [
@@ -82,6 +173,7 @@ rng = [
     "concision-utils/rng",
     "rand?/small_rng",
     "rand?/thread_rng",
+    "scsys/rng",
 ]
 
 rustfft = [
@@ -97,81 +189,28 @@ serde = [
     "num-complex?/serde",
     "rand?/serde",
     "rand_distr?/serde",
+    "scsys/serde",
 ]
+
+serde_json = ["dep:serde_json"]
 
 tracing = [
     "concision-utils/tracing",
     "dep:tracing",
+    "scsys/tracing",
 ]
 
-# ********* [FF] Environments *********
-std = [
-    "alloc",
-    "anyhow?/std",
-    "concision-utils/std",
-    "ndarray/std",
-    "num/std",
-    "num-complex?/std",
-    "num-traits/std",
-    "rand?/std",
-    "rand?/std_rng",
-    "serde/std",
-    "strum/std",
-    "thiserror/std",
-    "tracing?/std",
-]
-
-[lib]
-bench = false
-crate-type = [
-    "cdylib",
-    "rlib",
-]
-doctest = false
-test = true
-
-[dev-dependencies]
-lazy_static.workspace = true
-
-[dependencies]
-# custom / local
-concision-utils = { workspace = true }
-scsys-derive = { workspace = true }
-# standard deps
-anyhow = { optional = true, workspace = true }
-approx = { optional = true, workspace = true }
-ndarray = { workspace = true }
-num = { workspace = true }
-num-complex = { optional = true, workspace = true }
-num-traits = { workspace = true }
-paste = { workspace = true }
-rayon = { optional = true, workspace = true }
-serde = { features = ["derive"], optional = true, workspace = true }
-serde_derive = { optional = true, workspace = true }
-serde_json = { optional = true, workspace = true }
-smart-default = { workspace = true }
-strum = { workspace = true }
-thiserror = { workspace = true }
-tracing = { optional = true, workspace = true }
-
-# random
-getrandom = { default-features = false, optional = true, workspace = true }
-rand = { optional = true, workspace = true }
-rand_distr = { optional = true, workspace = true }
-
-[package.metadata.docs.rs]
-all-features = true
-rustc-args = [
-    "--cfg",
-    "docsrs",
-]
-
+# ************* [Unit Tests] *************
 [[test]]
 name = "default"
 
 [[test]]
 name = "init"
 required-features = ["rand", "std"]
+
+[[test]]
+name = "params"
+required-features = ["approx", "rand", "std"]
 
 [[test]]
 name = "traits"

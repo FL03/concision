@@ -1,46 +1,116 @@
 [package]
 build = "build.rs"
+description = "this crate provides additional tools for working with datasets"
 name = "concision-data"
 
 authors.workspace = true
 categories.workspace = true
-description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 repository.workspace = true
+rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
+
 [lib]
-crate-type = ["cdylib", "rlib"]
+crate-type = [
+    "cdylib",
+    "rlib",
+]
+bench = false
+doc = true
+doctest = true
+test = true
+
+[dependencies]
+concision-core = { workspace = true }
+# custom
+scsys = { workspace = true }
+# error handling
+anyhow = { optional = true, workspace = true }
+thiserror = { workspace = true }
+# mathematics
+approx = { optional = true, workspace = true }
+ndarray = { workspace = true }
+num = { workspace = true }
+num-traits = { workspace = true }
+num-complex = { optional = true, workspace = true }
+# concurrency & parallelism
+rayon = { optional = true, workspace = true }
+# networking
+reqwest = { optional = true, workspace = true }
+# data & serialization
+serde = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
+# logging
+tracing = { optional = true, workspace = true }
 
 [features]
-default = ["std"]
+default = [
+    "std",
+]
 
 full = [
+    "default",
     "anyhow",
     "approx",
     "complex",
-    "default",
     "json",
     "rand",
     "serde",
     "tracing",
 ]
+# ************* [FF:Features] *************
+loader = [
+    "json", 
+    "reqwest",
+]
 
-loader = ["json", "reqwest"]
+# ************* [FF:Environments] *************
+std = [
+    "alloc",
+    "concision-core/std",
+    "ndarray/std",
+    "num/std",
+    "num-complex?/std",
+    "scsys/std",
+    "serde?/std",
+    "serde_json?/std",
+    "tracing?/std",
+]
 
+wasi = [
+    "concision-core/wasi",
+    "scsys/wasi",
+]
 
-# ********* [FF] Dependencies *********
+wasm = [
+    "concision-core/wasm",
+    "scsys/wasm",
+]
+
+# ************* [FF:Dependencies] *************
 alloc = [
     "concision-core/alloc",
     "num/alloc",
     "serde?/alloc"
 ]
 
-anyhow = ["dep:anyhow", "concision-core/anyhow"]
+anyhow = [
+    "dep:anyhow", 
+    "concision-core/anyhow",
+    "scsys/anyhow",
+]
 
 approx = [
     "concision-core/approx",
@@ -60,9 +130,11 @@ complex = [
 
 json = [
     "alloc",
-    "dep:serde_json",
+    "serde",
+    "serde_json",
     "concision-core/json",
     "reqwest?/json",
+    "scsys/json",
 ]
 
 rayon = [
@@ -70,13 +142,18 @@ rayon = [
     "dep:rayon",
 ]
 
-rand = ["concision-core/rand", "rng"]
-
-rng = ["concision-core/rng"]
-
-reqwest = [
-    "dep:reqwest",
+rand = [
+    "concision-core/rand", 
+    "rng",
+    "scsys/rand",
 ]
+
+rng = [
+    "concision-core/rng",
+    "scsys/rng",
+]
+
+reqwest = ["dep:reqwest"]
 
 serde = [
     "dep:serde",
@@ -84,41 +161,18 @@ serde = [
     "ndarray/serde",
     "num/serde",
     "num-complex?/serde",
+    "scsys/serde",
 ]
+
+serde_json = ["dep:serde_json"]
 
 tracing = [
     "concision-core/tracing",
     "dep:tracing",
+    "scsys/tracing",
 ]
 
-std = [
-    "alloc",
-    "concision-core/std",
-    "ndarray/std",
-    "num/std",
-    "num-complex?/std",
-    "serde?/std",
-    "serde_json?/std",
-    "tracing?/std",
-]
-
-[dependencies]
-concision-core = { workspace = true }
-
-anyhow = { optional = true, workspace = true }
-approx = { optional = true, workspace = true }
-ndarray = { workspace = true }
-num = { workspace = true }
-num-traits = { workspace = true }
-num-complex = { optional = true, workspace = true }
-rayon = { optional = true, workspace = true }
-reqwest = { optional = true, workspace = true }
-serde = { optional = true, workspace = true }
-serde_json = { optional = true, workspace = true }
-thiserror = { workspace = true }
-tracing = { optional = true, workspace = true }
-
-
+# ************* [Unit Tests] *************
 [[test]]
 name = "default"
 

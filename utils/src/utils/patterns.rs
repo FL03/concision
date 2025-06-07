@@ -72,12 +72,11 @@ where
                 let mut similarity_score = T::zero();
 
                 // Check other sequences
-                for j in 0..history.len() {
+                for (j, other_seq) in history.iter().enumerate() {
                     if i == j {
                         continue; // Skip self
                     }
 
-                    let other_seq = &history[j];
                     if other_seq.len() < pattern.len() {
                         continue;
                     }

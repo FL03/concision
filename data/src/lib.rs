@@ -16,12 +16,11 @@ pub mod dataset;
 #[cfg(feature = "loader")]
 pub mod loader;
 
-#[allow(unused)]
 #[macro_use]
-pub(crate) mod macros;
-#[allow(unused)]
-#[macro_use]
-pub(crate) mod seal;
+pub(crate) mod macros {
+    #[macro_use]
+    pub mod seal;
+}
 
 pub mod traits {
     #[doc(inline)]

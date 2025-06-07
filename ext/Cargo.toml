@@ -1,0 +1,141 @@
+[package]
+build = "build.rs"
+description = "this crate implements additional models using the concision framework"
+name = "concision-ext"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
+
+[lib]
+crate-type = [
+    "cdylib",
+    "rlib",
+]
+bench = false
+doc = true
+doctest = true
+test = true
+
+[dependencies]
+concision-transformer = { optional = true, workspace = true }
+# local
+concision = { features = ["neural"], workspace = true }
+# custom
+scsys = { workspace = true }
+# error handling
+anyhow = { optional = true, workspace = true }
+# mathematics
+approx = { optional = true, workspace = true }
+ndarray = { workspace = true }
+num-traits = { workspace = true }
+# logging
+tracing = { optional = true, workspace = true }
+
+[dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
+lazy_static ={ workspace = true }
+tracing-subscriber = { features = ["std"], workspace = true }
+
+[features]
+default = [
+    "simple",
+    "std",
+]
+
+full = [
+    "anyhow",
+    "default", 
+    "models",
+    "rand", 
+    "serde", 
+    "tracing"
+]
+
+# ************* [FF:Features] *************
+models = [
+    "simple", 
+    "transformer"
+]
+
+simple = []
+
+transformer = ["dep:concision-transformer"]
+
+# ************* [FF:Environments] *************
+std = [
+    "concision/std", 
+    "concision-transformer?/std",
+    "scsys/std",
+    "ndarray/std",
+    "num-traits/std",
+    "tracing?/std",
+]
+
+# ************* [FF:Dependencies] *************
+anyhow = [
+    "dep:anyhow",
+    "concision/anyhow",
+    "concision-transformer?/anyhow",
+    "scsys/anyhow",
+]
+
+approx = [
+    "dep:approx",
+    "concision/approx", 
+    "ndarray/approx",
+    "concision-transformer?/approx",
+]
+
+blas = [
+    "concision/blas", 
+    "ndarray/blas",
+    "concision-transformer?/blas",
+]
+
+rand = [
+    "concision/rand", 
+    "concision-transformer?/rand",
+]
+
+rayon = [
+    "concision/rayon", 
+    "ndarray/rayon",
+    "concision-transformer?/rayon",
+]
+
+serde = [
+    "concision/serde", 
+    "concision-transformer?/serde",
+]
+
+tracing = [
+    "concision/tracing", 
+    "dep:tracing",
+    "concision-transformer?/tracing",
+]
+
+# ************* [Examples] *************
+[[example]]
+name = "simple"
+required-features = ["anyhow", "approx", "rand", "tracing"]
+
+# ************* [FF:Dependencies] *************
+[[test]]
+name = "simple"
+required-features = ["anyhow", "approx", "rand"]

@@ -2,10 +2,11 @@
     Appellation: fft <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-extern crate concision_utils as concision;
+extern crate concision_utils as utils;
+
+use utils::signal::fft::*;
 
 use approx::assert_abs_diff_eq;
-use concision::signal::fourier::*;
 use lazy_static::lazy_static;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::Float;

@@ -1,3 +1,0 @@
-# Quickstart
-
-## Getting Started

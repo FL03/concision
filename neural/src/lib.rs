@@ -31,7 +31,10 @@ pub use self::{
 };
 
 #[macro_use]
-pub(crate) mod macros;
+pub(crate) mod macros {
+    #[macro_use]
+    pub mod seal;
+}
 
 pub mod error;
 pub mod layers;
@@ -61,14 +64,11 @@ pub mod types {
     pub use self::prelude::*;
 
     pub mod dropout;
-    pub mod features;
     pub mod hyperparameters;
 
     pub(crate) mod prelude {
         #[doc(inline)]
         pub use super::dropout::*;
-        #[doc(inline)]
-        pub use super::features::*;
         #[doc(inline)]
         pub use super::hyperparameters::*;
     }

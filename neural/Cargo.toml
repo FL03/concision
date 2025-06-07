@@ -1,4 +1,5 @@
 [package]
+build = "build.rs"
 description = "This library implements various abstractions for designing neural networks."
 name = "concision-neural"
 
@@ -10,71 +11,180 @@ keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 repository.workspace = true
+rust-version.workspace = true
 version.workspace = true
 
-[features]
-default = ["attention"]
-
-full = ["approx", "complex", "default", "rand", "rustfft", "serde", "tracing"]
-
-attention = []
-
-# ********* [FF] Dependencies *********
-approx = ["concision-core/approx", "concision-data/approx", "dep:approx", "ndarray/approx"]
-
-blas = ["concision-core/blas", "concision-data/blas", "ndarray/blas"]
-
-complex = ["concision-core/complex", "concision-data/complex", "dep:num-complex"]
-
-json = ["concision-core/json", "concision-data/json", "dep:serde_json", "serde_json?/alloc"]
-
-rand = ["concision-core/rand", "concision-data/rand", "num/rand", "rng"]
-
-rng = ["concision-core/rng", "concision-data/rng",]
-
-rayon = ["concision-core/rayon", "concision-data/rayon", "dep:rayon", "ndarray/rayon"]
-
-rustfft = ["dep:rustfft", "concision-core/rustfft"]
-
-serde = ["concision-core/serde", "concision-data/serde", "dep:serde", "dep:serde_derive", "ndarray/serde", "num/serde"]
-
-tracing = ["concision-core/tracing", "concision-data/tracing", "dep:tracing"]
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
 
 [lib]
+crate-type = [
+    "cdylib", 
+    "rlib"
+]
 bench = false
-crate-type = ["cdylib", "rlib"]
-doctest = false
+doc = true
+doctest = true
 test = true
-
-[build-dependencies]
 
 [dependencies]
 concision-core = { workspace = true }
 concision-data = { workspace = true }
+# custom
+scsys = { workspace = true }
 scsys-derive = { workspace = true }
-
-# Shared dependencies
-approx = { optional = true, workspace = true }
-either = { workspace = true }
-ndarray = { features = ["std"], workspace = true }
-num = { features = ["std"], workspace = true }
-num-traits = { features = ["std"], workspace = true }
-num-complex = { features = ["std"], optional = true, workspace = true }
-paste = { workspace = true }
+# concurrency & parallelism
 rayon = { optional = true, workspace = true }
+# math
+approx = { optional = true, workspace = true }
+ndarray = { workspace = true }
+num = { workspace = true }
+num-traits = { workspace = true }
+num-complex = { optional = true, workspace = true }
 rustfft = { optional = true, workspace = true }
-serde = { features = ["std"], optional = true, workspace = true }
+# data & serialization
+serde = { optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
-serde_json = { features = ["std"], optional = true, workspace = true }
-strum = { features = ["std"], workspace = true }
-thiserror = { features = ["std"], workspace = true }
-tracing = { features = ["std"], optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
+# macros & utilities
+either = { workspace = true }
+paste = { workspace = true }
+strum = { workspace = true }
+# error handling
+anyhow = { optional = true, workspace = true }
+thiserror = { workspace = true }
+# logging
+tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
-anyhow = { features = ["std"], workspace = true }
 lazy_static = { workspace = true }
 
-# ********* Unit tests *********
+[features]
+default = [
+    "attention",
+    "std",
+]
+
+full = [
+    "anyhow",
+    "approx", 
+    "complex", 
+    "default", 
+    "rand", 
+    "rustfft", 
+    "serde", 
+    "tracing"
+]
+
+# ************* [FF:Features] *************
+attention = []
+
+# ************* [FF:Environments] *************
+std = [
+    "anyhow?/std",
+    "concision-core/std",
+    "concision-data/std",
+    "ndarray/std",
+    "num/std",
+    "num-traits/std",
+    "num-complex?/std",
+    "scsys/std",
+    "serde?/std",
+    "serde_json?/std",
+    "strum/std",
+    "thiserror/std",
+    "tracing?/std",
+]
+
+wasi = [
+    "concision-core/wasi",
+    "scsys/wasi",
+]
+
+wasm = [
+    "concision-core/wasm",
+    "scsys/wasm",
+]
+
+# ************* [FF:Dependencies] *************
+approx = [
+    "concision-core/approx", 
+    "concision-data/approx", 
+    "dep:approx", 
+    "ndarray/approx",
+]
+
+blas = [
+    "concision-core/blas", 
+    "concision-data/blas", 
+    "ndarray/blas"
+]
+
+complex = [
+    "concision-core/complex", 
+    "concision-data/complex", 
+    "dep:num-complex"
+]
+
+json = [
+    "std",
+    "concision-core/json", 
+    "concision-data/json",
+    "serde_json", 
+    "serde_json?/alloc"
+]
+
+rand = [
+    "concision-core/rand", 
+    "concision-data/rand", 
+    "num/rand", 
+    "rng",
+    "scsys/rand",
+]
+
+rng = [
+    "concision-core/rng", 
+    "concision-data/rng",
+    "scsys/rng",
+]
+
+rayon = [
+    "concision-core/rayon", 
+    "concision-data/rayon", 
+    "dep:rayon", 
+    "ndarray/rayon"
+]
+
+rustfft = [
+    "dep:rustfft", 
+    "concision-core/rustfft"
+]
+
+serde = [
+    "concision-core/serde", 
+    "concision-data/serde", 
+    "dep:serde", 
+    "dep:serde_derive", 
+    "ndarray/serde", 
+    "num/serde",
+    "scsys/serde",
+]
+
+serde_json = ["dep:serde_json"]
+
+tracing = [
+    "dep:tracing",
+    "concision-core/tracing", 
+    "concision-data/tracing",
+    "scsys/tracing",
+]
+
+# ************* [Unit Tests] *************
 [[test]]
 name = "default"
 required-features = ["default"]

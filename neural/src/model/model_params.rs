@@ -2,10 +2,10 @@
     Appellation: store <module>
     Contrib: @FL03
 */
-use crate::ModelFeatures;
+use super::layout::ModelFeatures;
 use cnc::params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
-use num_traits::{Float, FromPrimitive, One, Zero};
+use num_traits::{One, Zero};
 
 pub type ModelParams<A = f64, D = Ix2> = ModelParamsBase<ndarray::OwnedRepr<A>, D>;
 
@@ -154,11 +154,11 @@ where
         A: Clone + Default,
         S: DataOwned,
     {
-        let input = ParamsBase::default(features.d_input());
+        let input = ParamsBase::default(features.dim_input());
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::default(features.d_hidden()))
+            .map(|_| ParamsBase::default(features.dim_hidden()))
             .collect::<Vec<_>>();
-        let output = ParamsBase::default(features.d_output());
+        let output = ParamsBase::default(features.dim_output());
         Self::new(input, hidden, output)
     }
     /// create a new instance of the model;
@@ -168,11 +168,11 @@ where
         A: Clone + One,
         S: DataOwned,
     {
-        let input = ParamsBase::ones(features.d_input());
+        let input = ParamsBase::ones(features.dim_input());
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::ones(features.d_hidden()))
+            .map(|_| ParamsBase::ones(features.dim_hidden()))
             .collect::<Vec<_>>();
-        let output = ParamsBase::ones(features.d_output());
+        let output = ParamsBase::ones(features.dim_output());
         Self::new(input, hidden, output)
     }
     /// create a new instance of the model;
@@ -182,11 +182,11 @@ where
         A: Clone + Zero,
         S: DataOwned,
     {
-        let input = ParamsBase::zeros(features.d_input());
+        let input = ParamsBase::zeros(features.dim_input());
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::zeros(features.d_hidden()))
+            .map(|_| ParamsBase::zeros(features.dim_hidden()))
             .collect::<Vec<_>>();
-        let output = ParamsBase::zeros(features.d_output());
+        let output = ParamsBase::zeros(features.dim_output());
         Self::new(input, hidden, output)
     }
 
@@ -198,28 +198,28 @@ where
         S: DataOwned,
     {
         use cnc::init::Initialize;
-        let input = ParamsBase::rand(features.d_input(), distr(features.d_input()));
+        let input = ParamsBase::rand(features.dim_input(), distr(features.dim_input()));
         let hidden = (0..features.layers())
-            .map(|_| ParamsBase::rand(features.d_hidden(), distr(features.d_hidden())))
+            .map(|_| ParamsBase::rand(features.dim_hidden(), distr(features.dim_hidden())))
             .collect::<Vec<_>>();
 
-        let output = ParamsBase::rand(features.d_output(), distr(features.d_output()));
+        let output = ParamsBase::rand(features.dim_output(), distr(features.dim_output()));
 
         Self::new(input, hidden, output)
     }
-
+    /// initialize the model parameters using a glorot normal distribution
     #[cfg(feature = "rand")]
     pub fn glorot_normal(features: ModelFeatures) -> Self
     where
-        cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
         S: DataOwned,
-        S::Elem: Float + FromPrimitive,
+        A: num_traits::Float + num_traits::FromPrimitive,
+        cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
     {
         Self::init_rand(features, |(rows, cols)| {
             cnc::init::XavierNormal::new(rows, cols)
         })
     }
-
+    /// initialize the model parameters using a glorot uniform distribution
     #[cfg(feature = "rand")]
     pub fn glorot_uniform(features: ModelFeatures) -> Self
     where
@@ -246,7 +246,7 @@ where
     fn clone(&self) -> Self {
         Self {
             input: self.input.clone(),
-            hidden: self.hidden.iter().map(|p| p.clone()).collect(),
+            hidden: self.hidden.to_vec(),
             output: self.output.clone(),
         }
     }

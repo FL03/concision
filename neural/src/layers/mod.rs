@@ -18,9 +18,26 @@ pub(crate) mod prelude {
 }
 
 use cnc::params::ParamsBase;
-use cnc::{Activate, ActivateGradient, Backward, Forward, Tensor};
+use cnc::{Backward, Forward, Tensor};
 
 use ndarray::{Data, Dimension, RawData};
+
+/// The [`Activate`] trait defines a method for applying an activation function to an input tensor.
+pub trait Activate<T> {
+    type Output;
+
+    /// Applies the activation function to the input tensor.
+    fn activate(&self, input: T) -> Self::Output;
+}
+/// The [`ActivateGradient`] trait extends the [`Activate`] trait to include a method for 
+/// computing the gradient of the activation function.
+pub trait ActivateGradient<T>: Activate<T> {
+    type Input;
+    type Delta;
+
+    /// compute the gradient of some input
+    fn activate_gradient(&self, input: Self::Input) -> Self::Delta;
+}
 
 /// A layer within a neural-network containing a set of parameters and an activation function.
 /// Here, this manifests as a wrapper around the parameters of the layer with a generic
@@ -50,7 +67,7 @@ where
     ) -> cnc::Result<Z>
     where
         S: Data,
-        Self: ActivateGradient<Y, Delta = Delta>,
+        Self: ActivateGradient<X, Input = Y, Delta = Delta>,
         Self::Scalar: Clone,
         ParamsBase<S, D>: Backward<X, Delta, Elem = Self::Scalar, Output = Z>,
     {
@@ -59,7 +76,7 @@ where
         // apply the backward function of the inherited layer
         self.params_mut().backward(&input, &delta, gamma)
     }
-    ///
+    /// complete a forward pass through the layer
     fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         Y: Tensor<S, D, Scalar = Self::Scalar>,
@@ -105,7 +122,7 @@ where
     type Output = U::Output;
 
     fn activate(&self, x: U) -> Self::Output {
-        cnc::Sigmoid::sigmoid(&x)
+        cnc::Sigmoid::sigmoid(x)
     }
 }
 
@@ -117,7 +134,7 @@ where
     type Delta = U::Output;
 
     fn activate_gradient(&self, x: U) -> Self::Delta {
-        cnc::Sigmoid::sigmoid(&x)
+        cnc::Sigmoid::sigmoid_derivative(x)
     }
 }
 

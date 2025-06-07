@@ -61,6 +61,7 @@ pub enum PadAction {
 )]
 #[strum(serialize_all = "snake_case")]
 #[repr(C)]
+#[derive(Default)]
 pub enum PadMode<T = f64> {
     Constant(T),
     Edge,
@@ -71,14 +72,10 @@ pub enum PadMode<T = f64> {
     Mode,
     Reflect,
     Symmetric,
+    #[default]
     Wrap,
 }
 
-impl<T> Default for PadMode<T> {
-    fn default() -> Self {
-        PadMode::Wrap
-    }
-}
 
 impl<T> From<T> for PadMode<T> {
     fn from(value: T) -> Self {

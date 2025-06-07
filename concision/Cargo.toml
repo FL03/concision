@@ -1,4 +1,5 @@
 [package]
+build = "build.rs"
 name = "concision"
 
 authors.workspace = true
@@ -10,13 +11,65 @@ keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 repository.workspace = true
+rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"
+
+[lib]
+crate-type = [
+    "cdylib", 
+    "rlib"
+]
+bench = true
+doc = true
+doctest = true
+test = true
+
+[dependencies]
+concision-core = { workspace = true }
+concision-data = { optional = true, workspace = true }
+concision-derive = { optional = true, workspace = true }
+concision-macros = { optional = true, workspace = true }
+concision-neural = { optional = true, workspace = true }
+
+[dev-dependencies]
+anyhow = { workspace = true }
+approx = { workspace = true }
+criterion = { workspace = true }
+lazy_static = { workspace = true }
+ndarray = { workspace = true }
+num = { features = ["rand", "serde"], workspace = true }
+tracing = { features = ["log", "std", "attributes"], workspace = true }
+tracing-subscriber = { workspace = true }
+
 [features]
-default = ["data", "neural", "std"]
+default = [
+    "data", 
+    "neural", 
+    "std",
+]
 
-full = ["approx", "data", "default", "derive", "macros", "rand", "serde", "tracing"]
+full = [
+    "default",
+    "anyhow",
+    "approx", 
+    "data",  
+    "derive", 
+    "macros", 
+    "rand", 
+    "serde", 
+    "tracing"
+]
 
+# ************* [FF:Features] *************
 derive = ["dep:concision-derive"]
 
 macros = ["dep:concision-macros"]
@@ -25,10 +78,36 @@ data = ["dep:concision-data"]
 
 neural = ["dep:concision-neural"]
 
-# ********* [FF] Dependencies *********
+# ************* [FF:Environments] *************
+std = [
+    "alloc", 
+    "concision-core/std", 
+    "concision-data?/std",
+    "concision-neural?/std",
+]
+
+wasi = [
+    "concision-core/wasi", 
+    "concision-data?/wasi", 
+    "concision-neural?/wasi"
+]
+
+wasm = [
+    "concision-core/wasm", 
+    "concision-data?/wasm", 
+    "concision-neural?/wasm"
+]
+
+# ************* [FF:Dependencies] *************
 alloc = [
     "concision-core/alloc",
     "concision-data?/alloc",
+]
+
+anyhow = [
+    "concision-core/anyhow", 
+    "concision-data?/anyhow", 
+    "concision-neural?/anyhow",
 ]
 
 approx = [
@@ -84,14 +163,6 @@ tracing = [
     "concision-neural?/tracing"
 ]
 
-# ********* [FF] Environment(s) *********
-
-std = [
-    "alloc", 
-    "concision-core/std", 
-    "concision-data?/std"
-]
-
 # ********* [FF] Blas *********
 blas = [
     "concision-core/blas", 
@@ -111,46 +182,14 @@ openblas-system = ["blas"]
 
 openblas-static = ["blas"]
 
-[lib]
-bench = true
-crate-type = ["cdylib", "rlib"]
-doctest = true
-test = true
-
-[dependencies]
-concision-core = { workspace = true }
-concision-data = { optional = true, workspace = true }
-concision-derive = { optional = true, workspace = true }
-concision-macros = { optional = true, workspace = true }
-concision-neural = { optional = true, workspace = true }
-
-[dev-dependencies]
-anyhow = { workspace = true }
-approx = { workspace = true }
-criterion = { version = "0.5" }
-lazy_static = { workspace = true }
-ndarray = { workspace = true }
-num = { features = ["rand", "serde"], workspace = true }
-tracing = { features = ["log", "std", "attributes"], workspace = true }
-tracing-subscriber = { workspace = true }
-
-[package.metadata.docs.rs]
-all-features = false
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
-
-[package.metadata.release]
-no-dev-version = true
-tag-name = "{{version}}"
-
-# ********* benches *********
+# ************* [Benchmarks] *************
 [[bench]]
 harness = false
 name = "default"
 path = "benches/default.rs"
 required-features = ["std"]
 
-# ********* examples *********
+# ************* [Examples] *************
 [[example]]
 name = "basic"
 required-features = ["approx", "rand", "std", "tracing"]

@@ -40,8 +40,8 @@ fn test_simple_model() -> anyhow::Result<()> {
     // initialize the model with the given features and configuration
     let model = SimpleModel::<f64>::new(config, features);
     // initialize some input data
-    let input = Array1::linspace(1.0, 9.0, model.features().input());
-    let expected = Array1::from_elem(model.features().output(), 0.5);
+    let input = Array1::linspace(1.0, 9.0, model.layout().input());
+    let expected = Array1::from_elem(model.layout().output(), 0.5);
 
     // forward the input through the model
     let output = model.predict(&input)?;

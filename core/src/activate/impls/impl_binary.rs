@@ -51,7 +51,7 @@ where
     }
 }
 
-impl<'a, A, B, S, D> Heavyside for &'a ArrayBase<S, D>
+impl<A, B, S, D> Heavyside for &ArrayBase<S, D>
 where
     A: Clone + Heavyside<Output = B>,
     D: Dimension,
