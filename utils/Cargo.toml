@@ -194,7 +194,7 @@ required-features = []
 
 [[test]]
 name = "fft"
-required-features = ["approx", "std"]
+required-features = ["approx", "signal", "std"]
 
 [[test]]
 name = "tensor"
