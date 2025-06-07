@@ -5,7 +5,7 @@
 extern crate concision_utils as concision;
 
 use approx::assert_abs_diff_eq;
-use concision::signal::fourier::*;
+use concision::signal::fft::*;
 use lazy_static::lazy_static;
 use num::complex::{Complex, ComplexFloat};
 use num::traits::Float;

@@ -4,7 +4,7 @@
 */
 use core::slice;
 
-use super::utils::fft_permutation;
+use crate::signal::fft::fft_permutation;
 
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(

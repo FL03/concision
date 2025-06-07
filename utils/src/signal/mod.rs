@@ -6,11 +6,12 @@
 //!
 //! This module contains functions for signal processing such as convolution, filtering, and Fourier transforms.
 
-#[cfg(all(feature = "complex", feature = "std"))]
-pub mod fourier;
+#![cfg(feature = "signal")]
+#[doc(inline)]
+pub use self::prelude::*;
 
-#[allow(unused_imports)]
+pub mod fft;
+
 pub(crate) mod prelude {
-    #[cfg(all(feature = "complex", feature = "std"))]
-    pub use super::fourier::prelude::*;
+    pub use super::fft::prelude::*;
 }
