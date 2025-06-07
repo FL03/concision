@@ -88,6 +88,8 @@ jobs:
         run: cargo test -r --locked --workspace --target ${{ matrix.target}}
       -
         if: matrix.features == 'all'
+        env:
+          RUSTFLAGS: "-l"
         name: Test (all-features)
         run: cargo test -r --locked --workspace --target ${{ matrix.target}} --all-features
   test_no_defaults:
