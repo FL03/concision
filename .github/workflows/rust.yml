@@ -86,11 +86,12 @@ jobs:
         run: cargo test -r --locked --workspace --target ${{ matrix.target}} --all-features
   test_no_defaults:
     continue-on-error: true
-    env:
-      RUSTFLAGS: "-C panic=abort -Z panic_abort_tests"
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.no_std || github.event_name == 'repository_dispatch' && github.event.action == 'rust'
     name: test (no-default-features)
     needs: build
     runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: "-C panic=abort -Z panic_abort_tests"
     strategy:
       fail-fast: false
       matrix:

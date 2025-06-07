@@ -31,7 +31,7 @@ jobs:
     env:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     environment:
-      name: 'crates-io'
+      name: crates-io
       url: https://crates.io/crates/${{ github.event.repository.name }}
     strategy:
       fail-fast: false
@@ -45,6 +45,9 @@ jobs:
           - concision-derive
           - concision-macros
           - concision
+          # non-sdk packages
+          - concision-transformer
+          - concision-ext
     runs-on: ubuntu-latest
     steps:
       - 
