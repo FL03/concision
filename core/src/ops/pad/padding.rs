@@ -4,6 +4,12 @@
 */
 use super::{PadAction, PadMode, Padding};
 
+impl<T> Default for Padding<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T> Padding<T> {
     pub fn new() -> Self {
         Self {

@@ -104,7 +104,7 @@ where
         A: Clone,
         S: DataMut,
     {
-        self.bias_mut().assign(&bias);
+        self.bias_mut().assign(bias);
         self
     }
     /// assign the weights
@@ -113,7 +113,7 @@ where
         A: Clone,
         S: DataMut,
     {
-        self.weights_mut().assign(&weights);
+        self.weights_mut().assign(weights);
         self
     }
     /// replace the bias and return the previous state; uses [replace](core::mem::replace)
@@ -210,6 +210,18 @@ where
         S: DataMut,
     {
         self.weights_mut().iter_mut()
+    }
+    /// returns true if both the weights and bias are empty; uses [`is_empty`](ArrayBase::is_empty)
+    pub fn is_empty(&self) -> bool {
+        self.is_weights_empty() && self.is_bias_empty()
+    }
+    /// returns true if the weights are empty
+    pub fn is_weights_empty(&self) -> bool {
+        self.weights().is_empty()
+    }
+    /// returns true if the bias is empty
+    pub fn is_bias_empty(&self) -> bool {
+        self.bias().is_empty()
     }
     /// the total number of elements within the weight tensor
     pub fn len(&self) -> usize {

@@ -16,6 +16,12 @@ pub struct StandardModelConfig<T> {
     pub(crate) hyperparameters: ModelConfigMap<T>,
 }
 
+impl<T> Default for StandardModelConfig<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T> StandardModelConfig<T> {
     pub fn new() -> Self {
         Self {
@@ -53,9 +59,9 @@ impl<T> StandardModelConfig<T> {
         self.hyperparameters_mut().insert(key.to_string(), value)
     }
     /// gets a reference to a hyperparameter by key, returning None if it does not exist
-    pub fn get_parameter<Q: ?Sized>(&self, key: &Q) -> Option<&T>
+    pub fn get_parameter<Q>(&self, key: &Q) -> Option<&T>
     where
-        Q: Eq + core::hash::Hash,
+        Q: ?Sized + Eq + core::hash::Hash,
         String: core::borrow::Borrow<Q>,
     {
         self.hyperparameters().get(key)

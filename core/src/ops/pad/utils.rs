@@ -35,7 +35,7 @@ where
     }
 
     let mut padded = data.array_like(dim, mode.init()).to_owned();
-    let _ = pad_to(data, &pad, mode, &mut padded)?;
+    pad_to(data, &pad, mode, &mut padded)?;
     Ok(padded)
 }
 
@@ -64,7 +64,7 @@ where
     match mode.into_pad_action() {
         PadAction::StopAfterCopy => {
             // Do nothing
-            return Ok(());
+            Ok(())
         }
         _ => unimplemented!(),
     }

@@ -134,7 +134,7 @@ pub(crate) mod stack {
         res
     }
     #[cfg(feature = "alloc")]
-    ///
+    /// stack a 1D array into a 2D array by stacking them horizontally.
     pub fn hstack<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
     where
         T: Clone + Num,
@@ -147,8 +147,7 @@ pub(crate) mod stack {
         res
     }
     #[cfg(feature = "alloc")]
-
-    ///
+    /// stack a 1D array into a 2D array by stacking them vertically.
     pub fn vstack<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
     where
         T: Clone + Num,

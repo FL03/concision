@@ -132,4 +132,4 @@ jobs:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       -
         name: Benchmark
-        run: cargo bench -v --workspace --features full
+        run: cargo bench -v --features full

@@ -58,12 +58,12 @@ where
         if self.shape() != grad.shape() {
             return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
         }
-        let batch_size = if grad.shape().len() > 0 {
+        let batch_size = if !grad.shape().is_empty() {
             A::from_usize(self.shape()[0]).unwrap()
         } else {
             A::one()
         };
-        self.scaled_add(lr / batch_size, &grad);
+        self.scaled_add(lr / batch_size, grad);
         Ok(())
     }
 
@@ -76,7 +76,7 @@ where
         if self.shape() != grad.shape() {
             return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
         }
-        let batch_size = if grad.shape().len() > 0 {
+        let batch_size = if !grad.shape().is_empty() {
             A::from_usize(self.shape()[0]).unwrap()
         } else {
             A::one()
@@ -105,13 +105,13 @@ where
         if self.shape() != grad.shape() {
             return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
         }
-        let batch_size = if grad.shape().len() > 0 {
+        let batch_size = if !grad.shape().is_empty() {
             A::from_usize(self.shape()[0]).unwrap()
         } else {
             A::one()
         };
         *velocity = &*velocity * momentum + grad * (A::one() - momentum);
-        self.scaled_add(lr / batch_size, &velocity);
+        self.scaled_add(lr / batch_size, velocity);
         Ok(())
     }
 
@@ -128,7 +128,7 @@ where
                 ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
             );
         }
-        let batch_size = if grad.shape().len() > 0 {
+        let batch_size = if !grad.shape().is_empty() {
             A::from_usize(self.shape()[0]).unwrap()
         } else {
             A::one()
@@ -136,7 +136,7 @@ where
 
         let adjusted_grad = grad + &*self * decay;
         *velocity = &*velocity * momentum + adjusted_grad * (A::one() - momentum);
-        self.scaled_add(lr / batch_size, &velocity);
+        self.scaled_add(lr / batch_size, velocity);
         Ok(())
     }
 }

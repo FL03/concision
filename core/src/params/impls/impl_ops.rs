@@ -218,7 +218,7 @@ where
         let weight_delta = input * delta;
         // update the weights and bias
         self.weights.apply_gradient(&weight_delta, gamma)?;
-        self.bias.apply_gradient(&delta, gamma)?;
+        self.bias.apply_gradient(delta, gamma)?;
         // return the sum of the squared delta
         Ok(delta.pow2().sum())
     }
@@ -243,7 +243,7 @@ where
         let dw = &self.weights * delta.t().dot(input);
         // update the weights and bias
         self.weights.apply_gradient(&dw, gamma)?;
-        self.bias.apply_gradient(&delta, gamma)?;
+        self.bias.apply_gradient(delta, gamma)?;
         // return the sum of the squared delta
         Ok(delta.pow2().sum())
     }

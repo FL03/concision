@@ -131,7 +131,7 @@ where
     }
 }
 
-impl<'a, A, S, D> Abs for &'a ArrayBase<S, D>
+impl<A, S, D> Abs for &ArrayBase<S, D>
 where
     A: Clone + Signed,
     D: Dimension,
@@ -192,7 +192,7 @@ where
     }
 }
 
-impl<'a, A, S, D> Exp for &'a ArrayBase<S, D>
+impl<A, S, D> Exp for &ArrayBase<S, D>
 where
     A: Clone + ComplexFloat,
     D: Dimension,

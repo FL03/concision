@@ -10,7 +10,9 @@
 //! - [Backward]: This trait denotes a single backward pass through a layer of a neural network.
 //! - [Forward]: This trait denotes a single forward pass through a layer of a neural network.
 //!
-#![crate_type = "lib"]
+#![allow(
+    clippy::module_inception,
+)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "alloc")]

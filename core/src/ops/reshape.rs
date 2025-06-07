@@ -48,7 +48,7 @@ where
     }
 }
 
-impl<'a, A, S, D> Unsqueeze for &'a ArrayBase<S, D>
+impl<A, S, D> Unsqueeze for &ArrayBase<S, D>
 where
     D: Dimension,
     S: RawDataClone<Elem = A>,

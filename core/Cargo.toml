@@ -209,5 +209,9 @@ name = "init"
 required-features = ["rand", "std"]
 
 [[test]]
+name = "params"
+required-features = ["approx", "rand", "std"]
+
+[[test]]
 name = "traits"
 required-features = ["std"]

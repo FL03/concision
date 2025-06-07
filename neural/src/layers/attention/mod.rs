@@ -10,19 +10,19 @@
 //! ### _Features_
 //!
 //! - **Scaled Dot-Product Attention**: This is the basic attention mechanism that computes the
-//!  attention scores using the dot product of the query and key vectors, scales them by the
-//!  square root of the dimension of the key vectors, and applies a softmax function to obtain
-//!  the attention scores.
+//!   attention scores using the dot product of the query and key vectors, scales them by the
+//!   square root of the dimension of the key vectors, and applies a softmax function to obtain
+//!   the attention scores.
 //! - **Multi-Head Attention**: This mechanism extends the scaled dot-product attention by
-//!  allowing the model to jointly attend to information from different representation
-//!  subspaces at different positions. It does this by projecting the queries, keys, and values
-//!  multiple times with different learned linear projections, and then concatenating the
-//!  results.
+//!   allowing the model to jointly attend to information from different representation
+//!   subspaces at different positions. It does this by projecting the queries, keys and values
+//!   multiple times with different learned linear projections, and then concatenating the
+//!   results.
 //! - **FFT Attention**: This is a more advanced attention mechanism that uses the Fast Fourier
-//!  Transform (FFT) to compute the attention scores more efficiently. It is particularly
-//!  useful for long sequences where the standard attention mechanism can be computationally
-//!  expensive.
-#![cfg(feature = "attention")]
+//!   Transform (FFT) to compute the attention scores more efficiently. It is particularly 
+//!   useful for long sequences where the standard attention mechanism can be computationally
+//!   expensive.
+//! 
 #[doc(inline)]
 pub use self::{multi_head::MultiHeadAttention, qkv::*, scaled::ScaledDotProductAttention};
 

@@ -244,14 +244,21 @@ where
         }
         let mut loss = A::zero();
 
-        for (_i, (x, e)) in input.rows().into_iter().zip(target.rows()).enumerate() {
+        for (i, (x, e)) in input.rows().into_iter().zip(target.rows()).enumerate() {
             loss += match Train::<ArrayView1<A>, ArrayView1<A>>::train(self, &x, &e) {
                 Ok(l) => l,
                 Err(err) => {
                     #[cfg(feature = "tracing")]
                     tracing::error!(
                         "Training failed for batch {}/{}: {:?}",
-                        _i + 1,
+                        i + 1,
+                        input.nrows(),
+                        err
+                    );
+                    #[cfg(not(feature = "tracing"))]
+                    eprintln!(
+                        "Training failed for batch {}/{}: {:?}",
+                        i + 1,
                         input.nrows(),
                         err
                     );

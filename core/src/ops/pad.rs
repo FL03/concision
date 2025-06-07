@@ -11,7 +11,7 @@ pub(crate) mod error;
 pub(crate) mod mode;
 pub(crate) mod utils;
 
-///
+/// The [`Pad`] trait defines a padding operation for tensors.
 pub trait Pad<T> {
     type Output;
 

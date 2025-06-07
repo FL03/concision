@@ -39,7 +39,7 @@ where
 
     fn masked_fill(&self, mask: &Array<bool, D>, value: A) -> Self::Output {
         let mut arr = self.clone();
-        arr.zip_mut_with(&mask, |x, &m| {
+        arr.zip_mut_with(mask, |x, &m| {
             if m {
                 *x = value.clone();
             }

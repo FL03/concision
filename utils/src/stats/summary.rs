@@ -16,30 +16,35 @@ where
 {
     type Item;
     type Output;
-
+    /// returns the number of elements in the iterator
+    fn len(&self) -> usize;    
+    /// returns the number of elements in the iterator as an [`Item`](Self::Item) type.
+    fn product(&self) -> Self::Output;
+    /// returns the sum of the iterator
+    fn sum(&self) -> Self::Output;
+    /// returns the standard deviation of the iterator
+    fn std(&self) -> Self::Output;
+    /// returns the variance of the iterator
+    fn var(&self) -> Self::Output;
+    
+    /// returns the number of elements in the iterator as an [`Item`](Self::Item) type.
     fn elems(&self) -> Self::Item {
         Self::Item::from_usize(self.len()).unwrap()
     }
-
-    fn len(&self) -> usize;
-
+    /// returns true if the iterator is empty
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+    /// returns the mean of the iterator
     fn mean(&self) -> Self::Output {
         self.sum() / self.elems()
     }
-
-    fn product(&self) -> Self::Output;
-
-    fn sum(&self) -> Self::Output;
-
-    fn std(&self) -> Self::Output;
-
-    fn var(&self) -> Self::Output;
 }
 
 /*
  ************* Implementations *************
 */
-impl<'a, T, I> SummaryStatistics for &'a I
+impl<T, I> SummaryStatistics for &I
 where
     I: Clone + ExactSizeIterator<Item = T>,
     T: Copy + FromPrimitive + Num + Pow<i32, Output = T> + Product + Root<Output = T> + Sum,

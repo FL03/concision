@@ -25,7 +25,7 @@ pub fn snakecase(name: impl ToString) -> String {
         let mut n1: (bool, char) = (first.is_lowercase(), first);
 
         for c in text {
-            let prev_n1 = n1.clone();
+            let prev_n1 = n1;
 
             let n3 = n2;
             n2 = Some(n1);

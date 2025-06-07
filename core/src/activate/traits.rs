@@ -206,7 +206,7 @@ where
     }
 }
 
-impl<'a, A, S, D> Activate<A> for &'a ArrayBase<S, D>
+impl<A, S, D> Activate<A> for &ArrayBase<S, D>
 where
     A: ScalarOperand,
     D: Dimension,
@@ -222,7 +222,7 @@ where
     }
 }
 
-impl<'a, A, S, D> Activate<A> for &'a mut ArrayBase<S, D>
+impl<A, S, D> Activate<A> for &mut ArrayBase<S, D>
 where
     A: ScalarOperand,
     D: Dimension,
@@ -255,7 +255,7 @@ where
     }
 }
 
-impl<'a, A, S, D> ActivateMut<A> for &'a mut ArrayBase<S, D>
+impl<A, S, D> ActivateMut<A> for &mut ArrayBase<S, D>
 where
     A: ScalarOperand,
     D: Dimension,

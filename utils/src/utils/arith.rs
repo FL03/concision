@@ -2,12 +2,12 @@
     Appellation: arith <utils>
     Contrib: @FL03
 */
-use num::traits::{Float, Num};
+use num_traits::Float;
 
-///
+/// divide two values and round down to the nearest integer.
 pub fn floor_div<T>(numerator: T, denom: T) -> T
 where
-    T: Copy + Num,
+    T: Copy + core::ops::Div<Output = T> + core::ops::Rem<Output = T> + core::ops::Sub<Output = T>,
 {
     (numerator - (numerator % denom)) / denom
 }

@@ -5,7 +5,7 @@
 use super::layout::ModelFeatures;
 use cnc::params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
-use num_traits::{Float, FromPrimitive, One, Zero};
+use num_traits::{One, Zero};
 
 pub type ModelParams<A = f64, D = Ix2> = ModelParamsBase<ndarray::OwnedRepr<A>, D>;
 
@@ -207,19 +207,19 @@ where
 
         Self::new(input, hidden, output)
     }
-
+    /// initialize the model parameters using a glorot normal distribution
     #[cfg(feature = "rand")]
     pub fn glorot_normal(features: ModelFeatures) -> Self
     where
-        cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
         S: DataOwned,
-        S::Elem: Float + FromPrimitive,
+        A: num_traits::Float + num_traits::FromPrimitive,
+        cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
     {
         Self::init_rand(features, |(rows, cols)| {
             cnc::init::XavierNormal::new(rows, cols)
         })
     }
-
+    /// initialize the model parameters using a glorot uniform distribution
     #[cfg(feature = "rand")]
     pub fn glorot_uniform(features: ModelFeatures) -> Self
     where
@@ -246,7 +246,7 @@ where
     fn clone(&self) -> Self {
         Self {
             input: self.input.clone(),
-            hidden: self.hidden.iter().map(|p| p.clone()).collect(),
+            hidden: self.hidden.to_vec(),
             output: self.output.clone(),
         }
     }
