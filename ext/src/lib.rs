@@ -3,12 +3,17 @@
     Contrib: @FL03
 */
 //! This crate extends the `concision` framework to provide a set of models and layers
-extern crate concision_core as cnc;
+#![cfg_attr(not(feature = "std"), no_std)]
+
+// #[cfg(feature = "alloc")]
+// extern crate alloc;
+
+extern crate concision as cnc;
 
 #[cfg(feature = "simple")]
 pub mod simple;
 #[cfg(feature = "transformer")]
-pub use concicion_transformer as transformer;
+pub use concision_transformer as transformer;
 
 pub mod prelude {
     #[cfg(feature = "simple")]

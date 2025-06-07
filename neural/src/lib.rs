@@ -31,9 +31,10 @@ pub use self::{
 };
 
 #[macro_use]
-pub(crate) mod macros;
-#[macro_use]
-pub(crate) mod seal;
+pub(crate) mod macros {
+    #[macro_use]
+    pub mod seal;
+}
 
 pub mod error;
 pub mod layers;

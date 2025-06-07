@@ -1,4 +1,5 @@
 [package]
+build = "build.rs"
 description = "this crate implements the transformer model using the concision framework"
 name = "concision-transformer"
 
@@ -26,7 +27,6 @@ crate-type = [
     "cdylib",
     "rlib",
 ]
-path = "model.rs"
 bench = false
 doc = true
 doctest = true
@@ -34,7 +34,7 @@ test = true
 
 [dependencies]
 # sdk
-concision = { workspace = true }
+concision = { features = ["neural"], workspace = true }
 # error
 anyhow = { optional = true, workspace = true }
 # mathematics

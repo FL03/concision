@@ -10,8 +10,8 @@
 //! - [Backward]: This trait denotes a single backward pass through a layer of a neural network.
 //! - [Forward]: This trait denotes a single forward pass through a layer of a neural network.
 //!
-#![crate_name = "concision_core"]
 #![crate_type = "lib"]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -26,10 +26,12 @@ pub use self::{
 };
 
 #[macro_use]
-pub(crate) mod macros;
-#[allow(unused)]
-#[macro_use]
-pub(crate) mod seal;
+pub(crate) mod macros {
+    #[macro_use]
+    pub mod seal;
+    #[macro_use]
+    pub mod unary;
+}
 
 pub mod activate;
 pub mod error;
@@ -115,6 +117,6 @@ pub mod prelude {
     pub use crate::params::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::prelude::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     pub use concision_utils::prelude::*;
 }

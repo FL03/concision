@@ -1,5 +1,11 @@
-use concision_models::simple::SimpleModel;
-use concision_neural::{ModelFeatures, Predict, StandardModelConfig, Train};
+/*
+    appellation: simple <example>
+    authors: @FL03
+*/
+extern crate concision as cnc;
+
+use cnc::nn::{ModelFeatures, Predict, StandardModelConfig, Train};
+use concision_ext::simple::SimpleModel;
 use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {

@@ -1,12 +1,12 @@
 /*
-    Appellation: transformer <module>
+    Appellation: transformer <library>
     Contrib: @FL03
 */
-use concisione::{Forward, Norm, Params, ReLU, Sigmoid};
 
 #[cfg(feature = "rand")]
-use concision::init::rand_distr;
-use concision::nn::{Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train};
+use cnc::init::rand_distr;
+use cnc::nn::{Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train};
+use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
@@ -97,7 +97,7 @@ where
 {
     type Output = V;
 
-    fn forward(&self, input: &U) -> concision_core::Result<Self::Output> {
+    fn forward(&self, input: &U) -> cnc::Result<Self::Output> {
         let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
 
         for layer in self.params().hidden() {

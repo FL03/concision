@@ -1,4 +1,5 @@
 [package]
+build = "build.rs"
 description = "this crate implements additional models using the concision framework"
 name = "concision-ext"
 
@@ -34,7 +35,7 @@ test = true
 [dependencies]
 concision-transformer = { optional = true, workspace = true }
 # local
-concision = { workspace = true }
+concision = { features = ["neural"], workspace = true }
 # custom
 scsys = { workspace = true }
 # error handling

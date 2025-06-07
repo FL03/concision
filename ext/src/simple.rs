@@ -2,10 +2,8 @@
     Appellation: simple <module>
     Contrib: @FL03
 */
+use cnc::nn::{Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train};
 use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
-use concision_neural::{
-    Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train,
-};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};

@@ -2,7 +2,7 @@
     Appellation: unary <module>
     Contrib: @FL03
 */
-
+#[allow(unused_macros)]
 macro_rules! unary_op_trait {
     ($($name:ident::$call:ident($($rest:tt)*)),* $(,)?) => {
         $(
@@ -34,7 +34,7 @@ macro_rules! unary_op_trait {
         }
     };
 }
-
+#[allow(unused_macros)]
 macro_rules! impl_unary_op_trait {
     ($name:ident::<$T:ty, Output = $out:ty>::$call:ident(self) => {
         f => $func:expr,
