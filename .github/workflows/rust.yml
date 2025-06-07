@@ -54,6 +54,28 @@ jobs:
       -
         name: Build the workspace
         run: cargo build -r --locked --workspace --all-features --target ${{ matrix.target }}
+  benchmark:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || github.event.action == 'repository_dispatch' && github.event.action == 'rust' || github.event_name == 'workflow_dispatch' && github.event.inputs.benchmark
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [ concision ]
+        target: [ x86_64-unknown-linux-gnu ] # [ x86_64-unknown-linux-gnu, wasm32-unknown-unknown, wasm32-wasip1, wasm32-wasip2 ]
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          target: ${{ matrix.target }}
+      -
+        name: Benchmark (${{ matrix.package }})
+        run: cargo bench -v --locked --features full --package ${{ matrix.package }} --target ${{ matrix.target }}
   test:
     needs: build
     runs-on: ubuntu-latest
@@ -108,9 +130,8 @@ jobs:
         name: Test (all-features)
         run: cargo test -r --locked --workspace --target ${{ matrix.target}} --all-features
   test_no_std:
-    continue-on-error: true
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.no_std || github.event_name == 'repository_dispatch' && github.event.action == 'rust'
-    name: test (no-default-features)
+    continue-on-error: true
     needs: build
     runs-on: ubuntu-latest
     env:
@@ -140,25 +161,3 @@ jobs:
         continue-on-error: true
         name: Test (no_std)
         run: cargo test -r --locked --workspace --no-default-features
-  benchmark:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || github.event.action == 'repository_dispatch' && github.event.action == 'rust' || github.event_name == 'workflow_dispatch' && github.event.inputs.benchmark
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        package: [ concision ]
-        target: [ x86_64-unknown-linux-gnu ] # [ x86_64-unknown-linux-gnu, wasm32-unknown-unknown, wasm32-wasip1, wasm32-wasip2 ]
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          target: ${{ matrix.target }}
-      -
-        name: Benchmark
-        run: cargo bench -v --locked --features full --package ${{ matrix.package }} --target ${{ matrix.target }}
