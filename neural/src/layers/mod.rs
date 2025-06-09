@@ -29,7 +29,7 @@ pub trait Activate<T> {
     /// Applies the activation function to the input tensor.
     fn activate(&self, input: T) -> Self::Output;
 }
-/// The [`ActivateGradient`] trait extends the [`Activate`] trait to include a method for 
+/// The [`ActivateGradient`] trait extends the [`Activate`] trait to include a method for
 /// computing the gradient of the activation function.
 pub trait ActivateGradient<T>: Activate<T> {
     type Input;

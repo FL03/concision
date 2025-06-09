@@ -1,8 +1,8 @@
 extern crate concision_core as cnc;
 extern crate concision_neural as neural;
 
-use concision_neural::ModelFeatures;
 use concision_neural::model::{Model, StandardModelConfig};
+use concision_neural::{ModelFeatures, NeuralResult};
 use ndarray::prelude::*;
 
 use model::SimpleModel;
@@ -28,7 +28,7 @@ fn test_standard_model_config() {
 }
 
 #[test]
-fn test_simple_model() -> anyhow::Result<()> {
+fn test_simple_model() -> NeuralResult<()> {
     let mut config = StandardModelConfig::new()
         .with_epochs(1000)
         .with_batch_size(32);

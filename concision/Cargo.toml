@@ -18,6 +18,7 @@ version.workspace = true
 all-features = false
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
@@ -43,7 +44,7 @@ concision-neural = { optional = true, workspace = true }
 [dev-dependencies]
 anyhow = { workspace = true }
 approx = { workspace = true }
-criterion = { workspace = true }
+criterion = { features = ["plotters"], workspace = true }
 lazy_static = { workspace = true }
 ndarray = { workspace = true }
 num = { features = ["rand", "serde"], workspace = true }

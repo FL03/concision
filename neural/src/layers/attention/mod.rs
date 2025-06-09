@@ -19,10 +19,10 @@
 //!   multiple times with different learned linear projections, and then concatenating the
 //!   results.
 //! - **FFT Attention**: This is a more advanced attention mechanism that uses the Fast Fourier
-//!   Transform (FFT) to compute the attention scores more efficiently. It is particularly 
+//!   Transform (FFT) to compute the attention scores more efficiently. It is particularly
 //!   useful for long sequences where the standard attention mechanism can be computationally
 //!   expensive.
-//! 
+//!
 #[doc(inline)]
 pub use self::{multi_head::MultiHeadAttention, qkv::*, scaled::ScaledDotProductAttention};
 

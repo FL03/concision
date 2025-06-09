@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64-unknown-linux-gnu] # [ x86_64-unknown-linux-gnu, x86_64-apple-darwin, x86_64-pc-windows-msvc, wasm32-unknown-unknown, wasm32-wasip1, wasm32-wasip2 ]
+        target: [ x86_64-unknown-linux-gnu ] # [ x86_64-unknown-linux-gnu, x86_64-apple-darwin, x86_64-pc-windows-msvc, wasm32-unknown-unknown, wasm32-wasip1, wasm32-wasip2 ]
     steps:
       -
         name: Checkout
@@ -75,14 +75,14 @@ jobs:
           target: ${{ matrix.target }}
       -
         name: Benchmark (${{ matrix.package }})
-        run: cargo bench -v --locked --features full --package ${{ matrix.package }} --target ${{ matrix.target }}
+        run: cargo bench -v --features full --package ${{ matrix.package }} --target ${{ matrix.target }}
   test:
     needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        features:  [ full ]
+        features:  [default, full] # [ all, default, full ]
         target: [ x86_64-unknown-linux-gnu ] # [ x86_64-unknown-linux-gnu, wasm32-unknown-unknown, wasm32-wasip1, wasm32-wasip2 ]
     steps:
       -
@@ -95,33 +95,6 @@ jobs:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           target: ${{ matrix.target }}
       -
-        name: Test (${{ matrix.features }})
-        run: cargo test -r --locked --workspace --target ${{ matrix.target}} --features ${{ matrix.features }}
-  test_std:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        features:  [ default ] # [ default, all ]
-        target: [ x86_64-unknown-linux-gnu ]
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          target: ${{ matrix.target }}
-      -
-        if: matrix.features == 'all'
-        name: Setup blas
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y libopenblas-dev liblapack-dev
-      -
         if: matrix.features == 'default'
         name: Test (default)
         run: cargo test -r --locked --workspace --target ${{ matrix.target}}
@@ -129,17 +102,23 @@ jobs:
         if: matrix.features == 'all'
         name: Test (all-features)
         run: cargo test -r --locked --workspace --target ${{ matrix.target}} --all-features
-  test_no_std:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.no_std || github.event_name == 'repository_dispatch' && github.event.action == 'rust'
+      -
+        if: matrix.features == ('full')
+        name: Test (${{ matrix.features }})
+        run: cargo test -r --locked --workspace --target ${{ matrix.target}} --features ${{ matrix.features }}
+  test_no_defaults:
+    if: github.event.action == 'repository_dispatch' && github.event.action == 'rust' || github.event_name == 'workflow_dispatch' && github.event.inputs.no_std
     continue-on-error: true
-    needs: build
-    runs-on: ubuntu-latest
     env:
       RUSTFLAGS: "-C panic=abort -Z panic_abort_tests"
+    name: test (no-default-features)
+    needs: build
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         features:  [ alloc, no_std ]
+        package: [ concision ]
     steps:
       -
         name: Checkout
@@ -155,9 +134,9 @@ jobs:
         if: matrix.features != 'no_std'
         continue-on-error: true
         name: Test (${{ matrix.features }})
-        run: cargo test -r --locked --workspace  --no-default-features --features ${{ matrix.features }}
+        run: cargo test -r --locked --no-default-features --package ${{ matrix.package }} --features ${{ matrix.features }}
       -
         if: matrix.features == 'no_std'
         continue-on-error: true
         name: Test (no_std)
-        run: cargo test -r --locked --workspace --no-default-features
+        run: cargo test -r --locked --no-default-features --package ${{ matrix.package }}

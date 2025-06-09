@@ -51,8 +51,8 @@ concision-ext = { default-features = false, path = "ext", version = "0.2.0" }
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.0" }
 
 # custom
-scsys = { default-features = false, features = ["derive"], version = "0.2.8" }
-scsys-derive = { default-features = false, version = "0.2.8" }
+scsys = { default-features = false, features = ["derive"], version = "0.2.9" }
+scsys-derive = { default-features = false, version = "0.2.9" }
 # async
 futures = { default-features = false, version = "0.3" }
 tokio = { default-features = false, version = "1" }

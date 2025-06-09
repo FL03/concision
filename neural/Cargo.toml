@@ -112,6 +112,13 @@ wasm = [
 ]
 
 # ************* [FF:Dependencies] *************
+anyhow = [
+    "dep:anyhow", 
+    "concision-core/anyhow", 
+    "concision-data/anyhow", 
+    "scsys/anyhow",
+]
+
 approx = [
     "concision-core/approx", 
     "concision-data/approx", 

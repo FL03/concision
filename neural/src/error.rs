@@ -20,6 +20,13 @@ pub enum NeuralError {
     TrainingFailed,
     #[error(transparent)]
     TrainingError(#[from] TrainingError),
+    #[cfg(feature = "anyhow")]
+    #[error(transparent)]
+    AnyError(#[from] anyhow::Error),
+    #[error(transparent)]
+    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
+    #[error(transparent)]
+    FmtError(#[from] core::fmt::Error),
     #[error(transparent)]
     CoreError(#[from] concision_core::error::Error),
 }
