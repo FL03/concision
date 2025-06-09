@@ -60,7 +60,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       results: ${{ steps.artifacts.outputs.artifact-id }}
-      url: ${{ steps.artifacts.outputs.artifact-url }}
     permissions:
       contents: write
       checks: write
@@ -88,14 +87,15 @@ jobs:
           name: benchmarks@${{ github.sha }}
           if-no-files-found: error
           overwrite: true
-          path: target/criterion/
+          path: target/criterion/ 
   test:
     needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        features:  [ full ]
+        features:  [ default, full ] # [ all, default, full ]
+        toolchain: [ stable ] # [ stable, nightly ]
     steps:
       -
         name: Checkout
@@ -104,26 +104,13 @@ jobs:
         name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}  
+          toolchain: ${{ matrix.toolchain }}
+          override: true
       -
+        if: matrix.features != 'default' && matrix.features != 'all'
         name: Test (${{ matrix.features }})
         run: cargo test -r --locked --workspace --features ${{ matrix.features }}
-  test_std:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        features:  [ default ]
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       -
         if: matrix.features == 'default'
         name: Test (default)
@@ -132,34 +119,3 @@ jobs:
         if: matrix.features == 'all'
         name: Test (all-features)
         run: cargo test -r --locked --workspace --all-features
-  test_no_defaults:
-    if: github.event.inputs.no_std == 'true'
-    continue-on-error: true
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        features:  [ alloc, no_std ]
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          toolchain: nightly
-          override: true
-      -
-        name: Test (no_std)
-        if: matrix.features == 'no_std'
-        run: cargo test -r --locked --workspace --no-default-features
-      -
-        name: Test (${{ matrix.features }})
-        if: matrix.features != 'no_std'
-        run: cargo test -r --locked --workspace --no-default-features --features ${{ matrix.features }}
-        env:
-          RUSTFLAGS: "-C panic=abort -Z panic_abort_tests"
-    
