@@ -9,8 +9,6 @@ env:
   RUST_BACKTRACE: full
 
 on:
-  release:
-    types: [ published ]
   repository_dispatch:
     types: [ crates-io ]
   workflow_dispatch:
@@ -28,6 +26,7 @@ permissions:
 
 jobs:
   crates-io:
+    if: github.event.inputs.environment == 'crates-io' || github.event_name == 'repository_dispatch'
     env:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     environment:
