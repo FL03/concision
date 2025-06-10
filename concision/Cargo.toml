@@ -190,7 +190,24 @@ name = "default"
 path = "benches/default.rs"
 required-features = ["std"]
 
+[[bench]]
+harness = false
+name = "training"
+path = "benches/training.rs"
+required-features = [
+    "neural",
+    "approx", 
+    "rand", 
+    "std", 
+    "tracing",
+]
+
 # ************* [Examples] *************
 [[example]]
 name = "basic"
-required-features = ["approx", "rand", "std", "tracing"]
+required-features = [
+    "approx", 
+    "rand", 
+    "std", 
+    "tracing",
+]

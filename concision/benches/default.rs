@@ -4,9 +4,10 @@
 */
 use criterion::{BatchSize, BenchmarkId, Criterion, criterion_group, criterion_main};
 use lazy_static::lazy_static;
-use std::hint::black_box;
+use core::hint::black_box;
 use std::time::Duration;
 
+const SAMPLES: usize = 50;
 /// the default number of iterations to benchmark a method for
 const N: usize = 20;
 /// the default number of seconds a benchmark should complete in
@@ -18,22 +19,25 @@ lazy_static! {
 }
 
 fn bench_fib_func(c: &mut Criterion) {
-    c.bench_function("fib::fibonacci", |b| {
+    c.bench_function("fibonacci", |b| {
         b.iter(|| fib::fibonacci(black_box(N)))
     });
 }
 
 fn bench_fib_recursive(c: &mut Criterion) {
-    c.bench_function("fib::recursive_fibonacci", |b| {
+    c.bench_function("recursive_fibonacci", |b| {
         b.iter(|| fib::recursive_fibonacci(black_box(N)))
     });
 }
 
 fn bench_fib_iter(c: &mut Criterion) {
     let measure_for = Duration::from_secs(DEFAULT_DURATION_SECS);
+    // create a benchmark group for the Fibonacci iterator
     let mut group = c.benchmark_group("Fibonacci Iter");
+    // set the measurement time for the group
     group.measurement_time(measure_for);
-    group.sample_size(50);
+    //set the sample size
+    group.sample_size(SAMPLES);
 
     for &n in &[10, 50, 100, 500, 1000] {
         group.bench_with_input(BenchmarkId::new("Fibonacci::compute", n), &n, |b, &x| {
@@ -104,7 +108,9 @@ pub mod fib {
     }
 
     impl Fibonacci {
-        pub fn new() -> Fibonacci {
+        /// returns a new instance of the fibonacci sequence, with `curr` set to 0 and `next` 
+        /// set to 1
+        pub const fn new() -> Fibonacci {
             Fibonacci { curr: 0, next: 1 }
         }
         /// returns a copy of the current value
@@ -180,10 +186,10 @@ pub mod fib {
         fn next(&mut self) -> Option<u32> {
             // compute the new next value
             let new_next = self.compute_next();
-            // replace the current next value and use the previous next value as the new 
-            // current value then return the previous current value
+            // replaces the current next with the new value and replaces the current value with
+            // the previous next
             let prev = self.update(new_next);
-
+            // return the previous current value
             Some(prev)
         }
     }
