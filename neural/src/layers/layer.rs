@@ -2,8 +2,8 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
-use super::Layer;
-use cnc::{Activate, ActivateGradient, Forward, ParamsBase};
+use super::{Activate, ActivateGradient, Layer};
+use cnc::{Forward, ParamsBase};
 use ndarray::{Dimension, Ix2, RawData};
 
 pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activate<A, Output = A> + 'static>, S, D>;
@@ -162,7 +162,7 @@ where
     type Input = F::Input;
     type Delta = F::Delta;
 
-    fn activate_gradient(&self, inputs: U) -> F::Delta {
+    fn activate_gradient(&self, inputs: F::Input) -> F::Delta {
         self.rho().activate_gradient(inputs)
     }
 }

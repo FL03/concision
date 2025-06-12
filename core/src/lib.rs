@@ -63,6 +63,7 @@ pub mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
+    pub mod apply;
     pub mod clip;
     pub mod codex;
     pub mod gradient;
@@ -76,6 +77,8 @@ pub mod traits {
     pub mod wnb;
 
     pub(crate) mod prelude {
+        #[doc(inline)]
+        pub use super::apply::*;
         #[doc(inline)]
         pub use super::clip::*;
         #[doc(inline)]
