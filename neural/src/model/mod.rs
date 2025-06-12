@@ -5,21 +5,30 @@
 //! This module provides the scaffolding for creating models and layers in a neural network.
 
 #[doc(inline)]
-pub use self::{
-    config::StandardModelConfig, layout::*, model_params::ModelParams, trainer::Trainer,
-};
+pub use self::{config::StandardModelConfig, layout::*, model_params::*, trainer::Trainer};
 
 pub mod config;
 pub mod layout;
 pub mod model_params;
 pub mod trainer;
 
+mod impls {
+    pub mod impl_model_params;
+    #[cfg(feature = "rand")]
+    pub mod impl_model_params_rand;
+}
+
 pub(crate) mod prelude {
-    pub use super::Model;
+    #[doc(inline)]
     pub use super::config::*;
+    #[doc(inline)]
     pub use super::layout::*;
+    #[doc(inline)]
     pub use super::model_params::*;
+    #[doc(inline)]
     pub use super::trainer::*;
+    #[doc(inline)]
+    pub use super::{Model, ModelExt};
 }
 
 use crate::{NetworkConfig, Predict, Train};

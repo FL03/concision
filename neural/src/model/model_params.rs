@@ -2,10 +2,8 @@
     Appellation: store <module>
     Contrib: @FL03
 */
-use super::layout::ModelFeatures;
 use cnc::params::ParamsBase;
-use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
-use num_traits::{One, Zero};
+use ndarray::{Data, Dimension, Ix2, RawData};
 
 pub type ModelParams<A = f64, D = Ix2> = ModelParamsBase<ndarray::OwnedRepr<A>, D>;
 
@@ -22,11 +20,11 @@ where
     S: RawData,
 {
     /// the input layer of the model
-    pub input: ParamsBase<S, D>,
+    pub(crate) input: ParamsBase<S, D>,
     /// a sequential stack of params for the model's hidden layers
-    pub hidden: Vec<ParamsBase<S, D>>,
+    pub(crate) hidden: Vec<ParamsBase<S, D>>,
     /// the output layer of the model
-    pub output: ParamsBase<S, D>,
+    pub(crate) output: ParamsBase<S, D>,
 }
 
 impl<A, S, D> ModelParamsBase<S, D>
@@ -34,7 +32,9 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn new(
+    /// returns a new instance of the [`ModelParamsBase`] with the specified input, hidden, and
+    /// output layers.
+    pub const fn new(
         input: ParamsBase<S, D>,
         hidden: Vec<ParamsBase<S, D>>,
         output: ParamsBase<S, D>,
@@ -45,17 +45,12 @@ where
             output,
         }
     }
-    /// returns true if the stack is shallow
-    pub fn is_shallow(&self) -> bool {
-        self.hidden.is_empty() || self.hidden.len() == 1
-    }
     /// returns an immutable reference to the input layer of the model
     pub const fn input(&self) -> &ParamsBase<S, D> {
         &self.input
     }
     /// returns a mutable reference to the input layer of the model
-    #[inline]
-    pub fn input_mut(&mut self) -> &mut ParamsBase<S, D> {
+    pub const fn input_mut(&mut self) -> &mut ParamsBase<S, D> {
         &mut self.input
     }
     /// returns an immutable reference to the hidden layers of the model
@@ -68,8 +63,7 @@ where
         self.hidden.as_slice()
     }
     /// returns a mutable reference to the hidden layers of the model
-    #[inline]
-    pub fn hidden_mut(&mut self) -> &mut Vec<ParamsBase<S, D>> {
+    pub const fn hidden_mut(&mut self) -> &mut Vec<ParamsBase<S, D>> {
         &mut self.hidden
     }
     /// returns an immutable reference to the output layer of the model
@@ -77,30 +71,52 @@ where
         &self.output
     }
     /// returns a mutable reference to the output layer of the model
-    #[inline]
-    pub fn output_mut(&mut self) -> &mut ParamsBase<S, D> {
+    pub const fn output_mut(&mut self) -> &mut ParamsBase<S, D> {
         &mut self.output
     }
     /// set the input layer of the model
-    pub fn set_input(&mut self, input: ParamsBase<S, D>) {
+    #[inline]
+    pub fn set_input(&mut self, input: ParamsBase<S, D>) -> &mut Self {
         *self.input_mut() = input;
+        self
     }
     /// set the hidden layers of the model
-    pub fn set_hidden<I>(&mut self, iter: I)
-    where
-        I: IntoIterator<Item = ParamsBase<S, D>>,
-    {
-        *self.hidden_mut() = Vec::from_iter(iter);
+    #[inline]
+    pub fn set_hidden(&mut self, hidden: Vec<ParamsBase<S, D>>) -> &mut Self {
+        *self.hidden_mut() = hidden;
+        self
+    }
+    /// set the layer at the specified index in the hidden layers of the model
+    ///
+    /// ## Panics
+    ///
+    /// Panics if the index is out of bounds or if the dimension of the provided layer is
+    /// inconsistent with the others in the stack.
+    #[inline]
+    pub fn set_hidden_layer(&mut self, idx: usize, layer: ParamsBase<S, D>) -> &mut Self {
+        if layer.dim() != self.dim_hidden() {
+            panic!(
+                "the dimension of the layer ({:?}) does not match the dimension of the hidden layers ({:?})",
+                layer.dim(),
+                self.dim_hidden()
+            );
+        }
+        self.hidden_mut()[idx] = layer;
+        self
     }
     /// set the output layer of the model
-    pub fn set_output(&mut self, output: ParamsBase<S, D>) {
-        self.output = output;
+    #[inline]
+    pub fn set_output(&mut self, output: ParamsBase<S, D>) -> &mut Self {
+        *self.output_mut() = output;
+        self
     }
     /// consumes the current instance and returns another with the specified input layer
+    #[inline]
     pub fn with_input(self, input: ParamsBase<S, D>) -> Self {
         Self { input, ..self }
     }
     /// consumes the current instance and returns another with the specified hidden layers
+    #[inline]
     pub fn with_hidden<I>(self, iter: I) -> Self
     where
         I: IntoIterator<Item = ParamsBase<S, D>>,
@@ -111,129 +127,97 @@ where
         }
     }
     /// consumes the current instance and returns another with the specified output layer
+    #[inline]
     pub fn with_output(self, output: ParamsBase<S, D>) -> Self {
         Self { output, ..self }
     }
     /// returns the dimension of the input layer
+    #[inline]
     pub fn dim_input(&self) -> <D as Dimension>::Pattern {
         self.input().dim()
     }
     /// returns the dimension of the hidden layers
+    #[inline]
     pub fn dim_hidden(&self) -> <D as Dimension>::Pattern {
-        assert!(self.hidden.iter().all(|p| p.dim() == self.hidden[0].dim()));
+        // verify that all hidden layers have the same dimension
+        assert!(
+            self.hidden()
+                .iter()
+                .all(|p| p.dim() == self.hidden()[0].dim())
+        );
+        // use the first hidden layer's dimension as the representative
+        // dimension for all hidden layers
         self.hidden()[0].dim()
     }
     /// returns the dimension of the output layer
+    #[inline]
     pub fn dim_output(&self) -> <D as Dimension>::Pattern {
-        self.output.dim()
+        self.output().dim()
+    }
+    /// returns the hidden layer associated with the given index
+    #[inline]
+    pub fn get_hidden_layer<I>(&self, idx: I) -> Option<&I::Output>
+    where
+        I: core::slice::SliceIndex<[ParamsBase<S, D>]>,
+    {
+        self.hidden().get(idx)
+    }
+    /// returns a mutable reference to the hidden layer associated with the given index
+    #[inline]
+    pub fn get_hidden_layer_mut<I>(&mut self, idx: I) -> Option<&mut I::Output>
+    where
+        I: core::slice::SliceIndex<[ParamsBase<S, D>]>,
+    {
+        self.hidden_mut().get_mut(idx)
     }
     /// sequentially forwards the input through the model without any activations or other
     /// complexities in-between. not overly usefuly, but it is here for completeness
+    #[inline]
     pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
         A: Clone,
         S: Data,
         ParamsBase<S, D>: cnc::Forward<X, Output = Y> + cnc::Forward<Y, Output = Y>,
     {
+        // forward the input through the input layer
         let mut output = self.input().forward(input)?;
+        // forward the input through each of the hidden layers
         for layer in self.hidden() {
             output = layer.forward(&output)?;
         }
+        // finally, forward the output through the output layer
         self.output().forward(&output)
     }
-}
-
-impl<A, S> ModelParamsBase<S>
-where
-    S: RawData<Elem = A>,
-{
-    /// create a new instance of the model;
-    /// all parameters are initialized to their defaults (i.e., zero)
-    pub fn default(features: ModelFeatures) -> Self
-    where
-        A: Clone + Default,
-        S: DataOwned,
-    {
-        let input = ParamsBase::default(features.dim_input());
-        let hidden = (0..features.layers())
-            .map(|_| ParamsBase::default(features.dim_hidden()))
-            .collect::<Vec<_>>();
-        let output = ParamsBase::default(features.dim_output());
-        Self::new(input, hidden, output)
+    /// returns true if the stack is shallow; a neural network is considered to be _shallow_ if
+    /// it has at most one hidden layer (`n <= 1`).
+    #[inline]
+    pub fn is_shallow(&self) -> bool {
+        self.count_hidden() <= 1 || self.hidden().is_empty()
     }
-    /// create a new instance of the model;
-    /// all parameters are initialized to zero
-    pub fn ones(features: ModelFeatures) -> Self
-    where
-        A: Clone + One,
-        S: DataOwned,
-    {
-        let input = ParamsBase::ones(features.dim_input());
-        let hidden = (0..features.layers())
-            .map(|_| ParamsBase::ones(features.dim_hidden()))
-            .collect::<Vec<_>>();
-        let output = ParamsBase::ones(features.dim_output());
-        Self::new(input, hidden, output)
+    /// returns true if the model stack of parameters is considered to be _deep_, meaning that
+    /// there the number of hidden layers is greater than one.
+    #[inline]
+    pub fn is_deep(&self) -> bool {
+        self.count_hidden() > 1
     }
-    /// create a new instance of the model;
-    /// all parameters are initialized to zero
-    pub fn zeros(features: ModelFeatures) -> Self
-    where
-        A: Clone + Zero,
-        S: DataOwned,
-    {
-        let input = ParamsBase::zeros(features.dim_input());
-        let hidden = (0..features.layers())
-            .map(|_| ParamsBase::zeros(features.dim_hidden()))
-            .collect::<Vec<_>>();
-        let output = ParamsBase::zeros(features.dim_output());
-        Self::new(input, hidden, output)
+    /// returns the total number of hidden layers within the model
+    #[inline]
+    pub fn count_hidden(&self) -> usize {
+        self.hidden().len()
     }
-
-    #[cfg(feature = "rand")]
-    pub fn init_rand<G, Ds>(features: ModelFeatures, distr: G) -> Self
-    where
-        G: Fn((usize, usize)) -> Ds,
-        Ds: Clone + cnc::rand_distr::Distribution<A>,
-        S: DataOwned,
-    {
-        use cnc::init::Initialize;
-        let input = ParamsBase::rand(features.dim_input(), distr(features.dim_input()));
-        let hidden = (0..features.layers())
-            .map(|_| ParamsBase::rand(features.dim_hidden(), distr(features.dim_hidden())))
-            .collect::<Vec<_>>();
-
-        let output = ParamsBase::rand(features.dim_output(), distr(features.dim_output()));
-
-        Self::new(input, hidden, output)
+    /// returns the total number of layers within the model, including the input and output layers
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.count_hidden() + 2 // +2 for input and output layers
     }
-    /// initialize the model parameters using a glorot normal distribution
-    #[cfg(feature = "rand")]
-    pub fn glorot_normal(features: ModelFeatures) -> Self
-    where
-        S: DataOwned,
-        A: num_traits::Float + num_traits::FromPrimitive,
-        cnc::rand_distr::StandardNormal: cnc::rand_distr::Distribution<A>,
-    {
-        Self::init_rand(features, |(rows, cols)| {
-            cnc::init::XavierNormal::new(rows, cols)
-        })
-    }
-    /// initialize the model parameters using a glorot uniform distribution
-    #[cfg(feature = "rand")]
-    pub fn glorot_uniform(features: ModelFeatures) -> Self
-    where
-        S: ndarray::DataOwned,
-        A: Clone
-            + num_traits::Float
-            + num_traits::FromPrimitive
-            + cnc::rand_distr::uniform::SampleUniform,
-        <S::Elem as cnc::rand_distr::uniform::SampleUniform>::Sampler: Clone,
-        cnc::rand_distr::Uniform<S::Elem>: cnc::rand_distr::Distribution<S::Elem>,
-    {
-        Self::init_rand(features, |(rows, cols)| {
-            cnc::init::XavierUniform::new(rows, cols).expect("failed to create distribution")
-        })
+    /// returns the total number parameters within the model, including the input and output layers
+    #[inline]
+    pub fn size(&self) -> usize {
+        let mut size = self.input().count_weight();
+        for layer in self.hidden() {
+            size += layer.count_weight();
+        }
+        size + self.output().count_weight()
     }
 }
 
@@ -245,9 +229,9 @@ where
 {
     fn clone(&self) -> Self {
         Self {
-            input: self.input.clone(),
-            hidden: self.hidden.to_vec(),
-            output: self.output.clone(),
+            input: self.input().clone(),
+            hidden: self.hidden().to_vec(),
+            output: self.output().clone(),
         }
     }
 }
@@ -279,41 +263,5 @@ where
             "{{ input: {:?}, hidden: {:?}, output: {:?} }}",
             self.input, self.hidden, self.output
         )
-    }
-}
-
-impl<A, S, D> core::ops::Index<usize> for ModelParamsBase<S, D>
-where
-    A: Clone,
-    D: Dimension,
-    S: ndarray::Data<Elem = A>,
-{
-    type Output = ParamsBase<S, D>;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        if index == 0 {
-            &self.input
-        } else if index == self.hidden.len() + 1 {
-            &self.output
-        } else {
-            &self.hidden[index - 1]
-        }
-    }
-}
-
-impl<A, S, D> core::ops::IndexMut<usize> for ModelParamsBase<S, D>
-where
-    A: Clone,
-    D: Dimension,
-    S: ndarray::Data<Elem = A>,
-{
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        if index == 0 {
-            &mut self.input
-        } else if index == self.hidden.len() + 1 {
-            &mut self.output
-        } else {
-            &mut self.hidden[index - 1]
-        }
     }
 }

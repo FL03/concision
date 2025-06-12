@@ -23,11 +23,8 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub const fn new(bias: ArrayBase<S, D::Smaller>, weights: ArrayBase<S, D>) -> Self
-    where
-        A: Clone,
-        S: DataOwned,
-    {
+    /// create a new instance of the [`ParamsBase`] with the given bias and weights
+    pub const fn new(bias: ArrayBase<S, D::Smaller>, weights: ArrayBase<S, D>) -> Self {
         Self { bias, weights }
     }
     /// create a new instance of the [`ModelParams`] from the given shape and element;
@@ -215,8 +212,12 @@ where
         self.bias().is_empty()
     }
     /// the total number of elements within the weight tensor
-    pub fn len(&self) -> usize {
+    pub fn count_weight(&self) -> usize {
         self.weights().len()
+    }
+    /// the total number of elements within the bias tensor
+    pub fn count_bias(&self) -> usize {
+        self.bias().len()
     }
     /// returns the raw dimensions of the weights;
     pub fn raw_dim(&self) -> D {
@@ -231,16 +232,17 @@ where
     pub fn shape_bias(&self) -> &[usize] {
         self.bias().shape()
     }
+    /// returns the total number of parameters within the layer
+    pub fn size(&self) -> usize {
+        self.weights().len() + self.bias().len()
+    }
     /// returns an owned instance of the parameters
     pub fn to_owned(&self) -> ParamsBase<ndarray::OwnedRepr<A>, D>
     where
         A: Clone,
         S: DataOwned,
     {
-        ParamsBase {
-            bias: self.bias().to_owned(),
-            weights: self.weights().to_owned(),
-        }
+        ParamsBase::new(self.bias().to_owned(), self.weights().to_owned())
     }
     /// change the shape of the parameters; the shape of the bias parameters is determined by
     /// removing the "zero-th" axis of the given shape
@@ -258,27 +260,21 @@ where
         let dim = shape.raw_dim().clone();
         let bias = self.bias().to_shape(dim.remove_axis(Axis(0)))?;
         let weights = self.weights().to_shape(dim)?;
-        Ok(ParamsBase { bias, weights })
+        Ok(ParamsBase::new(bias, weights))
     }
     /// returns a "view" of the parameters; see [view](ArrayBase::view) for more information
     pub fn view(&self) -> ParamsBase<ndarray::ViewRepr<&'_ A>, D>
     where
         S: Data,
     {
-        ParamsBase {
-            bias: self.bias().view(),
-            weights: self.weights().view(),
-        }
+        ParamsBase::new(self.bias().view(), self.weights().view())
     }
     /// returns mutable view of the parameters; see [view_mut](ArrayBase::view_mut) for more information
     pub fn view_mut(&mut self) -> ParamsBase<ndarray::ViewRepr<&'_ mut A>, D>
     where
         S: ndarray::DataMut,
     {
-        ParamsBase {
-            bias: self.bias.view_mut(),
-            weights: self.weights.view_mut(),
-        }
+        ParamsBase::new(self.bias.view_mut(), self.weights.view_mut())
     }
 }
 
@@ -322,10 +318,7 @@ where
     A: Clone,
 {
     fn clone(&self) -> Self {
-        Self {
-            bias: self.bias.clone(),
-            weights: self.weights.clone(),
-        }
+        Self::new(self.bias().clone(), self.weights().clone())
     }
 }
 
@@ -345,7 +338,7 @@ where
     A: PartialEq,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.bias == other.bias && self.weights == other.weights
+        self.bias() == other.bias() && self.weights() == other.weights()
     }
 }
 
@@ -365,8 +358,8 @@ where
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         f.debug_struct("ModelParams")
-            .field("bias", &self.bias)
-            .field("weights", &self.weights)
+            .field("bias", self.bias())
+            .field("weights", self.weights())
             .finish()
     }
 }
