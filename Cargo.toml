@@ -3,22 +3,22 @@ default-members = [
     "concision"
 ]
 members = [
-    "concision", 
-    "core", 
-    "data", 
-    "derive", 
-    "macros", 
-    "neural", 
+    "concision",
+    "core",
+    "data",
+    "derive",
+    "macros",
+    "neural",
     "utils",
-    "ext", 
-    "models/*", 
+    "ext",
+    "models/*",
 ]
 
 resolver = "3"
 
 [workspace.package]
 authors = [
-    "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", 
+    "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)",
     "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"
 ]
 categories = ["science"]
@@ -26,9 +26,9 @@ description = "Concision is a toolkit for designing machine-learning models in R
 edition = "2024"
 homepage = "https://github.com/FL03/concision/wiki"
 keywords = [
-    "data-science", 
-    "machine-learning", 
-    "scsys", 
+    "data-science",
+    "machine-learning",
+    "scsys",
     "toolkit"
 ]
 license = "Apache-2.0"
@@ -51,8 +51,8 @@ concision-ext = { default-features = false, path = "ext", version = "0.2.0" }
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.0" }
 
 # custom
-scsys = { default-features = false, features = ["derive"], version = "0.2.9" }
-scsys-derive = { default-features = false, version = "0.2.9" }
+scsys = { default-features = false, features = ["derive"], version = "0.3.0" }
+scsys-derive = { default-features = false, version = "0.3.0" }
 # async
 futures = { default-features = false, version = "0.3" }
 tokio = { default-features = false, version = "1" }
