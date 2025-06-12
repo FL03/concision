@@ -65,10 +65,10 @@ rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 
 [dev-dependencies]
-lazy_static.workspace = true
+lazy_static = { workspace = true }
 
 [features]
-default = [ 
+default = [
     "std",
 ]
 
@@ -125,7 +125,7 @@ alloc = [
 ]
 
 anyhow = [
-    "dep:anyhow",    
+    "dep:anyhow",
     "scsys/anyhow",
 ]
 

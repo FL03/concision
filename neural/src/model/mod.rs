@@ -5,21 +5,30 @@
 //! This module provides the scaffolding for creating models and layers in a neural network.
 
 #[doc(inline)]
-pub use self::{
-    config::StandardModelConfig, layout::*, model_params::ModelParams, trainer::Trainer,
-};
+pub use self::{config::StandardModelConfig, layout::*, model_params::*, trainer::Trainer};
 
 pub mod config;
 pub mod layout;
 pub mod model_params;
 pub mod trainer;
 
+mod impls {
+    pub mod impl_model_params;
+    #[cfg(feature = "rand")]
+    pub mod impl_model_params_rand;
+}
+
 pub(crate) mod prelude {
-    pub use super::Model;
+    #[doc(inline)]
     pub use super::config::*;
+    #[doc(inline)]
     pub use super::layout::*;
+    #[doc(inline)]
     pub use super::model_params::*;
+    #[doc(inline)]
     pub use super::trainer::*;
+    #[doc(inline)]
+    pub use super::{Model, ModelExt};
 }
 
 use crate::{NetworkConfig, Predict, Train};
@@ -79,20 +88,20 @@ pub trait ModelExt<T>: Model<T>
 where
     Self::Layout: ModelLayout,
 {
-    /// replaces the current configuration and returns the old one;
+    /// [`replace`](core::mem::replace) the current configuration and returns the old one;
     fn replace_config(&mut self, config: Self::Config) -> Self::Config {
         core::mem::replace(self.config_mut(), config)
     }
-    /// replaces the current model parameters and returns the old one;
+    /// [`replace`](core::mem::replace) the current model parameters and returns the old one
     fn replace_params(&mut self, params: ModelParams<T>) -> ModelParams<T> {
         core::mem::replace(self.params_mut(), params)
     }
-    /// overrides the current configuration and returns a mutable reference to the model;
+    /// overrides the current configuration and returns a mutable reference to the model
     fn set_config(&mut self, config: Self::Config) -> &mut Self {
         *self.config_mut() = config;
         self
     }
-    /// overrides the current model parameters and returns a mutable reference to the model;
+    /// overrides the current model parameters and returns a mutable reference to the model
     fn set_params(&mut self, params: ModelParams<T>) -> &mut Self {
         *self.params_mut() = params;
         self

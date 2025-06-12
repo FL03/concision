@@ -76,7 +76,6 @@ pub enum PadMode<T = f64> {
     Wrap,
 }
 
-
 impl<T> From<T> for PadMode<T> {
     fn from(value: T) -> Self {
         PadMode::Constant(value)

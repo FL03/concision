@@ -2,15 +2,17 @@
     Appellation: concision-neural <library>
     Contrib: @FL03
 */
+//! # concision-neural (cnc::neural)
+//!
 //! The neural network abstractions used to create and train models.
 //!
 //! ## Features
 //!
-//! - [Model]: A trait for defining a neural network model.
-//! - [ModelParams]: A structure for storing the parameters of a neural network model.
-//! - [StandardModelConfig]: A standard configuration for the models
-//! - [Predict]: A trait extending the basic [Forward](cnc::Forward) pass
-//! - [Train]: A trait for training a neural network model.
+//! - [`Model`]: A trait for defining a neural network model.
+//! - [`ModelParams`]: A structure for storing the parameters of a neural network model.
+//! - [`StandardModelConfig`]: A standard configuration for the models
+//! - [`Predict`]: A trait extending the basic [`Forward`](cnc::Forward) pass
+//! - [`Train`]: A trait for training a neural network model.
 //!
 //! ### _Work in Progress_
 //!

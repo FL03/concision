@@ -30,6 +30,6 @@ where
     let mean = x.mean_axis(axis).unwrap();
     let var = x.var_axis(axis, A::zero());
     let inv_std = var.mapv(|v| (v + eps).recip().sqrt());
-    
+
     (x - &mean) * &inv_std
 }

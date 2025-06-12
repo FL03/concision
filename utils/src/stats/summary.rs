@@ -17,7 +17,7 @@ where
     type Item;
     type Output;
     /// returns the number of elements in the iterator
-    fn len(&self) -> usize;    
+    fn len(&self) -> usize;
     /// returns the number of elements in the iterator as an [`Item`](Self::Item) type.
     fn product(&self) -> Self::Output;
     /// returns the sum of the iterator
@@ -26,7 +26,7 @@ where
     fn std(&self) -> Self::Output;
     /// returns the variance of the iterator
     fn var(&self) -> Self::Output;
-    
+
     /// returns the number of elements in the iterator as an [`Item`](Self::Item) type.
     fn elems(&self) -> Self::Item {
         Self::Item::from_usize(self.len()).unwrap()

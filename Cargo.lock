@@ -257,7 +257,7 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
 name = "concision"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "approx",
@@ -276,7 +276,7 @@ dependencies = [
 
 [[package]]
 name = "concision-core"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "approx",
@@ -304,7 +304,7 @@ dependencies = [
 
 [[package]]
 name = "concision-data"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "approx",
@@ -324,7 +324,7 @@ dependencies = [
 
 [[package]]
 name = "concision-derive"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -333,11 +333,13 @@ dependencies = [
 
 [[package]]
 name = "concision-ext"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "approx",
  "concision",
+ "concision-kan",
+ "concision-s4",
  "concision-transformer",
  "lazy_static",
  "ndarray",
@@ -348,8 +350,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "concision-kan"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "approx",
+ "concision",
+ "ndarray",
+ "num-traits",
+ "tracing",
+]
+
+[[package]]
 name = "concision-macros"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -358,7 +372,7 @@ dependencies = [
 
 [[package]]
 name = "concision-neural"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "approx",
@@ -384,8 +398,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "concision-s4"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "approx",
+ "concision",
+ "ndarray",
+ "num-traits",
+ "tracing",
+]
+
+[[package]]
 name = "concision-transformer"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "approx",
@@ -397,7 +423,7 @@ dependencies = [
 
 [[package]]
 name = "concision-utils"
-version = "0.1.23"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "approx",
@@ -421,6 +447,18 @@ dependencies = [
  "strum",
  "thiserror",
  "tracing",
+]
+
+[[package]]
+name = "config"
+version = "0.15.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "595aae20e65c3be792d05818e8c63025294ac3cb7e200f11459063a352a6ef80"
+dependencies = [
+ "pathdiff",
+ "serde",
+ "serde_json",
+ "winnow",
 ]
 
 [[package]]
@@ -1230,6 +1268,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
+name = "pathdiff"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df94ce210e5bc13cb6651479fa48d14f601d9858cfe0467f43ae157023b938d3"
+
+[[package]]
 name = "percent-encoding"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1554,9 +1598,9 @@ dependencies = [
 
 [[package]]
 name = "scsys"
-version = "0.2.8"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "611a66e87dfdb691d117bfb00cb281aea45a6cf36a0024b078e9f0354d79eb7d"
+checksum = "dd97365a000c681edf2a3954250636442d7e76b2b53d32a0d516fa253c34e200"
 dependencies = [
  "scsys-config",
  "scsys-core",
@@ -1568,22 +1612,29 @@ dependencies = [
 
 [[package]]
 name = "scsys-config"
-version = "0.2.8"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "116a2e1d4edf29df645b60bf21f3c9e79b2d00cee4890b99632db42c2a64cbf1"
+checksum = "50a68cdb65ec0a505e6a8d486755ffff8751db626d3933dae305b80192f5827b"
 dependencies = [
+ "anyhow",
+ "config",
  "scsys-core",
+ "serde",
+ "serde_derive",
+ "serde_json",
  "smart-default",
  "strum",
  "thiserror",
  "tracing",
+ "tracing-subscriber",
+ "url",
 ]
 
 [[package]]
 name = "scsys-core"
-version = "0.2.8"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd399aec2895143cefde2a71711bcb6fa46d27b072baec155c6bbbe52fe5a263"
+checksum = "0939b72bac5a53728b7ff767996abd9547df2b7daf60228ee6c959761095b78b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1607,9 +1658,9 @@ dependencies = [
 
 [[package]]
 name = "scsys-crypto"
-version = "0.2.8"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e31f0ddd5b6c6f1a5115f121c93c318979532ba7451b7d499dcb218f695298d6"
+checksum = "70e266c3cbaf56d7c8fe8f47037c683c909fc85ed1cfa664cc61e35ed9f4f24b"
 dependencies = [
  "anyhow",
  "bincode",
@@ -1636,9 +1687,9 @@ dependencies = [
 
 [[package]]
 name = "scsys-derive"
-version = "0.2.8"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e120b90ac00014d38767588f7fe52ff34c89eff17f79f2cd5bc6ae389273ce17"
+checksum = "f57af57d501f1d0b99af8ce5a7e81705fd01f9cf688da8610e42b8817c049570"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1647,18 +1698,18 @@ dependencies = [
 
 [[package]]
 name = "scsys-traits"
-version = "0.2.8"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "788fccc9e6f96dca5d973e66322edf445184b54afb37b07f4d5d72caa865d131"
+checksum = "a5849f9fcb8ccacfaf68f287404236029a7d557fe8a875cdd4c1ec2b62b6987a"
 dependencies = [
  "num-traits",
 ]
 
 [[package]]
 name = "scsys-util"
-version = "0.2.8"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c23e2cf19762946b932a38e04f160883b3ce0ee05f8bec9feb255aeefe922e37"
+checksum = "b49c0764a02759cae0b0851ebcbab56a2ef18d5d87eb5344e1b9533478a7b82f"
 dependencies = [
  "num-traits",
  "rand 0.9.1",
@@ -1666,6 +1717,7 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "strum",
+ "tracing",
 ]
 
 [[package]]
@@ -2038,6 +2090,7 @@ dependencies = [
  "nu-ansi-term",
  "once_cell",
  "regex",
+ "serde",
  "sharded-slab",
  "thread_local",
  "tracing",
@@ -2087,6 +2140,7 @@ dependencies = [
  "form_urlencoded",
  "idna",
  "percent-encoding",
+ "serde",
 ]
 
 [[package]]
@@ -2405,6 +2459,15 @@ name = "windows_x86_64_msvc"
 version = "0.52.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
+
+[[package]]
+name = "winnow"
+version = "0.7.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c06928c8748d81b05c9be96aad92e1b6ff01833332f281e8cfca3be4b35fc9ec"
+dependencies = [
+ "memchr",
+]
 
 [[package]]
 name = "wit-bindgen-rt"

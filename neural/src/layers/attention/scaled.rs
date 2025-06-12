@@ -118,7 +118,6 @@ where
         let attention_weights = scaled_scores.mapv(|x| x.exp()) / scaled_scores.sum();
 
         // Compute the final attention output by multiplying the attention weights with the value vectors
-        
 
         attention_weights.dot(value)
     }

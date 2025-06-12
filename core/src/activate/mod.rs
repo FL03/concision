@@ -26,13 +26,7 @@ mod impls {
 
 pub(crate) mod prelude {
     pub use super::traits::*;
-    pub use super::{Activate, ActivateGradient, BinaryAction};
-}
-
-pub trait BinaryAction<A, B = A> {
-    type Output;
-
-    fn activate(&self, lhs: A, rhs: B) -> Self::Output;
+    pub use super::{Activate, ActivateGradient};
 }
 
 /// The [Activate] trait enables the definition of new activation functions often implemented
@@ -49,6 +43,10 @@ pub trait ActivateGradient<Rhs = Self>: Activate<Self::Input> {
 
     fn activate_gradient(&self, rhs: Rhs) -> Self::Delta;
 }
+
+/*
+ ************* Implementations *************
+*/
 
 impl<X, Y> Activate<X> for Box<dyn Activate<X, Output = Y>> {
     type Output = Y;
