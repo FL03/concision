@@ -5,7 +5,10 @@
 use ndarray::prelude::*;
 use ndarray::{Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
-/// this structure extends the `ArrayBase` type to include bias
+/// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
+/// model. The implementation is designed around the [`ArrayBase`] type from the
+/// `ndarray` crate, which allows for flexible and efficient storage of multi-dimensional
+/// arrays.
 pub struct ParamsBase<S, D = ndarray::Ix2>
 where
     D: Dimension,
@@ -20,14 +23,14 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn new(bias: ArrayBase<S, D::Smaller>, weights: ArrayBase<S, D>) -> Self
+    pub const fn new(bias: ArrayBase<S, D::Smaller>, weights: ArrayBase<S, D>) -> Self
     where
         A: Clone,
         S: DataOwned,
     {
         Self { bias, weights }
     }
-
+    /// create a new instance of the [`ModelParams`] from the given shape and element;
     pub fn from_elems<Sh>(shape: Sh, elem: A) -> Self
     where
         A: Clone,
@@ -38,7 +41,7 @@ where
         let weights = ArrayBase::from_elem(shape, elem.clone());
         let dim = weights.raw_dim();
         let bias = ArrayBase::from_elem(dim.remove_axis(Axis(0)), elem);
-        Self { bias, weights }
+        Self::new(bias, weights)
     }
     /// create an instance of the parameters with all values set to the default value
     pub fn default<Sh>(shape: Sh) -> Self
@@ -48,10 +51,7 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let weights = ArrayBase::default(shape);
-        let dim = weights.raw_dim();
-        let bias = ArrayBase::default(dim.remove_axis(Axis(0)));
-        Self { bias, weights }
+        Self::from_elems(shape, A::default())
     }
     /// initialize the parameters with all values set to zero
     pub fn ones<Sh>(shape: Sh) -> Self
@@ -61,10 +61,7 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let weights = ArrayBase::ones(shape);
-        let dim = weights.raw_dim();
-        let bias = ArrayBase::ones(dim.remove_axis(Axis(0)));
-        Self { bias, weights }
+        Self::from_elems(shape, A::one())
     }
     /// create an instance of the parameters with all values set to zero
     pub fn zeros<Sh>(shape: Sh) -> Self
@@ -74,18 +71,14 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        let weights = ArrayBase::zeros(shape);
-        let dim = weights.raw_dim();
-        let bias = ArrayBase::zeros(dim.remove_axis(Axis(0)));
-        Self { bias, weights }
+        Self::from_elems(shape, A::zero())
     }
     /// returns an immutable reference to the bias
     pub const fn bias(&self) -> &ArrayBase<S, D::Smaller> {
         &self.bias
     }
     /// returns a mutable reference to the bias
-    #[inline]
-    pub fn bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller> {
+    pub const fn bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller> {
         &mut self.bias
     }
     /// returns an immutable reference to the weights
@@ -93,11 +86,9 @@ where
         &self.weights
     }
     /// returns a mutable reference to the weights
-    #[inline]
-    pub fn weights_mut(&mut self) -> &mut ArrayBase<S, D> {
+    pub const fn weights_mut(&mut self) -> &mut ArrayBase<S, D> {
         &mut self.weights
     }
-
     /// assign the bias
     pub fn assign_bias(&mut self, bias: &ArrayBase<S, D::Smaller>) -> &mut Self
     where

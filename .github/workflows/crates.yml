@@ -1,6 +1,6 @@
 name: release
 
-concurrency:   
+concurrency:
   cancel-in-progress: false
   group: ${{ github.workflow }}-${{ github.ref }}
 
@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        package:  
+        package:
           - concision-utils
           - concision-core
           - concision-data
@@ -45,18 +45,20 @@ jobs:
           - concision-macros
           - concision
           # non-sdk packages
+          - concision-kan
+          - concision-s4
           - concision-transformer
           - concision-ext
     runs-on: ubuntu-latest
     steps:
-      - 
+      -
         name: Checkout
         uses: actions/checkout@v4
-      - 
+      -
         name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - 
+      -
         name: Publish (${{ matrix.package }})
         run: cargo publish --locked --package ${{ matrix.package }}

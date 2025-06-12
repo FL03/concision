@@ -338,6 +338,8 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
+ "concision-kan",
+ "concision-s4",
  "concision-transformer",
  "lazy_static",
  "ndarray",
@@ -345,6 +347,18 @@ dependencies = [
  "scsys",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "concision-kan"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "approx",
+ "concision",
+ "ndarray",
+ "num-traits",
+ "tracing",
 ]
 
 [[package]]
@@ -380,6 +394,18 @@ dependencies = [
  "serde_json",
  "strum",
  "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "concision-s4"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "approx",
+ "concision",
+ "ndarray",
+ "num-traits",
  "tracing",
 ]
 

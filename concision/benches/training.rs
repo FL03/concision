@@ -22,4 +22,3 @@ fn from_elem(c: &mut Criterion) {
 
 criterion_group!(benches, from_elem);
 criterion_main!(benches);
-

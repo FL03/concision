@@ -2,9 +2,9 @@
     Appellation: default <module>
     Contrib: @FL03
 */
+use core::hint::black_box;
 use criterion::{BatchSize, BenchmarkId, Criterion, criterion_group, criterion_main};
 use lazy_static::lazy_static;
-use core::hint::black_box;
 use std::time::Duration;
 
 const SAMPLES: usize = 50;
@@ -19,9 +19,7 @@ lazy_static! {
 }
 
 fn bench_fib_func(c: &mut Criterion) {
-    c.bench_function("fibonacci", |b| {
-        b.iter(|| fib::fibonacci(black_box(N)))
-    });
+    c.bench_function("fibonacci", |b| b.iter(|| fib::fibonacci(black_box(N))));
 }
 
 fn bench_fib_recursive(c: &mut Criterion) {
@@ -108,7 +106,7 @@ pub mod fib {
     }
 
     impl Fibonacci {
-        /// returns a new instance of the fibonacci sequence, with `curr` set to 0 and `next` 
+        /// returns a new instance of the fibonacci sequence, with `curr` set to 0 and `next`
         /// set to 1
         pub const fn new() -> Fibonacci {
             Fibonacci { curr: 0, next: 1 }
@@ -140,13 +138,13 @@ pub mod fib {
         /// reset the instance to its default state, with `curr` set to 0 and `next` set to 1
         pub const fn reset(&mut self) -> &mut Self {
             self.set_curr(0).set_next(1)
-        }       
+        }
         /// compute the next value in the fibonacci sequence, using the current and next values
         #[inline]
         const fn compute_next(&self) -> u32 {
             self.curr() + self.next()
         }
-        /// [`replace`](core::mem::replace) the current value with the given value, returning the 
+        /// [`replace`](core::mem::replace) the current value with the given value, returning the
         /// previous value
         const fn replace_curr(&mut self, curr: u32) -> u32 {
             core::mem::replace(self.curr_mut(), curr)
@@ -166,12 +164,12 @@ pub mod fib {
             self.next = next;
             self
         }
-        /// replace the next value with the given, using the previous next as the new current 
+        /// replace the next value with the given, using the previous next as the new current
         /// value, and returning the previous current value
         const fn update(&mut self, next: u32) -> u32 {
             let new = self.replace_next(next);
             self.replace_curr(new)
-        } 
+        }
     }
 
     impl Default for Fibonacci {

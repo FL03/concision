@@ -48,6 +48,8 @@ concision-neural = { default-features = false, path = "neural", version = "0.2.0
 concision-utils = { default-features = false, path = "utils", version = "0.2.0" }
 # extra crates
 concision-ext = { default-features = false, path = "ext", version = "0.2.0" }
+concision-kan = { default-features = false, path = "models/kan", version = "0.2.0" }
+concision-s4 = { default-features = false, path = "models/s4", version = "0.2.0" }
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.0" }
 
 # custom
