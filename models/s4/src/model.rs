@@ -3,12 +3,13 @@
     authors: @FL03
 */
 
-#[cfg(feature = "rand")]
-use cnc::init::rand_distr;
 use cnc::nn::{Model, ModelFeatures, ModelParams, StandardModelConfig};
+#[cfg(feature = "rand")]
+use cnc::rand_distr;
 
 use num_traits::{Float, FromPrimitive};
 
+#[derive(Clone, Debug)]
 pub struct S4Model<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
@@ -36,7 +37,7 @@ where
         T: Float + FromPrimitive,
         rand_distr::StandardNormal: rand_distr::Distribution<T>,
     {
-        let params = ModelParams::glorot_normal(self.features);
+        let params = ModelParams::glorot_normal(self.features());
         S4Model { params, ..self }
     }
     /// returns a reference to the model configuration

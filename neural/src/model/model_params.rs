@@ -194,7 +194,7 @@ where
     pub fn init_rand<G, Ds>(features: ModelFeatures, distr: G) -> Self
     where
         G: Fn((usize, usize)) -> Ds,
-        Ds: Clone + cnc::init::rand_distr::Distribution<A>,
+        Ds: Clone + cnc::rand_distr::Distribution<A>,
         S: DataOwned,
     {
         use cnc::init::Initialize;
@@ -213,7 +213,7 @@ where
     where
         S: DataOwned,
         A: num_traits::Float + num_traits::FromPrimitive,
-        cnc::init::rand_distr::StandardNormal: cnc::init::rand_distr::Distribution<A>,
+        cnc::rand_distr::StandardNormal: cnc::rand_distr::Distribution<A>,
     {
         Self::init_rand(features, |(rows, cols)| {
             cnc::init::XavierNormal::new(rows, cols)
@@ -227,9 +227,9 @@ where
         A: Clone
             + num_traits::Float
             + num_traits::FromPrimitive
-            + cnc::init::rand_distr::uniform::SampleUniform,
-        <S::Elem as cnc::init::rand_distr::uniform::SampleUniform>::Sampler: Clone,
-        cnc::init::rand_distr::Uniform<S::Elem>: cnc::init::rand_distr::Distribution<S::Elem>,
+            + cnc::rand_distr::uniform::SampleUniform,
+        <S::Elem as cnc::rand_distr::uniform::SampleUniform>::Sampler: Clone,
+        cnc::rand_distr::Uniform<S::Elem>: cnc::rand_distr::Distribution<S::Elem>,
     {
         Self::init_rand(features, |(rows, cols)| {
             cnc::init::XavierUniform::new(rows, cols).expect("failed to create distribution")

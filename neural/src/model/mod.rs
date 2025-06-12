@@ -79,20 +79,20 @@ pub trait ModelExt<T>: Model<T>
 where
     Self::Layout: ModelLayout,
 {
-    /// replaces the current configuration and returns the old one;
+    /// [`replace`](core::mem::replace) the current configuration and returns the old one;
     fn replace_config(&mut self, config: Self::Config) -> Self::Config {
         core::mem::replace(self.config_mut(), config)
     }
-    /// replaces the current model parameters and returns the old one;
+    /// [`replace`](core::mem::replace) the current model parameters and returns the old one
     fn replace_params(&mut self, params: ModelParams<T>) -> ModelParams<T> {
         core::mem::replace(self.params_mut(), params)
     }
-    /// overrides the current configuration and returns a mutable reference to the model;
+    /// overrides the current configuration and returns a mutable reference to the model
     fn set_config(&mut self, config: Self::Config) -> &mut Self {
         *self.config_mut() = config;
         self
     }
-    /// overrides the current model parameters and returns a mutable reference to the model;
+    /// overrides the current model parameters and returns a mutable reference to the model
     fn set_params(&mut self, params: ModelParams<T>) -> &mut Self {
         *self.params_mut() = params;
         self

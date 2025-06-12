@@ -3,12 +3,13 @@
     authors: @FL03
 */
 
-#[cfg(feature = "rand")]
-use cnc::init::rand_distr;
 use cnc::nn::{Model, ModelFeatures, ModelParams, StandardModelConfig};
+#[cfg(feature = "rand")]
+use cnc::rand_distr;
 
 use num_traits::{Float, FromPrimitive};
 
+#[derive(Clone, Debug)]
 pub struct KanModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
@@ -35,7 +36,7 @@ where
     where
         rand_distr::StandardNormal: rand_distr::Distribution<T>,
     {
-        let params = ModelParams::glorot_normal(self.features);
+        let params = ModelParams::glorot_normal(self.features());
         KanModel { params, ..self }
     }
     /// returns a reference to the model configuration
@@ -93,7 +94,6 @@ where
 
 impl<T> Model<T> for KanModel<T> {
     type Config = StandardModelConfig<T>;
-
     type Layout = ModelFeatures;
 
     fn config(&self) -> &StandardModelConfig<T> {

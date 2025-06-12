@@ -3,15 +3,16 @@
     Contrib: @FL03
 */
 
-#[cfg(feature = "rand")]
-use cnc::init::rand_distr;
 use cnc::nn::{Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train};
+#[cfg(feature = "rand")]
+use cnc::rand_distr;
 use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign};
 
+#[derive(Clone, Debug)]
 pub struct TransformerModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
@@ -36,7 +37,7 @@ impl<T> TransformerModel<T> {
         T: Float + FromPrimitive,
         rand_distr::StandardNormal: rand_distr::Distribution<T>,
     {
-        let params = ModelParams::glorot_normal(self.features);
+        let params = ModelParams::glorot_normal(self.features());
         TransformerModel { params, ..self }
     }
     /// returns a reference to the model configuration
@@ -94,27 +95,26 @@ impl<T> TransformerModel<T> {
 
 impl<T> Model<T> for TransformerModel<T> {
     type Config = StandardModelConfig<T>;
-
     type Layout = ModelFeatures;
 
     fn config(&self) -> &StandardModelConfig<T> {
-        self.config()
+        &self.config
     }
 
     fn config_mut(&mut self) -> &mut StandardModelConfig<T> {
-        self.config_mut()
+        &mut self.config
     }
 
     fn layout(&self) -> ModelFeatures {
-        self.features()
+        self.features
     }
 
     fn params(&self) -> &ModelParams<T> {
-        self.params()
+        &self.params
     }
 
     fn params_mut(&mut self) -> &mut ModelParams<T> {
-        self.params_mut()
+        &mut self.params
     }
 }
 

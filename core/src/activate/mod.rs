@@ -45,7 +45,7 @@ pub trait ActivateGradient<Rhs = Self>: Activate<Self::Input> {
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 
 impl<X, Y> Activate<X> for Box<dyn Activate<X, Output = Y>> {

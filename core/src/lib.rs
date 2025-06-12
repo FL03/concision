@@ -2,19 +2,34 @@
     Appellation: concision-core <library>
     Contrib: @FL03
 */
-//! This library provides the core abstractions and utilities for the Concision framework.
+//! # concision-core
+//!
+//! This library provides the core abstractions and utilities for the concision (cnc) machine
+//! learning framework.
 //!
 //! ## Features
 //!
-//! - [ParamsBase]: A structure for defining the parameters within a neural network.
-//! - [Backward]: This trait denotes a single backward pass through a layer of a neural network.
-//! - [Forward]: This trait denotes a single forward pass through a layer of a neural network.
+//! - [`ParamsBase`]: A structure for defining the parameters within a neural network.
+//! - [`Backward`]: This trait establishes a common interface for backward propagation.
+//! - [`Forward`]: This trait denotes a single forward pass through a layer of a neural network
 //!
-#![allow(clippy::module_inception)]
+#![allow(
+    clippy::module_inception,
+    clippy::needless_doctest_main,
+    clippy::upper_case_acronyms
+)]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![crate_type = "lib"]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+
+#[cfg(feature = "rand")]
+#[doc(no_inline)]
+pub use rand;
+#[cfg(feature = "rand")]
+#[doc(no_inline)]
+pub use rand_distr;
 
 #[doc(inline)]
 pub use concision_utils as utils;
@@ -29,17 +44,23 @@ pub use self::{
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
-    #[macro_use]
-    pub mod unary;
 }
-
+/// this module is dedicated to activation function
 pub mod activate;
+/// this module provides the base [`Error`] type for the library
 pub mod error;
+/// this module establishes generic random initialization routines for models, params, and
+/// tensors.
 pub mod init;
+/// this module focuses on the loss functions used in training neural networks.
 pub mod loss;
+/// this module provides the [`ParamsBase`] type for the library, which is used to define the
+/// parameters of a neural network.
 pub mod params;
 
 pub mod ops {
+    //! This module provides the core operations for tensors, including filling, padding,
+    //! reshaping, and tensor manipulation.
     #[doc(inline)]
     pub use self::prelude::*;
 
@@ -60,6 +81,8 @@ pub mod ops {
     }
 }
 pub mod traits {
+    //! This module provides the core traits for the library, such as  [`Backward`] and
+    //! [`Forward`]
     #[doc(inline)]
     pub use self::prelude::*;
 

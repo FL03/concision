@@ -35,12 +35,6 @@ pub mod distr {
     }
 }
 
-#[doc(hidden)]
-#[doc(no_inline)]
-pub use rand;
-#[doc(no_inline)]
-pub use rand_distr;
-
 pub(crate) mod prelude {
     pub use super::UniformResult;
     pub use super::distr::prelude::*;
