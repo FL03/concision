@@ -1,37 +1,34 @@
-name: release
+name: crates-io
 
 concurrency:
   cancel-in-progress: false
   group: ${{ github.workflow }}-${{ github.ref }}
 
-env:
-  CARGO_TERM_COLOR: always
-  RUST_BACKTRACE: full
-
 on:
   repository_dispatch:
-    types: [ crates-io ]
+    types: [ cargo-publish, crates-io ]
   workflow_dispatch:
     inputs:
-      environment:
-        default: 'crates-io'
-        description: 'Environment to publish to'
-        required: true
-        type: environment
-
-permissions:
-  contents: write
-  deployments: read
-  discussions: write
+      publish:
+        default: true
+        description: 'Publish the crate(s) to crates.io?'
+        type: boolean
 
 jobs:
   crates-io:
-    if: github.event.inputs.environment == 'crates-io' || github.event_name == 'repository_dispatch'
+    runs-on: ubuntu-latest
     env:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      CARGO_TERM_COLOR: always
+      RUST_BACKTRACE: full
     environment:
       name: crates-io
-      url: https://crates.io/crates/${{ github.event.repository.name }}
+    outputs:
+      url:  ${{ steps.results.outputs.url }}
+    permissions:
+      contents: read
+      deployments: write
+      packages: write
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -49,7 +46,6 @@ jobs:
           - concision-s4
           - concision-transformer
           - concision-ext
-    runs-on: ubuntu-latest
     steps:
       -
         name: Checkout
@@ -61,4 +57,10 @@ jobs:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       -
         name: Publish (${{ matrix.package }})
+        id: publish
         run: cargo publish --locked --package ${{ matrix.package }}
+      -
+        name: Set output(s)
+        id: results
+        run:
+          echo "url=https://crates.io/crates/${{ matrix.package }}" >> "$GITHUB_OUTPUT"
