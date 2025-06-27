@@ -2,7 +2,7 @@ extern crate concision_core as cnc;
 
 use concision_core::{Forward, Norm, Params, ReLU, Sigmoid};
 use concision_neural::{
-    Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train,
+    DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train,
 };
 
 use ndarray::prelude::*;
@@ -12,7 +12,7 @@ use num_traits::{Float, FromPrimitive, NumAssign};
 pub struct SimpleModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
-    pub params: ModelParams<T>,
+    pub params: DeepModelParams<T>,
 }
 
 impl<T> SimpleModel<T>
@@ -20,7 +20,7 @@ where
     T: Float,
 {
     pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self {
-        let params = ModelParams::zeros(features);
+        let params = DeepModelParams::zeros(features);
         SimpleModel {
             config,
             features,
@@ -46,11 +46,11 @@ impl<T> Model<T> for SimpleModel<T> {
         self.features
     }
 
-    fn params(&self) -> &ModelParams<T> {
+    fn params(&self) -> &DeepModelParams<T> {
         &self.params
     }
 
-    fn params_mut(&mut self) -> &mut ModelParams<T> {
+    fn params_mut(&mut self) -> &mut DeepModelParams<T> {
         &mut self.params
     }
 }

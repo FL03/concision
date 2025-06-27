@@ -53,8 +53,8 @@ concision-s4 = { default-features = false, path = "models/s4", version = "0.2.1"
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.1" }
 
 # custom
-scsys = { default-features = false, features = ["derive"], version = "0.3.0" }
-scsys-derive = { default-features = false, version = "0.3.0" }
+scsys = { default-features = false, features = ["derive"], version = "0.3.1" }
+scsys-derive = { default-features = false, version = "0.3.1" }
 # async
 futures = { default-features = false, version = "0.3" }
 tokio = { default-features = false, version = "1" }

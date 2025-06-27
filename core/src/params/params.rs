@@ -40,6 +40,7 @@ where
         let bias = ArrayBase::from_elem(dim.remove_axis(Axis(0)), elem);
         Self::new(bias, weights)
     }
+    #[allow(clippy::should_implement_trait)]
     /// create an instance of the parameters with all values set to the default value
     pub fn default<Sh>(shape: Sh) -> Self
     where

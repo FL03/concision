@@ -2,7 +2,7 @@
     Appellation: simple <module>
     Contrib: @FL03
 */
-use cnc::nn::{Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train};
+use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
 use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
 
 use ndarray::prelude::*;
@@ -13,7 +13,7 @@ use num_traits::{Float, FromPrimitive, NumAssign};
 pub struct SimpleModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
-    pub params: ModelParams<T>,
+    pub params: DeepModelParams<T>,
 }
 
 impl<T> SimpleModel<T> {
@@ -21,7 +21,7 @@ impl<T> SimpleModel<T> {
     where
         T: Clone + Default,
     {
-        let params = ModelParams::default(features);
+        let params = DeepModelParams::default(features);
         SimpleModel {
             config,
             features,
@@ -45,11 +45,11 @@ impl<T> SimpleModel<T> {
         &mut self.features
     }
     /// returns a reference to the model parameters
-    pub const fn params(&self) -> &ModelParams<T> {
+    pub const fn params(&self) -> &DeepModelParams<T> {
         &self.params
     }
     /// returns a mutable reference to the model parameters
-    pub const fn params_mut(&mut self) -> &mut ModelParams<T> {
+    pub const fn params_mut(&mut self) -> &mut DeepModelParams<T> {
         &mut self.params
     }
     /// set the current configuration and return a mutable reference to the model
@@ -63,7 +63,7 @@ impl<T> SimpleModel<T> {
         self
     }
     /// set the current parameters and return a mutable reference to the model
-    pub fn set_params(&mut self, params: ModelParams<T>) -> &mut Self {
+    pub fn set_params(&mut self, params: DeepModelParams<T>) -> &mut Self {
         self.params = params;
         self
     }
@@ -76,7 +76,7 @@ impl<T> SimpleModel<T> {
         Self { features, ..self }
     }
     /// consumes the current instance to create another with the given parameters
-    pub fn with_params(self, params: ModelParams<T>) -> Self {
+    pub fn with_params(self, params: DeepModelParams<T>) -> Self {
         Self { params, ..self }
     }
     /// initializes the model with Glorot normal distribution
@@ -86,7 +86,7 @@ impl<T> SimpleModel<T> {
         T: Float + FromPrimitive,
         cnc::rand_distr::StandardNormal: cnc::rand_distr::Distribution<T>,
     {
-        let params = ModelParams::glorot_normal(self.features());
+        let params = DeepModelParams::glorot_normal(self.features());
         SimpleModel { params, ..self }
     }
 }
@@ -107,11 +107,11 @@ impl<T> Model<T> for SimpleModel<T> {
         self.features
     }
 
-    fn params(&self) -> &ModelParams<T> {
+    fn params(&self) -> &DeepModelParams<T> {
         &self.params
     }
 
-    fn params_mut(&mut self) -> &mut ModelParams<T> {
+    fn params_mut(&mut self) -> &mut DeepModelParams<T> {
         &mut self.params
     }
 }
