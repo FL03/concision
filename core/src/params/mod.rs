@@ -18,8 +18,9 @@ pub mod iter;
 pub mod params;
 
 mod impls {
-    pub mod impl_init;
-    pub mod impl_ops;
+    mod impl_params;
+    mod impl_params_init;
+    mod impl_params_ops;
 }
 
 pub(crate) mod prelude {
