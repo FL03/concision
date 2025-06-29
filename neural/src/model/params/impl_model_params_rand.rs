@@ -8,7 +8,6 @@ use crate::model::params::{DeepParamsBase, ShallowParamsBase};
 use crate::model::ModelFeatures;
 use cnc::init::{self, Initialize};
 use cnc::params::ParamsBase;
-use cnc::rand_distr;
 use ndarray::{DataOwned, Ix2};
 use num_traits::{Float, FromPrimitive};
 

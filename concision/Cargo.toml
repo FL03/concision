@@ -48,6 +48,7 @@ criterion = { features = ["plotters"], workspace = true }
 lazy_static = { workspace = true }
 ndarray = { workspace = true }
 num = { features = ["rand", "serde"], workspace = true }
+serde = { features = ["std"], workspace = true }
 tracing = { features = ["log", "std", "attributes"], workspace = true }
 tracing-subscriber = { workspace = true }
 
@@ -69,6 +70,12 @@ full = [
     "rand",
     "serde",
     "tracing"
+]
+
+nightly = [
+    "concision-core/nightly",
+    "concision-data?/nightly",
+    "concision-neural?/nightly",
 ]
 
 # ************* [FF:Features] *************
@@ -218,3 +225,12 @@ required-features = [
     "std",
     "tracing",
 ]
+
+# ************* [Unit Tests] *************
+[[test]]
+name = "default"
+
+[[test]]
+name = "simple"
+path = "tests/simple/main.rs"
+required-features = ["approx", "default", "neural", "rand"]

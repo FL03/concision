@@ -43,11 +43,9 @@ macro_rules! _unary {
     };
 }
 macro_rules! unary {
-    {
-        $(
+    ($(
             $name:ident::$call:ident($($rest:tt)*)
-        ),* $(,)?
-    } => {
+        ),* $(,)?) => {
         $(
             _unary!(@impl $name::$call($($rest)*));
         )*

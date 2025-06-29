@@ -20,15 +20,12 @@ pub(crate) mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    mod ndactivate;
-    mod rho;
+    mod activate;
     mod unary;
 
     mod prelude {
         #[doc(inline)]
-        pub use super::ndactivate::*;
-        #[doc(inline)]
-        pub use super::rho::*;
+        pub use super::activate::*;
         #[doc(inline)]
         pub use super::unary::*;
     }
@@ -38,11 +35,14 @@ pub(crate) mod utils {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    mod funcs;
+    mod non_linear;
+    mod simple;
 
     mod prelude {
         #[doc(inline)]
-        pub use super::funcs::*;
+        pub use super::non_linear::*;
+        #[doc(inline)]
+        pub use super::simple::*;
     }
 }
 
@@ -53,6 +53,8 @@ mod impls {
 }
 
 pub(crate) mod prelude {
+    #[doc(inline)]
     pub use super::traits::*;
+    #[doc(inline)]
     pub use super::utils::*;
 }

@@ -1,7 +1,7 @@
 [package]
 build = "build.rs"
 description = "this crate implements additional models using the concision framework"
-name = "concision-ext"
+name = "concision-models"
 
 authors.workspace = true
 categories.workspace = true
@@ -35,26 +35,20 @@ doctest = true
 test = true
 
 [dependencies]
+concision-kan = { optional = true, workspace = true }
+concision-s4 = { optional = true, workspace = true }
+concision-transformer = { optional = true, workspace = true }
 # local
 concision = { features = ["neural"], workspace = true }
+concision-ext = { workspace = true }
 # custom
 scsys = { workspace = true }
-# concurrency & parallelism
-rayon = { optional = true, workspace = true }
-# data-structures
-ndarray = { workspace = true }
 # error handling
 anyhow = { optional = true, workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
-num = { workspace = true }
-num-complex = { optional = true, workspace = true }
+ndarray = { workspace = true }
 num-traits = { workspace = true }
-rustfft = { optional = true, workspace = true }
-# serialization
-serde = { optional = true, workspace = true }
-serde_derive = { optional = true, workspace = true }
-serde_json = { optional = true, workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
 
@@ -65,133 +59,128 @@ tracing-subscriber = { features = ["std"], workspace = true }
 
 [features]
 default = [
-    "attention",
+    "simple",
     "std",
 ]
 
 full = [
-    "default",
     "anyhow",
-    "complex",
+    "default",
+    "models",
     "rand",
-    "json",
     "serde",
     "tracing"
 ]
 
-nightly = [
-    "concision/nightly",
-]
-
 # ************* [FF:Features] *************
-attention = []
-
-signal = [
-    "complex",
-    "rustfft"
+models = [
+    "simple",
+    "transformer"
 ]
 
-json = [
-    "alloc",
-    "serde",
-    "serde_json",
-]
+simple = []
 
-init = [
-    "concision/init", 
-    "rand"
-]
+kan = ["dep:concision-kan"]
+
+s4 = ["dep:concision-s4"]
+
+transformer = ["dep:concision-transformer"]
+
 # ************* [FF:Environments] *************
 std = [
-    "alloc",
-    "anyhow?/std",
-    "approx?/std",
     "concision/std",
-    "ndarray/std",
-    "num/std",
-    "num-complex?/std",
-    "num-traits/std",
+    "concision-ext/std",
+    "concision-kan?/std",
+    "concision-s4?/std",
+    "concision-transformer?/std",
     "scsys/std",
-    "serde?/std",
-    "serde_json?/std",
+    "ndarray/std",
+    "num-traits/std",
     "tracing?/std",
 ]
 
-wasi = [
-    "concision/wasi",
-    "scsys/wasi",
-]
-
-wasm = [
-    "concision/wasm",
-    "scsys/wasm",
-    "rayon?/web_spin_lock",
-]
 # ************* [FF:Dependencies] *************
-alloc = [
-    "concision/alloc",
-    "num/alloc",
-    "scsys/alloc",
-    "serde?/alloc",
-    "serde_json?/alloc",
-]
-
 anyhow = [
     "dep:anyhow",
     "concision/anyhow",
+    "concision-ext/anyhow",
+    "concision-kan?/anyhow",
+    "concision-s4?/anyhow",
+    "concision-transformer?/anyhow",
     "scsys/anyhow",
 ]
 
 approx = [
     "dep:approx",
     "concision/approx",
+    "concision-ext/approx",
+    "concision-kan?/approx",
+    "concision-s4?/approx",
+    "concision-transformer?/approx",
     "ndarray/approx",
 ]
 
 blas = [
     "concision/blas",
+    "concision-ext/blas",
+    "concision-kan?/blas",
+    "concision-s4?/blas",
+    "concision-transformer?/blas",
     "ndarray/blas",
 ]
 
-complex = ["dep:num-complex"]
-
 rand = [
     "concision/rand",
-    "num/rand",
-    "num-complex?/rand",
+    "concision-ext/rand",
+    "concision-kan?/rand",
+    "concision-s4?/rand",
+    "concision-transformer?/rand",
 ]
 
 rayon = [
     "concision/rayon",
+    "concision-ext/rayon",
+    "concision-kan?/rayon",
+    "concision-s4?/rayon",
+    "concision-transformer?/rayon",
     "ndarray/rayon",
 ]
 
-rng = [
-    "concision/rng",
-    "scsys/rng",
-]
-
-rustfft = ["dep:rustfft"]
-
 serde = [
-    "dep:serde",
-    "dep:serde_derive",
     "concision/serde",
+    "concision-ext/rng",
+    "concision-kan?/serde",
+    "concision-s4?/serde",
+    "concision-transformer?/serde",
     "ndarray/serde",
-    "num/serde",
-    "num-complex?/serde",
     "scsys/serde",
 ]
-
-serde_json = ["dep:serde_json"]
 
 tracing = [
     "dep:tracing",
     "concision/tracing",
+    "concision-ext/tracing",
+    "concision-kan?/tracing",
+    "concision-s4?/tracing",
+    "concision-transformer?/tracing",
     "scsys/tracing",
 ]
 
-# ************* [Unit Tests] *************
+# ************* [Examples] *************
+[[example]]
+name = "simple"
+required-features = [
+    "anyhow",
+    "approx",
+    "rand",
+    "tracing",
+]
+
+# ************* [FF:Dependencies] *************
 [[test]]
-name = "attention"
-required-features = ["approx", "attention", "default", "rand"]
+name = "simple"
+required-features = [
+    "anyhow",
+    "approx",
+    "rand",
+]

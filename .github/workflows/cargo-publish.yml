@@ -1,4 +1,4 @@
-name: crates-io
+name: Publish
 
 concurrency:
   cancel-in-progress: false
@@ -6,7 +6,7 @@ concurrency:
 
 on:
   repository_dispatch:
-    types: [ cargo-publish, crates-io ]
+    types: [ deploy, publish, cargo-publish, crates-io ]
   workflow_dispatch:
     inputs:
       publish:
@@ -42,11 +42,12 @@ jobs:
           - concision-derive
           - concision-macros
           - concision
+          - concision-ext
           # non-sdk packages
           - concision-kan
           - concision-s4
           - concision-transformer
-          - concision-ext
+          - concision-models
     steps:
       -
         name: Checkout

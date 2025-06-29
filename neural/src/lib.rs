@@ -2,22 +2,21 @@
     Appellation: concision-neural <library>
     Contrib: @FL03
 */
-//! # concision-neural (cnc::neural)
+//! # concision-neural
 //!
-//! The neural network abstractions used to create and train models.
+//! This crate focuses on implementing various neural network components, including models,
+//! layers, and training mechanisms.
+//!
+//! ## Overview
 //!
 //! ## Features
 //!
 //! - [`Model`]: A trait for defining a neural network model.
-//! - [`ModelParams`]: A structure for storing the parameters of a neural network model.
+//! - [`ModelParamsBase`]: A dedicated object capable of storing the parameters for both
+//!   shallow and deep neural networks.
 //! - [`StandardModelConfig`]: A standard configuration for the models
 //! - [`Predict`]: A trait extending the basic [`Forward`](cnc::Forward) pass
 //! - [`Train`]: A trait for training a neural network model.
-//!
-//! ### _Work in Progress_
-//!
-//! - [LayerBase]: Functional wrappers for the [ParamsBase](cnc::ParamsBase) structure.
-
 #![crate_type = "lib"]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(
@@ -26,6 +25,7 @@
     clippy::needless_doctest_main,
     clippy::upper_case_acronyms
 )]
+
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
@@ -88,10 +88,10 @@ pub(crate) mod types {
 
 #[doc(hidden)]
 pub mod prelude {
-    #[doc(inline)]
-    pub use super::config::prelude::*;
     #[doc(no_inline)]
-    pub use crate::layers::prelude::*;
+    pub use super::config::prelude::*;
+    // #[doc(no_inline)]
+    // pub use crate::layers::prelude::*;
     #[doc(no_inline)]
     pub use crate::model::prelude::*;
     #[doc(no_inline)]

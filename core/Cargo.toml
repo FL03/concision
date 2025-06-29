@@ -73,28 +73,29 @@ lazy_static = { workspace = true }
 [features]
 default = [
     "std",
+    "init",
     "utils",
 ]
 
 full = [
-    "init",
+    "default",
     "anyhow",
     "approx",
     "complex",
-    "default",
     "json",
+    "rand",
     "serde",
     "tracing",
 ]
 
 nightly = [
-    "concision-init/nightly",
-    "concision-utils/nightly",
+    "concision-init?/nightly",
+    "concision-utils?/nightly",
 ]
 
 # ************* [FF:Features] *************
 init = [
-    "concision_init",
+    "cnc_init",
     "rand",
 ]
 
@@ -110,9 +111,13 @@ signal =[
     "concision-utils?/signal"
 ]
 
-utils = ["dep:concision-utils"]
+utils = [
+    "cnc_utils",
+]
 
+cnc_init = ["dep:concision-init"]
 
+cnc_utils = ["dep:concision-utils"]
 # ************* [FF:Dependencies] *************
 std = [
     "alloc",
@@ -177,8 +182,6 @@ complex = [
     "concision-init?/complex",
     "concision-utils?/complex",
 ]
-
-concision_init = ["dep:concision-init"]
 
 rand = [
     "concision-init?/rand",

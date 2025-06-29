@@ -1,9 +1,8 @@
-#![allow(unused_imports)]
-
-extern crate concision_core as cnc;
-extern crate concision_neural as nn;
-
-use nn::layers::attention::{Qkv, ScaledDotProductAttention};
+/*
+    appellation: attention <test>
+    authors: @FL03
+*/
+use concision_neural::attention::{Qkv, ScaledDotProductAttention};
 
 use ndarray::prelude::*;
 

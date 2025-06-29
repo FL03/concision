@@ -34,15 +34,15 @@ pub use rand_distr;
 
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
-#[cfg(feature = "concision_init")]
+#[cfg(feature = "cnc_init")]
 pub use concision_init as init;
 
-#[cfg(feature = "utils")]
+#[cfg(feature = "cnc_utils")]
 pub use concision_utils as utils;
 
-#[cfg(feature = "concision_init")]
+#[cfg(feature = "cnc_init")]
 pub use self::init::prelude::*;
-#[cfg(feature = "utils")]
+#[cfg(feature = "cnc_utils")]
 pub use self::utils::prelude::*;
 
 #[doc(inline)]
@@ -138,9 +138,9 @@ pub mod traits {
 
 #[doc(hidden)]
 pub mod prelude {
-    #[cfg(feature = "concision_init")]
+    #[cfg(feature = "cnc_init")]
     pub use concision_init::prelude::*;
-    #[cfg(feature = "utils")]
+    #[cfg(feature = "cnc_utils")]
     pub use concision_utils::prelude::*;
 
     #[doc(no_inline)]

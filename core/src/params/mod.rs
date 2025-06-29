@@ -26,6 +26,8 @@ mod impls {
     mod impl_params_ops;
     #[cfg(feature = "rand")]
     mod impl_params_rand;
+    #[cfg(feature = "serde")]
+    mod impl_params_serde;
 }
 
 pub(crate) mod prelude {

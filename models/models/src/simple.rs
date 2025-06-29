@@ -1,37 +1,98 @@
-extern crate concision_core as cnc;
-
-use concision_core::{Forward, Norm, Params, ReLU, Sigmoid};
-use concision_neural::{
-    DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train,
-};
+/*
+    Appellation: simple <module>
+    Contrib: @FL03
+*/
+use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
+use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign};
 
+#[derive(Clone, Debug)]
 pub struct SimpleModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: DeepModelParams<T>,
 }
 
-impl<T> SimpleModel<T>
-where
-    T: Float,
-{
-    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self {
-        let params = DeepModelParams::zeros(features);
+impl<T> SimpleModel<T> {
+    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self
+    where
+        T: Clone + Default,
+    {
+        let params = DeepModelParams::default(features);
         SimpleModel {
             config,
             features,
             params,
         }
     }
+    /// returns a reference to the model configuration
+    pub const fn config(&self) -> &StandardModelConfig<T> {
+        &self.config
+    }
+    /// returns a mutable reference to the model configuration
+    pub const fn config_mut(&mut self) -> &mut StandardModelConfig<T> {
+        &mut self.config
+    }
+    /// returns the model features
+    pub const fn features(&self) -> ModelFeatures {
+        self.features
+    }
+    /// returns a mutable reference to the model features
+    pub const fn features_mut(&mut self) -> &mut ModelFeatures {
+        &mut self.features
+    }
+    /// returns a reference to the model parameters
+    pub const fn params(&self) -> &DeepModelParams<T> {
+        &self.params
+    }
+    /// returns a mutable reference to the model parameters
+    pub const fn params_mut(&mut self) -> &mut DeepModelParams<T> {
+        &mut self.params
+    }
+    /// set the current configuration and return a mutable reference to the model
+    pub fn set_config(&mut self, config: StandardModelConfig<T>) -> &mut Self {
+        self.config = config;
+        self
+    }
+    /// set the current features and return a mutable reference to the model
+    pub fn set_features(&mut self, features: ModelFeatures) -> &mut Self {
+        self.features = features;
+        self
+    }
+    /// set the current parameters and return a mutable reference to the model
+    pub fn set_params(&mut self, params: DeepModelParams<T>) -> &mut Self {
+        self.params = params;
+        self
+    }
+    /// consumes the current instance to create another with the given configuration
+    pub fn with_config(self, config: StandardModelConfig<T>) -> Self {
+        Self { config, ..self }
+    }
+    /// consumes the current instance to create another with the given features
+    pub fn with_features(self, features: ModelFeatures) -> Self {
+        Self { features, ..self }
+    }
+    /// consumes the current instance to create another with the given parameters
+    pub fn with_params(self, params: DeepModelParams<T>) -> Self {
+        Self { params, ..self }
+    }
+    /// initializes the model with Glorot normal distribution
+    #[cfg(feature = "rand")]
+    pub fn init(self) -> Self
+    where
+        T: Float + FromPrimitive,
+        cnc::rand_distr::StandardNormal: cnc::rand_distr::Distribution<T>,
+    {
+        let params = DeepModelParams::glorot_normal(self.features());
+        SimpleModel { params, ..self }
+    }
 }
 
 impl<T> Model<T> for SimpleModel<T> {
     type Config = StandardModelConfig<T>;
-
     type Layout = ModelFeatures;
 
     fn config(&self) -> &StandardModelConfig<T> {
@@ -104,10 +165,10 @@ where
         input: &ArrayBase<S, Ix1>,
         target: &ArrayBase<T, Ix1>,
     ) -> Result<Self::Output, NeuralError> {
-        if input.len() != self.layout().input() {
+        if input.len() != self.features().input() {
             return Err(NeuralError::InvalidInputShape);
         }
-        if target.len() != self.layout().output() {
+        if target.len() != self.features().output() {
             return Err(NeuralError::InvalidOutputShape);
         }
         // get the learning rate from the model's configuration
@@ -149,7 +210,7 @@ where
             .output_mut()
             .backward(activations.last().unwrap(), &delta, lr)?;
 
-        let num_hidden = self.layout().layers();
+        let num_hidden = self.features().layers();
         // Iterate through hidden layers in reverse order
         for i in (0..num_hidden).rev() {
             // Calculate error for this layer
@@ -208,13 +269,12 @@ where
         if input.nrows() == 0 || target.nrows() == 0 {
             return Err(NeuralError::InvalidBatchSize);
         }
-        if input.ncols() != self.layout().input() {
+        if input.ncols() != self.features().input() {
             return Err(NeuralError::InvalidInputShape);
         }
-        if target.ncols() != self.layout().output() || target.nrows() != input.nrows() {
+        if target.ncols() != self.features().output() || target.nrows() != input.nrows() {
             return Err(NeuralError::InvalidOutputShape);
         }
-        let batch_size = input.nrows();
         let mut loss = A::zero();
 
         for (i, (x, e)) in input.rows().into_iter().zip(target.rows()).enumerate() {
@@ -225,7 +285,14 @@ where
                     tracing::error!(
                         "Training failed for batch {}/{}: {:?}",
                         i + 1,
-                        batch_size,
+                        input.nrows(),
+                        err
+                    );
+                    #[cfg(not(feature = "tracing"))]
+                    eprintln!(
+                        "Training failed for batch {}/{}: {:?}",
+                        i + 1,
+                        input.nrows(),
                         err
                     );
                     return Err(err);

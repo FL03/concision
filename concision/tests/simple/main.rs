@@ -1,11 +1,15 @@
-extern crate concision_core as cnc;
-extern crate concision_neural as neural;
+/*
+    appellation: simple <test>
+    authors: @FL03
+*/
+mod model;
 
-use concision_neural::{Model, ModelFeatures, NeuralResult, StandardModelConfig};
+extern crate concision as cnc;
+
+use cnc::nn::{Model, ModelFeatures, StandardModelConfig};
 use ndarray::prelude::*;
 
 use model::SimpleModel;
-mod model;
 
 #[test]
 fn test_standard_model_config() {
@@ -27,7 +31,7 @@ fn test_standard_model_config() {
 }
 
 #[test]
-fn test_simple_model() -> NeuralResult<()> {
+fn test_simple_model() -> anyhow::Result<()> {
     let mut config = StandardModelConfig::new()
         .with_epochs(1000)
         .with_batch_size(32);

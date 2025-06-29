@@ -2,11 +2,11 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
-use super::{Activate, ActivateGradient, Layer};
+use super::{Activator, ActivatorGradient, Layer};
 use cnc::{Forward, ParamsBase};
 use ndarray::{Dimension, Ix2, RawData};
 
-pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activate<A, Output = A> + 'static>, S, D>;
+pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activator<A, Output = A> + 'static>, S, D>;
 
 pub struct LayerBase<F, S, D = Ix2>
 where
@@ -98,8 +98,8 @@ where
     /// This is useful during the creation of the model, when the activation function is not known yet.
     pub fn with_rho<G>(self, rho: G) -> LayerBase<G, S, D>
     where
-        G: Activate<S::Elem>,
-        F: Activate<S::Elem>,
+        G: Activator<S::Elem>,
+        F: Activator<S::Elem>,
         S: RawData<Elem = A>,
     {
         LayerBase {
@@ -109,7 +109,7 @@ where
     }
     pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
-        F: Activate<<ParamsBase<S, D> as Forward<X>>::Output, Output = Y>,
+        F: Activator<<ParamsBase<S, D> as Forward<X>>::Output, Output = Y>,
         ParamsBase<S, D>: Forward<X, Output = Y>,
         X: Clone,
         Y: Clone,
@@ -140,9 +140,9 @@ where
     }
 }
 
-impl<U, V, F, S, D> Activate<U> for LayerBase<F, S, D>
+impl<U, V, F, S, D> Activator<U> for LayerBase<F, S, D>
 where
-    F: Activate<U, Output = V>,
+    F: Activator<U, Output = V>,
     D: Dimension,
     S: RawData,
 {
@@ -153,9 +153,9 @@ where
     }
 }
 
-impl<U, F, S, D> ActivateGradient<U> for LayerBase<F, S, D>
+impl<U, F, S, D> ActivatorGradient<U> for LayerBase<F, S, D>
 where
-    F: ActivateGradient<U>,
+    F: ActivatorGradient<U>,
     D: Dimension,
     S: RawData,
 {
@@ -169,7 +169,7 @@ where
 
 impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D>
 where
-    F: ActivateGradient<A>,
+    F: ActivatorGradient<A>,
     D: Dimension,
     S: RawData<Elem = A>,
 {
