@@ -72,7 +72,6 @@ mod utils {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    mod activate;
     mod arith;
     mod gradient;
     mod norm;
@@ -80,8 +79,6 @@ mod utils {
     mod tensor;
 
     mod prelude {
-        #[doc(inline)]
-        pub use super::activate::*;
         #[doc(inline)]
         pub use super::arith::*;
         #[doc(inline)]

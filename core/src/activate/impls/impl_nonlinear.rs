@@ -2,9 +2,8 @@
     Appellation: sigmoid <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::{
-    activate::{ReLU, Sigmoid, Softmax, Tanh},
-    sigmoid_derivative,
+use crate::activate::{ReLU, Sigmoid, Softmax, Tanh,
+    utils::sigmoid_derivative,
 };
 
 use ndarray::{Array, ArrayBase, Data, Dimension, ScalarOperand};
