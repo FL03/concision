@@ -34,6 +34,7 @@ jobs:
       max-parallel: 1
       matrix:
         package:
+          - concision-init
           - concision-utils
           - concision-core
           - concision-data

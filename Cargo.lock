@@ -280,6 +280,7 @@ version = "0.2.1"
 dependencies = [
  "anyhow",
  "approx",
+ "concision-init",
  "concision-utils",
  "getrandom",
  "lazy_static",
@@ -347,6 +348,30 @@ dependencies = [
  "scsys",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "concision-init"
+version = "0.2.1"
+dependencies = [
+ "anyhow",
+ "approx",
+ "getrandom",
+ "lazy_static",
+ "ndarray",
+ "num",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "rand 0.9.1",
+ "rand_distr",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "smart-default",
+ "strum",
+ "thiserror",
+ "tracing",
 ]
 
 [[package]]

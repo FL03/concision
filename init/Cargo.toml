@@ -1,7 +1,7 @@
 [package]
 build = "build.rs"
-description = "this crate implements the core modules for the concision framework"
-name = "concision-core"
+description = "tthis crate provides various random distribution and initialization routines for the concision framework"
+name = "concision-init"
 
 authors.workspace = true
 categories.workspace = true
@@ -33,14 +33,6 @@ doctest = true
 test = true
 
 [dependencies]
-#  local
-concision-init = { optional = true, workspace = true }
-concision-utils = {  optional = true, workspace = true }
-# custom
-scsys = { workspace = true }
-scsys-derive = { workspace = true }
-# concurrency & parallelism
-rayon = { optional = true, workspace = true }
 # data & serialization
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
@@ -70,140 +62,72 @@ lazy_static = { workspace = true }
 
 [features]
 default = [
+    "rand",
     "std",
-    "utils",
 ]
 
 full = [
-    "init",
-    "anyhow",
     "approx",
     "complex",
     "default",
-    "json",
     "serde",
     "tracing",
 ]
 
-# ************* [FF:Features] *************
-init = [
-    "dep:concision-init",
-    "rand",
-]
-
-signal =[
-    "complex",
-    "concision-utils?/signal"
-]
-
-utils = ["dep:concision-utils"]
+nightly = []
 
 
 # ************* [FF:Dependencies] *************
 std = [
     "alloc",
     "anyhow?/std",
-    "concision-init?/std",
-    "concision-utils?/std",
     "ndarray/std",
     "num/std",
     "num-complex?/std",
     "num-traits/std",
-    "rand?/std",
-    "rand?/std_rng",
+    "rand/std",
+    "rand/std_rng",
     "serde/std",
-    "scsys/std",
     "strum/std",
     "thiserror/std",
     "tracing?/std",
 ]
 
-wasi = [
-    "scsys/wasi",
-    "concision-init?/wasi",
-    "concision-utils?/wasi",
-]
+wasi = []
 
 wasm = [
     "getrandom?/wasm_js",
-    "concision-init?/wasm",
-    "concision-utils?/wasm",
-    "scsys/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-    "concision-init?/alloc",
-    "concision-utils?/alloc",
     "num/alloc",
     "serde?/alloc",
-    "serde_json?/alloc",
-    "scsys/alloc",
-]
-
-anyhow = [
-    "dep:anyhow",
-    "scsys/anyhow",
 ]
 
 approx = [
-    "concision-init?/approx",
-    "concision-utils?/approx",
     "dep:approx",
     "ndarray/approx",
 ]
 
-blas = [
-    "concision-init?/blas",
-    "concision-utils?/blas",
-    "ndarray/blas",
-]
+blas = ["ndarray/blas"]
 
-complex = [
-    "dep:num-complex",
-    "concision-init?/complex",
-    "concision-utils?/complex",
-]
-
-json = [
-    "alloc",
-    "serde",
-    "serde_json",
-    "scsys/json",
-]
+complex = ["dep:num-complex"]
 
 rand = [
-    "concision-init?/rand",
-    "concision-utils?/rand",
     "dep:rand",
     "dep:rand_distr",
     "num/rand",
     "num-complex?/rand",
     "rng",
-    "scsys/rand",
-]
-
-rayon = [
-    "dep:rayon",
-    "concision-utils?/rayon",
-    "ndarray/rayon",
 ]
 
 rng = [
     "dep:getrandom",
-    "concision-init?/rng",
-    "concision-utils?/rng",
     "rand?/small_rng",
     "rand?/thread_rng",
-    "scsys/rng",
-]
-
-rustfft = [
-    "concision-utils?/rustfft",
 ]
 
 serde = [
-    "concision-init?/serde",
-    "concision-utils?/serde",
     "dep:serde",
     "dep:serde_derive",
     "ndarray/serde",
@@ -211,26 +135,14 @@ serde = [
     "num-complex?/serde",
     "rand?/serde",
     "rand_distr?/serde",
-    "scsys/serde",
 ]
 
-serde_json = ["dep:serde_json"]
-
-tracing = [
-    "concision-init?/tracing",
-    "concision-utils?/tracing",
-    "dep:tracing",
-    "scsys/tracing",
-]
+tracing = ["dep:tracing"]
 
 # ************* [Unit Tests] *************
 [[test]]
 name = "default"
 
 [[test]]
-name = "params"
-required-features = ["approx", "std"]
-
-[[test]]
-name = "traits"
-required-features = ["std"]
+name = "init"
+required-features = ["rand", "std"]

@@ -64,7 +64,12 @@ where
     A: core::fmt::Display,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "{{ bias: {}, weights: {} }}", self.bias(), self.weights())
+        write!(
+            f,
+            "{{ bias: {}, weights: {} }}",
+            self.bias(),
+            self.weights()
+        )
     }
 }
 
@@ -120,7 +125,6 @@ where
         self.bias() == other.bias() && self.weights() == other.weights()
     }
 }
-
 
 impl<A, S, D> Eq for ParamsBase<S, D>
 where

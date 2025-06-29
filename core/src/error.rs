@@ -19,6 +19,9 @@ pub enum Error {
     PadError(#[from] crate::ops::pad::error::PadError),
     #[error(transparent)]
     ParamError(#[from] crate::params::error::ParamsError),
+    #[error(transparent)]
+    #[cfg(feature = "init")]
+    InitError(#[from] concision_init::InitError),
     #[cfg(feature = "anyhow")]
     #[error(transparent)]
     AnyError(#[from] anyhow::Error),
@@ -38,8 +41,8 @@ pub enum Error {
     IoError(#[from] std::io::Error),
     #[error(transparent)]
     ShapeError(#[from] ndarray::ShapeError),
-    #[cfg(feature = "rand")]
     #[error(transparent)]
+    #[cfg(feature = "rand")]
     UniformError(#[from] rand_distr::uniform::Error),
     #[cfg(feature = "alloc")]
     #[error("Unknown Error: {0}")]

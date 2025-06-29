@@ -2,8 +2,9 @@
     Appellation: initialize <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use super::distr::*;
+use crate::distr::*;
 
+use crate::UniformResult;
 use core::ops::Neg;
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, Shape, ShapeBuilder};
 use num_traits::{Float, FromPrimitive};
@@ -68,7 +69,7 @@ where
         Self::rand(shape, distr)
     }
     /// Initialize the object according to the Glorot Initialization scheme.
-    fn glorot_uniform<Sh>(shape: Sh) -> super::UniformResult<Self>
+    fn glorot_uniform<Sh>(shape: Sh) -> UniformResult<Self>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -146,7 +147,7 @@ where
         Ok(Self::rand(shape, distr))
     }
     /// initialize the object using the [`Uniform`] distribution with values bounded by `+/- dk`
-    fn uniform<Sh>(shape: Sh, dk: S::Elem) -> super::UniformResult<Self>
+    fn uniform<Sh>(shape: Sh, dk: S::Elem) -> UniformResult<Self>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -162,7 +163,7 @@ where
         start: S::Elem,
         stop: S::Elem,
         key: u64,
-    ) -> super::UniformResult<Self>
+    ) -> UniformResult<Self>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -179,7 +180,7 @@ where
     /// initialize the object using the [`Uniform`] distribution with values bounded by the
     /// size of the specified axis.
     /// The values are bounded by `+/- dk` where `dk = 1 / size(axis)`.
-    fn uniform_along<Sh>(shape: Sh, axis: usize) -> super::UniformResult<Self>
+    fn uniform_along<Sh>(shape: Sh, axis: usize) -> UniformResult<Self>
     where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
@@ -194,7 +195,7 @@ where
     }
     /// initialize the object using the [`Uniform`] distribution with values between then given
     /// bounds, `a` and `b`.
-    fn uniform_between<Sh>(shape: Sh, a: S::Elem, b: S::Elem) -> super::UniformResult<Self>
+    fn uniform_between<Sh>(shape: Sh, a: S::Elem, b: S::Elem) -> UniformResult<Self>
     where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,

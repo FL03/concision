@@ -13,6 +13,4 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-
 }
-

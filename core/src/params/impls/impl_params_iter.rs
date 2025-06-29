@@ -6,8 +6,8 @@ use crate::params::ParamsBase;
 
 use crate::params::iter::Iter;
 use core::iter::Zip;
-use ndarray::{Dimension, RawData, Data, Axis, DataMut, RemoveAxis};
 use ndarray::iter as nditer;
+use ndarray::{Axis, Data, DataMut, Dimension, RawData, RemoveAxis};
 
 /// Here, we implement various iterators for the parameters and its constituents. The _core_
 /// iterators are:
@@ -15,8 +15,12 @@ use ndarray::iter as nditer;
 /// - immutable and mutable iterators over each parameter (weights and bias) respectively;
 /// - an iterator over the parameters, which zips together an axis iterator over the columns of
 ///   the weights and an iterator over the bias;
-impl<S, D, A> ParamsBase<S, D> where S: RawData<Elem = A>, D: Dimension {
-/// an iterator of the parameters; the created iterator zips together an axis iterator over
+impl<S, D, A> ParamsBase<S, D>
+where
+    S: RawData<Elem = A>,
+    D: Dimension,
+{
+    /// an iterator of the parameters; the created iterator zips together an axis iterator over
     /// the columns of the weights and an iterator over the bias
     pub fn iter(&self) -> Iter<'_, A, D>
     where
@@ -31,10 +35,7 @@ impl<S, D, A> ParamsBase<S, D> where S: RawData<Elem = A>, D: Dimension {
     /// a mutable iterator of the parameters
     pub fn iter_mut(
         &mut self,
-    ) -> Zip<
-        nditer::AxisIterMut<'_, A, D::Smaller>,
-        nditer::IterMut<'_, A, D::Smaller>,
-    >
+    ) -> Zip<nditer::AxisIterMut<'_, A, D::Smaller>, nditer::IterMut<'_, A, D::Smaller>>
     where
         D: RemoveAxis,
         S: DataMut,

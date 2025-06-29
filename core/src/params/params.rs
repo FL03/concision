@@ -2,7 +2,9 @@
     Appellation: params <module>
     Contrib: @FL03
 */
-use ndarray::{ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
+use ndarray::{
+    ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder,
+};
 
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
 /// model. The implementation is designed around the [`ArrayBase`] type from the

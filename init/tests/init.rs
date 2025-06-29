@@ -2,10 +2,10 @@
    Appellation: random <test>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-extern crate concision_core as cnc;
+extern crate concision_init as cnc;
 
-use cnc::init::Initialize;
-use cnc::init::distr::LecunNormal;
+use cnc::Initialize;
+use cnc::distr::LecunNormal;
 use ndarray::prelude::*;
 
 #[test]
