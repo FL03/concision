@@ -17,10 +17,12 @@ version.workspace = true
 [package.metadata.docs.rs]
 all-features = false
 features = ["full"]
-rustc-args = [
-    "--cfg",
-    "docsrs",
-]
+rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"
 
 [lib]
 crate-type = [
@@ -40,9 +42,10 @@ scsys = { workspace = true }
 scsys-derive = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
+# data-structures
+ndarray = { workspace = true }
 # math
 approx = { optional = true, workspace = true }
-ndarray = { workspace = true }
 num = { workspace = true }
 num-traits = { workspace = true }
 num-complex = { optional = true, workspace = true }
@@ -54,6 +57,7 @@ serde_json = { optional = true, workspace = true }
 # macros & utilities
 either = { workspace = true }
 paste = { workspace = true }
+smart-default  = { workspace = true }
 strum = { workspace = true }
 # error handling
 anyhow = { optional = true, workspace = true }
@@ -75,14 +79,24 @@ full = [
     "approx", 
     "complex", 
     "default", 
+    "init",
     "rand", 
     "rustfft", 
     "serde", 
     "tracing"
 ]
 
+nightly = [
+    "concision-core/nightly",
+    "concision-data/nightly",
+]
+
 # ************* [FF:Features] *************
 attention = []
+
+init = [
+    "concision-core/init"
+]
 
 # ************* [FF:Environments] *************
 std = [
@@ -103,15 +117,26 @@ std = [
 
 wasi = [
     "concision-core/wasi",
+    "concision-data/wasi",
     "scsys/wasi",
 ]
 
 wasm = [
     "concision-core/wasm",
+    "concision-data/wasm",
     "scsys/wasm",
 ]
 
 # ************* [FF:Dependencies] *************
+alloc = [
+    "concision-core/alloc",
+    "concision-data/alloc",
+    "serde?/alloc",
+    "serde_json?/alloc",
+    "num/alloc",
+    "scsys/alloc",
+]
+
 anyhow = [
     "dep:anyhow", 
     "concision-core/anyhow", 
@@ -139,11 +164,10 @@ complex = [
 ]
 
 json = [
-    "std",
+    "alloc",
     "concision-core/json", 
     "concision-data/json",
-    "serde_json", 
-    "serde_json?/alloc"
+    "serde_json",
 ]
 
 rand = [
