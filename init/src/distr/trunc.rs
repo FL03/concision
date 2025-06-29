@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 use num::traits::Float;
-use rand::Rng;
+use rand::{Rng, RngCore};
 use rand_distr::{Distribution, Normal, StandardNormal};
 
 /// A truncated normal distribution is similar to a [normal](rand_distr::Normal) [distribution](rand_distr::Distribution), however,
@@ -22,14 +22,16 @@ where
     T: Float,
     StandardNormal: Distribution<T>,
 {
-    /// Create a new truncated normal distribution with a given mean and standard deviation
+    /// create a new [`TruncatedNormal`] distribution with the given mean and standard
+    /// deviation; both of which are type `T`.
     pub const fn new(mean: T, std: T) -> crate::Result<Self> {
-     Ok(Self {
-            mean,
-            std,
-        })
+        Ok(Self { mean, std })
     }
-
+    /// compute the boundary of the truncated normal distribution
+    /// which is two standard deviations from the mean:
+    /// $$
+    /// \text{boundary} = \mu + 2\sigma
+    /// $$
     pub(crate) fn boundary(&self) -> T {
         self.mean() + self.std_dev() * T::from(2).unwrap()
     }
@@ -58,7 +60,7 @@ where
 {
     fn sample<R>(&self, rng: &mut R) -> T
     where
-        R: Rng + ?Sized,
+        R: RngCore + ?Sized,
     {
         let bnd = self.boundary();
         let mut x = self.score(rng.sample(StandardNormal));

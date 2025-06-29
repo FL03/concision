@@ -45,6 +45,8 @@ jobs:
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           components: clippy, rustfmt
+          toolchain: nightly
+          override: true
       -
         name: Setup the for sarif output
         run: cargo install clippy-sarif sarif-fmt

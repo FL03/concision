@@ -6,6 +6,7 @@
 /// that one may encounter within the library.
 #[cfg(feature = "alloc")]
 use alloc::string::String;
+use rand_distr::NormalError;
 use rand_distr::uniform::Error as UniformError;
 #[allow(dead_code)]
 /// a private type alias for a [`Result`](core::result::Result) type that is used throughout
@@ -17,7 +18,17 @@ pub enum InitError {
     #[cfg(feature = "alloc")]
     #[error("Failed to initialize with the given distribution: {0}")]
     DistributionError(String),
+    #[cfg(feature = "rand")]
+    #[error("[NormalError] {0}")]
+    NormalError(NormalError),
     #[error(transparent)]
     #[cfg(feature = "rand")]
     UniformError(#[from] UniformError),
+}
+
+#[cfg(feature = "rand")]
+impl From<NormalError> for InitError {
+    fn from(err: NormalError) -> Self {
+        InitError::NormalError(err)
+    }
 }

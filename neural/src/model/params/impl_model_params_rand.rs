@@ -65,9 +65,9 @@ where
     /// initialize the model parameters using a glorot uniform distribution
     pub fn glorot_uniform(features: ModelFeatures) -> Self
     where
-        A: Clone + Float + FromPrimitive + SampleUniform,
-        <S::Elem as SampleUniform>::Sampler: Clone,
-        Uniform<S::Elem>: Distribution<S::Elem>,
+        A: Float + FromPrimitive + SampleUniform,
+        <A as SampleUniform>::Sampler: Clone,
+        Uniform<A>: Distribution<A>,
     {
         Self::init_rand(features, |(rows, cols)| {
             init::XavierUniform::new(rows, cols).expect("failed to create distribution")

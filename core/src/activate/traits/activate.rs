@@ -8,7 +8,7 @@ use ndarray::prelude::*;
 use ndarray::{Data, DataMut, ScalarOperand};
 use num::complex::ComplexFloat;
 
-/// The [`Activate`] trait establishes a common interface for entities that can be _activated_ 
+/// The [`Activate`] trait establishes a common interface for entities that can be _activated_
 /// according to some function
 pub trait Activate<A> {
     type Cont<B>;

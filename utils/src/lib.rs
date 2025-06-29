@@ -16,43 +16,47 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-#[doc(inline)]
-pub use self::{error::*, ops::prelude::*, traits::prelude::*, utils::prelude::*};
-
 #[macro_use]
-pub(crate) mod macros;
+pub(crate) mod macros {
+    #[macro_use]
+    pub(crate) mod seal;
+    #[macro_use]
+    pub(crate) mod unary;
+}
+
+#[doc(inline)]
+pub use self::{error::*, ops::*, traits::*, utils::*};
 
 pub mod error;
 #[cfg(feature = "signal")]
 pub mod signal;
 pub mod stats;
 
-pub mod ops {
+mod ops {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod unary;
+    mod unary;
 
-    pub(crate) mod prelude {
+    mod prelude {
         #[doc(inline)]
         pub use super::unary::*;
     }
 }
 
-pub(crate) mod traits {
+mod traits {
     #[doc(inline)]
-    #[allow(unused_imports)]
-    pub(crate) use self::prelude::*;
+    pub use self::prelude::*;
 
     #[cfg(feature = "complex")]
-    pub mod complex;
-    pub mod difference;
-    pub mod precision;
-    pub mod root;
+    mod complex;
+    mod difference;
+    mod precision;
+    mod root;
 
-    pub(crate) mod prelude {
-        #[cfg(feature = "complex")]
+    mod prelude {
         #[doc(inline)]
+        #[cfg(feature = "complex")]
         pub use super::complex::*;
         #[doc(inline)]
         pub use super::difference::*;
@@ -63,19 +67,19 @@ pub(crate) mod traits {
     }
 }
 
-pub(crate) mod utils {
+mod utils {
     //! utilties supporting various mathematical routines for machine learning tasks.
-    #[allow(unused_imports)]
-    pub(crate) use self::prelude::*;
+    #[doc(inline)]
+    pub use self::prelude::*;
 
-    pub mod activate;
-    pub mod arith;
-    pub mod gradient;
-    pub mod norm;
-    pub mod patterns;
-    pub mod tensor;
+    mod activate;
+    mod arith;
+    mod gradient;
+    mod norm;
+    mod patterns;
+    mod tensor;
 
-    pub(crate) mod prelude {
+    mod prelude {
         #[doc(inline)]
         pub use super::activate::*;
         #[doc(inline)]
@@ -91,16 +95,12 @@ pub(crate) mod utils {
     }
 }
 
+#[doc(hidden)]
 pub mod prelude {
-    #[doc(no_inline)]
-    pub use crate::error::*;
-    #[cfg(feature = "signal")]
-    #[doc(no_inline)]
-    pub use crate::signal::prelude::*;
-    #[doc(no_inline)]
     pub use crate::stats::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::traits::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::utils::prelude::*;
+    pub use crate::traits::*;
+    pub use crate::utils::*;
+
+    #[cfg(feature = "signal")]
+    pub use crate::signal::prelude::*;
 }

@@ -1,5 +1,5 @@
 /*
-    Appellation: init <library>
+    Appellation: concision-init <library>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # concision-init
@@ -9,9 +9,8 @@
 //! optimized for neural networks, such as Glorot (Xavier) initialization, LeCun
 //! initialization, etc.
 //!
-#![cfg(feature = "rand")]
 #![allow(
-    clippy::missing_saftey_doc,
+    clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
     clippy::should_implement_trait,
@@ -21,7 +20,10 @@
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
 
 #[doc(inline)]
-pub use self::{distr::prelude::*, error::*, traits::*, utils::*};
+#[cfg(feature = "rand")]
+pub use self::{distr::prelude::*, utils::*};
+#[doc(inline)]
+pub use self::{error::*, traits::*};
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -34,18 +36,35 @@ pub use rand;
 pub use rand_distr;
 
 pub mod error;
-#[cfg(feature = "rand")]
-pub(crate) mod utils;
 
-#[cfg(feature = "rand")]
+pub(crate) mod utils {
+    //! this module provides various utility functions for random initialization.
+    #[doc(inline)]
+    #[cfg(feature = "rand")]
+    pub use self::prelude::*;
+
+    #[cfg(feature = "rand")]
+    mod rand_utils;
+
+    mod prelude {
+        #[cfg(feature = "rand")]
+        pub use super::rand_utils::*;
+    }
+}
+
 mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
+    mod init;
+    #[cfg(feature = "rand")]
     mod initialize;
 
     mod prelude {
         #[doc(inline)]
+        pub use super::init::*;
+        #[doc(inline)]
+        #[cfg(feature = "rand")]
         pub use super::initialize::*;
     }
 }
@@ -75,9 +94,7 @@ pub mod distr {
 pub mod prelude {
     #[cfg(feature = "rand")]
     pub use super::distr::prelude::*;
-    #[cfg(feature = "rand")]
     pub use super::traits::*;
     #[cfg(feature = "rand")]
     pub use super::utils::*;
 }
-

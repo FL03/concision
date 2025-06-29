@@ -87,8 +87,15 @@ full = [
 
 # ************* [FF:Features] *************
 init = [
-    "dep:concision-init",
+    "concision_init",
     "rand",
+]
+
+json = [
+    "alloc",
+    "serde",
+    "serde_json",
+    "scsys/json",
 ]
 
 signal =[
@@ -164,12 +171,7 @@ complex = [
     "concision-utils?/complex",
 ]
 
-json = [
-    "alloc",
-    "serde",
-    "serde_json",
-    "scsys/json",
-]
+concision_init = ["dep:concision-init"]
 
 rand = [
     "concision-init?/rand",

@@ -8,105 +8,166 @@
 //! These methods are designed to initialize the weights of a neural network in a way that
 //! prevents the vanishing and exploding gradient problems. The initialization technique
 //! manifests into two distributions: [XavierNormal] and [XavierUniform].
-// #76
-use num_traits::{Float, FromPrimitive};
-use rand::Rng;
 use rand_distr::uniform::{SampleUniform, Uniform};
-use rand_distr::{Distribution, Normal, NormalError, StandardNormal};
+use rand_distr::{Distribution, StandardNormal};
 
-pub(crate) fn std_dev<F>(inputs: usize, outputs: usize) -> F
-where
-    F: Float + FromPrimitive,
-{
-    (F::from_usize(2).unwrap() / F::from_usize(inputs + outputs).unwrap()).sqrt()
-}
-
-pub(crate) fn boundary<F>(inputs: usize, outputs: usize) -> F
-where
-    F: Float + FromPrimitive,
-{
-    (F::from_usize(6).unwrap() / F::from_usize(inputs + outputs).unwrap()).sqrt()
-}
 /// Normal Xavier initializers leverage a normal distribution with a mean of 0 and a standard deviation (`σ`)
-/// computed by the formula: `σ = sqrt(2/(d_in + d_out))`
+/// computed by the formula: $`σ = sqrt(2/(d_in + d_out))`$
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct XavierNormal<F>
+pub struct XavierNormal<T>
 where
-    StandardNormal: Distribution<F>,
+    StandardNormal: Distribution<T>,
 {
-    std: F,
-}
-
-impl<F> XavierNormal<F>
-where
-    F: Float,
-    StandardNormal: Distribution<F>,
-{
-    pub fn new(inputs: usize, outputs: usize) -> Self
-    where
-        F: FromPrimitive,
-    {
-        Self {
-            std: std_dev(inputs, outputs),
-        }
-    }
-
-    pub fn distr(&self) -> Result<Normal<F>, NormalError> {
-        Normal::new(F::zero(), self.std_dev())
-    }
-
-    pub fn std_dev(&self) -> F {
-        self.std
-    }
-}
-
-impl<F> Distribution<F> for XavierNormal<F>
-where
-    F: Float,
-    StandardNormal: Distribution<F>,
-{
-    fn sample<R>(&self, rng: &mut R) -> F
-    where
-        R: Rng + ?Sized,
-    {
-        self.distr().unwrap().sample(rng)
-    }
+    std: T,
 }
 
 /// Uniform Xavier initializers use a uniform distribution to initialize the weights of a neural network
 /// within a given range.
-pub struct XavierUniform<X>
+pub struct XavierUniform<T>
 where
-    X: Float + SampleUniform,
+    T: SampleUniform,
 {
-    distr: Uniform<X>,
+    distr: Uniform<T>,
 }
 
-impl<X> XavierUniform<X>
-where
-    X: Float + SampleUniform,
-{
-    pub fn new(inputs: usize, outputs: usize) -> Result<Uniform<X>, rand_distr::uniform::Error>
+/*
+ ************* Implementations *************
+*/
+
+mod impl_normal {
+    use super::XavierNormal;
+    use num_traits::{Float, FromPrimitive};
+    use rand::RngCore;
+    use rand_distr::{Distribution, Normal, StandardNormal};
+
+    fn std_dev<T>(inputs: usize, outputs: usize) -> T
     where
-        X: FromPrimitive,
+        T: FromPrimitive + Float,
     {
-        let limit = boundary::<X>(inputs, outputs);
-        Uniform::new(-limit, limit)
+        let numerator = T::from_usize(2).unwrap();
+        let denominator = T::from_usize(inputs + outputs).unwrap();
+        (numerator / denominator).sqrt()
     }
 
-    pub const fn distr(&self) -> &Uniform<X> {
-        &self.distr
+    impl<T> XavierNormal<T>
+    where
+        T: Float,
+        StandardNormal: Distribution<T>,
+    {
+        pub fn new(inputs: usize, outputs: usize) -> Self
+        where
+            T: FromPrimitive,
+        {
+            Self {
+                std: std_dev(inputs, outputs),
+            }
+        }
+        /// tries creating a new [`Normal`] distribution with a mean of 0 and the standard
+        /// deviation computed by the formula: $`σ = sqrt(2/(d_in + d_out))`$
+        pub fn distr(&self) -> crate::Result<Normal<T>> {
+            Normal::new(T::zero(), self.std_dev()).map_err(Into::into)
+        }
+        /// returns a reference to the standard deviation of the distribution
+        pub const fn std_dev(&self) -> T {
+            self.std
+        }
+    }
+
+    impl<T> Distribution<T> for XavierNormal<T>
+    where
+        T: Float,
+        StandardNormal: Distribution<T>,
+    {
+        fn sample<R>(&self, rng: &mut R) -> T
+        where
+            R: RngCore + ?Sized,
+        {
+            self.distr().unwrap().sample(rng)
+        }
     }
 }
 
-impl<X> Distribution<X> for XavierUniform<X>
-where
-    X: Float + SampleUniform,
-{
-    fn sample<R>(&self, rng: &mut R) -> X
+mod impl_uniform {
+    use super::XavierUniform;
+    use num_traits::{Float, FromPrimitive};
+    use rand::RngCore;
+    use rand_distr::Distribution;
+    use rand_distr::uniform::{SampleUniform, Uniform};
+
+    fn boundary<U>(inputs: usize, outputs: usize) -> U
     where
-        R: Rng + ?Sized,
+        U: FromPrimitive + Float,
     {
-        self.distr().sample(rng)
+        let numer = <U>::from_usize(6).unwrap();
+        let denom = <U>::from_usize(inputs + outputs).unwrap();
+        (numer / denom).sqrt()
+    }
+
+    impl<T> XavierUniform<T>
+    where
+        T: SampleUniform,
+    {
+        pub fn new(inputs: usize, outputs: usize) -> crate::Result<Self>
+        where
+            T: Float + FromPrimitive,
+        {
+            // calculate the boundary for the uniform distribution
+            let limit = boundary::<T>(inputs, outputs);
+            // create a uniform distribution with the calculated limit
+            let distr = Uniform::new(-limit, limit)?;
+            Ok(Self { distr })
+        }
+        /// returns an immutable reference to the underlying uniform distribution
+        pub(crate) const fn distr(&self) -> &Uniform<T> {
+            &self.distr
+        }
+    }
+
+    impl<T> Distribution<T> for XavierUniform<T>
+    where
+        T: Float + SampleUniform,
+    {
+        fn sample<R>(&self, rng: &mut R) -> T
+        where
+            R: RngCore + ?Sized,
+        {
+            self.distr().sample(rng)
+        }
+    }
+
+    impl<T> Clone for XavierUniform<T>
+    where
+        T: Clone + SampleUniform,
+        <T as SampleUniform>::Sampler: Clone,
+    {
+        fn clone(&self) -> Self {
+            Self {
+                distr: self.distr.clone(),
+            }
+        }
+    }
+
+    impl<T> Copy for XavierUniform<T>
+    where
+        T: Copy + SampleUniform,
+        <T as SampleUniform>::Sampler: Copy,
+    {
+    }
+
+    impl<T> Eq for XavierUniform<T>
+    where
+        T: Eq + SampleUniform,
+        <T as SampleUniform>::Sampler: Eq,
+    {
+    }
+
+    impl<T> PartialEq for XavierUniform<T>
+    where
+        T: PartialEq + SampleUniform,
+        <T as SampleUniform>::Sampler: PartialEq,
+    {
+        fn eq(&self, other: &Self) -> bool {
+            &self.distr == &other.distr
+        }
     }
 }

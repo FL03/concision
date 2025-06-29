@@ -5,6 +5,7 @@
 #![cfg(feature = "complex")]
 use num::Num;
 use num::complex::Complex;
+
 pub trait AsComplex<T> {
     type Complex<A>;
 

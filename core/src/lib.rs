@@ -14,6 +14,7 @@
 //! - [`Forward`]: This trait denotes a single forward pass through a layer of a neural network
 //!
 #![allow(
+    clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
     clippy::upper_case_acronyms
@@ -33,13 +34,13 @@ pub use rand_distr;
 
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
-#[cfg(feature = "init")]
+#[cfg(feature = "concision_init")]
 pub use concision_init as init;
 
 #[cfg(feature = "utils")]
 pub use concision_utils as utils;
 
-#[cfg(feature = "init")]
+#[cfg(feature = "concision_init")]
 pub use self::init::prelude::*;
 #[cfg(feature = "utils")]
 pub use self::utils::prelude::*;
@@ -98,7 +99,6 @@ pub mod traits {
     mod clip;
     mod codex;
     mod gradient;
-    mod init;
     mod like;
     mod mask;
     mod norm;
@@ -116,8 +116,6 @@ pub mod traits {
         pub use super::codex::*;
         #[doc(inline)]
         pub use super::gradient::*;
-        #[doc(inline)]
-        pub use super::init::*;
         #[doc(inline)]
         pub use super::like::*;
         #[doc(inline)]
@@ -137,7 +135,7 @@ pub mod traits {
 
 #[doc(hidden)]
 pub mod prelude {
-    #[cfg(feature = "init")]
+    #[cfg(feature = "concision_init")]
     pub use concision_init::prelude::*;
     #[cfg(feature = "utils")]
     pub use concision_utils::prelude::*;
