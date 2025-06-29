@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use super::Hyperparameters::*;
-use super::{RawConfig, NetworkConfig, TrainingConfiguration};
+use super::{NetworkConfig, RawConfig, TrainingConfiguration};
 
 pub(crate) type ModelConfigMap<T> = std::collections::HashMap<String, T>;
 

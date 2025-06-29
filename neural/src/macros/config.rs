@@ -5,8 +5,8 @@
 
 #[doc(hidden)]
 #[macro_export]
-/// the [`config!`] macro is used to define a configuration for a neural network or its 
-/// components, automatically implementing the required traits along side various 
+/// the [`config!`] macro is used to define a configuration for a neural network or its
+/// components, automatically implementing the required traits along side various
 /// getters and setters for managing the configuration.
 macro_rules! config {
     (
@@ -17,7 +17,7 @@ macro_rules! config {
     ) => {
         $(#[$attr])*
         #[cfg_attr(
-            feature = "serde", 
+            feature = "serde",
             derive(serde::Deserialize, serde::Serialize),
             serde(rename_all = "snake_case"),
         )]

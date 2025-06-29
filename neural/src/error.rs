@@ -3,14 +3,17 @@
     Contrib: @FL03
 */
 //! this module defines the [`NeuralError`] type, used to define the various errors encountered
-//! by the different components of a neural network. Additionally, the [`NeuralResult`] alias 
-//! is defined for convenience, allowing for a more ergonomic way to handle results that may 
+//! by the different components of a neural network. Additionally, the [`NeuralResult`] alias
+//! is defined for convenience, allowing for a more ergonomic way to handle results that may
 //! fail.
-  
-#[cfg(feature = "alloc")]
-use alloc::{boxed::Box, string::{String, ToString}};
 
-/// a type alias for a [Result](core::result::Result) configured to use the [`NeuralError`] 
+#[cfg(feature = "alloc")]
+use alloc::{
+    boxed::Box,
+    string::{String, ToString},
+};
+
+/// a type alias for a [Result](core::result::Result) configured to use the [`NeuralError`]
 /// implementation as its error type.
 pub type NeuralResult<T> = core::result::Result<T, NeuralError>;
 

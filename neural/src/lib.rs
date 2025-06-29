@@ -8,24 +8,24 @@
 //! layers, and training mechanisms.
 //!
 //! ## Overview
-//! 
+//!
 //! Neural networks are a fundamental part of machine learning, and this crate provides a
-//! comprehensive set of tools to build, configure, and train neural network models. Listed 
+//! comprehensive set of tools to build, configure, and train neural network models. Listed
 //! below are several key components of the crate:
 //!
 //! - [`Model`]: A trait for defining a neural network model.
 //! - [`ModelParamsBase`]: A dedicated object capable of storing the parameters for both
 //!   shallow and deep neural networks.
 //! - [`StandardModelConfig`]: A standard configuration for the models
-//! 
+//!
 //! ### Traits
-//! 
-//! This crate extends the [`Forward`](cnc::Forward) and [`Backward`](cnc::Backward) traits 
+//!
+//! This crate extends the [`Forward`](cnc::Forward) and [`Backward`](cnc::Backward) traits
 //! from the [`core`](cnc) crate to provide additional functionality for neural networks.
-//! 
-//! - [`Predict`]: A more robust implementation of the [`Forward`] trait 
+//!
+//! - [`Predict`]: A more robust implementation of the [`Forward`] trait
 //! - [`Train`]: A trait for training a neural network model.
-//! 
+//!
 #![cfg(feature = "alloc")]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(
@@ -34,6 +34,10 @@
     clippy::needless_doctest_main,
     clippy::upper_case_acronyms
 )]
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compile_error! {
+    "At least one of the 'std' or 'alloc' features must be enabled."
+}
 
 extern crate concision_core as cnc;
 
