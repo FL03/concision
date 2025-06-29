@@ -90,8 +90,8 @@ pub(crate) mod types {
 pub mod prelude {
     #[doc(no_inline)]
     pub use super::config::prelude::*;
-    // #[doc(no_inline)]
-    // pub use crate::layers::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::layers::prelude::*;
     #[doc(no_inline)]
     pub use crate::model::prelude::*;
     #[doc(no_inline)]

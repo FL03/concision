@@ -26,6 +26,4 @@ pub(crate) mod traits {
 pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::layer::*;
-    #[doc(inline)]
-    pub use super::traits::*;
 }
