@@ -257,7 +257,7 @@ checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
 
 [[package]]
 name = "concision"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -276,7 +276,7 @@ dependencies = [
 
 [[package]]
 name = "concision-core"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -305,7 +305,7 @@ dependencies = [
 
 [[package]]
 name = "concision-data"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -325,7 +325,7 @@ dependencies = [
 
 [[package]]
 name = "concision-derive"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -334,7 +334,7 @@ dependencies = [
 
 [[package]]
 name = "concision-ext"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -352,7 +352,7 @@ dependencies = [
 
 [[package]]
 name = "concision-init"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -376,7 +376,7 @@ dependencies = [
 
 [[package]]
 name = "concision-kan"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -388,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "concision-macros"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -397,7 +397,7 @@ dependencies = [
 
 [[package]]
 name = "concision-neural"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -424,7 +424,7 @@ dependencies = [
 
 [[package]]
 name = "concision-s4"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -436,7 +436,7 @@ dependencies = [
 
 [[package]]
 name = "concision-transformer"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -448,7 +448,7 @@ dependencies = [
 
 [[package]]
 name = "concision-utils"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
