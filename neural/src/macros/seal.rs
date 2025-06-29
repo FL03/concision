@@ -22,6 +22,8 @@
 //! Then, using the [`seal!`] macro, you can implment the method on trait implementations:
 //!
 //! ```no_run
+//! pub struct MyType;
+//! 
 //! impl RawSample for MyType {
 //!     seal!();
 //! }
