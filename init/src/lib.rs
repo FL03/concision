@@ -17,7 +17,6 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
 
 #[doc(inline)]
 #[cfg(feature = "rand")]

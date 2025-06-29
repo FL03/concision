@@ -98,6 +98,7 @@ pub mod traits {
     mod apply;
     mod clip;
     mod codex;
+    mod convert;
     mod gradient;
     mod like;
     mod mask;
@@ -114,6 +115,8 @@ pub mod traits {
         pub use super::clip::*;
         #[doc(inline)]
         pub use super::codex::*;
+        #[doc(inline)]
+        pub use super::convert::*;
         #[doc(inline)]
         pub use super::gradient::*;
         #[doc(inline)]

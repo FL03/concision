@@ -1,7 +1,8 @@
 /*
-    Appellation: ops <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    appellation: tensor <module>
+    authors: @FL03
 */
+
 /// apply an affine transformation to a tensor;
 /// affine transformation is defined as `mul * self + add`
 pub trait Affine<X, Y = X> {
@@ -9,29 +10,32 @@ pub trait Affine<X, Y = X> {
 
     fn affine(&self, mul: X, add: Y) -> Self::Output;
 }
-/// this trait enables the inversion of a matrix
+/// The [`Inverse`] trait generically establishes an interface for computing the inverse of a
+/// type, regardless of if its a tensor, scalar, or some other compatible type.
 pub trait Inverse {
+    /// the output, or result, of the inverse operation
     type Output;
-
+    /// compute the inverse of the current object, producing some [`Output`](Inverse::Output)
     fn inverse(&self) -> Self::Output;
 }
-/// A trait denoting objects capable of matrix multiplication.
-pub trait Matmul<Rhs = Self> {
+/// The [`MatMul`] trait defines an interface for matrix multiplication.
+pub trait MatMul<Rhs = Self> {
     type Output;
 
     fn matmul(&self, rhs: &Rhs) -> Self::Output;
 }
-/// a trait denoting objects capable of matrix exponentiation
-pub trait Matpow<Rhs = Self> {
+/// The [`MatPow`] trait defines an interface for computing the exponentiation of a matrix.
+pub trait MatPow<Rhs = Self> {
     type Output;
-
-    fn pow(&self, rhs: Rhs) -> Self::Output;
+    /// raise the tensor to the power of the right-hand side, producing some [`Output`](Matpow::Output)
+    fn matpow(&self, rhs: Rhs) -> Self::Output;
 }
 
-/// the trait denotes the ability to transpose a tensor
+/// The [`Transpose`] trait generically establishes an interface for transposing a type
 pub trait Transpose {
+    /// the output, or result, of the transposition
     type Output;
-
+    /// transpose a reference to the current object
     fn transpose(&self) -> Self::Output;
 }
 
@@ -66,7 +70,7 @@ where
     }
 }
 
-impl<A, S, D, X, Y> Matmul<X> for ArrayBase<S, D>
+impl<A, S, D, X, Y> MatMul<X> for ArrayBase<S, D>
 where
     A: ndarray::LinalgScalar,
     D: Dimension,
@@ -80,7 +84,7 @@ where
     }
 }
 
-impl<T> Matmul<Vec<T>> for Vec<T>
+impl<T> MatMul<Vec<T>> for Vec<T>
 where
     T: Copy + num::Num,
 {
@@ -93,7 +97,7 @@ where
     }
 }
 
-impl<T, const N: usize> Matmul<[T; N]> for [T; N]
+impl<T, const N: usize> MatMul<[T; N]> for [T; N]
 where
     T: Copy + num::Num,
 {
@@ -105,7 +109,7 @@ where
             .fold(T::zero(), |acc, (&a, &b)| acc + a * b)
     }
 }
-impl<A, S> Matpow<i32> for ArrayBase<S, ndarray::Ix2>
+impl<A, S> MatPow<i32> for ArrayBase<S, ndarray::Ix2>
 where
     A: Copy + Num + 'static,
     S: Data<Elem = A>,
@@ -113,7 +117,7 @@ where
 {
     type Output = Array<A, Ix2>;
 
-    fn pow(&self, rhs: i32) -> Self::Output {
+    fn matpow(&self, rhs: i32) -> Self::Output {
         if !self.is_square() {
             panic!("Matrix must be square to be raised to a power");
         }

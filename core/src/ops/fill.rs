@@ -16,10 +16,8 @@ where
     fn masked_fill(&self, mask: &Array<bool, D>, value: A) -> Self::Output;
 }
 
-pub trait IntoAxis {
-    fn into_axis(self) -> Axis;
-}
-
+/// [`IsSquare`] is a trait for checking if the layout, or dimensionality, of a tensor is
+/// square.
 pub trait IsSquare {
     fn is_square(&self) -> bool;
 }
@@ -45,15 +43,6 @@ where
             }
         });
         arr
-    }
-}
-
-impl<S> IntoAxis for S
-where
-    S: AsRef<usize>,
-{
-    fn into_axis(self) -> Axis {
-        Axis(*self.as_ref())
     }
 }
 

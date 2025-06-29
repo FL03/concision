@@ -79,7 +79,7 @@ where
     /// complete a forward pass through the layer
     fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
-        Y: Tensor<S, D, Scalar = Self::Scalar>,
+        Y: Tensor<S::Elem, D, Repr = S>,
         ParamsBase<S, D>: Forward<X, Output = Y>,
         Self: Activate<Y, Output = Y>,
     {

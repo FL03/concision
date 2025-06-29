@@ -7,138 +7,158 @@ use ndarray::{
     ArrayBase, Axis, DataMut, DataOwned, Dimension, OwnedRepr, RawData, RemoveAxis, ShapeBuilder,
 };
 use num::Signed;
-use num_traits::{FromPrimitive, One, Pow, Zero};
+use num_traits::{One, Zero};
 
-pub trait Tensor<S, D>
+/// The [`RawTensor`] trait defines the base interface for all tensors,
+pub trait RawTensor<A, D> {
+    type Repr: RawData<Elem = A>;
+    type Container<U: RawData, V: Dimension>;
+
+    private!();
+}
+/// The [`Tensor`] trait extends the [`RawTensor`] trait to provide additional functionality
+/// for tensors, such as creating tensors from shapes, applying functions, and iterating over
+/// elements. It is generic over the element type `A` and the dimension type `D
+pub trait Tensor<A, D>: RawTensor<A, D>
 where
-    S: RawData<Elem = Self::Scalar>,
     D: Dimension,
 {
-    type Scalar;
-    type Container<U: RawData, V: Dimension>;
     /// Create a new tensor with the given shape and a function to fill it
-    fn from_shape_with_fn<Sh, F>(shape: Sh, f: F) -> Self::Container<S, D>
+    fn from_shape_with_fn<Sh, F>(shape: Sh, f: F) -> Self::Container<Self::Repr, D>
     where
         Sh: ShapeBuilder<Dim = D>,
-        F: FnMut(D::Pattern) -> Self::Scalar,
+        F: FnMut(D::Pattern) -> A,
         Self: Sized;
     /// Create a new tensor with the given shape and value
-    fn from_shape_with_value<Sh>(shape: Sh, value: Self::Scalar) -> Self::Container<S, D>
+    fn from_shape_with_value<Sh>(shape: Sh, value: A) -> Self::Container<Self::Repr, D>
     where
         Sh: ShapeBuilder<Dim = D>,
         Self: Sized;
     /// Create a new tensor with the given shape and all values set to their default
-    fn default<Sh>(shape: Sh) -> Self::Container<S, D>
+    fn default<Sh>(shape: Sh) -> Self::Container<Self::Repr, D>
     where
         Sh: ShapeBuilder<Dim = D>,
         Self: Sized,
-        Self::Scalar: Default,
+        A: Default,
     {
-        Self::from_shape_with_value(shape, Self::Scalar::default())
+        Self::from_shape_with_value(shape, A::default())
     }
     /// create a new tensor with the given shape and all values set to one
-    fn ones<Sh>(shape: Sh) -> Self::Container<S, D>
+    fn ones<Sh>(shape: Sh) -> Self::Container<Self::Repr, D>
     where
         Sh: ShapeBuilder<Dim = D>,
         Self: Sized,
-        Self::Scalar: Clone + One,
+        A: Clone + One,
     {
-        Self::from_shape_with_value(shape, Self::Scalar::one())
+        Self::from_shape_with_value(shape, A::one())
     }
     /// create a new tensor with the given shape and all values set to zero
-    fn zeros<Sh>(shape: Sh) -> Self::Container<S, D>
+    fn zeros<Sh>(shape: Sh) -> Self::Container<Self::Repr, D>
     where
         Sh: ShapeBuilder<Dim = D>,
         Self: Sized,
-        Self::Scalar: Clone + Zero,
+        A: Clone + Zero,
     {
-        Self::from_shape_with_value(shape, <Self as Tensor<S, D>>::Scalar::zero())
+        Self::from_shape_with_value(shape, <A>::zero())
     }
     /// returns a reference to the data of the object
-    fn data(&self) -> &Self::Container<S, D>;
+    fn data(&self) -> &Self::Container<Self::Repr, D>;
     /// returns a mutable reference to the data of the object
-    fn data_mut(&mut self) -> &mut Self::Container<S, D>;
+    fn data_mut(&mut self) -> &mut Self::Container<Self::Repr, D>;
     /// returns the number of dimensions of the object
     fn dim(&self) -> D::Pattern;
     /// returns the shape of the object
     fn raw_dim(&self) -> D;
     /// returns the shape of the object
     fn shape(&self) -> &[usize];
-    /// sets the data of the object
-    fn set_data(&mut self, data: Self::Container<S, D>) -> &mut Self {
-        *self.data_mut() = data;
-        self
-    }
     /// returns a new tensor with the same shape as the object and the given function applied
     /// to each element
     fn apply<F, B>(&self, f: F) -> Self::Container<OwnedRepr<B>, D>
     where
-        F: FnMut(Self::Scalar) -> B;
+        F: FnMut(A) -> B;
     /// returns a new tensor with the same shape as the object and the given function applied
     fn apply_mut<F>(&mut self, f: F)
     where
-        S: DataMut,
-        F: FnMut(Self::Scalar) -> Self::Scalar;
+        Self::Repr: DataMut,
+        F: FnMut(A) -> A;
 
-    fn axis_iter(&self, axis: usize) -> ndarray::iter::AxisIter<'_, Self::Scalar, D::Smaller>
+    fn axis_iter(&self, axis: usize) -> ndarray::iter::AxisIter<'_, A, D::Smaller>
     where
         D: RemoveAxis;
 
-    fn iter(&self) -> ndarray::iter::Iter<'_, Self::Scalar, D>;
+    fn iter(&self) -> ndarray::iter::Iter<'_, A, D>;
 
-    fn iter_mut(&mut self) -> ndarray::iter::IterMut<'_, Self::Scalar, D>
+    fn iter_mut(&mut self) -> ndarray::iter::IterMut<'_, A, D>
     where
-        S: DataMut;
+        Self::Repr: DataMut;
 
-    fn mean(&self) -> Self::Scalar
+    fn mean(&self) -> A
     where
-        Self::Scalar: Scalar,
+        A: Scalar,
     {
         let sum = self.sum();
         let count = self.iter().count();
-        sum / Self::Scalar::from_usize(count).unwrap()
+        sum / A::from_usize(count).unwrap()
+    }
+    /// sets the data of the object and returns a mutable reference to the object
+    fn set_data(&mut self, data: Self::Container<Self::Repr, D>) -> &mut Self {
+        *self.data_mut() = data;
+        self
     }
 
-    fn sum(&self) -> Self::Scalar
+    fn sum(&self) -> A
     where
-        Self::Scalar: Clone + core::iter::Sum,
+        A: Clone + core::iter::Sum,
     {
         self.iter().cloned().sum()
     }
 
-    fn pow2(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
+    fn pow2(&self) -> Self::Container<OwnedRepr<A>, D>
     where
-        Self::Scalar: Scalar,
+        A: Scalar,
     {
-        let two = Self::Scalar::from_usize(2).unwrap();
+        let two = A::from_usize(2).unwrap();
         self.apply(|x| x.pow(two))
     }
 
-    fn abs(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
+    fn abs(&self) -> Self::Container<OwnedRepr<A>, D>
     where
-        Self::Scalar: Signed,
+        A: Signed,
     {
         self.apply(|x| x.abs())
     }
 
-    fn neg(&self) -> Self::Container<OwnedRepr<Self::Scalar>, D>
+    fn neg(&self) -> Self::Container<OwnedRepr<A>, D>
     where
-        Self::Scalar: core::ops::Neg<Output = Self::Scalar>,
+        A: core::ops::Neg<Output = A>,
     {
         self.apply(|x| -x)
     }
 }
 
-impl<A, S, D> Tensor<S, D> for ArrayBase<S, D>
+/*
+ ************* Implementations *************
+*/
+
+impl<A, S, D> RawTensor<A, D> for ArrayBase<S, D>
+where
+    S: RawData<Elem = A>,
+    A: Scalar,
+    D: Dimension,
+{
+    type Repr = S;
+    type Container<U: RawData, V: Dimension> = ArrayBase<U, V>;
+
+    seal!();
+}
+
+impl<A, S, D> Tensor<A, D> for ArrayBase<S, D>
 where
     S: DataOwned<Elem = A>,
     A: Scalar,
     D: Dimension,
 {
-    type Scalar = A;
-    type Container<U: RawData, V: Dimension> = ArrayBase<U, V>;
-
-    fn from_shape_with_value<Sh>(shape: Sh, value: Self::Scalar) -> Self::Container<S, D>
+    fn from_shape_with_value<Sh>(shape: Sh, value: A) -> Self::Container<Self::Repr, D>
     where
         Self: Sized,
         Sh: ndarray::ShapeBuilder<Dim = D>,
@@ -146,20 +166,20 @@ where
         Self::Container::<S, D>::from_elem(shape, value)
     }
 
-    fn from_shape_with_fn<Sh, F>(shape: Sh, f: F) -> Self::Container<S, D>
+    fn from_shape_with_fn<Sh, F>(shape: Sh, f: F) -> Self::Container<Self::Repr, D>
     where
         Self: Sized,
         Sh: ShapeBuilder<Dim = D>,
-        F: FnMut(D::Pattern) -> Self::Scalar,
+        F: FnMut(D::Pattern) -> A,
     {
         Self::Container::<S, D>::from_shape_fn(shape, f)
     }
 
-    fn data(&self) -> &Self::Container<S, D> {
+    fn data(&self) -> &Self::Container<Self::Repr, D> {
         self
     }
 
-    fn data_mut(&mut self) -> &mut Self::Container<S, D> {
+    fn data_mut(&mut self) -> &mut Self::Container<Self::Repr, D> {
         self
     }
 
@@ -177,29 +197,29 @@ where
 
     fn apply<F, B>(&self, f: F) -> Self::Container<OwnedRepr<B>, D>
     where
-        F: FnMut(Self::Scalar) -> B,
+        F: FnMut(A) -> B,
     {
         self.mapv(f)
     }
 
     fn apply_mut<F>(&mut self, f: F)
     where
-        F: FnMut(Self::Scalar) -> Self::Scalar,
+        F: FnMut(A) -> A,
         S: DataMut,
     {
         self.mapv_inplace(f)
     }
 
-    fn iter(&self) -> ndarray::iter::Iter<'_, Self::Scalar, D> {
+    fn iter(&self) -> ndarray::iter::Iter<'_, A, D> {
         self.iter()
     }
-    fn iter_mut(&mut self) -> ndarray::iter::IterMut<'_, Self::Scalar, D>
+    fn iter_mut(&mut self) -> ndarray::iter::IterMut<'_, A, D>
     where
         S: DataMut,
     {
         self.iter_mut()
     }
-    fn axis_iter(&self, axis: usize) -> ndarray::iter::AxisIter<'_, Self::Scalar, D::Smaller>
+    fn axis_iter(&self, axis: usize) -> ndarray::iter::AxisIter<'_, A, D::Smaller>
     where
         D: RemoveAxis,
     {
