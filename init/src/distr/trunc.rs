@@ -4,56 +4,59 @@
 */
 use num::traits::Float;
 use rand::Rng;
-use rand_distr::{Distribution, Normal, NormalError, StandardNormal};
+use rand_distr::{Distribution, Normal, StandardNormal};
 
 /// A truncated normal distribution is similar to a [normal](rand_distr::Normal) [distribution](rand_distr::Distribution), however,
 /// any generated value over two standard deviations from the mean is discarded and re-generated.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct TruncatedNormal<F>
+pub struct TruncatedNormal<T>
 where
-    StandardNormal: Distribution<F>,
+    StandardNormal: Distribution<T>,
 {
-    mean: F,
-    std: F,
+    mean: T,
+    std: T,
 }
 
-impl<F> TruncatedNormal<F>
+impl<T> TruncatedNormal<T>
 where
-    F: Float,
-    StandardNormal: Distribution<F>,
+    T: Float,
+    StandardNormal: Distribution<T>,
 {
     /// Create a new truncated normal distribution with a given mean and standard deviation
-    pub fn new(mean: F, std: F) -> Result<Self, NormalError> {
-        Ok(Self { mean, std })
+    pub const fn new(mean: T, std: T) -> crate::Result<Self> {
+     Ok(Self {
+            mean,
+            std,
+        })
     }
 
-    pub(crate) fn boundary(&self) -> F {
-        self.mean() + self.std_dev() * F::from(2).unwrap()
+    pub(crate) fn boundary(&self) -> T {
+        self.mean() + self.std_dev() * T::from(2).unwrap()
     }
 
-    pub(crate) fn score(&self, x: F) -> F {
+    pub(crate) fn score(&self, x: T) -> T {
         self.mean() - self.std_dev() * x
     }
 
-    pub fn distr(&self) -> Normal<F> {
+    pub fn distr(&self) -> Normal<T> {
         Normal::new(self.mean(), self.std_dev()).unwrap()
     }
 
-    pub fn mean(&self) -> F {
+    pub fn mean(&self) -> T {
         self.mean
     }
 
-    pub fn std_dev(&self) -> F {
+    pub fn std_dev(&self) -> T {
         self.std
     }
 }
 
-impl<F> Distribution<F> for TruncatedNormal<F>
+impl<T> Distribution<T> for TruncatedNormal<T>
 where
-    F: Float,
-    StandardNormal: Distribution<F>,
+    T: Float,
+    StandardNormal: Distribution<T>,
 {
-    fn sample<R>(&self, rng: &mut R) -> F
+    fn sample<R>(&self, rng: &mut R) -> T
     where
         R: Rng + ?Sized,
     {
@@ -67,12 +70,12 @@ where
     }
 }
 
-impl<F> From<Normal<F>> for TruncatedNormal<F>
+impl<T> From<Normal<T>> for TruncatedNormal<T>
 where
-    F: Float,
-    StandardNormal: Distribution<F>,
+    T: Float,
+    StandardNormal: Distribution<T>,
 {
-    fn from(normal: Normal<F>) -> Self {
+    fn from(normal: Normal<T>) -> Self {
         Self {
             mean: normal.mean(),
             std: normal.std_dev(),

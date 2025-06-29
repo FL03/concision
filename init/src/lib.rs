@@ -81,4 +81,3 @@ pub mod prelude {
     pub use super::utils::*;
 }
 
-pub(crate) type UniformResult<T> = core::result::Result<T, rand_distr::uniform::Error>;

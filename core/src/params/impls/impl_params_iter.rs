@@ -4,8 +4,7 @@
 */
 use crate::params::ParamsBase;
 
-use crate::params::iter::Iter;
-use core::iter::Zip;
+use crate::params::iter::{Iter, IterMut};
 use ndarray::iter as nditer;
 use ndarray::{Axis, Data, DataMut, Dimension, RawData, RemoveAxis};
 
@@ -32,17 +31,18 @@ where
             weights: self.weights().axis_iter(Axis(1)),
         }
     }
-    /// a mutable iterator of the parameters
-    pub fn iter_mut(
-        &mut self,
-    ) -> Zip<nditer::AxisIterMut<'_, A, D::Smaller>, nditer::IterMut<'_, A, D::Smaller>>
+    /// returns a mutable iterator of the parameters, [`IterMut`], which essentially zips
+    /// together a mutable axis iterator over the columns of the weights against a mutable
+    /// iterator over the elements of the bias
+    pub fn iter_mut(&mut self) -> IterMut<'_, A, D>
     where
         D: RemoveAxis,
         S: DataMut,
     {
-        self.weights
-            .axis_iter_mut(Axis(1))
-            .zip(self.bias.iter_mut())
+        IterMut {
+            bias: self.bias.iter_mut(),
+            weights: self.weights.axis_iter_mut(Axis(1)),
+        }
     }
     /// returns an iterator over the bias
     pub fn iter_bias(&self) -> nditer::Iter<'_, A, D::Smaller>

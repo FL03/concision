@@ -1,58 +1,15 @@
 /*
-    Appellation: traits <activate>
-    Contrib: @FL03
+    appellation: activate <module>
+    authors: @FL03
 */
+use super::unary::*;
 
 use ndarray::prelude::*;
 use ndarray::{Data, DataMut, ScalarOperand};
 use num::complex::ComplexFloat;
 
-macro_rules! unary {
-    ($($name:ident::$call:ident($($rest:tt)*)),* $(,)?) => {
-        $(
-            unary!(@impl $name::$call($($rest)*));
-        )*
-    };
-
-    (@impl $name:ident::$call:ident(self)) => {
-        paste::paste! {
-            pub trait $name {
-                type Output;
-
-                fn $call(self) -> Self::Output;
-
-                fn [<$call _derivative>](self) -> Self::Output;
-            }
-        }
-
-    };
-    (@impl $name:ident::$call:ident(&self)) => {
-        paste::paste! {
-            pub trait $name {
-                type Output;
-
-                fn $call(&self) -> Self::Output;
-
-                fn [<$call _derivative>](&self) -> Self::Output;
-            }
-        }
-    };
-}
-
-unary! {
-    Heavyside::heavyside(self),
-    LinearActivation::linear(self),
-    Sigmoid::sigmoid(self),
-    Softmax::softmax(&self),
-    ReLU::relu(&self),
-    Tanh::tanh(&self),
-}
-
-pub trait SoftmaxAxis: Softmax {
-    fn softmax_axis(self, axis: usize) -> Self::Output;
-}
-
-/// A trait defining the manner in which a particular entity can be activated.
+/// The [`Activate`] trait establishes a common interface for entities that can be _activated_ 
+/// according to some function
 pub trait Activate<A> {
     type Cont<B>;
 

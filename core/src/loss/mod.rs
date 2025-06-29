@@ -2,27 +2,36 @@
     Appellation: loss <module>
     Contrib: @FL03
 */
-//! This module provides various loss functions used in machine learning.
+//! # Loss Functions
 //!
-//! ## Features
-//!
-//! - [`entropy`]: entropic loss functions
-//! - [`standard`]: basic loss functions like mse, mae, etc.
+//! Loss functions are used to measure the difference between the predicted output and the
+//! actual output of a model. Over the years, several leading approaches have been researched
+//! and developed, each with its own strengths and weaknesses. This module provides a
+//! collection of traits and implementations for various loss functions, including
+//! entropic loss, standard loss, and others.
 #[doc(inline)]
-pub use self::prelude::*;
+pub use self::traits::*;
 
-pub mod entropy;
-pub mod standard;
+mod traits {
+    //! this module implements the various traits of the loss module
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    mod entropy;
+    mod loss;
+    mod standard;
+
+    mod prelude {
+        #[doc(inline)]
+        pub use super::entropy::*;
+        #[doc(inline)]
+        pub use super::loss::*;
+        #[doc(inline)]
+        pub use super::standard::*;
+    }
+}
 
 pub(crate) mod prelude {
     #[doc(inline)]
-    pub use super::entropy::*;
-    #[doc(inline)]
-    pub use super::standard::*;
-}
-
-pub trait Loss {
-    type Output;
-
-    fn loss(&self) -> Self::Output;
+    pub use super::traits::*;
 }

@@ -5,7 +5,7 @@
 use super::TruncatedNormal;
 use num_traits::Float;
 use rand::Rng;
-use rand_distr::{Distribution, NormalError, StandardNormal};
+use rand_distr::{Distribution, StandardNormal};
 
 /// [LecunNormal] is a truncated [normal](rand_distr::Normal) distribution centered at 0
 /// with a standard deviation that is calculated as `σ = sqrt(1/n_in)`
@@ -21,7 +21,7 @@ impl LecunNormal {
     }
     /// Create a [truncated normal](TruncatedNormal) [distribution](Distribution) centered at 0;
     /// See [Self::std_dev] for the standard deviation calculations.
-    pub fn distr<F>(&self) -> Result<TruncatedNormal<F>, NormalError>
+    pub fn distr<F>(&self) -> crate::Result<TruncatedNormal<F>>
     where
         F: Float,
         StandardNormal: Distribution<F>,

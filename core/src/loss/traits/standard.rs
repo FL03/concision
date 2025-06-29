@@ -3,13 +3,23 @@
     Contrib: @FL03
 */
 
-/// Compute the mean absolute error (MAE) of the object.
+/// Compute the mean absolute error (MAE) of the object; more formally, we define the MAE as
+/// the average of the absolute differences between the predicted and actual values:
+///
+/// $$
+/// Err = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+/// $$
 pub trait MeanAbsoluteError {
     type Output;
 
     fn mae(&self) -> Self::Output;
 }
-/// Compute the mean squared error (MSE) of the object.
+/// The [`MeanSquaredError`] (MSE) is the average of the squared differences between the
+/// ($`\hat{y_{i}}`$) and actual values ($`y_{i}`$):
+///
+/// $$
+/// Err = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+/// $$
 pub trait MeanSquaredError {
     type Output;
 

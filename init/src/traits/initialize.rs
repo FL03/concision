@@ -4,7 +4,6 @@
 */
 use crate::distr::*;
 
-use crate::UniformResult;
 use core::ops::Neg;
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, Shape, ShapeBuilder};
 use num_traits::{Float, FromPrimitive};
@@ -69,7 +68,7 @@ where
         Self::rand(shape, distr)
     }
     /// Initialize the object according to the Glorot Initialization scheme.
-    fn glorot_uniform<Sh>(shape: Sh) -> UniformResult<Self>
+    fn glorot_uniform<Sh>(shape: Sh) -> crate::Result<Self>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -126,7 +125,7 @@ where
     {
         Self::rand(shape, StandardNormal)
     }
-    /// Generate a random array using the [StandardNormal](rand_distr::StandardNormal) distribution with a given seed
+    /// Generate a random array using the [`StandardNormal`] distribution with a given seed
     fn stdnorm_from_seed<Sh>(shape: Sh, seed: u64) -> Self
     where
         StandardNormal: Distribution<S::Elem>,
@@ -135,8 +134,8 @@ where
     {
         Self::rand_with(shape, StandardNormal, &mut StdRng::seed_from_u64(seed))
     }
-    /// Initialize the object using the [TruncatedNormal](crate::init::distr::TruncatedNormal) distribution
-    fn truncnorm<Sh>(shape: Sh, mean: S::Elem, std: S::Elem) -> Result<Self, NormalError>
+    /// Initialize the object using the [`TruncatedNormal`] distribution
+    fn truncnorm<Sh>(shape: Sh, mean: S::Elem, std: S::Elem) -> crate::Result<Self>
     where
         StandardNormal: Distribution<S::Elem>,
         S: DataOwned,
@@ -147,7 +146,7 @@ where
         Ok(Self::rand(shape, distr))
     }
     /// initialize the object using the [`Uniform`] distribution with values bounded by `+/- dk`
-    fn uniform<Sh>(shape: Sh, dk: S::Elem) -> UniformResult<Self>
+    fn uniform<Sh>(shape: Sh, dk: S::Elem) -> crate::Result<Self>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -163,7 +162,7 @@ where
         start: S::Elem,
         stop: S::Elem,
         key: u64,
-    ) -> UniformResult<Self>
+    ) -> crate::Result<Self>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -180,7 +179,7 @@ where
     /// initialize the object using the [`Uniform`] distribution with values bounded by the
     /// size of the specified axis.
     /// The values are bounded by `+/- dk` where `dk = 1 / size(axis)`.
-    fn uniform_along<Sh>(shape: Sh, axis: usize) -> UniformResult<Self>
+    fn uniform_along<Sh>(shape: Sh, axis: usize) -> crate::Result<Self>
     where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
@@ -195,7 +194,7 @@ where
     }
     /// initialize the object using the [`Uniform`] distribution with values between then given
     /// bounds, `a` and `b`.
-    fn uniform_between<Sh>(shape: Sh, a: S::Elem, b: S::Elem) -> UniformResult<Self>
+    fn uniform_between<Sh>(shape: Sh, a: S::Elem, b: S::Elem) -> crate::Result<Self>
     where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
