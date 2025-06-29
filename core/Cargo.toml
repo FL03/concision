@@ -34,7 +34,8 @@ test = true
 
 [dependencies]
 #  local
-concision-utils = { workspace = true }
+concision-init = { optional = true, workspace = true }
+concision-utils = {  optional = true, workspace = true }
 # custom
 scsys = { workspace = true }
 scsys-derive = { workspace = true }
@@ -70,30 +71,47 @@ lazy_static = { workspace = true }
 [features]
 default = [
     "std",
+    "utils",
 ]
 
 full = [
+    "init",
     "anyhow",
     "approx",
     "complex",
     "default",
     "json",
-    "rand",
     "serde",
     "tracing",
 ]
 
 # ************* [FF:Features] *************
+init = [
+    "concision_init",
+    "rand",
+]
+
+json = [
+    "alloc",
+    "serde",
+    "serde_json",
+    "scsys/json",
+]
+
 signal =[
     "complex",
-    "concision-utils/signal"
+    "concision-utils?/signal"
 ]
+
+utils = ["dep:concision-utils"]
+
 
 # ************* [FF:Dependencies] *************
 std = [
     "alloc",
     "anyhow?/std",
-    "concision-utils/std",
+    "concision-init?/std",
+    "concision-utils?/std",
     "ndarray/std",
     "num/std",
     "num-complex?/std",
@@ -109,15 +127,20 @@ std = [
 
 wasi = [
     "scsys/wasi",
+    "concision-init?/wasi",
+    "concision-utils?/wasi",
 ]
 
 wasm = [
     "getrandom?/wasm_js",
+    "concision-init?/wasm",
+    "concision-utils?/wasm",
     "scsys/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-    "concision-utils/alloc",
+    "concision-init?/alloc",
+    "concision-utils?/alloc",
     "num/alloc",
     "serde?/alloc",
     "serde_json?/alloc",
@@ -130,30 +153,29 @@ anyhow = [
 ]
 
 approx = [
-    "concision-utils/approx",
+    "concision-init?/approx",
+    "concision-utils?/approx",
     "dep:approx",
     "ndarray/approx",
 ]
 
 blas = [
-    "concision-utils/blas",
+    "concision-init?/blas",
+    "concision-utils?/blas",
     "ndarray/blas",
 ]
 
 complex = [
     "dep:num-complex",
-    "concision-utils/complex",
+    "concision-init?/complex",
+    "concision-utils?/complex",
 ]
 
-json = [
-    "alloc",
-    "serde",
-    "serde_json",
-    "scsys/json",
-]
+concision_init = ["dep:concision-init"]
 
 rand = [
-    "concision-utils/rand",
+    "concision-init?/rand",
+    "concision-utils?/rand",
     "dep:rand",
     "dep:rand_distr",
     "num/rand",
@@ -164,24 +186,26 @@ rand = [
 
 rayon = [
     "dep:rayon",
-    "concision-utils/rayon",
+    "concision-utils?/rayon",
     "ndarray/rayon",
 ]
 
 rng = [
     "dep:getrandom",
-    "concision-utils/rng",
+    "concision-init?/rng",
+    "concision-utils?/rng",
     "rand?/small_rng",
     "rand?/thread_rng",
     "scsys/rng",
 ]
 
 rustfft = [
-    "concision-utils/rustfft",
+    "concision-utils?/rustfft",
 ]
 
 serde = [
-    "concision-utils/serde",
+    "concision-init?/serde",
+    "concision-utils?/serde",
     "dep:serde",
     "dep:serde_derive",
     "ndarray/serde",
@@ -195,7 +219,8 @@ serde = [
 serde_json = ["dep:serde_json"]
 
 tracing = [
-    "concision-utils/tracing",
+    "concision-init?/tracing",
+    "concision-utils?/tracing",
     "dep:tracing",
     "scsys/tracing",
 ]
@@ -205,12 +230,8 @@ tracing = [
 name = "default"
 
 [[test]]
-name = "init"
-required-features = ["rand", "std"]
-
-[[test]]
 name = "params"
-required-features = ["approx", "rand", "std"]
+required-features = ["approx", "std"]
 
 [[test]]
 name = "traits"

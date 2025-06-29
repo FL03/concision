@@ -28,8 +28,8 @@ pub use self::{
     error::*,
     layers::{Layer, LayerBase},
     model::prelude::*,
-    traits::prelude::*,
-    types::prelude::*,
+    traits::*,
+    types::*,
 };
 
 #[macro_use]
@@ -43,17 +43,20 @@ pub mod layers;
 pub mod model;
 pub mod utils;
 
-pub mod traits {
+pub(crate) mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod config;
-    pub mod predict;
-    pub mod train;
+    pub(crate) mod config;
+    pub(crate) mod hidden;
+    pub(crate) mod predict;
+    pub(crate) mod train;
 
-    pub(crate) mod prelude {
+    mod prelude {
         #[doc(inline)]
         pub use super::config::*;
+        #[doc(inline)]
+        pub use super::hidden::*;
         #[doc(inline)]
         pub use super::predict::*;
         #[doc(inline)]
@@ -61,14 +64,14 @@ pub mod traits {
     }
 }
 
-pub mod types {
+pub(crate) mod types {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod dropout;
-    pub mod hyperparameters;
+    pub(crate) mod dropout;
+    pub(crate) mod hyperparameters;
 
-    pub(crate) mod prelude {
+    mod prelude {
         #[doc(inline)]
         pub use super::dropout::*;
         #[doc(inline)]
@@ -84,7 +87,7 @@ pub mod prelude {
     #[doc(no_inline)]
     pub use crate::model::prelude::*;
     #[doc(no_inline)]
-    pub use crate::traits::prelude::*;
+    pub use crate::traits::*;
     #[doc(no_inline)]
-    pub use crate::types::prelude::*;
+    pub use crate::types::*;
 }

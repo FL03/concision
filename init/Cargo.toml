@@ -1,0 +1,148 @@
+[package]
+build = "build.rs"
+description = "tthis crate provides various random distribution and initialization routines for the concision framework"
+name = "concision-init"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
+
+[lib]
+crate-type = [
+    "cdylib",
+    "rlib",
+]
+bench = false
+doc = true
+doctest = true
+test = true
+
+[dependencies]
+# data & serialization
+serde = { features = ["derive"], optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
+# error-handling
+anyhow = { optional = true, workspace = true }
+thiserror = { workspace = true }
+# logging
+tracing = { optional = true, workspace = true }
+# macros & utilities
+paste = { workspace = true }
+smart-default = { workspace = true }
+strum = { workspace = true }
+# mathematics
+approx = { optional = true, workspace = true }
+ndarray = { workspace = true }
+num = { workspace = true }
+num-complex = { optional = true, workspace = true }
+num-traits = { workspace = true }
+# random
+getrandom = { default-features = false, optional = true, workspace = true }
+rand = { optional = true, workspace = true }
+rand_distr = { optional = true, workspace = true }
+
+[dev-dependencies]
+lazy_static = { workspace = true }
+
+[features]
+default = [
+    "rand",
+    "std",
+]
+
+full = [
+    "approx",
+    "complex",
+    "default",
+    "serde",
+    "tracing",
+]
+
+nightly = []
+
+
+# ************* [FF:Dependencies] *************
+std = [
+    "alloc",
+    "anyhow?/std",
+    "ndarray/std",
+    "num/std",
+    "num-complex?/std",
+    "num-traits/std",
+    "rand/std",
+    "rand/std_rng",
+    "serde/std",
+    "strum/std",
+    "thiserror/std",
+    "tracing?/std",
+]
+
+wasi = []
+
+wasm = [
+    "getrandom?/wasm_js",
+]
+# ************* [FF:Dependencies] *************
+alloc = [
+    "num/alloc",
+    "serde?/alloc",
+]
+
+approx = [
+    "dep:approx",
+    "ndarray/approx",
+]
+
+blas = ["ndarray/blas"]
+
+complex = ["dep:num-complex"]
+
+rand = [
+    "dep:rand",
+    "dep:rand_distr",
+    "num/rand",
+    "num-complex?/rand",
+    "rng",
+]
+
+rng = [
+    "dep:getrandom",
+    "rand?/small_rng",
+    "rand?/thread_rng",
+]
+
+serde = [
+    "dep:serde",
+    "dep:serde_derive",
+    "ndarray/serde",
+    "num/serde",
+    "num-complex?/serde",
+    "rand?/serde",
+    "rand_distr?/serde",
+]
+
+tracing = ["dep:tracing"]
+
+# ************* [Unit Tests] *************
+[[test]]
+name = "default"
+
+[[test]]
+name = "init"
+required-features = ["rand", "std"]

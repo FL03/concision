@@ -37,7 +37,7 @@ fn test_simple_model() -> anyhow::Result<()> {
     config.set_momentum(0.9);
     config.set_decay(0.0001);
     // define the model features
-    let features = ModelFeatures::new(3, 9, 9, 1);
+    let features = ModelFeatures::deep(3, 9, 9, 1);
     // initialize the model with the given features and configuration
     let model = SimpleModel::<f64>::new(config, features);
     // initialize some input data

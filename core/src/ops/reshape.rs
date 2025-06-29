@@ -4,19 +4,22 @@
 */
 use ndarray::{ArrayBase, Axis, Dimension, RawData, RawDataClone, RemoveAxis};
 
-/// This trait enables an array to remove an axis from itself
+/// The [`DecrementAxis`] trait defines a method enabling an axis to decrement itself,
 pub trait DecrementAxis {
     type Output;
 
     fn dec(&self) -> Self::Output;
 }
-
+/// The [`IncrementAxis`] trait defines a method enabling an axis to increment itself,
+/// effectively adding a new axis to the array.
 pub trait IncrementAxis {
     type Output;
 
     fn inc(&self) -> Self::Output;
 }
-
+/// The [`Unsqueeze`] trait establishes an interface for a routine that _unsqueezes_ an array,
+/// by inserting a new axis at a specified position. This is useful for reshaping arrays to
+/// meet specific dimensional requirements.
 pub trait Unsqueeze {
     type Output;
 

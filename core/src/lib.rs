@@ -14,6 +14,7 @@
 //! - [`Forward`]: This trait denotes a single forward pass through a layer of a neural network
 //!
 #![allow(
+    clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
     clippy::upper_case_acronyms
@@ -31,13 +32,23 @@ pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
-#[doc(inline)]
+/// this module establishes generic random initialization routines for models, params, and
+/// tensors.
+#[cfg(feature = "concision_init")]
+pub use concision_init as init;
+
+#[cfg(feature = "utils")]
 pub use concision_utils as utils;
+
+#[cfg(feature = "concision_init")]
+pub use self::init::prelude::*;
+#[cfg(feature = "utils")]
+pub use self::utils::prelude::*;
 
 #[doc(inline)]
 pub use self::{
     activate::prelude::*, error::*, loss::prelude::*, ops::prelude::*, params::prelude::*,
-    traits::prelude::*, utils::prelude::*,
+    traits::*,
 };
 
 #[macro_use]
@@ -49,9 +60,6 @@ pub(crate) mod macros {
 pub mod activate;
 /// this module provides the base [`Error`] type for the library
 pub mod error;
-/// this module establishes generic random initialization routines for models, params, and
-/// tensors.
-pub mod init;
 /// this module focuses on the loss functions used in training neural networks.
 pub mod loss;
 /// this module provides the [`ParamsBase`] type for the library, which is used to define the
@@ -80,26 +88,27 @@ pub mod ops {
         pub use super::tensor::*;
     }
 }
+
 pub mod traits {
     //! This module provides the core traits for the library, such as  [`Backward`] and
     //! [`Forward`]
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod apply;
-    pub mod clip;
-    pub mod codex;
-    pub mod gradient;
-    pub mod init;
-    pub mod like;
-    pub mod mask;
-    pub mod norm;
-    pub mod propagation;
-    pub mod scalar;
-    pub mod tensor;
-    pub mod wnb;
+    mod apply;
+    mod clip;
+    mod codex;
+    mod convert;
+    mod gradient;
+    mod like;
+    mod mask;
+    mod norm;
+    mod propagation;
+    mod scalar;
+    mod tensor;
+    mod wnb;
 
-    pub(crate) mod prelude {
+    mod prelude {
         #[doc(inline)]
         pub use super::apply::*;
         #[doc(inline)]
@@ -107,9 +116,9 @@ pub mod traits {
         #[doc(inline)]
         pub use super::codex::*;
         #[doc(inline)]
-        pub use super::gradient::*;
+        pub use super::convert::*;
         #[doc(inline)]
-        pub use super::init::*;
+        pub use super::gradient::*;
         #[doc(inline)]
         pub use super::like::*;
         #[doc(inline)]
@@ -127,14 +136,15 @@ pub mod traits {
     }
 }
 
+#[doc(hidden)]
 pub mod prelude {
+    #[cfg(feature = "concision_init")]
+    pub use concision_init::prelude::*;
+    #[cfg(feature = "utils")]
+    pub use concision_utils::prelude::*;
+
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::error::*;
-    #[cfg(feature = "rand")]
-    #[doc(no_inline)]
-    pub use crate::init::prelude::*;
     #[doc(no_inline)]
     pub use crate::loss::prelude::*;
     #[doc(no_inline)]
@@ -142,7 +152,5 @@ pub mod prelude {
     #[doc(no_inline)]
     pub use crate::params::prelude::*;
     #[doc(no_inline)]
-    pub use crate::traits::prelude::*;
-    #[doc(no_inline)]
-    pub use concision_utils::prelude::*;
+    pub use crate::traits::*;
 }

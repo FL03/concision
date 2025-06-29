@@ -38,11 +38,11 @@ fn test_masked_fill() {
 
 #[test]
 fn test_matrix_power() {
-    use cnc::Matpow;
+    use cnc::MatPow;
     let x = array![[1.0, 2.0], [3.0, 4.0]];
-    assert_eq!(x.pow(0), Array2::<f64>::eye(2));
-    assert_eq!(x.pow(1), x);
-    assert_eq!(x.pow(2), x.dot(&x));
+    assert_eq!(x.matpow(0), Array2::<f64>::eye(2));
+    assert_eq!(x.matpow(1), x);
+    assert_eq!(x.matpow(2), x.dot(&x));
 }
 
 #[test]

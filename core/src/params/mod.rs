@@ -18,8 +18,14 @@ pub mod iter;
 pub mod params;
 
 mod impls {
-    pub mod impl_init;
-    pub mod impl_ops;
+    mod impl_params;
+    #[allow(deprecated)]
+    mod impl_params_deprecated;
+    mod impl_params_init;
+    mod impl_params_iter;
+    mod impl_params_ops;
+    #[cfg(feature = "rand")]
+    mod impl_params_rand;
 }
 
 pub(crate) mod prelude {

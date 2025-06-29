@@ -22,7 +22,7 @@ To use `concision` in your project, add the following to your `Cargo.toml`:
 ```toml
 [dependencies.concision]
 features = ["full"]
-version = "0.1.x"
+version = "0.2.x"
 ```
 
 ### Examples
@@ -33,14 +33,14 @@ version = "0.1.x"
     extern crate concision as cnc;
 
     use cnc::activate::{ReLU, Sigmoid};
-    use cnc::nn::{Model, ModelFeatures, ModelParams, StandardModelConfig};
+    use cnc::nn::{Model, ModelFeatures, DeepModelParams, StandardModelConfig};
     use ndarray::{Array1, ScalarOperand};
     use num::Float;
 
     pub struct SimpleModel<T = f64> {
         pub config: StandardModelConfig<T>,
         pub features: ModelFeatures,
-        pub params: ModelParams<T>,
+        pub params: DeepModelParams<T>,
     }
 
     impl<T> SimpleModel<T> {
@@ -48,7 +48,7 @@ version = "0.1.x"
         where 
             T: Clone + num::Zero
         {
-            let params = ModelParams::zeros(features);
+            let params = DeepModelParams::zeros(features);
             SimpleModel {
                 config,
                 features,
@@ -94,11 +94,11 @@ version = "0.1.x"
             self.features
         }
 
-        fn params(&self) -> &ModelParams<T> {
+        fn params(&self) -> &DeepModelParams<T> {
             &self.params
         }
 
-        fn params_mut(&mut self) -> &mut ModelParams<T> {
+        fn params_mut(&mut self) -> &mut DeepModelParams<T> {
             &mut self.params
         }
     }

@@ -4,6 +4,46 @@
 */
 use super::ModelLayout;
 
+/// verify if the input and hidden dimensions are compatible by checking:
+///
+/// 1. they have the same dimensionality
+/// 2. if the the number of dimensions is greater than one, the hidden layer should be square
+/// 3. the finaly dimension of the input is equal to one hidden dimension
+pub fn _verify_input_and_hidden_shape<D>(input: D, hidden: D) -> bool
+where
+    D: ndarray::Dimension,
+{
+    let mut valid = true;
+    // // check that the hidden dimension is square
+    // if hidden.ndim() > 1 && hidden.shape().iter().any(|&d| d != hidden.shape()[0]) {
+    //     valid = false;
+    // }
+    // check that the input and hidden dimensions are compatible
+    if input.ndim() != hidden.ndim() {
+        valid = false;
+    }
+    valid
+}
+
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+    scsys::VariantConstructors,
+    strum::EnumCount,
+    strum::EnumIs,
+)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum ModelFormat {
+    Shallow { hidden: usize },
+    Deep { hidden: usize, layers: usize },
+}
+
 /// The [`ModelFeatures`] provides a common way of defining the layout of a model. This is
 /// used to define the number of input features, the number of hidden layers, the number of
 /// hidden features, and the number of output features.
@@ -12,21 +52,112 @@ use super::ModelLayout;
 pub struct ModelFeatures {
     /// the number of input features
     pub(crate) input: usize,
-    /// the dimension of hidden layers
-    pub(crate) hidden: usize,
-    /// the number of hidden layers
-    pub(crate) layers: usize,
+    /// the features of the "inner" layers
+    pub(crate) inner: ModelFormat,
     /// the number of output features
     pub(crate) output: usize,
 }
 
+impl ModelFormat {
+    /// returns a copy of the number of hidden features
+    pub const fn hidden(&self) -> usize {
+        match self {
+            ModelFormat::Shallow { hidden } => *hidden,
+            ModelFormat::Deep { hidden, .. } => *hidden,
+        }
+    }
+    /// returns a mutable reference to the hidden features for the model
+    pub const fn hidden_mut(&mut self) -> &mut usize {
+        match self {
+            ModelFormat::Shallow { hidden } => hidden,
+            ModelFormat::Deep { hidden, .. } => hidden,
+        }
+    }
+    /// returns a copy of the number of layers for the model; if the variant is
+    /// [`Shallow`](ModelFormat::Shallow), it returns 1
+    /// returns `n` if the variant is [`Deep`](ModelFormat::Deep)
+    pub const fn layers(&self) -> usize {
+        match self {
+            ModelFormat::Shallow { .. } => 1,
+            ModelFormat::Deep { layers, .. } => *layers,
+        }
+    }
+    /// returns a mutable reference to the number of layers for the model; this will panic on
+    /// [`Shallow`](ModelFormat::Shallow) variants
+    pub const fn layers_mut(&mut self) -> &mut usize {
+        match self {
+            ModelFormat::Shallow { .. } => panic!("Cannot mutate layers of a shallow model"),
+            ModelFormat::Deep { layers, .. } => layers,
+        }
+    }
+    /// update the number of hidden features for the model
+    pub fn set_hidden(&mut self, value: usize) -> &mut Self {
+        match self {
+            ModelFormat::Shallow { hidden } => {
+                *hidden = value;
+            }
+            ModelFormat::Deep { hidden, .. } => {
+                *hidden = value;
+            }
+        }
+        self
+    }
+    /// update the number of layers for the model;
+    ///
+    /// **note:** this method will automatically convert the model to a [`Deep`](ModelFormat::Deep)
+    /// variant if it is currently a [`Shallow`](ModelFormat::Shallow) variant and the number
+    /// of layers becomes greater than 1
+    pub fn set_layers(&mut self, value: usize) -> &mut Self {
+        match self {
+            ModelFormat::Shallow { hidden } => {
+                if value > 1 {
+                    *self = ModelFormat::Deep {
+                        hidden: *hidden,
+                        layers: value,
+                    };
+                }
+                // if the value is 1, we do not change the model format
+            }
+            ModelFormat::Deep { layers, .. } => {
+                *layers = value;
+            }
+        }
+        self
+    }
+    /// consumes the current instance and returns a new instance with the given hidden
+    /// features
+    pub fn with_hidden(self, hidden: usize) -> Self {
+        match self {
+            ModelFormat::Shallow { .. } => ModelFormat::Shallow { hidden },
+            ModelFormat::Deep { layers, .. } => ModelFormat::Deep { hidden, layers },
+        }
+    }
+    /// consumes the current instance and returns a new instance with the given number of
+    /// hidden layers
+    ///
+    /// **note:** this method will automatically convert the model to a [`Deep`](ModelFormat::Deep)
+    /// variant if it is currently a [`Shallow`](ModelFormat::Shallow) variant and the number
+    /// of layers becomes greater than 1
+    pub fn with_layers(self, layers: usize) -> Self {
+        match self {
+            ModelFormat::Shallow { hidden } => {
+                if layers > 1 {
+                    ModelFormat::Deep { hidden, layers }
+                } else {
+                    ModelFormat::Shallow { hidden }
+                }
+            }
+            ModelFormat::Deep { hidden, .. } => ModelFormat::Deep { hidden, layers },
+        }
+    }
+}
+
 impl ModelFeatures {
-    pub fn new(input: usize, hidden: usize, layers: usize, output: usize) -> Self {
+    pub const fn deep(input: usize, hidden: usize, layers: usize, output: usize) -> Self {
         Self {
             input,
-            hidden,
-            layers,
             output,
+            inner: ModelFormat::Deep { hidden, layers },
         }
     }
     /// returns a copy of the input features for the model
@@ -34,34 +165,38 @@ impl ModelFeatures {
         self.input
     }
     /// returns a mutable reference to the input features for the model
-    #[inline]
     pub const fn input_mut(&mut self) -> &mut usize {
         &mut self.input
     }
+    /// returns a copy of the inner format for the model
+    pub const fn inner(&self) -> ModelFormat {
+        self.inner
+    }
+    /// returns a mutable reference to the inner format for the model
+    pub const fn inner_mut(&mut self) -> &mut ModelFormat {
+        &mut self.inner
+    }
     /// returns a copy of the hidden features for the model
     pub const fn hidden(&self) -> usize {
-        self.hidden
+        self.inner().hidden()
     }
     /// returns a mutable reference to the hidden features for the model
-    #[inline]
     pub const fn hidden_mut(&mut self) -> &mut usize {
-        &mut self.hidden
+        self.inner_mut().hidden_mut()
     }
     /// returns a copy of the number of hidden layers for the model
     pub const fn layers(&self) -> usize {
-        self.layers
+        self.inner().layers()
     }
     /// returns a mutable reference to the number of hidden layers for the model
-    #[inline]
     pub const fn layers_mut(&mut self) -> &mut usize {
-        &mut self.layers
+        self.inner_mut().layers_mut()
     }
     /// returns a copy of the output features for the model
     pub const fn output(&self) -> usize {
         self.output
     }
     /// returns a mutable reference to the output features for the model
-    #[inline]
     pub const fn output_mut(&mut self) -> &mut usize {
         &mut self.output
     }
@@ -74,13 +209,13 @@ impl ModelFeatures {
     #[inline]
     /// sets the hidden features for the model
     pub fn set_hidden(&mut self, hidden: usize) -> &mut Self {
-        self.hidden = hidden;
+        self.inner_mut().set_hidden(hidden);
         self
     }
     #[inline]
     /// sets the number of hidden layers for the model
     pub fn set_layers(&mut self, layers: usize) -> &mut Self {
-        self.layers = layers;
+        self.inner_mut().set_layers(layers);
         self
     }
     #[inline]
@@ -93,16 +228,21 @@ impl ModelFeatures {
     pub fn with_input(self, input: usize) -> Self {
         Self { input, ..self }
     }
-
     /// consumes the current instance and returns a new instance with the given hidden
     /// features
     pub fn with_hidden(self, hidden: usize) -> Self {
-        Self { hidden, ..self }
+        Self {
+            inner: self.inner.with_hidden(hidden),
+            ..self
+        }
     }
     /// consumes the current instance and returns a new instance with the given number of
     /// hidden layers
     pub fn with_layers(self, layers: usize) -> Self {
-        Self { layers, ..self }
+        Self {
+            inner: self.inner.with_layers(layers),
+            ..self
+        }
     }
     /// consumes the current instance and returns a new instance with the given output
     /// features
@@ -166,14 +306,36 @@ impl ModelLayout for ModelFeatures {
     }
 }
 
+impl Default for ModelFormat {
+    fn default() -> Self {
+        Self::Deep {
+            hidden: 16,
+            layers: 1,
+        }
+    }
+}
+
 impl Default for ModelFeatures {
     fn default() -> Self {
         Self {
             input: 16,
-            hidden: 64,
-            layers: 3,
+            inner: ModelFormat::Deep {
+                hidden: 16,
+                layers: 1,
+            },
             output: 16,
         }
+    }
+}
+
+impl core::fmt::Display for ModelFormat {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(
+            f,
+            "{{ hidden: {}, layers: {} }}",
+            self.hidden(),
+            self.layers()
+        )
     }
 }
 
@@ -181,8 +343,11 @@ impl core::fmt::Display for ModelFeatures {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
-            "{{ input: {}, hidden: {}, layers: {}, output: {} }}",
-            self.input, self.hidden, self.layers, self.output
+            "{{ input: {i}, hidden: {h}, output: {o}, layers: {l} }}",
+            i = self.input(),
+            h = self.hidden(),
+            l = self.layers(),
+            o = self.output()
         )
     }
 }

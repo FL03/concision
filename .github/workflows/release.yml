@@ -1,8 +1,9 @@
-name: release
+name: Release
 
 on:
   release:
-    types: [ published ]
+    types:
+      - published
   repository_dispatch:
     types: [ release ]
   workflow_dispatch:
@@ -29,24 +30,24 @@ jobs:
       url: https://crates.io/crates/${{ github.event.repository.name }}
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger target workflow
-        uses: peter-evans/repository-dispatch@v3 
+      - name: Publish to crates.io
+        uses: peter-evans/repository-dispatch@v3
         with:
-          event-type: crates-io          
+          event-type: cargo-publish
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
           token: ${{ github.token }}
   release:
     continue-on-error: true
-    needs: publish    
+    needs: publish
     env:
       IS_PRERELEASE: ${{ github.event.inputs.prerelease || false }}
       IS_DRAFT: ${{ github.event.inputs.draft || false }}
     runs-on: ubuntu-latest
     steps:
-      - 
+      -
         name: Checkout
         uses: actions/checkout@v4
-      - 
+      -
         name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -55,7 +56,7 @@ jobs:
           prerelease: ${{ env.IS_PRERELEASE }}
           tag_name: ${{ github.event.release.tag_name }}
           body: |
-            ${{ github.event.release.body }} 
+            ${{ github.event.release.body }}
 
             ## Links
 

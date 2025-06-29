@@ -3,14 +3,20 @@
     Contrib: @FL03
 */
 use ndarray::Dimension;
-use ndarray::iter::AxisIter;
-use ndarray::iter::Iter as NdIter;
+use ndarray::iter::{AxisIter, AxisIterMut};
+use ndarray::iter::{Iter as NdIter, IterMut as NdIterMut};
 
-pub type ItemMut<'a, A, D> = (
+pub(crate) type ItemRef<'a, A, D> = (
     <AxisIter<'a, A, <D as Dimension>::Smaller> as Iterator>::Item,
+    &'a A,
+);
+pub(crate) type ItemMut<'a, A, D> = (
+    <AxisIterMut<'a, A, <D as Dimension>::Smaller> as Iterator>::Item,
     &'a mut A,
 );
-
+/// The [`Iter`] type provides an iterator over the parameters of a neural network layer by
+/// zipping together an axis iterator over the columns of the weights and an iterator over the
+/// bias.
 pub struct Iter<'a, A, D>
 where
     D: Dimension,
@@ -18,24 +24,39 @@ where
     pub(crate) weights: AxisIter<'a, A, D::Smaller>,
     pub(crate) bias: NdIter<'a, A, D::Smaller>,
 }
-
-impl<'a, A, D> Iter<'a, A, D>
+/// The [`IterMut`] type provides a mutable iterator over the parameters of a neural network
+/// layer by zipping together a mutable axis iterator over the columns of the weights and
+/// a mutable iterator over the bias.
+pub struct IterMut<'a, A, D>
 where
     D: Dimension,
 {
-    pub fn new(weights: AxisIter<'a, A, D::Smaller>, bias: NdIter<'a, A, D::Smaller>) -> Self {
-        Self { weights, bias }
-    }
+    pub(crate) weights: AxisIterMut<'a, A, D::Smaller>,
+    pub(crate) bias: NdIterMut<'a, A, D::Smaller>,
 }
 
+/*
+ ************* Implementations *************
+*/
 impl<'a, A, D> Iterator for Iter<'a, A, D>
 where
     D: Dimension,
 {
-    type Item = (
-        <AxisIter<'a, A, <D as Dimension>::Smaller> as Iterator>::Item,
-        &'a A,
-    );
+    type Item = ItemRef<'a, A, D>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match (self.weights.next(), self.bias.next()) {
+            (Some(w), Some(b)) => Some((w, b)),
+            _ => None,
+        }
+    }
+}
+
+impl<'a, A, D> Iterator for IterMut<'a, A, D>
+where
+    D: Dimension,
+{
+    type Item = ItemMut<'a, A, D>;
 
     fn next(&mut self) -> Option<Self::Item> {
         match (self.weights.next(), self.bias.next()) {

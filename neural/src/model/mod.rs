@@ -5,18 +5,12 @@
 //! This module provides the scaffolding for creating models and layers in a neural network.
 
 #[doc(inline)]
-pub use self::{config::StandardModelConfig, layout::*, model_params::*, trainer::Trainer};
+pub use self::{config::StandardModelConfig, layout::*, params::*, trainer::Trainer};
 
 pub mod config;
 pub mod layout;
-pub mod model_params;
+pub mod params;
 pub mod trainer;
-
-mod impls {
-    pub mod impl_model_params;
-    #[cfg(feature = "rand")]
-    pub mod impl_model_params_rand;
-}
 
 pub(crate) mod prelude {
     #[doc(inline)]
@@ -24,7 +18,7 @@ pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::layout::*;
     #[doc(inline)]
-    pub use super::model_params::*;
+    pub use super::params::*;
     #[doc(inline)]
     pub use super::trainer::*;
     #[doc(inline)]
@@ -58,9 +52,9 @@ pub trait Model<T = f32> {
     /// validating the dimensionality of the model's inputs, outputs, training data, etc.
     fn layout(&self) -> Self::Layout;
     /// returns an immutable reference to the model parameters
-    fn params(&self) -> &ModelParams<T>;
+    fn params(&self) -> &DeepModelParams<T>;
     /// returns a mutable reference to the model's parameters
-    fn params_mut(&mut self) -> &mut ModelParams<T>;
+    fn params_mut(&mut self) -> &mut DeepModelParams<T>;
     /// propagates the input through the model; each layer is applied in sequence meaning that
     /// the output of each previous layer is the input to the next layer. This pattern
     /// repeats until the output layer returns the final result.
@@ -93,7 +87,7 @@ where
         core::mem::replace(self.config_mut(), config)
     }
     /// [`replace`](core::mem::replace) the current model parameters and returns the old one
-    fn replace_params(&mut self, params: ModelParams<T>) -> ModelParams<T> {
+    fn replace_params(&mut self, params: DeepModelParams<T>) -> DeepModelParams<T> {
         core::mem::replace(self.params_mut(), params)
     }
     /// overrides the current configuration and returns a mutable reference to the model
@@ -102,7 +96,7 @@ where
         self
     }
     /// overrides the current model parameters and returns a mutable reference to the model
-    fn set_params(&mut self, params: ModelParams<T>) -> &mut Self {
+    fn set_params(&mut self, params: DeepModelParams<T>) -> &mut Self {
         *self.params_mut() = params;
         self
     }

@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 
-use cnc::nn::{Model, ModelFeatures, ModelParams, NeuralError, StandardModelConfig, Train};
+use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
 #[cfg(feature = "rand")]
 use cnc::rand_distr;
 use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
@@ -16,7 +16,7 @@ use num_traits::{Float, FromPrimitive, NumAssign};
 pub struct TransformerModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
-    pub params: ModelParams<T>,
+    pub params: DeepModelParams<T>,
 }
 
 impl<T> TransformerModel<T> {
@@ -24,7 +24,7 @@ impl<T> TransformerModel<T> {
     where
         T: Clone + Default,
     {
-        let params = ModelParams::default(features);
+        let params = DeepModelParams::default(features);
         TransformerModel {
             config,
             features,
@@ -37,7 +37,7 @@ impl<T> TransformerModel<T> {
         T: Float + FromPrimitive,
         rand_distr::StandardNormal: rand_distr::Distribution<T>,
     {
-        let params = ModelParams::glorot_normal(self.features());
+        let params = DeepModelParams::glorot_normal(self.features());
         TransformerModel { params, ..self }
     }
     /// returns a reference to the model configuration
@@ -57,11 +57,11 @@ impl<T> TransformerModel<T> {
         &mut self.features
     }
     /// returns a reference to the model parameters
-    pub const fn params(&self) -> &ModelParams<T> {
+    pub const fn params(&self) -> &DeepModelParams<T> {
         &self.params
     }
     /// returns a mutable reference to the model parameters
-    pub const fn params_mut(&mut self) -> &mut ModelParams<T> {
+    pub const fn params_mut(&mut self) -> &mut DeepModelParams<T> {
         &mut self.params
     }
     /// set the current configuration and return a mutable reference to the model
@@ -75,7 +75,7 @@ impl<T> TransformerModel<T> {
         self
     }
     /// set the current parameters and return a mutable reference to the model
-    pub fn set_params(&mut self, params: ModelParams<T>) -> &mut Self {
+    pub fn set_params(&mut self, params: DeepModelParams<T>) -> &mut Self {
         self.params = params;
         self
     }
@@ -88,7 +88,7 @@ impl<T> TransformerModel<T> {
         Self { features, ..self }
     }
     /// consumes the current instance to create another with the given parameters
-    pub fn with_params(self, params: ModelParams<T>) -> Self {
+    pub fn with_params(self, params: DeepModelParams<T>) -> Self {
         Self { params, ..self }
     }
 }
@@ -109,11 +109,11 @@ impl<T> Model<T> for TransformerModel<T> {
         self.features
     }
 
-    fn params(&self) -> &ModelParams<T> {
+    fn params(&self) -> &DeepModelParams<T> {
         &self.params
     }
 
-    fn params_mut(&mut self) -> &mut ModelParams<T> {
+    fn params_mut(&mut self) -> &mut DeepModelParams<T> {
         &mut self.params
     }
 }

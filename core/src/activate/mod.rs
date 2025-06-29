@@ -16,7 +16,20 @@
 #[doc(inline)]
 pub use self::prelude::*;
 
-pub(crate) mod traits;
+pub(crate) mod traits {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    mod activate;
+    mod unary;
+
+    mod prelude {
+        #[doc(inline)]
+        pub use super::activate::*;
+        #[doc(inline)]
+        pub use super::unary::*;
+    }
+}
 
 mod impls {
     mod impl_binary;

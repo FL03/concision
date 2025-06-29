@@ -5,6 +5,7 @@
 use num::integer::Roots;
 use num::traits::FromPrimitive;
 
+/// The [`Root`] trait provides methods for computing the nth root of a number.
 pub trait Root {
     type Output;
 
@@ -18,6 +19,10 @@ pub trait Root {
         self.nth_root(3)
     }
 }
+
+/*
+ ************* Implementations *************
+*/
 
 macro_rules! impl_root {
     (float $($T:ty),* $(,)?) => {

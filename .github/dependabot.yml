@@ -4,12 +4,13 @@ updates:
   - package-ecosystem: cargo
     schedule:
       interval: monthly
-    directories: 
+    directories:
       - /
       - /concision
       - /core
       - /data
       - /derive
+      - /init
       - /macros
       - /neural
       - /utils

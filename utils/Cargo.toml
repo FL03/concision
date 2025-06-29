@@ -84,6 +84,8 @@ full = [
 ]
 
 # ************* [FF:Features] *************
+nightly = []
+
 signal =[
     "complex",
     "rustfft",

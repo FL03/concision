@@ -1,24 +1,37 @@
 /*
-   Appellation: concision-macros <library>
-   Contrib: FL03 <jo3mccain@icloud.com>
+    appellation: concision-macros <library>
+    authors: @FL03
 */
-//! Procedural macros written in support of the concision framework.
-#![crate_name = "concision_macros"]
-#![crate_type = "proc-macro"]
+//! # concision-macros
+//!
+//! this crate defines various procedural macros for the `concision` crate working to
+//! streamline the process of creating and developing custom neural networks.
+//!
 
-extern crate proc_macro;
-
-#[allow(dead_code)]
 pub(crate) mod ast;
-#[allow(dead_code)]
-pub(crate) mod gets;
+pub(crate) mod attr;
+pub(crate) mod impls;
 
+use self::ast::ModelAst;
 use proc_macro::TokenStream;
 
 #[doc(hidden)]
-/// A procedural macro for generativly creating getter methods; i.e. $field_name() -> &$field_type and $field_name_mut() -> &mut $field_type
 #[proc_macro]
-pub fn gets(input: TokenStream) -> TokenStream {
-    println!("display: {:?}", input);
-    input
+/// the [`model!`]procedural macro is used to streamline the creation of custom models using the
+/// `concision` framework
+pub fn model(input: TokenStream) -> TokenStream {
+    let data = syn::parse_macro_input!(input as ModelAst);
+    // use the handler to process the input data
+    let res = self::impls::impl_model(data);
+    // convert the tokens into a TokenStream
+    res.into()
+}
+
+mod kw {
+    use syn::custom_keyword;
+    custom_keyword! { model }
+    custom_keyword! { layer }
+    custom_keyword! { layers }
+    custom_keyword! { param }
+    custom_keyword! { params }
 }

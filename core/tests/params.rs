@@ -47,8 +47,8 @@ fn test_params_forward() {
     assert_abs_diff_eq!(output, array![7.0, 7.0, 7.0, 7.0], epsilon = 1e-3);
 }
 
-#[cfg(feature = "rand")]
 #[test]
+#[cfg(feature = "init")]
 fn test_params_init() {
     use cnc::init::Initialize;
 
