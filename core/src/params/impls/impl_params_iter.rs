@@ -1,0 +1,74 @@
+/*
+    appellation: impl_params_iter <module>
+    authors: @FL03
+*/
+use crate::params::ParamsBase;
+
+use crate::params::iter::Iter;
+use core::iter::Zip;
+use ndarray::{Dimension, RawData, Data, Axis, DataMut, RemoveAxis};
+use ndarray::iter as nditer;
+
+/// Here, we implement various iterators for the parameters and its constituents. The _core_
+/// iterators are:
+///
+/// - immutable and mutable iterators over each parameter (weights and bias) respectively;
+/// - an iterator over the parameters, which zips together an axis iterator over the columns of
+///   the weights and an iterator over the bias;
+impl<S, D, A> ParamsBase<S, D> where S: RawData<Elem = A>, D: Dimension {
+/// an iterator of the parameters; the created iterator zips together an axis iterator over
+    /// the columns of the weights and an iterator over the bias
+    pub fn iter(&self) -> Iter<'_, A, D>
+    where
+        D: RemoveAxis,
+        S: Data,
+    {
+        Iter {
+            bias: self.bias().iter(),
+            weights: self.weights().axis_iter(Axis(1)),
+        }
+    }
+    /// a mutable iterator of the parameters
+    pub fn iter_mut(
+        &mut self,
+    ) -> Zip<
+        nditer::AxisIterMut<'_, A, D::Smaller>,
+        nditer::IterMut<'_, A, D::Smaller>,
+    >
+    where
+        D: RemoveAxis,
+        S: DataMut,
+    {
+        self.weights
+            .axis_iter_mut(Axis(1))
+            .zip(self.bias.iter_mut())
+    }
+    /// returns an iterator over the bias
+    pub fn iter_bias(&self) -> nditer::Iter<'_, A, D::Smaller>
+    where
+        S: Data,
+    {
+        self.bias().iter()
+    }
+    /// returns a mutable iterator over the bias
+    pub fn iter_bias_mut(&mut self) -> nditer::IterMut<'_, A, D::Smaller>
+    where
+        S: DataMut,
+    {
+        self.bias_mut().iter_mut()
+    }
+    /// returns an iterator over the weights
+    pub fn iter_weights(&self) -> nditer::Iter<'_, A, D>
+    where
+        S: Data,
+    {
+        self.weights().iter()
+    }
+    /// returns a mutable iterator over the weights; see [`iter_mut`](ArrayBase::iter_mut) for more
+    pub fn iter_weights_mut(&mut self) -> nditer::IterMut<'_, A, D>
+    where
+        S: DataMut,
+    {
+        self.weights_mut().iter_mut()
+    }
+}

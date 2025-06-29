@@ -2,8 +2,7 @@
     Appellation: params <module>
     Contrib: @FL03
 */
-use ndarray::prelude::*;
-use ndarray::{Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
+use ndarray::{ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
 /// model. The implementation is designed around the [`ArrayBase`] type from the
@@ -145,61 +144,6 @@ where
     pub fn dim(&self) -> D::Pattern {
         self.weights().dim()
     }
-    /// an iterator of the parameters; the created iterator zips together an axis iterator over
-    /// the columns of the weights and an iterator over the bias
-    pub fn iter(&self) -> super::iter::Iter<'_, A, D>
-    where
-        D: RemoveAxis,
-        S: Data,
-    {
-        super::iter::Iter {
-            bias: self.bias().iter(),
-            weights: self.weights().axis_iter(Axis(1)),
-        }
-    }
-    /// a mutable iterator of the parameters
-    pub fn iter_mut(
-        &mut self,
-    ) -> core::iter::Zip<
-        ndarray::iter::AxisIterMut<'_, A, D::Smaller>,
-        ndarray::iter::IterMut<'_, A, D::Smaller>,
-    >
-    where
-        D: RemoveAxis,
-        S: DataMut,
-    {
-        self.weights
-            .axis_iter_mut(Axis(1))
-            .zip(self.bias.iter_mut())
-    }
-    /// returns an iterator over the bias
-    pub fn iter_bias(&self) -> ndarray::iter::Iter<'_, A, D::Smaller>
-    where
-        S: Data,
-    {
-        self.bias().iter()
-    }
-    /// returns a mutable iterator over the bias
-    pub fn iter_bias_mut(&mut self) -> ndarray::iter::IterMut<'_, A, D::Smaller>
-    where
-        S: DataMut,
-    {
-        self.bias_mut().iter_mut()
-    }
-    /// returns an iterator over the weights
-    pub fn iter_weights(&self) -> ndarray::iter::Iter<'_, A, D>
-    where
-        S: Data,
-    {
-        self.weights().iter()
-    }
-    /// returns a mutable iterator over the weights; see [`iter_mut`](ArrayBase::iter_mut) for more
-    pub fn iter_weights_mut(&mut self) -> ndarray::iter::IterMut<'_, A, D>
-    where
-        S: DataMut,
-    {
-        self.weights_mut().iter_mut()
-    }
     /// returns true if both the weights and bias are empty; uses [`is_empty`](ArrayBase::is_empty)
     pub fn is_empty(&self) -> bool {
         self.is_weights_empty() && self.is_bias_empty()
@@ -263,6 +207,15 @@ where
         let weights = self.weights().to_shape(dim)?;
         Ok(ParamsBase::new(bias, weights))
     }
+    /// returns a new [`ParamsBase`] instance with the same paramaters, but using a shared
+    /// representation of the data;
+    pub fn to_shared(&self) -> ParamsBase<ndarray::OwnedArcRepr<A>, D>
+    where
+        A: Clone,
+        S: Data,
+    {
+        ParamsBase::new(self.bias().to_shared(), self.weights().to_shared())
+    }
     /// returns a "view" of the parameters; see [view](ArrayBase::view) for more information
     pub fn view(&self) -> ParamsBase<ndarray::ViewRepr<&'_ A>, D>
     where
@@ -278,103 +231,3 @@ where
         ParamsBase::new(self.bias.view_mut(), self.weights.view_mut())
     }
 }
-
-impl<A, S> ParamsBase<S, Ix1>
-where
-    S: RawData<Elem = A>,
-{
-    pub fn from_scalar_bias(bias: A, weights: ArrayBase<S, Ix1>) -> Self
-    where
-        A: Clone,
-        S: DataOwned,
-    {
-        Self {
-            bias: ArrayBase::from_elem((), bias),
-            weights,
-        }
-    }
-
-    pub fn nrows(&self) -> usize {
-        self.weights.len()
-    }
-}
-
-impl<A, S> ParamsBase<S, Ix2>
-where
-    S: RawData<Elem = A>,
-{
-    pub fn ncols(&self) -> usize {
-        self.weights.ncols()
-    }
-
-    pub fn nrows(&self) -> usize {
-        self.weights.nrows()
-    }
-}
-
-impl<A, S, D> Clone for ParamsBase<S, D>
-where
-    D: Dimension,
-    S: ndarray::RawDataClone<Elem = A>,
-    A: Clone,
-{
-    fn clone(&self) -> Self {
-        Self::new(self.bias().clone(), self.weights().clone())
-    }
-}
-
-impl<A, S, D> Copy for ParamsBase<S, D>
-where
-    D: Dimension + Copy,
-    <D as Dimension>::Smaller: Copy,
-    S: ndarray::RawDataClone<Elem = A> + Copy,
-    A: Copy,
-{
-}
-
-impl<A, S, D> PartialEq for ParamsBase<S, D>
-where
-    D: Dimension,
-    S: Data<Elem = A>,
-    A: PartialEq,
-{
-    fn eq(&self, other: &Self) -> bool {
-        self.bias() == other.bias() && self.weights() == other.weights()
-    }
-}
-
-impl<A, S, D> Eq for ParamsBase<S, D>
-where
-    D: Dimension,
-    S: Data<Elem = A>,
-    A: Eq,
-{
-}
-
-impl<A, S, D> core::fmt::Debug for ParamsBase<S, D>
-where
-    D: Dimension,
-    S: Data<Elem = A>,
-    A: core::fmt::Debug,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        f.debug_struct("ModelParams")
-            .field("bias", self.bias())
-            .field("weights", self.weights())
-            .finish()
-    }
-}
-
-// impl<A, S, D> PartialOrd for ModelParams<S, D>
-// where
-//     D: Dimension,
-//     S: Data<Elem = A>,
-//     A: PartialOrd,
-// {
-//     fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
-//         match self.bias.iter().partial_cmp(&other.bias.iter()) {
-//             Some(core::cmp::Ordering::Equal) => self.weights.iter().partial_cmp(&other.weights.iter()),
-//             other => other,
-//         }
-//     }
-// }

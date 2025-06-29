@@ -1,5 +1,5 @@
 /*
-    appellation: impl_init <module>
+    appellation: impl_params_init <module>
     authors: @FL03
 */
 use crate::params::ParamsBase;
@@ -13,17 +13,6 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    #[cfg(feature = "rand")]
-    pub fn init_rand<G, Dst, Sh>(shape: Sh, distr: G) -> Self
-    where
-        D: ndarray::RemoveAxis,
-        S: ndarray::DataOwned,
-        Sh: ndarray::ShapeBuilder<Dim = D>,
-        Dst: Clone + rand_distr::Distribution<A>,
-        G: Fn(&Sh) -> Dst,
-    {
-        use crate::init::Initialize;
-        let dist = distr(&shape);
-        Self::rand(shape, dist)
-    }
+
 }
+

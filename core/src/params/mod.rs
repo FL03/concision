@@ -20,7 +20,12 @@ pub mod params;
 mod impls {
     mod impl_params;
     mod impl_params_init;
+    mod impl_params_iter;
     mod impl_params_ops;
+    #[allow(deprecated)]
+    mod impl_params_deprecated;
+    #[cfg(feature = "rand")]
+    mod impl_params_rand;
 }
 
 pub(crate) mod prelude {

@@ -8,7 +8,7 @@ use core::ops::Neg;
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, Shape, ShapeBuilder};
 use num_traits::{Float, FromPrimitive};
 use rand::rngs::{SmallRng, StdRng};
-use rand::{Rng, SeedableRng};
+use rand::{Rng, RngCore, SeedableRng};
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, NormalError, StandardNormal};
 
@@ -41,7 +41,7 @@ where
 
     fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self
     where
-        R: Rng + ?Sized,
+        R: RngCore + ?Sized,
         Ds: Distribution<S::Elem>,
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned;

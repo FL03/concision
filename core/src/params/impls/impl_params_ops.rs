@@ -17,14 +17,14 @@ where
 {
     /// Returns the L1 norm of the parameters (bias and weights).
     pub fn l1_norm(&self) -> A {
-        let bias = self.bias.l1_norm();
-        let weights = self.weights.l1_norm();
+        let bias = self.bias().l1_norm();
+        let weights = self.weights().l1_norm();
         bias + weights
     }
     /// Returns the L2 norm of the parameters (bias and weights).
     pub fn l2_norm(&self) -> A {
-        let bias = self.bias.l2_norm();
-        let weights = self.weights.l2_norm();
+        let bias = self.bias().l2_norm();
+        let weights = self.weights().l2_norm();
         bias + weights
     }
     /// a convenience method used to apply a gradient to the parameters using the given
@@ -95,9 +95,9 @@ where
 
     fn apply_gradient(&mut self, grad: &ParamsBase<T, D>, lr: A) -> crate::Result<Self::Output> {
         // apply the bias gradient
-        self.bias.apply_gradient(grad.bias(), lr)?;
+        self.bias_mut().apply_gradient(grad.bias(), lr)?;
         // apply the weight gradient
-        self.weights.apply_gradient(grad.weights(), lr)?;
+        self.weights_mut().apply_gradient(grad.weights(), lr)?;
         Ok(())
     }
 
@@ -108,10 +108,10 @@ where
         decay: A,
     ) -> crate::Result<Self::Output> {
         // apply the bias gradient
-        self.bias
+        self.bias_mut()
             .apply_gradient_with_decay(grad.bias(), lr, decay)?;
         // apply the weight gradient
-        self.weights
+        self.weights_mut()
             .apply_gradient_with_decay(grad.weights(), lr, decay)?;
         Ok(())
     }
@@ -134,10 +134,14 @@ where
         velocity: &mut Self::Velocity,
     ) -> crate::Result<()> {
         // apply the bias gradient
-        self.bias
-            .apply_gradient_with_momentum(grad.bias(), lr, momentum, velocity.bias_mut())?;
+        self.bias_mut().apply_gradient_with_momentum(
+            grad.bias(),
+            lr,
+            momentum,
+            velocity.bias_mut(),
+        )?;
         // apply the weight gradient
-        self.weights.apply_gradient_with_momentum(
+        self.weights_mut().apply_gradient_with_momentum(
             grad.weights(),
             lr,
             momentum,
@@ -155,7 +159,7 @@ where
         velocity: &mut Self::Velocity,
     ) -> crate::Result<()> {
         // apply the bias gradient
-        self.bias.apply_gradient_with_decay_and_momentum(
+        self.bias_mut().apply_gradient_with_decay_and_momentum(
             grad.bias(),
             lr,
             decay,
@@ -163,7 +167,7 @@ where
             velocity.bias_mut(),
         )?;
         // apply the weight gradient
-        self.weights.apply_gradient_with_decay_and_momentum(
+        self.weights_mut().apply_gradient_with_decay_and_momentum(
             grad.weights(),
             lr,
             decay,
@@ -192,8 +196,9 @@ where
         // compute the weight gradient
         let weight_delta = delta.t().dot(input);
         // update the weights and bias
-        self.weights.apply_gradient(&weight_delta, gamma)?;
-        self.bias.apply_gradient(&delta.sum_axis(Axis(0)), gamma)?;
+        self.weights_mut().apply_gradient(&weight_delta, gamma)?;
+        self.bias_mut()
+            .apply_gradient(&delta.sum_axis(Axis(0)), gamma)?;
         // return the sum of the squared delta
         Ok(delta.pow2().sum())
     }
@@ -217,8 +222,8 @@ where
         // compute the weight gradient
         let weight_delta = input * delta;
         // update the weights and bias
-        self.weights.apply_gradient(&weight_delta, gamma)?;
-        self.bias.apply_gradient(delta, gamma)?;
+        self.weights_mut().apply_gradient(&weight_delta, gamma)?;
+        self.bias_mut().apply_gradient(delta, gamma)?;
         // return the sum of the squared delta
         Ok(delta.pow2().sum())
     }
@@ -242,8 +247,8 @@ where
         // compute the weight gradient
         let dw = &self.weights * delta.t().dot(input);
         // update the weights and bias
-        self.weights.apply_gradient(&dw, gamma)?;
-        self.bias.apply_gradient(delta, gamma)?;
+        self.weights_mut().apply_gradient(&dw, gamma)?;
+        self.bias_mut().apply_gradient(delta, gamma)?;
         // return the sum of the squared delta
         Ok(delta.pow2().sum())
     }
@@ -269,8 +274,8 @@ where
         // compute the bias gradient
         let bias_delta = delta.sum_axis(Axis(0));
 
-        self.weights.apply_gradient(&weight_delta, gamma)?;
-        self.bias.apply_gradient(&bias_delta, gamma)?;
+        self.weights_mut().apply_gradient(&weight_delta, gamma)?;
+        self.bias_mut().apply_gradient(&bias_delta, gamma)?;
         // return the sum of the squared delta
         Ok(delta.pow2().sum())
     }
@@ -289,40 +294,5 @@ where
     fn forward(&self, input: &X) -> crate::Result<Self::Output> {
         let output = input.dot(&self.weights) + &self.bias;
         Ok(output)
-    }
-}
-
-#[cfg(feature = "rand")]
-impl<A, S, D> crate::init::Initialize<S, D> for ParamsBase<S, D>
-where
-    D: ndarray::RemoveAxis,
-    S: ndarray::RawData<Elem = A>,
-{
-    fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
-    where
-        Ds: rand_distr::Distribution<A>,
-        Sh: ndarray::ShapeBuilder<Dim = D>,
-        S: ndarray::DataOwned,
-    {
-        use rand::SeedableRng;
-        Self::rand_with(
-            shape,
-            distr,
-            &mut rand::rngs::SmallRng::from_rng(&mut rand::rng()),
-        )
-    }
-
-    fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self
-    where
-        R: rand::Rng + ?Sized,
-        Ds: rand_distr::Distribution<A>,
-        Sh: ShapeBuilder<Dim = D>,
-        S: ndarray::DataOwned,
-    {
-        let shape = shape.into_shape_with_order();
-        let bias_shape = shape.raw_dim().remove_axis(Axis(0));
-        let bias = ArrayBase::from_shape_fn(bias_shape, |_| distr.sample(rng));
-        let weights = ArrayBase::from_shape_fn(shape, |_| distr.sample(rng));
-        Self { bias, weights }
     }
 }
