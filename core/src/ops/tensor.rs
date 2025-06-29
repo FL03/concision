@@ -58,7 +58,7 @@ where
     }
 }
 
-// #[cfg(feature = "blas")]
+// #[cfg(not(feature = "blas"))]
 impl<T> Inverse for Array<T, Ix2>
 where
     T: Copy + NumAssign + ScalarOperand,
@@ -66,9 +66,58 @@ where
     type Output = Option<Self>;
 
     fn inverse(&self) -> Self::Output {
-        crate::inverse(self)
+        let (rows, cols) = self.dim();
+
+        if !self.is_square() {
+            return None; // Matrix must be square for inversion
+        }
+
+        let identity = Array2::eye(rows);
+
+        // Construct an augmented matrix by concatenating the original matrix with an identity matrix
+        let mut aug = Array2::zeros((rows, 2 * cols));
+        aug.slice_mut(s![.., ..cols]).assign(self);
+        aug.slice_mut(s![.., cols..]).assign(&identity);
+
+        // Perform Gaussian elimination to reduce the left half to the identity matrix
+        for i in 0..rows {
+            let pivot = aug[[i, i]];
+
+            if pivot == T::zero() {
+                return None; // Matrix is singular
+            }
+
+            aug.slice_mut(s![i, ..]).mapv_inplace(|x| x / pivot);
+
+            for j in 0..rows {
+                if i != j {
+                    let am = aug.clone();
+                    let factor = aug[[j, i]];
+                    let rhs = am.slice(s![i, ..]);
+                    aug.slice_mut(s![j, ..])
+                        .zip_mut_with(&rhs, |x, &y| *x -= y * factor);
+                }
+            }
+        }
+
+        // Extract the inverted matrix from the augmented matrix
+        let inverted = aug.slice(s![.., cols..]);
+
+        Some(inverted.to_owned())
     }
 }
+// #[cfg(feature = "blas")]
+// impl<T> Inverse for Array<T, Ix2>
+// where
+//     T: Copy + NumAssign + ScalarOperand,
+// {
+//     type Output = Option<Self>;
+
+//     fn inverse(&self) -> Self::Output {
+//         use ndarray_linalg::solve::Inverse;
+//         self.inv().ok()
+//     }
+// }
 
 impl<A, S, D, X, Y> MatMul<X> for ArrayBase<S, D>
 where
