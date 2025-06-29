@@ -2,7 +2,7 @@
 description: Usage guide for the `rshyper` library, including features and examples.
 title: Usage Guide
 layout: default
-order: 1
+nav_order: 1
 ---
 
 ## Getting Started

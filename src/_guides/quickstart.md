@@ -2,7 +2,7 @@
 description: "A detailed guide to setting up and developing with the concision framework."
 title: Quickstart
 layout: default
-order: 2
+nav_order: 2
 ---
 ## Getting Started
 

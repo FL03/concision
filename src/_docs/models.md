@@ -2,7 +2,7 @@
 description: Creating models with the concision framework
 title: Models
 layout: default
-order: 2
+nav_order: 2
 ---
 
 ## Overview
