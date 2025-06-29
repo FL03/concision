@@ -1,0 +1,91 @@
+**/_site
+**/Gemfile.lock
+**/node_modules
+**/vendor
+
+
+# Artifacts
+**/.artifacts/*
+**/.docker/data/*
+
+!**/.artifacts/assets
+!**/.artifacts/docs
+
+## cache
+**/.cache/
+
+# config
+**/.config/*.config.*
+
+**/*.env
+**/*.env.*
+
+# Dev
+
+### Idea
+**/.idea/
+
+### vscode
+**/.vscode/*
+
+!**/.vscode/settings.json
+
+# Misc
+**/*.csv
+**/*.csv.*
+
+**/*.db
+**/*.db.*
+
+**/*.db-*.*
+
+**/*.lock
+**/*.lock.*
+
+**/*-lock.*
+
+**/*.log
+**/*.log.*
+
+**/*.tmp
+**/*.tmp.*
+
+**/*.tmp-*
+
+**/*.whl
+**/*.whl.*
+
+**/*.zip
+**/*.zip.*
+
+## Nix
+**/*.drv
+**/*.drv.*
+
+!**/flake.lock
+
+
+
+# Exceptions
+!**/.config/default.config.*
+!**/.config/docker.config.*
+
+!**/*.env.example
+!**/*.env.default
+
+!**/default.env
+!**/default.env.*
+
+!**/example.env
+!**/example.env.*
+
+
+# Rust
+**/debug/
+**/target/
+
+**/*.bk
+**/*.bk.*
+**/target/
+
+!Cargo.lock
