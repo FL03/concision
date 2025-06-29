@@ -2,14 +2,31 @@
     Appellation: controller <module>
     Contrib: @FL03
 */
-use crate::model::params::ShallowParamsBase;
+use crate::model::params::{ModelParamsBase, ShallowParamsBase};
 
 use crate::model::ModelFeatures;
+use crate::traits::ShallowNeuralStore;
 use cnc::{ParamsBase, ReLU, Sigmoid};
 use ndarray::{
     Array1, ArrayBase, Data, DataOwned, Dimension, Ix2, RawData, RemoveAxis, ScalarOperand,
 };
 use num_traits::Float;
+
+impl<S, D, H, A> ModelParamsBase<S, D, H>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+    H: ShallowNeuralStore<S, D>,
+{
+    /// create a new instance of the [`ModelParamsBase`] instance
+    pub const fn shallow(input: ParamsBase<S, D>, hidden: H, output: ParamsBase<S, D>) -> Self {
+        Self {
+            input,
+            hidden,
+            output,
+        }
+    }
+}
 
 impl<S, D, A> ShallowParamsBase<S, D>
 where

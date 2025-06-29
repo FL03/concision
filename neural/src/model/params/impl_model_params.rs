@@ -4,9 +4,9 @@
 */
 use crate::model::params::ModelParamsBase;
 
-use crate::{DeepNeuralStore, RawHidden, ShallowNeuralStore};
+use crate::{DeepNeuralStore, RawHidden};
 use cnc::params::ParamsBase;
-use ndarray::{ArrayBase, Dimension, RawData};
+use ndarray::{ArrayBase, Data, Dimension, RawData, RawDataClone};
 
 impl<S, D, H, A> ModelParamsBase<S, D, H>
 where
@@ -143,44 +143,62 @@ where
     }
 }
 
-impl<S, D, H, A> ModelParamsBase<S, D, H>
+impl<A, S, D, H> Clone for ModelParamsBase<S, D, H>
 where
     D: Dimension,
-    S: RawData<Elem = A>,
-    H: ShallowNeuralStore<S, D>,
+    H: RawHidden<S, D> + Clone,
+    S: RawDataClone<Elem = A>,
+    A: Clone,
 {
-    /// create a new instance of the [`ModelParamsBase`] instance
-    pub const fn shallow(input: ParamsBase<S, D>, hidden: H, output: ParamsBase<S, D>) -> Self {
+    fn clone(&self) -> Self {
         Self {
-            input,
-            hidden,
-            output,
+            input: self.input().clone(),
+            hidden: self.hidden().clone(),
+            output: self.output().clone(),
         }
     }
 }
 
-impl<S, D, H, A> ModelParamsBase<S, D, H>
+impl<A, S, D, H> core::fmt::Debug for ModelParamsBase<S, D, H>
 where
     D: Dimension,
-    S: RawData<Elem = A>,
-    H: DeepNeuralStore<S, D>,
+    H: RawHidden<S, D> + core::fmt::Debug,
+    S: Data<Elem = A>,
+    A: core::fmt::Debug,
 {
-    /// create a new instance of the [`ModelParamsBase`] instance
-    pub const fn deep(input: ParamsBase<S, D>, hidden: H, output: ParamsBase<S, D>) -> Self {
-        Self {
-            input,
-            hidden,
-            output,
-        }
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("ModelParams")
+            .field("input", self.input())
+            .field("hidden", self.hidden())
+            .field("output", self.output())
+            .finish()
+    }
+}
+
+impl<A, S, D, H> core::fmt::Display for ModelParamsBase<S, D, H>
+where
+    D: Dimension,
+    H: RawHidden<S, D> + core::fmt::Debug,
+    S: Data<Elem = A>,
+    A: core::fmt::Display,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(
+            f,
+            "{{ input: {i}, hidden: {h:?}, output: {o} }}",
+            i = self.input(),
+            h = self.hidden(),
+            o = self.output()
+        )
     }
 }
 
 impl<A, S, D, H> core::ops::Index<usize> for ModelParamsBase<S, D, H>
 where
-    A: Clone,
     D: Dimension,
-    S: ndarray::Data<Elem = A>,
+    S: Data<Elem = A>,
     H: DeepNeuralStore<S, D>,
+    A: Clone,
 {
     type Output = ParamsBase<S, D>;
 
@@ -197,10 +215,10 @@ where
 
 impl<A, S, D, H> core::ops::IndexMut<usize> for ModelParamsBase<S, D, H>
 where
-    A: Clone,
     D: Dimension,
-    S: ndarray::Data<Elem = A>,
+    S: Data<Elem = A>,
     H: DeepNeuralStore<S, D>,
+    A: Clone,
 {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         if index == 0 {

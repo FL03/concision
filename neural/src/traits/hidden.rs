@@ -3,7 +3,7 @@
     authors: @FL03
 */
 use cnc::ParamsBase;
-use ndarray::{Dimension, RawData};
+use ndarray::{Data, Dimension, RawData};
 
 /// The [`RawHidden`] trait for compatible representations of hidden layers
 pub trait RawHidden<S, D>
@@ -90,10 +90,10 @@ where
     }
 }
 
-impl<S, D, const N: usize> RawHidden<S, D> for [ParamsBase<S, D>; N]
+impl<A, S, D, const N: usize> RawHidden<S, D> for [ParamsBase<S, D>; N]
 where
     D: Dimension,
-    S: RawData,
+    S: Data<Elem = A>,
 {
     seal!();
 

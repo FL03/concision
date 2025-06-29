@@ -2,11 +2,31 @@
     appellation: impl_model_params <module>
     authors: @FL03
 */
-use crate::model::{DeepParamsBase, ModelFeatures};
+use crate::model::{DeepParamsBase, ModelParamsBase};
 
+use crate::model::ModelFeatures;
+use crate::traits::DeepNeuralStore;
 use cnc::params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
 use num_traits::{One, Zero};
+
+
+
+impl<S, D, H, A> ModelParamsBase<S, D, H>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+    H: DeepNeuralStore<S, D>,
+{
+    /// create a new instance of the [`ModelParamsBase`] instance
+    pub const fn deep(input: ParamsBase<S, D>, hidden: H, output: ParamsBase<S, D>) -> Self {
+        Self {
+            input,
+            hidden,
+            output,
+        }
+    }
+}
 
 impl<A, S, D> DeepParamsBase<S, D>
 where
@@ -97,51 +117,6 @@ where
         }
         // finally, forward the output through the output layer
         self.output().forward(&output)
-    }
-}
-
-impl<A, S, D> Clone for DeepParamsBase<S, D>
-where
-    A: Clone,
-    D: Dimension,
-    S: ndarray::RawDataClone<Elem = A>,
-{
-    fn clone(&self) -> Self {
-        Self {
-            input: self.input().clone(),
-            hidden: self.hidden().to_vec(),
-            output: self.output().clone(),
-        }
-    }
-}
-
-impl<A, S, D> core::fmt::Debug for DeepParamsBase<S, D>
-where
-    A: core::fmt::Debug,
-    D: Dimension,
-    S: ndarray::Data<Elem = A>,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        f.debug_struct("ModelParams")
-            .field("input", &self.input)
-            .field("hidden", &self.hidden)
-            .field("output", &self.output)
-            .finish()
-    }
-}
-
-impl<A, S, D> core::fmt::Display for DeepParamsBase<S, D>
-where
-    A: core::fmt::Debug,
-    D: Dimension,
-    S: ndarray::Data<Elem = A>,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(
-            f,
-            "{{ input: {:?}, hidden: {:?}, output: {:?} }}",
-            self.input, self.hidden, self.output
-        )
     }
 }
 
