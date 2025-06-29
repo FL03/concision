@@ -10,23 +10,7 @@
 //! ## Usage
 //!
 //! To define a private trait, you can use the [`private!`] macro, which will define a hidden
-//! method `__private__` that can only be implemented within the crate. For example, you can
-//! define a trait like this:
-//!
-//! ```no_run
-//! pub trait RawSample {
-//!     private!();
-//! }
-//! ```
-//!
-//! Then, using the [`seal!`] macro, you can implment the method on trait implementations:
-//!
-//! ```no_run
-//! pub struct MyType;
-//! 
-//! impl RawSample for MyType {
-//!     seal!();
-//! }
+//! method `__private__` that can only be implemented within the crate.
 //! ```
 
 /// If this type is pub but not publicly reachable, third parties
