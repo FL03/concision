@@ -2,14 +2,8 @@
 description: Creating models with the concision framework
 title: Models
 layout: default
-order: 1
+order: 2
 ---
-
-## Table of Contents
-{: .no_toc .text-delta }
-
-1. TOC
-{:toc}
 
 ## Overview
 
