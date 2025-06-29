@@ -1,8 +1,7 @@
 extern crate concision_core as cnc;
 extern crate concision_neural as neural;
 
-use concision_neural::model::{Model, StandardModelConfig};
-use concision_neural::{ModelFeatures, NeuralResult};
+use concision_neural::{Model, ModelFeatures, NeuralResult, StandardModelConfig};
 use ndarray::prelude::*;
 
 use model::SimpleModel;
