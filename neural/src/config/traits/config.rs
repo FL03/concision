@@ -3,7 +3,15 @@
     Contrib: @FL03
 */
 
-pub trait NetworkConfig<T> {
+/// The [`RawConfig`] trait defines a basic interface for all _configurations_ used within the 
+/// framework for neural networks, their layers, and more.
+pub trait RawConfig: Send + Sync + core::fmt::Debug {
+    type Ctx;
+}
+
+/// The [`NetworkConfig`] trait extends the [`RawConfig`] trait to provide a more robust 
+/// interface for neural network configurations. 
+pub trait NetworkConfig<T>: RawConfig<Ctx = T> {
     fn get<K>(&self, key: K) -> Option<&T>
     where
         K: AsRef<str>;
@@ -65,3 +73,7 @@ pub trait TrainingConfiguration<T>: NetworkConfig<T> {
 
     }
 }
+
+/*
+    ************* Implementations *************
+*/

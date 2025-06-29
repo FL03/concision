@@ -34,9 +34,11 @@ pub use rand_distr;
 
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
+#[doc(inline)]
 #[cfg(feature = "cnc_init")]
 pub use concision_init as init;
-
+/// this module implements various utilities useful for developing machine learning models
+#[doc(inline)]
 #[cfg(feature = "cnc_utils")]
 pub use concision_utils as utils;
 

@@ -11,7 +11,6 @@
 //!
 //! To define a private trait, you can use the [`private!`] macro, which will define a hidden
 //! method `__private__` that can only be implemented within the crate.
-//! ```
 
 /// If this type is pub but not publicly reachable, third parties
 /// can't name it and can't implement traits using it.

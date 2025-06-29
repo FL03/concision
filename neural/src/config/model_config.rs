@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use super::Hyperparameters::*;
-use super::{NetworkConfig, TrainingConfiguration};
+use super::{RawConfig, NetworkConfig, TrainingConfiguration};
 
 pub(crate) type ModelConfigMap<T> = std::collections::HashMap<String, T>;
 
@@ -125,6 +125,13 @@ impl<T> StandardModelConfig<T> {
     pub fn weight_decay(&self) -> Option<&T> {
         self.get_parameter("weight_decay")
     }
+}
+
+impl<T> RawConfig for StandardModelConfig<T>
+where
+    T: Send + Sync + core::fmt::Debug,
+{
+    type Ctx = T;
 }
 
 impl<T> NetworkConfig<T> for StandardModelConfig<T> {

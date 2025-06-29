@@ -73,19 +73,20 @@ pub use concision_data as data;
 #[cfg(feature = "neural")]
 pub use concision_neural as nn;
 
+#[doc(hidden)]
 pub mod prelude {
-    #[doc(inline)]
+    #[doc(no_inline)]
     pub use concision_core::prelude::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     #[cfg(feature = "data")]
     pub use concision_data::prelude::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     #[cfg(feature = "derive")]
     pub use concision_derive::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     #[cfg(feature = "macros")]
     pub use concision_macros::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     #[cfg(feature = "neural")]
     pub use concision_neural::prelude::*;
 }
