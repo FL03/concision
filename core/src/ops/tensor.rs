@@ -43,7 +43,7 @@ pub trait Transpose {
  ********* Implementations *********
 */
 use ndarray::linalg::Dot;
-use ndarray::{Array, ArrayBase, Data, Dimension, Ix2, LinalgScalar, ScalarOperand};
+use ndarray::{Array, ArrayBase, Data, Dimension, Ix2, LinalgScalar, ScalarOperand, s, Array2};
 use num_traits::{Num, NumAssign};
 
 impl<A, D> Affine<A> for Array<A, D>

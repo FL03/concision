@@ -1,38 +1,44 @@
-
-/// The [Activate] trait enables the definition of new activation functions often implemented
+/*
+    appellation: rho <module>
+    authors: @FL03
+*/
+/// The [`Rho`] trait enables the definition of new activation functions often implemented
 /// as _fieldless_ structs.
-pub trait Activate<Rhs = Self> {
+pub trait Rho<Rhs = Self> {
     type Output;
 
-    fn activate(&self, rhs: Rhs) -> Self::Output;
+    fn rho(&self, rhs: Rhs) -> Self::Output;
 }
 
-pub trait ActivateGradient<Rhs = Self>: Activate<Self::Input> {
+pub trait RhoGradient<Rhs = Self>: Rho<Self::Input> {
     type Input;
     type Delta;
 
-    fn activate_gradient(&self, rhs: Rhs) -> Self::Delta;
+    fn rho_gradient(&self, rhs: Rhs) -> Self::Delta;
 }
 
 /*
  ************* Implementations *************
 */
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
 
-impl<X, Y> Activate<X> for Box<dyn Activate<X, Output = Y>> {
+#[cfg(feature = "alloc")]
+impl<X, Y> Rho<X> for Box<dyn Rho<X, Output = Y>> {
     type Output = Y;
 
-    fn activate(&self, rhs: X) -> Self::Output {
-        self.as_ref().activate(rhs)
+    fn rho(&self, rhs: X) -> Self::Output {
+        self.as_ref().rho(rhs)
     }
 }
 
-impl<X, Y, F> Activate<X> for F
+impl<X, Y, F> Rho<X> for F
 where
     F: Fn(X) -> Y,
 {
     type Output = Y;
 
-    fn activate(&self, rhs: X) -> Self::Output {
+    fn rho(&self, rhs: X) -> Self::Output {
         self(rhs)
     }
 }
