@@ -2,9 +2,7 @@
     Appellation: sigmoid <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::activate::{ReLU, Sigmoid, Softmax, Tanh,
-    utils::sigmoid_derivative,
-};
+use crate::activate::{ReLU, Sigmoid, Softmax, Tanh, utils::sigmoid_derivative};
 
 use ndarray::{Array, ArrayBase, Data, Dimension, ScalarOperand};
 use num_traits::{Float, One, Zero};
@@ -28,7 +26,7 @@ where
 
 impl<A, S, D> Sigmoid for ArrayBase<S, D>
 where
-    A: Float + 'static,
+    A: ScalarOperand + Float,
     S: Data<Elem = A>,
     D: Dimension,
 {
@@ -48,7 +46,7 @@ where
 
 impl<A, S, D> Softmax for ArrayBase<S, D>
 where
-    A: Float + ScalarOperand,
+    A: ScalarOperand + Float,
     S: Data<Elem = A>,
     D: Dimension,
 {
@@ -71,7 +69,7 @@ where
 
 impl<A, S, D> Tanh for ArrayBase<S, D>
 where
-    A: Float + 'static,
+    A: ScalarOperand + Float,
     S: Data<Elem = A>,
     D: Dimension,
 {

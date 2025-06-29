@@ -257,7 +257,7 @@ checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
 
 [[package]]
 name = "concision"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -270,13 +270,14 @@ dependencies = [
  "lazy_static",
  "ndarray",
  "num",
+ "serde",
  "tracing",
  "tracing-subscriber",
 ]
 
 [[package]]
 name = "concision-core"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -305,7 +306,7 @@ dependencies = [
 
 [[package]]
 name = "concision-data"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -325,7 +326,7 @@ dependencies = [
 
 [[package]]
 name = "concision-derive"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -334,25 +335,29 @@ dependencies = [
 
 [[package]]
 name = "concision-ext"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
  "concision",
- "concision-kan",
- "concision-s4",
- "concision-transformer",
  "lazy_static",
  "ndarray",
+ "num",
+ "num-complex",
  "num-traits",
+ "rayon",
+ "rustfft",
  "scsys",
+ "serde",
+ "serde_derive",
+ "serde_json",
  "tracing",
  "tracing-subscriber",
 ]
 
 [[package]]
 name = "concision-init"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -376,7 +381,7 @@ dependencies = [
 
 [[package]]
 name = "concision-kan"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -388,7 +393,7 @@ dependencies = [
 
 [[package]]
 name = "concision-macros"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -396,20 +401,42 @@ dependencies = [
 ]
 
 [[package]]
+name = "concision-models"
+version = "0.2.3"
+dependencies = [
+ "anyhow",
+ "approx",
+ "concision",
+ "concision-ext",
+ "concision-kan",
+ "concision-s4",
+ "concision-transformer",
+ "lazy_static",
+ "ndarray",
+ "num-traits",
+ "scsys",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "concision-neural"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
  "concision-core",
  "concision-data",
  "either",
+ "getrandom",
  "lazy_static",
  "ndarray",
  "num",
  "num-complex",
  "num-traits",
  "paste",
+ "rand 0.9.1",
+ "rand_distr",
  "rayon",
  "rustfft",
  "scsys",
@@ -417,6 +444,7 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_json",
+ "smart-default",
  "strum",
  "thiserror",
  "tracing",
@@ -424,7 +452,7 @@ dependencies = [
 
 [[package]]
 name = "concision-s4"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -436,7 +464,7 @@ dependencies = [
 
 [[package]]
 name = "concision-transformer"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -448,7 +476,7 @@ dependencies = [
 
 [[package]]
 name = "concision-utils"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "approx",
@@ -1482,6 +1510,7 @@ checksum = "b418a60154510ca1a002a752ca9714984e21e4241e804d32555251faf8b78ffa"
 dependencies = [
  "either",
  "rayon-core",
+ "wasm_sync",
 ]
 
 [[package]]
@@ -1492,6 +1521,7 @@ checksum = "1465873a3dfdaa8ae7cb14b4383657caab0b3e8a0aa9ae8e04b044854c8dfce2"
 dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
+ "wasm_sync",
 ]
 
 [[package]]
@@ -2289,6 +2319,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a05d73b933a847d6cccdda8f838a22ff101ad9bf93e33684f39c1f5f0eece3d"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "wasm_sync"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cff360cade7fec41ff0e9d2cda57fe58258c5f16def0e21302394659e6bbb0ea"
+dependencies = [
+ "js-sys",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

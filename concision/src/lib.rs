@@ -22,13 +22,26 @@
 //!
 //! - `data`: Provides utilities for data loading, preprocessing, and augmentation.
 //! - `derive`: Custom derive macros for automatic implementation of traits
+//! - `init`: Enables various initialization strategies for model parameters.
 //! - `macros`: Procedural macros for simplifying common tasks in machine learning.
 //! - `neural`: A neural network module that includes layers, optimizers, and training
 //!   utilities.
 //!
-//! ### Dependency Features
+//! ### _Extensions_
 //!
-//! - `rayon`: Enables parallel processing for data loading and training.
+//! The crate is integrated with several optional externcal crates that are commonly used in
+//! Rust development; listed below are some of the most relevant of these _extensions_ as they
+//! add additional functionality to the framework.
+//!
+//! - [`approx`](https://docs.rs/approx): Enables approximate equality checks for
+//!   floating-point arithmetic, useful for testing and validation of model outputs.
+//! - `json`: Enables JSON serialization and deserialization for models and data.
+//! - [`rayon`](https://docs.rs/rayon): Enables parallel processing for data loading and
+//!   training.
+//! - [`serde`](https://serde.rs): Enables the `serde` crate for the serialization and
+//!   deserialization of models and data.
+//! - [`tracing`](https://docs.rs/tracing): Enables the `tracing` crate for structured logging
+//!   and diagnostics.
 //!
 //! ## Roadmap
 //!

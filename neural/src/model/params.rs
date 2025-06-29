@@ -8,6 +8,8 @@ mod impl_params_shallow;
 
 #[cfg(feature = "rand")]
 mod impl_model_params_rand;
+#[cfg(feature = "serde")]
+mod impl_model_params_serde;
 
 use cnc::params::ParamsBase;
 use ndarray::{Dimension, Ix2, RawData};

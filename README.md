@@ -13,6 +13,29 @@ _**Warning: The library still in development and is not yet ready for production
 - `autodiff`: the upcoming feature enabling rust to natively support automatic differentiation.
 - [`ndarray`](https://docs.rs/ndarray): The crate is designed around the `ndarray` crate, which provides a powerful N-dimensional array type for Rust
 
+## Overview
+
+### Goals
+
+- Provide a flexible and extensible framework for building neural network models in Rust.
+- Support both shallow and deep neural networks with a focus on modularity and reusability.
+- Enable easy integration with other libraries and frameworks in the Rust ecosystem.
+
+### Roadmap
+
+- [ ] **v1**:
+  - [ ] **`ParamsBase`**: Design a basic structure for storing model parameters.
+  - [ ]  **Traits**: Create a set of traits for defining the basics of a neural network model.
+    - `Forward` and `Backward`: traits defining forward and backward propagation
+    - `Model`: A trait for defining a neural network model.
+    - `Predict`: A trait extending the basic [`Forward`](cnc::Forward) pass.
+    - `Train`: A trait for training a neural network model.
+- [ ] **v2**:
+  - [ ] **Models**:
+    - `Trainer`: A generic model trainer that can be used to train any model.
+  - [ ] **Layers**: Implement a standard model configuration and parameters.
+    - `LayerBase`: _functional_ wrappers for the `ParamsBase` structure.
+
 ## Usage
 
 ### Adding to your project

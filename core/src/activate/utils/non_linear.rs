@@ -5,13 +5,6 @@
 use ndarray::{Array, ArrayBase, Axis, Data, Dimension, RemoveAxis, ScalarOperand};
 use num_traits::{Float, One, Zero};
 
-/// Heaviside activation function
-pub fn heavyside<T>(x: T) -> T
-where
-    T: One + PartialOrd + Zero,
-{
-    if x > T::zero() { T::one() } else { T::zero() }
-}
 /// the relu activation function: $f(x) = \max(0, x)$
 pub fn relu<T>(args: T) -> T
 where

@@ -17,11 +17,12 @@ version.workspace = true
 [package.metadata.docs.rs]
 all-features = false
 features = ["full"]
-rustc-args = [
-    "--cfg",
-    "docsrs",
-]
+rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
 
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"
 [lib]
 crate-type = [
     "cdylib",

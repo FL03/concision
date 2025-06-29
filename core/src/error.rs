@@ -23,10 +23,10 @@ pub enum Error {
     #[error(transparent)]
     ParamError(#[from] crate::params::error::ParamsError),
     #[error(transparent)]
-    #[cfg(feature = "concision_init")]
+    #[cfg(feature = "cnc_init")]
     InitError(#[from] concision_init::error::InitError),
     #[error(transparent)]
-    #[cfg(feature = "utils")]
+    #[cfg(feature = "cnc_utils")]
     UtilityError(#[from] concision_utils::error::UtilityError),
     #[cfg(feature = "anyhow")]
     #[error(transparent)]

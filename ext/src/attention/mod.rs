@@ -26,7 +26,7 @@
 #[doc(inline)]
 pub use self::{multi_head::MultiHeadAttention, qkv::*, scaled::ScaledDotProductAttention};
 
-#[cfg(feature = "rustfft")]
+#[cfg(feature = "signal")]
 pub mod fft;
 pub mod multi_head;
 pub mod qkv;
@@ -40,7 +40,7 @@ pub trait Attention<T> {
 }
 
 pub(crate) mod prelude {
-    #[cfg(feature = "rustfft")]
+    #[cfg(feature = "signal")]
     pub use super::fft::FftAttention;
     #[doc(inline)]
     pub use super::multi_head::MultiHeadAttention;

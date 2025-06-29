@@ -1,4 +1,4 @@
-name: Benchmark (rust)
+name: Benchmark
 
 concurrency:
   cancel-in-progress: false

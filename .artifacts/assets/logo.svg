@@ -1,0 +1,34 @@
+<svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .bg    { fill: #f8fafc; }
+    .ring  { fill: none; stroke: #1e293b; stroke-width: 4; stroke-linecap: round; }
+    .neg   { fill: none; stroke: #cbd5e1; stroke-width: 3; stroke-linecap: round; opacity: 0.4; }
+    .core  { fill: #1e293b; }
+  </style>
+
+  <!-- Background -->
+  <rect width="200" height="200" class="bg"/>
+
+  <!-- TOP HALF ARCS -->
+  <path class="ring" d="M 50,100 A 50 50 0 0 1 100,50" />
+  <path class="ring" d="M 100,50 A 50 50 0 0 1 150,100" />
+  
+  <path class="ring" d="M 65,100 A 35 35 0 0 1 100,65" />
+  <path class="ring" d="M 100,65 A 35 35 0 0 1 135,100" />
+  
+  <path class="ring" d="M 78,100 A 22 22 0 0 1 100,78" />
+  <path class="ring" d="M 100,78 A 22 22 0 0 1 122,100" />
+
+  <!-- BOTTOM HALF ARCS (centered reflection) -->
+  <path class="neg" d="M 50,100 A 50 50 0 0 0 100,150" />
+  <path class="neg" d="M 100,150 A 50 50 0 0 0 150,100" />
+  
+  <path class="neg" d="M 65,100 A 35 35 0 0 0 100,135" />
+  <path class="neg" d="M 100,135 A 35 35 0 0 0 135,100" />
+  
+  <path class="neg" d="M 78,100 A 22 22 0 0 0 100,122" />
+  <path class="neg" d="M 100,122 A 22 22 0 0 0 122,100" />
+
+  <!-- Core -->
+  <circle cx="100" cy="100" r="6" class="core"/>
+</svg>
