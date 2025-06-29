@@ -10,8 +10,6 @@ use cnc::params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
 use num_traits::{One, Zero};
 
-
-
 impl<S, D, H, A> ModelParamsBase<S, D, H>
 where
     D: Dimension,

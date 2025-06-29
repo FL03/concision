@@ -46,7 +46,6 @@ pub(crate) mod utils {
     }
 }
 
-
 mod impls {
     mod impl_binary;
     mod impl_linear;
