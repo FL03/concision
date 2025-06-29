@@ -68,14 +68,17 @@ pub(crate) mod types {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub(crate) mod dropout;
-    pub(crate) mod hyperparameters;
+    mod dropout;
+    mod hyperparameters;
+    mod key_value;
 
     mod prelude {
         #[doc(inline)]
         pub use super::dropout::*;
         #[doc(inline)]
         pub use super::hyperparameters::*;
+        #[doc(inline)]
+        pub use super::key_value::*;
     }
 }
 

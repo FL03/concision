@@ -2,49 +2,67 @@
     Appellation: hyperparameters <module>
     Contrib: @FL03
 */
-
-#[doc(hidden)]
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct KeyValue<K = String, V = f64> {
-    pub key: K,
-    pub value: V,
-}
+use crate::types::KeyValue;
 
 #[derive(
     Clone,
-    Copy,
     Debug,
-    Default,
     Eq,
     Hash,
     Ord,
     PartialEq,
     PartialOrd,
-    scsys_derive::VariantConstructors,
-    strum::AsRefStr,
-    strum::Display,
     strum::EnumCount,
     strum::EnumIs,
-    strum::EnumIter,
-    strum::EnumString,
-    strum::VariantArray,
-    strum::VariantNames,
+    strum::EnumDiscriminants,
 )]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "snake_case", untagged)
+    serde(rename_all = "snake_case", untagged),
+    strum_discriminants(derive(serde::Deserialize, serde::Serialize))
+)]
+#[strum_discriminants(
+    name(Hyperparameters),
+    derive(
+        Hash,
+        Ord,
+        PartialOrd,
+        scsys::VariantConstructors,
+        strum::AsRefStr,
+        strum::Display,
+        strum::EnumCount,
+        strum::EnumIs,
+        strum::EnumIter,
+        strum::EnumString,
+        strum::VariantArray,
+        strum::VariantNames,
+    ),
+    strum(serialize_all = "snake_case")
 )]
 #[strum(serialize_all = "snake_case")]
-pub enum Hyperparameters {
-    Decay,
-    Dropout,
-    #[default]
-    LearningRate,
-    Momentum,
-    Temperature,
-    WeightDecay,
+pub enum HyperParams<T = f64> {
+    Decay(T),
+    Dropout(T),
+    LearningRate(T),
+    Momentum(T),
+    Temperature(T),
+    WeightDecay(T),
+    Unknown(KeyValue<String, T>),
+}
+
+impl<T> From<KeyValue<String, T>> for HyperParams<T> {
+    fn from(kv: KeyValue<String, T>) -> Self {
+        match kv.key.as_str() {
+            "decay" => HyperParams::Decay(kv.value),
+            "dropout" => HyperParams::Dropout(kv.value),
+            "learning_rate" => HyperParams::LearningRate(kv.value),
+            "momentum" => HyperParams::Momentum(kv.value),
+            "temperature" => HyperParams::Temperature(kv.value),
+            "weight_decay" => HyperParams::WeightDecay(kv.value),
+            _ => HyperParams::Unknown(kv),
+        }
+    }
 }
 
 #[cfg(test)]
