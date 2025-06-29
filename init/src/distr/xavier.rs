@@ -167,7 +167,7 @@ mod impl_uniform {
         <T as SampleUniform>::Sampler: PartialEq,
     {
         fn eq(&self, other: &Self) -> bool {
-            &self.distr == &other.distr
+            self.distr == other.distr
         }
     }
 }
