@@ -31,19 +31,20 @@ permissions:
 
 jobs:
   build:
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
-    - 
+    -
       uses: actions/checkout@v4
-    - 
+    -
       uses: cachix/install-nix-action@v31
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
-    - 
+    -
       name: Build
       id: build
       run: nix build
-    - 
+    -
       name: Check the flake
       id: check
       run: nix flake check

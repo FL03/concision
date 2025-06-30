@@ -16,7 +16,7 @@
         packages.default = rustPlatform.buildRustPackage {
           pname = "concision";
           version = "0.2.5";
-          src = "./.";
+          src = self; # "./.";
           # If Cargo.lock doesn't exist yet, remove or comment out this block:
           cargoLock = {
             lockFile = ./Cargo.lock;
