@@ -1,8 +1,3 @@
-/*
-    Appellation: mask <module>
-    Contrib: @FL03
-*/
-
 /// [Dropout] randomly zeroizes elements with a given probability (`p`).
 pub trait DropOut {
     type Output;
@@ -10,7 +5,7 @@ pub trait DropOut {
     fn dropout(&self, p: f64) -> Self::Output;
 }
 
-#[cfg(feature = "rand")]
+#[cfg(feature = "init")]
 impl<A, S, D> DropOut for ndarray::ArrayBase<S, D>
 where
     A: num_traits::Num + ndarray::ScalarOperand,

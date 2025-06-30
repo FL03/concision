@@ -2,16 +2,32 @@
     Appellation: concision-core <library>
     Contrib: @FL03
 */
-//! # concision-core
-//!
-//! This library provides the core abstractions and utilities for the concision (cnc) machine
-//! learning framework.
-//!
-//! ## Features
+//! This crate provides the core implementations for the `cnc` framework, defining various
+//! traits, types, and utilities essential for building neural networks.
 //!
 //! - [`ParamsBase`]: A structure for defining the parameters within a neural network.
 //! - [`Backward`]: This trait establishes a common interface for backward propagation.
 //! - [`Forward`]: This trait denotes a single forward pass through a layer of a neural network
+//!
+//! ## Features
+//!
+//! The crate is heavily feature-gate, enabling users to customize their experience based on
+//! their needs.
+//!
+//! - `init`: Enables (random) initialization routines for models, parameters, and tensors.
+//! - `utils`: Provides various utilities for developing machine learning models.
+//!
+//! ### Dependency-specific Features
+//!
+//! Additionally, the crate provides various dependency-specific features that can be enabled:
+//!
+//! - `anyhow`: Enables the use of the `anyhow` crate for error handling.
+//! - `approx`: Enables approximate equality checks for floating-point numbers.
+//! - `complex`: Enables complex number support.
+//! - `json`: Enables JSON serialization and deserialization capabilities.
+//! - `rand`: Enables random number generation capabilities.
+//! - `serde`: Enables serialization and deserialization capabilities.
+//! - `tracing`: Enables tracing capabilities for debugging and logging.
 //!
 #![allow(
     clippy::missing_safety_doc,
@@ -49,13 +65,8 @@ pub use self::utils::prelude::*;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*,
-    error::*,
-    loss::prelude::*,
-    ops::prelude::*,
-    params::prelude::*,
-    tensor::{NdTensor, RawTensor, Tensor, TensorBase},
-    traits::*,
+    activate::prelude::*, error::*, loss::prelude::*, ops::prelude::*, params::prelude::*,
+    tensor::prelude::*, traits::*,
 };
 
 #[macro_use]
@@ -82,19 +93,22 @@ pub mod ops {
     pub use self::prelude::*;
 
     pub mod fill;
+    pub mod mask;
+    pub mod norm;
     pub mod pad;
     pub mod reshape;
-    pub mod tensor;
 
     pub(crate) mod prelude {
         #[doc(inline)]
         pub use super::fill::*;
         #[doc(inline)]
+        pub use super::mask::*;
+        #[doc(inline)]
+        pub use super::norm::*;
+        #[doc(inline)]
         pub use super::pad::*;
         #[doc(inline)]
         pub use super::reshape::*;
-        #[doc(inline)]
-        pub use super::tensor::*;
     }
 }
 
@@ -110,8 +124,6 @@ pub mod traits {
     mod convert;
     mod gradient;
     mod like;
-    mod mask;
-    mod norm;
     mod propagation;
     mod shape;
     mod wnb;
@@ -129,10 +141,6 @@ pub mod traits {
         pub use super::gradient::*;
         #[doc(inline)]
         pub use super::like::*;
-        #[doc(inline)]
-        pub use super::mask::*;
-        #[doc(inline)]
-        pub use super::norm::*;
         #[doc(inline)]
         pub use super::propagation::*;
         #[doc(inline)]
