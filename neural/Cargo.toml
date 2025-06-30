@@ -95,12 +95,6 @@ nightly = [
 ]
 
 # ************* [FF:Features] *************
-complex = [
-    "concision-core/complex", 
-    "concision-data/complex", 
-    "num_complex"
-]
-
 init = [
     "concision-core/init"
 ]
@@ -174,7 +168,11 @@ blas = [
     "ndarray/blas"
 ]
 
-num_complex = ["dep:num-complex"]
+complex = [ 
+    "dep:num-complex",
+    "concision-core/complex", 
+    "concision-data/complex",
+]
 
 rand = [
     "dep:rand",
@@ -199,11 +197,6 @@ rayon = [
     "ndarray/rayon"
 ]
 
-rustfft = [
-    "dep:rustfft", 
-    "concision-core/rustfft"
-]
-
 serde = [
     "concision-core/serde", 
     "concision-data/serde", 
@@ -226,8 +219,11 @@ tracing = [
 # ************* [Unit Tests] *************
 [[test]]
 name = "default"
-required-features = ["default"]
+
+[[test]]
+name = "layers"
+required-features = ["alloc", "anyhow"]
 
 [[test]]
 name = "masks"
-required-features = ["rand"]
+required-features = ["alloc", "rand"]

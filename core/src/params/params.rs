@@ -3,7 +3,8 @@
     Contrib: @FL03
 */
 use ndarray::{
-    ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder,
+    ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeArg,
+    ShapeBuilder,
 };
 
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
@@ -28,7 +29,65 @@ where
     pub const fn new(bias: ArrayBase<S, D::Smaller>, weights: ArrayBase<S, D>) -> Self {
         Self { bias, weights }
     }
-    /// create a new instance of the [`ModelParams`] from the given shape and element;
+    /// returns a new instance of the [`ParamsBase`] using the initialization routine
+    pub fn init_from_fn<Sh, F>(shape: Sh, init: F) -> Self
+    where
+        A: Clone,
+        D: RemoveAxis,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+        F: Fn() -> A,
+    {
+        let shape = shape.into_shape_with_order();
+        let bshape = shape.raw_dim().remove_axis(Axis(0));
+        // initialize the bias and weights using the provided function for each element
+        let bias = ArrayBase::from_shape_fn(bshape, |_| init());
+        let weights = ArrayBase::from_shape_fn(shape, |_| init());
+        // create a new instance from the generated bias and weights
+        Self::new(bias, weights)
+    }
+    /// returns a new instance of the [`ParamsBase`] initialized use the given shape_function
+    pub fn from_shape_fn<Sh, F>(shape: Sh, f: F) -> Self
+    where
+        A: Clone,
+        D: RemoveAxis,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+        D::Smaller: Dimension + ShapeArg,
+        F: Fn(<D::Smaller as Dimension>::Pattern) -> A + Fn(<D as Dimension>::Pattern) -> A,
+    {
+        let shape = shape.into_shape_with_order();
+        let bdim = shape.raw_dim().remove_axis(Axis(0));
+        let bias = ArrayBase::from_shape_fn(bdim, |s| f(s));
+        let weights = ArrayBase::from_shape_fn(shape, |s| f(s));
+        Self::new(bias, weights)
+    }
+    /// create a new instance of the [`ParamsBase`] with the given bias used the default weights
+    pub fn from_bias<Sh>(shape: Sh, bias: ArrayBase<S, D::Smaller>) -> Self
+    where
+        A: Clone + Default,
+        D: RemoveAxis,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        let weights = ArrayBase::from_elem(shape, A::default());
+        Self::new(bias, weights)
+    }
+    /// create a new instance of the [`ParamsBase`] with the given weights used the default
+    /// bias
+    pub fn from_weights<Sh>(shape: Sh, weights: ArrayBase<S, D>) -> Self
+    where
+        A: Clone + Default,
+        D: RemoveAxis,
+        S: DataOwned,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        let shape = shape.into_shape_with_order();
+        let dim_bias = shape.raw_dim().remove_axis(Axis(0));
+        let bias = ArrayBase::from_elem(dim_bias, A::default());
+        Self::new(bias, weights)
+    }
+    /// create a new instance of the [`ParamsBase`] from the given shape and element;
     pub fn from_elems<Sh>(shape: Sh, elem: A) -> Self
     where
         A: Clone,

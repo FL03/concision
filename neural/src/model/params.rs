@@ -6,7 +6,7 @@ mod impl_model_params;
 mod impl_params_deep;
 mod impl_params_shallow;
 
-#[cfg(feature = "rand")]
+#[cfg(feature = "init")]
 mod impl_model_params_rand;
 #[cfg(feature = "serde")]
 mod impl_model_params_serde;

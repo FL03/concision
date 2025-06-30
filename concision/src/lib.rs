@@ -51,9 +51,15 @@
 //! - **Visualization**: Utilities for visualizing model architectures and training progress
 //! - **WASM**: Native support for WebAssembly enabling models to be run in web browsers.
 //!
-#![allow(clippy::module_inception, clippy::needless_doctest_main)]
-#![cfg_attr(not(feature = "std"), no_std)]
 #![crate_name = "concision"]
+#![crate_type = "lib"]
+#![allow(
+    clippy::missing_safety_doc,
+    clippy::module_inception,
+    clippy::needless_doctest_main,
+    clippy::upper_case_acronyms
+)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 #[doc(inline)]
 pub use concision_core::*;
@@ -73,19 +79,20 @@ pub use concision_data as data;
 #[cfg(feature = "neural")]
 pub use concision_neural as nn;
 
+#[doc(hidden)]
 pub mod prelude {
-    #[doc(inline)]
+    #[doc(no_inline)]
     pub use concision_core::prelude::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     #[cfg(feature = "data")]
     pub use concision_data::prelude::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     #[cfg(feature = "derive")]
     pub use concision_derive::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     #[cfg(feature = "macros")]
     pub use concision_macros::*;
-    #[doc(inline)]
+    #[doc(no_inline)]
     #[cfg(feature = "neural")]
     pub use concision_neural::prelude::*;
 }

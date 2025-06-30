@@ -3,8 +3,11 @@
     Contrib: @FL03
 */
 use super::Hyperparameters::*;
-use super::{NetworkConfig, TrainingConfiguration};
+use super::{NetworkConfig, RawConfig, TrainingConfiguration};
 
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+pub(crate) type ModelConfigMap<T> = alloc::collections::BTreeMap<String, T>;
+#[cfg(feature = "std")]
 pub(crate) type ModelConfigMap<T> = std::collections::HashMap<String, T>;
 
 #[derive(Clone, Debug)]
@@ -125,6 +128,14 @@ impl<T> StandardModelConfig<T> {
     pub fn weight_decay(&self) -> Option<&T> {
         self.get_parameter("weight_decay")
     }
+}
+
+unsafe impl<T> Send for StandardModelConfig<T> where T: Send {}
+
+unsafe impl<T> Sync for StandardModelConfig<T> where T: Sync {}
+
+impl<T> RawConfig for StandardModelConfig<T> {
+    type Ctx = T;
 }
 
 impl<T> NetworkConfig<T> for StandardModelConfig<T> {

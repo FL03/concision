@@ -9,15 +9,23 @@
 //!
 //! ## Overview
 //!
-//! ## Features
+//! Neural networks are a fundamental part of machine learning, and this crate provides a
+//! comprehensive set of tools to build, configure, and train neural network models. Listed
+//! below are several key components of the crate:
 //!
 //! - [`Model`]: A trait for defining a neural network model.
 //! - [`ModelParamsBase`]: A dedicated object capable of storing the parameters for both
 //!   shallow and deep neural networks.
 //! - [`StandardModelConfig`]: A standard configuration for the models
-//! - [`Predict`]: A trait extending the basic [`Forward`](cnc::Forward) pass
+//!
+//! ### Traits
+//!
+//! This crate extends the [`Forward`](cnc::Forward) and [`Backward`](cnc::Backward) traits
+//! from the [`core`](cnc) crate to provide additional functionality for neural networks.
+//!
+//! - [`Predict`]: A more robust implementation of the [`Forward`] trait
 //! - [`Train`]: A trait for training a neural network model.
-#![crate_type = "lib"]
+//!
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(
     clippy::missing_saftey_doc,
@@ -25,11 +33,16 @@
     clippy::needless_doctest_main,
     clippy::upper_case_acronyms
 )]
+// ensure that either `std` or `alloc` feature is enabled
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compile_error! {
+    "At least one of the 'std' or 'alloc' features must be enabled."
+}
+
+extern crate concision_core as cnc;
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
-
-extern crate concision_core as cnc;
 
 #[doc(inline)]
 pub use self::{
@@ -44,6 +57,8 @@ pub use self::{
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
+    pub mod config;
+    #[macro_use]
     pub mod seal;
 }
 
@@ -51,7 +66,6 @@ pub mod config;
 pub mod error;
 pub mod layers;
 pub mod model;
-pub mod utils;
 
 pub(crate) mod traits {
     #[doc(inline)]
@@ -90,7 +104,7 @@ pub(crate) mod types {
 pub mod prelude {
     #[doc(no_inline)]
     pub use super::config::prelude::*;
-    #[doc(no_inline)]
+    #[doc(hidden)]
     pub use crate::layers::prelude::*;
     #[doc(no_inline)]
     pub use crate::model::prelude::*;
