@@ -8,8 +8,8 @@ use rand::RngCore;
 use rand_distr::{Distribution, StandardNormal};
 
 /// [LecunNormal] is a truncated [normal](rand_distr::Normal) distribution centered at 0
-/// with a standard deviation that is calculated as $`σ = sqrt(1/n_in)`$
-/// where $`n_in`$ is the number of input units.
+/// with a standard deviation that is calculated as $σ = sqrt(1/n_in)$
+/// where $n_in$ is the number of input units.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LecunNormal {
     n: usize,
@@ -31,7 +31,7 @@ impl LecunNormal {
     /// Calculate the standard deviation ($`σ`$) of the distribution.
     /// This is done by computing the root of the reciprocal of the number of inputs
     ///
-    /// Symbolically: $`σ = sqrt(1/n)`$
+    /// Symbolically: $σ = sqrt(1/n)$
     pub fn std_dev<F>(&self) -> F
     where
         F: Float,

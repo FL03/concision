@@ -6,20 +6,25 @@ use num::traits::Float;
 use rand::{Rng, RngCore};
 use rand_distr::{Distribution, Normal, StandardNormal};
 
-/// A truncated normal distribution is similar to a [normal](rand_distr::Normal) [distribution](rand_distr::Distribution), however,
-/// any generated value over two standard deviations from the mean is discarded and re-generated.
+/// The [`TruncatedNormal`] distribution is similar to the [`StandardNormal`] distribution,
+/// differing in that is computes a boundary equal to two standard deviations from the mean.
+/// More formally, the boundary is defined as:
+///
+/// ```math
+/// \text{boundary} = \mu + 2\sigma
+/// ```
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct TruncatedNormal<T>
 where
     StandardNormal: Distribution<T>,
 {
-    mean: T,
-    std: T,
+    pub(crate) mean: T,
+    pub(crate) std: T,
 }
 
 impl<T> TruncatedNormal<T>
 where
-    T: Float,
+    T: Copy,
     StandardNormal: Distribution<T>,
 {
     /// create a new [`TruncatedNormal`] distribution with the given mean and standard
@@ -27,29 +32,45 @@ where
     pub const fn new(mean: T, std: T) -> crate::Result<Self> {
         Ok(Self { mean, std })
     }
+    /// returns a copy of the mean for the distribution
+    pub const fn mean(&self) -> T {
+        self.mean
+    }
+    /// returns a copy of the standard deviation for the distribution
+    pub const fn std_dev(&self) -> T {
+        self.std
+    }
     /// compute the boundary of the truncated normal distribution
     /// which is two standard deviations from the mean:
     /// $$
     /// \text{boundary} = \mu + 2\sigma
     /// $$
-    pub(crate) fn boundary(&self) -> T {
+    pub fn boundary(&self) -> T
+    where
+        T: Float,
+    {
         self.mean() + self.std_dev() * T::from(2).unwrap()
     }
-
-    pub(crate) fn score(&self, x: T) -> T {
-        self.mean() - self.std_dev() * x
-    }
-
-    pub fn distr(&self) -> Normal<T> {
+    /// returns a new [`Normal`] distribution instance created from the current mean and
+    /// standard deviation.
+    pub fn distr(&self) -> Normal<T>
+    where
+        T: Float,
+    {
         Normal::new(self.mean(), self.std_dev()).unwrap()
     }
-
-    pub fn mean(&self) -> T {
-        self.mean
-    }
-
-    pub fn std_dev(&self) -> T {
-        self.std
+    /// compute the score of the distribution at point `x`. The score is calculated by
+    /// subtracing a scaled standard deviation from the mean:
+    /// $$
+    /// \text{score}(x) = \mu - \sigma \cdot x
+    /// $$
+    ///
+    /// where $\mu$ is the mean and $\sigma$ is the standard deviation.
+    pub fn score(&self, x: T) -> T
+    where
+        T: Float,
+    {
+        self.mean() - self.std_dev() * x
     }
 }
 

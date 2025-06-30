@@ -11,8 +11,8 @@
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Distribution, StandardNormal};
 
-/// Normal Xavier initializers leverage a normal distribution with a mean of 0 and a standard deviation (`σ`)
-/// computed by the formula: $`σ = sqrt(2/(d_in + d_out))`$
+/// Normal Xavier initializers leverage a normal distribution with a mean of 0 and a standard deviation ($\sigma$)
+/// computed by the formula: $\sigma = \sqrt{\frac{2}{d_{m} + d_{n}}}$
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct XavierNormal<T>
 where
@@ -63,7 +63,7 @@ mod impl_normal {
             }
         }
         /// tries creating a new [`Normal`] distribution with a mean of 0 and the standard
-        /// deviation computed by the formula: $`σ = sqrt(2/(d_in + d_out))`$
+        /// deviation computed by the formula: $σ = sqrt(2/(d_in + d_out))`$
         pub fn distr(&self) -> crate::Result<Normal<T>> {
             Normal::new(T::zero(), self.std_dev()).map_err(Into::into)
         }
