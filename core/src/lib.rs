@@ -49,7 +49,12 @@ pub use self::utils::prelude::*;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, error::*, loss::prelude::*, ops::prelude::*, params::prelude::*,
+    activate::prelude::*,
+    error::*,
+    loss::prelude::*,
+    ops::prelude::*,
+    params::prelude::*,
+    tensor::{NdTensor, RawTensor, Tensor, TensorBase},
     traits::*,
 };
 
@@ -67,6 +72,8 @@ pub mod loss;
 /// this module provides the [`ParamsBase`] type for the library, which is used to define the
 /// parameters of a neural network.
 pub mod params;
+/// the [`tensor`] module provides various traits and types for handling n-dimensional tensors.
+pub mod tensor;
 
 pub mod ops {
     //! This module provides the core operations for tensors, including filling, padding,
@@ -106,8 +113,7 @@ pub mod traits {
     mod mask;
     mod norm;
     mod propagation;
-    mod scalar;
-    mod tensor;
+    mod shape;
     mod wnb;
 
     mod prelude {
@@ -130,9 +136,7 @@ pub mod traits {
         #[doc(inline)]
         pub use super::propagation::*;
         #[doc(inline)]
-        pub use super::scalar::*;
-        #[doc(inline)]
-        pub use super::tensor::*;
+        pub use super::shape::*;
         #[doc(inline)]
         pub use super::wnb::*;
     }
@@ -153,6 +157,8 @@ pub mod prelude {
     pub use crate::ops::prelude::*;
     #[doc(no_inline)]
     pub use crate::params::prelude::*;
+    #[doc(inline)]
+    pub use crate::tensor::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::*;
 }

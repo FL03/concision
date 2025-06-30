@@ -26,7 +26,6 @@
 //! - [`Predict`]: A more robust implementation of the [`Forward`] trait
 //! - [`Train`]: A trait for training a neural network model.
 //!
-#![cfg(feature = "alloc")]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(
     clippy::missing_saftey_doc,
@@ -34,6 +33,7 @@
     clippy::needless_doctest_main,
     clippy::upper_case_acronyms
 )]
+// ensure that either `std` or `alloc` feature is enabled
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! {
     "At least one of the 'std' or 'alloc' features must be enabled."
@@ -100,11 +100,11 @@ pub(crate) mod types {
     }
 }
 
-#[doc(inline)]
+#[doc(hidden)]
 pub mod prelude {
     #[doc(no_inline)]
     pub use super::config::prelude::*;
-    #[doc(no_inline)]
+    #[doc(hidden)]
     pub use crate::layers::prelude::*;
     #[doc(no_inline)]
     pub use crate::model::prelude::*;

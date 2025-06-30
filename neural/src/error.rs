@@ -8,10 +8,7 @@
 //! fail.
 
 #[cfg(feature = "alloc")]
-use alloc::{
-    boxed::Box,
-    string::{String, ToString},
-};
+use alloc::{boxed::Box, string::String};
 
 /// a type alias for a [Result](core::result::Result) configured to use the [`NeuralError`]
 /// implementation as its error type.
@@ -24,11 +21,11 @@ pub type NeuralResult<T> = core::result::Result<T, NeuralError>;
 /// intended to provide a clear and consistent way to handle errors across the neural network
 /// components, making it easier to debug and resolve issues that may occur during the development
 /// and execution of neural network models.
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, scsys::VariantConstructors, thiserror::Error)]
 #[non_exhaustive]
 pub enum NeuralError {
-    #[error("Invalid Batch Size: {0}")]
-    InvalidBatchSize(usize),
+    #[error("Invalid Batch Size")]
+    InvalidBatchSize,
     #[error("Invalid Input Shape")]
     InvalidInputShape,
     #[error("Invalid Output Shape")]
@@ -42,7 +39,7 @@ pub enum NeuralError {
     ParameterError(String),
 }
 
-#[derive(Debug, scsys_derive::VariantConstructors, thiserror::Error)]
+#[derive(Debug, scsys::VariantConstructors, thiserror::Error)]
 pub enum TrainingError {
     #[error("Invalid Training Data")]
     InvalidTrainingData,
@@ -54,23 +51,15 @@ impl From<NeuralError> for concision_core::error::Error {
     fn from(err: NeuralError) -> Self {
         match err {
             NeuralError::CoreError(e) => e,
-            NeuralError::TrainingError(e) => e.into(),
             _ => concision_core::error::Error::box_error(err),
         }
     }
 }
 
 #[cfg(feature = "alloc")]
-impl From<NeuralError> for Box<dyn core::error::Error + Send + Sync> {
-    fn from(err: NeuralError) -> Self {
-        Box::new(err)
-    }
-}
-
-#[cfg(feature = "alloc")]
 impl From<Box<dyn core::error::Error + Send + Sync>> for NeuralError {
     fn from(err: Box<dyn core::error::Error + Send + Sync>) -> Self {
-        cnc::Error::BoxError(err)
+        cnc::Error::BoxError(err).into()
     }
 }
 #[cfg(feature = "alloc")]

@@ -2,7 +2,7 @@
     Appellation: tensor <module>
     Contrib: @FL03
 */
-use crate::traits::Scalar;
+use super::Scalar;
 use ndarray::{
     ArrayBase, Axis, DataMut, DataOwned, Dimension, OwnedRepr, RawData, RemoveAxis, ShapeBuilder,
 };
@@ -19,7 +19,7 @@ pub trait RawTensor<A, D> {
 /// The [`Tensor`] trait extends the [`RawTensor`] trait to provide additional functionality
 /// for tensors, such as creating tensors from shapes, applying functions, and iterating over
 /// elements. It is generic over the element type `A` and the dimension type `D
-pub trait Tensor<A, D>: RawTensor<A, D>
+pub trait NdTensor<A, D>: RawTensor<A, D>
 where
     D: Dimension,
 {
@@ -152,7 +152,7 @@ where
     seal!();
 }
 
-impl<A, S, D> Tensor<A, D> for ArrayBase<S, D>
+impl<A, S, D> NdTensor<A, D> for ArrayBase<S, D>
 where
     S: DataOwned<Elem = A>,
     A: Scalar,

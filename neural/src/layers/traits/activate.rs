@@ -44,7 +44,7 @@ mod impl_alloc {
         type Output = Y;
 
         fn activate(&self, rhs: X) -> Self::Output {
-            self.as_ref().rho(rhs)
+            self.as_ref().activate(rhs)
         }
     }
 }

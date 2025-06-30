@@ -5,7 +5,7 @@
 
 /// The [`RawConfig`] trait defines a basic interface for all _configurations_ used within the
 /// framework for neural networks, their layers, and more.
-pub trait RawConfig: Send + Sync + core::fmt::Debug {
+pub trait RawConfig {
     type Ctx;
 }
 

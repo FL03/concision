@@ -2,19 +2,15 @@
     Appellation: train <module>
     Contrib: @FL03
 */
+use crate::error::{NeuralResult, TrainingError};
 
 /// This trait defines the training process for the network
 pub trait Train<X, Y> {
     type Output;
 
-    fn train(&mut self, input: &X, target: &Y) -> crate::NeuralResult<Self::Output>;
+    fn train(&mut self, input: &X, target: &Y) -> NeuralResult<Self::Output>;
 
-    fn train_for(
-        &mut self,
-        input: &X,
-        target: &Y,
-        epochs: usize,
-    ) -> crate::NeuralResult<Self::Output> {
+    fn train_for(&mut self, input: &X, target: &Y, epochs: usize) -> NeuralResult<Self::Output> {
         let mut output = None;
 
         for _ in 0..epochs {
@@ -27,6 +23,6 @@ pub trait Train<X, Y> {
                 }
             }
         }
-        output.ok_or_else(crate::error::NeuralError::training_failed)
+        output.ok_or_else(|| TrainingError::TrainingFailed.into())
     }
 }

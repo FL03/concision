@@ -16,6 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
+doc-scrape-examples = true
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
 version = "v{{version}}"
@@ -87,7 +88,10 @@ data = ["dep:concision-data"]
 
 init = ["concision-core/init"]
 
-neural = ["dep:concision-neural"]
+neural = [
+    "dep:concision-neural",
+    "alloc",
+]
 
 utils = [
     "concision-core/utils"
@@ -117,6 +121,7 @@ wasm = [
 alloc = [
     "concision-core/alloc",
     "concision-data?/alloc",
+    "concision-neural?/alloc",
 ]
 
 anyhow = [
