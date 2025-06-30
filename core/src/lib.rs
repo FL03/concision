@@ -48,8 +48,6 @@ pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
-/// An n-dimensional tensor
-pub use ndtensor as tensor;
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]
@@ -59,6 +57,8 @@ pub use concision_init as init;
 #[doc(inline)]
 #[cfg(feature = "cnc_utils")]
 pub use concision_utils as utils;
+/// An n-dimensional tensor
+pub use ndtensor as tensor;
 
 #[cfg(feature = "cnc_init")]
 pub use self::init::prelude::*;
@@ -152,11 +152,11 @@ pub mod traits {
 
 #[doc(hidden)]
 pub mod prelude {
-    pub use ndtensor::prelude::*;
     #[cfg(feature = "cnc_init")]
     pub use concision_init::prelude::*;
     #[cfg(feature = "cnc_utils")]
     pub use concision_utils::prelude::*;
+    pub use ndtensor::prelude::*;
 
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;

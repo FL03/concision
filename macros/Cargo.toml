@@ -27,7 +27,7 @@ tag-name = "{{version}}"
 [lib]
 bench = false
 doc = true
-doctest = true
+doctest = false
 proc-macro = true
 test = false
 

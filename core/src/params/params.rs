@@ -9,8 +9,8 @@ use ndarray::{
 
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
 /// model where the bias tensor is always `n-1` dimensions smaller than the `weights` tensor.
-/// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions 
-/// that can be reduced by one axis (i.e. $`\mbox{rank}(D)>0`$), which is typically the "zero-th" axis. 
+/// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
+/// that can be reduced by one axis (i.e. $`\mbox{rank}(D)>0`$), which is typically the "zero-th" axis.
 pub struct ParamsBase<S, D = ndarray::Ix2>
 where
     D: Dimension,

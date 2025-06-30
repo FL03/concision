@@ -61,7 +61,6 @@ where
     }
 }
 
-
 impl<A, S, D> Apply<A> for &ArrayBase<S, D>
 where
     A: ScalarOperand,

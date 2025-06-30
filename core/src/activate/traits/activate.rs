@@ -8,10 +8,10 @@ use crate::Apply;
 use num_complex::ComplexFloat;
 use num_traits::One;
 
-/// The [`CncActivate`] trait builds off of the [`Apply`] trait, extending it to provide 
+/// The [`CncActivate`] trait builds off of the [`Apply`] trait, extending it to provide
 /// various activation functions and their derivatives.
 pub trait CncActivate<U>: Apply<U> {
-    /// the linear activation function is essentially a passthrough function, simply cloning 
+    /// the linear activation function is essentially a passthrough function, simply cloning
     /// the content.
     fn linear(&self) -> Self::Cont<U>
     where

@@ -14,8 +14,18 @@ pub(crate) mod impls;
 
 use self::ast::ModelAst;
 use proc_macro::TokenStream;
+#[proc_macro]
+/// [`model_config!`] is a procedural macro used to define the configuration for a model in the
+/// `concision` framework. It allows users to specify various parameters and settings for the model
+/// in a concise and structured manner, declaring a name for their instanc
+pub fn model_config(input: TokenStream) -> TokenStream {
+    let data = syn::parse_macro_input!(input as ModelAst);
+    // use the handler to process the input data
+    let res = self::impls::impl_model(data);
+    // convert the tokens into a TokenStream
+    res.into()
+}
 
-#[doc(hidden)]
 #[proc_macro]
 /// the [`model!`]procedural macro is used to streamline the creation of custom models using the
 /// `concision` framework
@@ -29,6 +39,11 @@ pub fn model(input: TokenStream) -> TokenStream {
 
 mod kw {
     use syn::custom_keyword;
+
+    custom_keyword! { context }
+    custom_keyword! { config }
+    custom_keyword! { dim }
+    custom_keyword! { rank }
     custom_keyword! { model }
     custom_keyword! { layer }
     custom_keyword! { layers }

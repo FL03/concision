@@ -57,8 +57,6 @@ pub use self::{
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
-    pub mod config;
-    #[macro_use]
     pub mod seal;
 }
 

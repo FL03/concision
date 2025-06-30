@@ -4,11 +4,13 @@
 */
 pub use self::prelude::*;
 
+mod config;
 mod layer;
 mod model;
 mod params;
 
 mod prelude {
+
     pub use super::layer::*;
     pub use super::model::*;
     pub use super::params::*;
