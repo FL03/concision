@@ -38,7 +38,7 @@ pub trait ClipMut<T = f32> {
 /*
  ************* Implementations *************
 */
-use super::{L1Norm, L2Norm};
+use crate::ops::{L1Norm, L2Norm};
 use ndarray::{ArrayBase, Dimension, ScalarOperand};
 use num_traits::Float;
 

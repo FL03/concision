@@ -34,10 +34,13 @@ mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
+    mod ops;
     mod raw_tensor;
     mod scalar;
 
     mod prelude {
+        #[doc(inline)]
+        pub use super::ops::*;
         #[doc(inline)]
         pub use super::raw_tensor::*;
         #[doc(inline)]

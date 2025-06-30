@@ -4,12 +4,11 @@
 */
 extern crate concision_core as cnc;
 
-use cnc::linarr;
+use cnc::{Affine, Inverse, MaskFill, MatPow, Unsqueeze};
 use ndarray::{Array2, Ix2, array};
 
 #[test]
 fn test_affine() {
-    use cnc::Affine;
     let x = array![[0.0, 1.0], [2.0, 3.0]];
 
     let y = x.affine(4.0, -2.0);
@@ -18,7 +17,6 @@ fn test_affine() {
 
 #[test]
 fn test_inverse() {
-    use cnc::Inverse;
     let a = array![[1.0, 2.0], [3.0, 4.0]];
     let b = array![[1.0, 2.0, 3.0,], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]];
     let exp = array![[-2.0, 1.0], [1.5, -0.5]];
@@ -28,17 +26,15 @@ fn test_inverse() {
 
 #[test]
 fn test_masked_fill() {
-    use cnc::MaskFill;
     let shape = (2, 2);
     let mask = array![[true, false], [false, true]];
-    let arr = linarr::<f64, Ix2>(shape).unwrap();
+    let arr = cnc::linarr::<f64, Ix2>(shape).unwrap();
     let a = arr.masked_fill(&mask, 0.0);
     assert_eq!(a, array![[0.0, 1.0], [2.0, 0.0]]);
 }
 
 #[test]
 fn test_matrix_power() {
-    use cnc::MatPow;
     let x = array![[1.0, 2.0], [3.0, 4.0]];
     assert_eq!(x.matpow(0), Array2::<f64>::eye(2));
     assert_eq!(x.matpow(1), x);
@@ -47,7 +43,6 @@ fn test_matrix_power() {
 
 #[test]
 fn test_unsqueeze() {
-    use cnc::Unsqueeze;
     let arr = array![1, 2, 3, 4];
     let a = arr.clone().unsqueeze(0);
     assert_eq!(a.dim(), (1, 4));

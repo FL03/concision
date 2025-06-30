@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use crate::params::{Params, ParamsBase};
-use crate::traits::{ApplyGradient, ApplyGradientExt, Backward, Forward, Norm};
+use crate::{ApplyGradient, ApplyGradientExt, Backward, Forward, Norm};
 use ndarray::linalg::Dot;
 use ndarray::prelude::*;
 use ndarray::{ArrayBase, Data, DataMut, Dimension, ScalarOperand};

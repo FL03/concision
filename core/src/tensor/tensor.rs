@@ -5,8 +5,8 @@
 use ndarray::{ArrayBase, Data, DataMut, DataOwned, Dimension, NdIndex, RawData, ShapeBuilder};
 use num_traits::{One, Zero};
 
-#[doc(hidden)]
 /// the [`TensorBase`] struct is the base type for all tensors in the library.
+#[repr(transparent)]
 pub struct TensorBase<S, D>
 where
     D: Dimension,
@@ -83,12 +83,23 @@ where
     /// applies the function to every element within the tensor
     pub fn map<F, B>(&self, f: F) -> super::Tensor<B, D>
     where
-        S: DataOwned,
         A: Clone,
+        S: Data,
         F: FnMut(A) -> B,
     {
         TensorBase {
             store: self.store().mapv(f),
+        }
+    }
+    /// this method applies the function to the store, capturing the result in a new tensor.
+    pub(crate) fn mapd<F, U, S2, D2>(&self, f: F) -> TensorBase<S2, D2>
+    where
+        D2: Dimension,
+        S2: RawData<Elem = U>,
+        F: FnOnce(&ArrayBase<S, D>) -> ArrayBase<S2, D2>,
+    {
+        TensorBase {
+            store: f(self.store()),
         }
     }
 }
