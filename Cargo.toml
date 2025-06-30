@@ -10,7 +10,6 @@ members = [
     "init",
     "macros",
     "neural",
-    "tensor",
     "utils",
     "ext",
     "models/*",
@@ -22,7 +21,11 @@ authors = [
     "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)",
     "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"
 ]
-categories = ["science"]
+categories = [
+    "algorithms",
+    "mathematics",
+    "science"
+]
 description = "Concision is a toolkit for designing machine-learning models in Rust."
 edition = "2024"
 homepage = "https://github.com/FL03/concision/wiki"
@@ -46,7 +49,6 @@ concision-derive = { default-features = false, path = "derive", version = "0.2.6
 concision-init = { default-features = false, path = "init", version = "0.2.6" }
 concision-macros = { default-features = false, path = "macros", version = "0.2.6" }
 concision-neural = { default-features = false, path = "neural", version = "0.2.6" }
-concision-tensor = { default-features = false, path = "tensor", version = "0.2.6" }
 concision-utils = { default-features = false, path = "utils", version = "0.2.6" }
 # extras
 concision-ext = { default-features = false, path = "ext", version = "0.2.6" }
@@ -57,6 +59,7 @@ concision-s4 = { default-features = false, path = "models/s4", version = "0.2.6"
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.6" }
 
 # custom
+ndtensor = { default-features = false, version = "0.1.1" }
 scsys = { default-features = false, features = ["derive"], version = "0.3.1" }
 scsys-derive = { default-features = false, version = "0.3.1" }
 # async

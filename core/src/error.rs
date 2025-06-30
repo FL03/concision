@@ -28,7 +28,7 @@ pub enum Error {
     #[cfg(feature = "cnc_init")]
     InitError(#[from] concision_init::error::InitError),
     #[error(transparent)]
-    TensorError(#[from] concision_tensor::error::TensorError),
+    TensorError(#[from] ndtensor::error::TensorError),
     #[error(transparent)]
     #[cfg(feature = "cnc_utils")]
     UtilityError(#[from] concision_utils::error::UtilityError),

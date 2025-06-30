@@ -3,7 +3,7 @@
     authors: @FL03
 */
 
-macro_rules! _unary {
+macro_rules! unary {
     (@impl $name:ident::$call:ident(self)) => {
         paste::paste! {
             pub trait $name {
@@ -38,16 +38,11 @@ macro_rules! _unary {
             }
         }
     };
-    ($name:ident::$call:ident($($rest:tt)*)) => {
-        _unary!(@impl $name::$call($($rest)*));
-    };
-}
-macro_rules! unary {
     ($(
-            $name:ident::$call:ident($($rest:tt)*)
-        ),* $(,)?) => {
+        $name:ident::$call:ident($($rest:tt)*)
+    ),* $(,)?) => {
         $(
-            _unary!(@impl $name::$call($($rest)*));
+            unary!(@impl $name::$call($($rest)*));
         )*
     };
 }

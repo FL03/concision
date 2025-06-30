@@ -48,6 +48,8 @@ pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
+/// An n-dimensional tensor
+pub use ndtensor as tensor;
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]
@@ -83,8 +85,6 @@ pub mod loss;
 /// this module provides the [`ParamsBase`] type for the library, which is used to define the
 /// parameters of a neural network.
 pub mod params;
-/// the [`tensor`] module provides various traits and types for handling n-dimensional tensors.
-pub use concision_tensor as tensor;
 
 pub mod ops {
     //! This module provides the core operations for tensors, including filling, padding,
@@ -152,9 +152,9 @@ pub mod traits {
 
 #[doc(hidden)]
 pub mod prelude {
+    pub use ndtensor::prelude::*;
     #[cfg(feature = "cnc_init")]
     pub use concision_init::prelude::*;
-    pub use concision_tensor::prelude::*;
     #[cfg(feature = "cnc_utils")]
     pub use concision_utils::prelude::*;
 

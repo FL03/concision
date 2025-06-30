@@ -1,142 +1,129 @@
 /*
-    Appellation: gradient <module>
-    Contrib: @FL03
+    appellation: apply <module>
+    authors: @FL03
 */
-/// A trait declaring basic gradient-related routines for a neural network
-pub trait ApplyGradient<Delta, T> {
-    type Output;
 
-    fn apply_gradient(&mut self, grad: &Delta, lr: T) -> crate::Result<Self::Output>;
+/// The [`Apply`] establishes an interface for _owned_ containers that are capable of applying
+/// some function onto their elements.
+pub trait Apply<T> {
+    type Cont<_T>;
 
-    fn apply_gradient_with_decay(
-        &mut self,
-        grad: &Delta,
-        lr: T,
-        decay: T,
-    ) -> crate::Result<Self::Output>;
+    fn apply<U, F>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(T) -> U;
 }
+/// The [`ApplyMut`] trait mutates the each element of the container, in-place, using the given
+/// function.
+pub trait ApplyMut<T> {
+    type Cont<_T>;
 
-/// This trait extends the [ApplyGradient] trait by allowing for momentum-based optimization
-pub trait ApplyGradientExt<Delta, T>: ApplyGradient<Delta, T> {
-    type Velocity;
-
-    fn apply_gradient_with_momentum(
-        &mut self,
-        grad: &Delta,
-        lr: T,
-        momentum: T,
-        velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output>;
-
-    fn apply_gradient_with_decay_and_momentum(
-        &mut self,
-        grad: &Delta,
-        lr: T,
-        decay: T,
-        momentum: T,
-        velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output>;
+    fn apply_mut<'a, F>(&'a mut self, f: F)
+    where
+        T: 'a,
+        F: FnMut(T) -> T;
 }
 
 /*
  ************* Implementations *************
 */
+use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand};
+use ndtensor::{Tensor, TensorBase};
 
-use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand, ShapeError};
-use num_traits::{Float, FromPrimitive};
-
-impl<A, S, T, D> ApplyGradient<ArrayBase<T, D>, A> for ArrayBase<S, D>
+impl<A, S, D> Apply<A> for ArrayBase<S, D>
 where
-    A: Float + FromPrimitive + ScalarOperand,
-    S: DataMut<Elem = A>,
-    T: Data<Elem = A>,
+    A: ScalarOperand,
     D: Dimension,
+    S: Data<Elem = A>,
 {
-    type Output = ();
+    type Cont<V> = Array<V, D>;
 
-    fn apply_gradient(&mut self, grad: &ArrayBase<T, D>, lr: A) -> crate::Result<Self::Output> {
-        if self.shape() != grad.shape() {
-            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
-        }
-        let batch_size = if !grad.shape().is_empty() {
-            A::from_usize(self.shape()[0]).unwrap()
-        } else {
-            A::one()
-        };
-        self.scaled_add(lr / batch_size, grad);
-        Ok(())
-    }
-
-    fn apply_gradient_with_decay(
-        &mut self,
-        grad: &ArrayBase<T, D>,
-        lr: A,
-        decay: A,
-    ) -> crate::Result<Self::Output> {
-        if self.shape() != grad.shape() {
-            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
-        }
-        let batch_size = if !grad.shape().is_empty() {
-            A::from_usize(self.shape()[0]).unwrap()
-        } else {
-            A::one()
-        };
-        self.scaled_add(lr / batch_size, &(grad + &*self * decay));
-        Ok(())
+    fn apply<V, F>(&self, f: F) -> Self::Cont<V>
+    where
+        F: Fn(A) -> V,
+    {
+        self.mapv(f)
     }
 }
 
-impl<A, S, T, D> ApplyGradientExt<ArrayBase<T, D>, A> for ArrayBase<S, D>
+impl<A, S, D> Apply<A> for TensorBase<S, D>
 where
-    A: Float + FromPrimitive + ScalarOperand,
-    S: DataMut<Elem = A>,
-    T: Data<Elem = A>,
+    A: ScalarOperand,
     D: Dimension,
+    S: Data<Elem = A>,
 {
-    type Velocity = Array<A, D>;
+    type Cont<V> = Tensor<V, D>;
 
-    fn apply_gradient_with_momentum(
-        &mut self,
-        grad: &ArrayBase<T, D>,
-        lr: A,
-        momentum: A,
-        velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output> {
-        if self.shape() != grad.shape() {
-            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
-        }
-        let batch_size = if !grad.shape().is_empty() {
-            A::from_usize(self.shape()[0]).unwrap()
-        } else {
-            A::one()
-        };
-        *velocity = &*velocity * momentum + grad * (A::one() - momentum);
-        self.scaled_add(lr / batch_size, velocity);
-        Ok(())
+    fn apply<V, F>(&self, f: F) -> Self::Cont<V>
+    where
+        F: Fn(A) -> V,
+    {
+        self.map(f)
     }
+}
 
-    fn apply_gradient_with_decay_and_momentum(
-        &mut self,
-        grad: &ArrayBase<T, D>,
-        lr: A,
-        decay: A,
-        momentum: A,
-        velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output> {
-        if self.shape() != grad.shape() {
-            return Err(
-                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
-            );
-        }
-        let batch_size = if !grad.shape().is_empty() {
-            A::from_usize(self.shape()[0]).unwrap()
-        } else {
-            A::one()
-        };
 
-        let adjusted_grad = grad + &*self * decay;
-        *velocity = &*velocity * momentum + adjusted_grad * (A::one() - momentum);
-        self.scaled_add(lr / batch_size, velocity);
-        Ok(())
+impl<A, S, D> Apply<A> for &ArrayBase<S, D>
+where
+    A: ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Cont<V> = Array<V, D>;
+
+    fn apply<B, F>(&self, f: F) -> Array<B, D>
+    where
+        F: Fn(A) -> B,
+    {
+        self.mapv(f)
+    }
+}
+
+impl<A, S, D> Apply<A> for &mut ArrayBase<S, D>
+where
+    A: ScalarOperand,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Cont<V> = Array<V, D>;
+
+    fn apply<B, F>(&self, f: F) -> Array<B, D>
+    where
+        F: Fn(A) -> B,
+    {
+        self.mapv(f)
+    }
+}
+
+impl<A, S, D> ApplyMut<A> for ArrayBase<S, D>
+where
+    A: ScalarOperand,
+    D: Dimension,
+    S: DataMut<Elem = A>,
+{
+    type Cont<V> = Array<V, D>;
+
+    fn apply_mut<'a, F>(&'a mut self, f: F)
+    where
+        A: 'a,
+        F: FnMut(A) -> A,
+    {
+        self.mapv_inplace(f)
+    }
+}
+
+impl<A, S, D> ApplyMut<A> for &mut ArrayBase<S, D>
+where
+    A: ScalarOperand,
+    D: Dimension,
+    S: DataMut<Elem = A>,
+{
+    type Cont<V> = Array<V, D>;
+
+    fn apply_mut<'b, F>(&'b mut self, f: F)
+    where
+        A: 'b,
+        F: FnMut(A) -> A,
+    {
+        self.mapv_inplace(f)
     }
 }
