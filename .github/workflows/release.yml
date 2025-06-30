@@ -27,10 +27,18 @@ jobs:
   publish:
     environment:
       name: crates-io
-      url: https://crates.io/crates/${{ github.event.repository.name }}
+      url: https://crates.io/crates/concision
     runs-on: ubuntu-latest
     steps:
-      - name: Publish to crates.io
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+          repository: ${{ github.repository }}
+      - 
+        name: Publish to crates.io
         uses: peter-evans/repository-dispatch@v3
         with:
           event-type: cargo-publish

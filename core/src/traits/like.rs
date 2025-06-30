@@ -50,7 +50,12 @@ macro_rules! ndlike {
 
 }
 
-ndlike!(DefaultLike::default_like, OnesLike::ones_like, ZerosLike::zeros_like, FillLike::<T>::fill_like(elem: T));
+ndlike! {
+    DefaultLike::default_like, 
+    OnesLike::ones_like, 
+    ZerosLike::zeros_like, 
+    FillLike::<T>::fill_like(elem: T)
+}
 
 /*
  ************* Implementations *************

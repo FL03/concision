@@ -23,9 +23,9 @@ _**Warning: The library still in development and is not yet ready for production
 
 ### Roadmap
 
-- [ ] **v1**:
-  - [ ] **`ParamsBase`**: Design a basic structure for storing model parameters.
-  - [ ]  **Traits**: Create a set of traits for defining the basics of a neural network model.
+- [x] **v1**:
+  - [x] **`ParamsBase`**: Design a basic structure for storing model parameters.
+  - [x]  **Traits**: Create a set of traits for defining the basics of a neural network model.
     - `Forward` and `Backward`: traits defining forward and backward propagation
     - `Model`: A trait for defining a neural network model.
     - `Predict`: A trait extending the basic [`Forward`](cnc::Forward) pass.
