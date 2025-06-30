@@ -5,7 +5,11 @@
 use ndarray::{Array, ArrayBase, Axis, Data, Dimension, RemoveAxis, ScalarOperand};
 use num_traits::{Float, One, Zero};
 
-/// the relu activation function: $f(x) = \max(0, x)$
+/// the relu activation function:
+///
+/// ```math
+/// f(x) = \max(0, x)
+/// ```
 pub fn relu<T>(args: T) -> T
 where
     T: PartialOrd + Zero,
@@ -23,7 +27,11 @@ where
         T::zero()
     }
 }
-/// the sigmoid activation function: $f(x) = \frac{1}{1 + e^{-x}}$
+/// the sigmoid activation function:
+///
+/// ```math
+/// f(x) = \frac{1}{1 + e^{-x}}
+/// ```
 pub fn sigmoid<T>(args: T) -> T
 where
     T: Float,
@@ -38,7 +46,11 @@ where
     let s = sigmoid(args);
     s * (T::one() - s)
 }
-/// Softmax function: $f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}$
+/// Softmax function:
+///
+/// ```math
+/// f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}
+/// ```
 pub fn softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
 where
     A: Float + ScalarOperand,
@@ -48,7 +60,11 @@ where
     let e = args.exp();
     &e / e.sum()
 }
-/// Softmax function along a specific axis: $f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}$
+/// Softmax function along a specific axis:
+///
+/// ```math
+/// f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}
+/// ```
 pub fn softmax_axis<A, S, D>(args: &ArrayBase<S, D>, axis: usize) -> Array<A, D>
 where
     A: Float + ScalarOperand,
@@ -59,7 +75,11 @@ where
     let e = args.exp();
     &e / &e.sum_axis(axis)
 }
-/// the tanh activation function: $f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$
+/// the tanh activation function:
+///
+/// ```math
+/// f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
+/// ```
 pub fn tanh<T>(args: T) -> T
 where
     T: num::traits::Float,

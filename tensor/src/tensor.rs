@@ -64,6 +64,18 @@ where
     {
         Self::from_fn_with_shape(shape, A::zero)
     }
+    /// returns the dimension of the tensor as a [`Pattern`](Dimension::Pattern)
+    pub fn dim(&self) -> D::Pattern {
+        self.store().dim()
+    }
+    /// returns the _raw_ dimension, `D`, of the tensor
+    pub fn raw_dim(&self) -> D {
+        self.store().raw_dim()
+    }
+    /// returns the shape of the tensor
+    pub fn shape(&self) -> &[usize] {
+        self.store().shape()
+    }
     /// returns a reference to the element at the given index, if any
     pub fn get<Ix>(&self, index: Ix) -> Option<&A>
     where

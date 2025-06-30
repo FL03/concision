@@ -10,6 +10,7 @@ members = [
     "init",
     "macros",
     "neural",
+    "tensor",
     "utils",
     "ext",
     "models/*",
@@ -45,6 +46,7 @@ concision-derive = { default-features = false, path = "derive", version = "0.2.6
 concision-init = { default-features = false, path = "init", version = "0.2.6" }
 concision-macros = { default-features = false, path = "macros", version = "0.2.6" }
 concision-neural = { default-features = false, path = "neural", version = "0.2.6" }
+concision-tensor = { default-features = false, path = "tensor", version = "0.2.6" }
 concision-utils = { default-features = false, path = "utils", version = "0.2.6" }
 # extras
 concision-ext = { default-features = false, path = "ext", version = "0.2.6" }

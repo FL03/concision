@@ -36,6 +36,7 @@ jobs:
         package:
           - concision-init
           - concision-utils
+          - concision-tensor
           - concision-core
           - concision-data
           - concision-neural

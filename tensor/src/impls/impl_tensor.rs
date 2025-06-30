@@ -34,6 +34,30 @@ where
 {
 }
 
+impl<A, S, D> core::fmt::Debug for TensorBase<S, D>
+where
+    A: core::fmt::Debug,
+    S: Data<Elem = A>,
+    D: Dimension,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("TensorBase")
+            .field("store", &self.store())
+            .finish()
+    }
+}
+
+impl<A, S, D> core::fmt::Display for TensorBase<S, D>
+where
+    A: core::fmt::Display,
+    S: Data<Elem = A>,
+    D: Dimension,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.store())
+    }
+}
+
 impl<A, S, D> PartialEq for TensorBase<S, D>
 where
     A: PartialEq,

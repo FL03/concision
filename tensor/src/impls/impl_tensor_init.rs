@@ -4,7 +4,7 @@
 */
 use crate::tensor::TensorBase;
 
-use crate::init::Initialize;
+use concision_init::Initialize;
 use ndarray::{DataOwned, Dimension, RawData, ShapeBuilder};
 use rand::RngCore;
 use rand_distr::Distribution;

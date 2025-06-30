@@ -1,7 +1,7 @@
 [package]
 build = "build.rs"
-description = "this crate implements the core modules for the concision framework"
-name = "concision-core"
+description = "An n-dimensional tensor for the concision framework"
+name = "concision-tensor"
 
 authors.workspace = true
 categories.workspace = true
@@ -37,29 +37,22 @@ test = true
 [dependencies]
 #  local
 concision-init = { optional = true, workspace = true }
-concision-tensor = { workspace = true }
-concision-utils = {  optional = true, workspace = true }
 # custom
 scsys = { workspace = true }
 scsys-derive = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
-# data & serialization
-serde = { features = ["derive"], optional = true, workspace = true }
-serde_derive = { optional = true, workspace = true }
-serde_json = { optional = true, workspace = true }
+# data structures
+ndarray = { workspace = true }
 # error-handling
 anyhow = { optional = true, workspace = true }
 thiserror = { workspace = true }
-# logging
-tracing = { optional = true, workspace = true }
 # macros & utilities
 paste = { workspace = true }
 smart-default = { workspace = true }
 strum = { workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
-ndarray = { workspace = true }
 num = { workspace = true }
 num-complex = { optional = true, workspace = true }
 num-traits = { workspace = true }
@@ -68,6 +61,12 @@ rustfft = { optional = true, workspace = true }
 getrandom = { default-features = false, optional = true, workspace = true }
 rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
+# serialization
+serde = { features = ["derive"], optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
+# tracing
+tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static = { workspace = true }
@@ -75,7 +74,6 @@ lazy_static = { workspace = true }
 [features]
 default = [
     "std",
-    "utils",
 ]
 
 full = [
@@ -92,14 +90,11 @@ full = [
 
 nightly = [
     "concision-init?/nightly",
-    "concision-tensor/nightly",
-    "concision-utils?/nightly",
 ]
 
 # ************* [FF:Features] *************
 init = [
     "cnc_init",
-    "concision-tensor/init",
     "rand",
 ]
 
@@ -108,30 +103,20 @@ json = [
     "serde",
     "serde_json",
     "scsys/json",
-    "concision-tensor/json",
 ]
 
 signal =[
     "complex",
-    "concision-utils?/signal",
     "rustfft",
 ]
 
-utils = [
-    "cnc_utils",
-]
-
 cnc_init = ["dep:concision-init"]
-
-cnc_utils = ["dep:concision-utils"]
 
 # ************* [FF:Dependencies] *************
 std = [
     "alloc",
     "anyhow?/std",
     "concision-init?/std",
-    "concision-tensor/std",
-    "concision-utils?/std",
     "ndarray/std",
     "num/std",
     "num-complex?/std",
@@ -148,22 +133,16 @@ std = [
 wasi = [
     "scsys/wasi",
     "concision-init?/wasi",
-    "concision-tensor/wasi",
-    "concision-utils?/wasi",
 ]
 
 wasm = [
     "getrandom?/wasm_js",
     "concision-init?/wasm",
-    "concision-tensor/wasm",
-    "concision-utils?/wasm",
     "scsys/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
     "concision-init?/alloc",
-    "concision-tensor/alloc",
-    "concision-utils?/alloc",
     "num/alloc",
     "serde?/alloc",
     "serde_json?/alloc",
@@ -172,36 +151,27 @@ alloc = [
 
 anyhow = [
     "dep:anyhow",
-    "concision-tensor/anyhow",
     "scsys/anyhow",
 ]
 
 approx = [
     "concision-init?/approx",
-    "concision-tensor/approx",
-    "concision-utils?/approx",
     "dep:approx",
     "ndarray/approx",
 ]
 
 blas = [
     "concision-init?/blas",
-    "concision-tensor/blas",
-    "concision-utils?/blas",
     "ndarray/blas",
 ]
 
 complex = [
     "dep:num-complex",
     "concision-init?/complex",
-    "concision-tensor/complex",
-    "concision-utils?/complex",
 ]
 
 rand = [
     "concision-init?/rand",
-    "concision-tensor/rand",
-    "concision-utils?/rand",
     "dep:rand",
     "dep:rand_distr",
     "num/rand",
@@ -212,16 +182,12 @@ rand = [
 
 rayon = [
     "dep:rayon",
-    "concision-tensor/rayon",
-    "concision-utils?/rayon",
     "ndarray/rayon",
 ]
 
 rng = [
     "dep:getrandom",
     "concision-init?/rng",
-    "concision-tensor/rng",
-    "concision-utils?/rng",
     "rand?/small_rng",
     "rand?/thread_rng",
     "scsys/rng",
@@ -231,8 +197,6 @@ rustfft = ["dep:rustfft"]
 
 serde = [
     "concision-init?/serde",
-    "concision-tensor/serde",
-    "concision-utils?/serde",
     "dep:serde",
     "dep:serde_derive",
     "ndarray/serde",
@@ -247,8 +211,6 @@ serde_json = ["dep:serde_json"]
 
 tracing = [
     "concision-init?/tracing",
-    "concision-tensor/tracing",
-    "concision-utils?/tracing",
     "dep:tracing",
     "scsys/tracing",
 ]
@@ -258,9 +220,5 @@ tracing = [
 name = "default"
 
 [[test]]
-name = "params"
+name = "tensor"
 required-features = ["approx", "std"]
-
-[[test]]
-name = "traits"
-required-features = ["std"]

@@ -84,7 +84,7 @@ pub mod loss;
 /// parameters of a neural network.
 pub mod params;
 /// the [`tensor`] module provides various traits and types for handling n-dimensional tensors.
-pub mod tensor;
+pub use concision_tensor as tensor;
 
 pub mod ops {
     //! This module provides the core operations for tensors, including filling, padding,
@@ -154,6 +154,7 @@ pub mod traits {
 pub mod prelude {
     #[cfg(feature = "cnc_init")]
     pub use concision_init::prelude::*;
+    pub use concision_tensor::prelude::*;
     #[cfg(feature = "cnc_utils")]
     pub use concision_utils::prelude::*;
 
@@ -165,8 +166,6 @@ pub mod prelude {
     pub use crate::ops::prelude::*;
     #[doc(no_inline)]
     pub use crate::params::prelude::*;
-    #[doc(inline)]
-    pub use crate::tensor::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::*;
 }

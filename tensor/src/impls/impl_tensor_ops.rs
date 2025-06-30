@@ -4,7 +4,7 @@
 */
 use crate::tensor::TensorBase;
 
-use crate::tensor::{Inverse, Tensor, TensorView, Transpose};
+use crate::{Inverse, Tensor, TensorView, Transpose};
 
 use ndarray::linalg::Dot;
 use ndarray::{ArrayBase, Data, Dimension, Ix2, LinalgScalar, RawData, ScalarOperand};

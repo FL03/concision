@@ -4,7 +4,7 @@
 */
 use crate::tensor::TensorBase;
 
-use crate::tensor::{ArcTensor, Tensor, TensorView, TensorViewMut};
+use crate::{ArcTensor, Tensor, TensorView, TensorViewMut};
 use ndarray::{Data, DataMut, Dimension, RawData};
 
 impl<A, S, D> TensorBase<S, D>

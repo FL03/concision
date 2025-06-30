@@ -2,36 +2,26 @@
     Appellation: error <module>
     Contrib: @FL03
 */
-//! This module implements the core [`Error`] type for the framework and provides a [`Result`]
-//! type alias for convenience.
+//! This module implements the core [`TensorError`] type for the framework and provides a
+//! [`Result`] type alias for convenience.
 #[cfg(feature = "alloc")]
 use alloc::{
     boxed::Box,
     string::{String, ToString},
 };
-
 #[allow(dead_code)]
-/// a type alias for a [Result](core::result::Result) configured with an [`Error`] as its error
-/// type.
-pub type Result<T> = core::result::Result<T, Error>;
+/// a type alias for a [`Result`](core::result::Result) configured with the [`TensorError`] as
+/// its error type.
+pub(crate) type Result<T> = core::result::Result<T, TensorError>;
 
 /// The [`Error`] type enumerates various errors that can occur within the framework.
 #[derive(Debug, thiserror::Error)]
-pub enum Error {
-    #[error("Invalid Shape")]
-    InvalidShape,
+pub enum TensorError {
     #[error(transparent)]
-    PadError(#[from] crate::ops::pad::error::PadError),
-    #[error(transparent)]
-    ParamError(#[from] crate::params::error::ParamsError),
+    ShapeError(#[from] ndarray::ShapeError),
     #[error(transparent)]
     #[cfg(feature = "cnc_init")]
     InitError(#[from] concision_init::error::InitError),
-    #[error(transparent)]
-    TensorError(#[from] concision_tensor::error::TensorError),
-    #[error(transparent)]
-    #[cfg(feature = "cnc_utils")]
-    UtilityError(#[from] concision_utils::error::UtilityError),
     #[cfg(feature = "anyhow")]
     #[error(transparent)]
     AnyError(#[from] anyhow::Error),
@@ -50,8 +40,6 @@ pub enum Error {
     #[error(transparent)]
     IoError(#[from] std::io::Error),
     #[error(transparent)]
-    ShapeError(#[from] ndarray::ShapeError),
-    #[error(transparent)]
     #[cfg(feature = "rand")]
     UniformError(#[from] rand_distr::uniform::Error),
     #[cfg(feature = "alloc")]
@@ -60,7 +48,7 @@ pub enum Error {
 }
 
 #[cfg(feature = "alloc")]
-impl Error {
+impl TensorError {
     /// create a new [`BoxError`](Error::BoxError) variant using the given error
     pub fn box_error<E>(error: E) -> Self
     where
@@ -77,14 +65,14 @@ impl Error {
     }
 }
 #[cfg(feature = "alloc")]
-impl From<String> for Error {
+impl From<String> for TensorError {
     fn from(value: String) -> Self {
         Self::Unknown(value)
     }
 }
 
 #[cfg(feature = "alloc")]
-impl From<&str> for Error {
+impl From<&str> for TensorError {
     fn from(value: &str) -> Self {
         Self::Unknown(String::from(value))
     }
