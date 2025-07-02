@@ -4,7 +4,7 @@
 */
 //! This module implments various layers for a neural network
 #[doc(inline)]
-pub use self::{layer::LayerBase, traits::*};
+pub use self::{layer::LayerBase, traits::*, types::*};
 
 pub(crate) mod layer;
 
@@ -23,7 +23,21 @@ pub(crate) mod traits {
     }
 }
 
+pub(crate) mod types {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    mod aliases;
+
+    mod prelude {
+        #[doc(inline)]
+        pub use super::aliases::*;
+    }
+}
+
 pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::layer::*;
+    #[doc(inline)]
+    pub use super::types::*;
 }

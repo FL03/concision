@@ -2,12 +2,14 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
+mod impl_layer_repr;
+
 use super::{Activator, ActivatorGradient, Layer};
 use cnc::{Forward, ParamsBase};
-use ndarray::{Dimension, Ix2, RawData};
+use ndarray::{DataOwned, Dimension, Ix2, RawData, RemoveAxis, ShapeBuilder};
 
-pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activator<A, Output = A> + 'static>, S, D>;
-
+/// The [`LayerBase`] struct is a base representation of a neural network layer, essentially
+/// binding an activation function, `F`, to a set of parameters, `ParamsBase<S, D>`.
 pub struct LayerBase<F, S, D = Ix2>
 where
     D: Dimension,
@@ -15,59 +17,8 @@ where
 {
     /// the activation function of the layer
     pub(crate) rho: F,
+    /// the parameters of the layer is an object consisting of both a weight and a bias tensor.
     pub(crate) params: ParamsBase<S, D>,
-}
-
-impl<S, D> LayerBase<super::Linear, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
-    pub fn linear(params: ParamsBase<S, D>) -> Self {
-        Self {
-            rho: super::Linear,
-            params,
-        }
-    }
-}
-
-impl<S, D> LayerBase<super::Sigmoid, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
-    pub fn sigmoid(params: ParamsBase<S, D>) -> Self {
-        Self {
-            rho: super::Sigmoid,
-            params,
-        }
-    }
-}
-
-impl<S, D> LayerBase<super::Tanh, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
-    pub fn tanh(params: ParamsBase<S, D>) -> Self {
-        Self {
-            rho: super::Tanh,
-            params,
-        }
-    }
-}
-
-impl<S, D> LayerBase<super::ReLU, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
-    pub fn relu(params: ParamsBase<S, D>) -> Self {
-        Self {
-            rho: super::ReLU,
-            params,
-        }
-    }
 }
 
 impl<F, S, A, D> LayerBase<F, S, D>
@@ -75,24 +26,60 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn new(rho: F, params: ParamsBase<S, D>) -> Self {
+    /// create a new [`LayerBase`] from the given activation function and parameters.
+    pub const fn new(rho: F, params: ParamsBase<S, D>) -> Self {
         Self { rho, params }
     }
+    /// create a new [`LayerBase`] from the given parameters assuming the logical default for
+    /// the activation of type `F`.
+    pub fn from_params(params: ParamsBase<S, D>) -> Self
+    where
+        F: Default,
+    {
+        Self {
+            rho: F::default(),
+            params,
+        }
+    }
+    /// create a new [`LayerBase`] from the given activation function and shape.
+    pub fn from_rho<Sh>(rho: F, shape: Sh) -> Self
+    where
+        A: Clone + Default,
+        S: DataOwned,
+        D: RemoveAxis,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        Self {
+            rho,
+            params: ParamsBase::default(shape),
+        }
+    }
     /// returns an immutable reference to the layer's parameters
-    pub fn params(&self) -> &ParamsBase<S, D> {
+    pub const fn params(&self) -> &ParamsBase<S, D> {
         &self.params
     }
     /// returns a mutable reference to the layer's parameters
-    pub fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
+    pub const fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
         &mut self.params
     }
     /// returns an immutable reference to the activation function of the layer
-    pub fn rho(&self) -> &F {
+    pub const fn rho(&self) -> &F {
         &self.rho
     }
     /// returns a mutable reference to the activation function of the layer
-    pub fn rho_mut(&mut self) -> &mut F {
+    pub const fn rho_mut(&mut self) -> &mut F {
         &mut self.rho
+    }
+    /// consumes the current instance and returns another with the given parameters.
+    pub fn with_params<S2, D2>(self, params: ParamsBase<S2, D2>) -> LayerBase<F, S2, D2>
+    where
+        S2: RawData<Elem = S::Elem>,
+        D2: Dimension,
+    {
+        LayerBase {
+            rho: self.rho,
+            params,
+        }
     }
     /// consumes the current instance and returns another with the given activation function.
     /// This is useful during the creation of the model, when the activation function is not known yet.
