@@ -7,6 +7,7 @@
 pub use self::{layer::LayerBase, traits::*, types::*};
 
 pub(crate) mod layer;
+pub mod sequential;
 
 pub(crate) mod traits {
     #[doc(inline)]

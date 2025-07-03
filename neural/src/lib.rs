@@ -2,10 +2,9 @@
     Appellation: concision-neural <library>
     Contrib: @FL03
 */
-//! # concision-neural
-//!
-//! This crate focuses on implementing various neural network components, including models,
-//! layers, and training mechanisms.
+//! Various components, implementations, and traits for creating neural networks. The crate
+//! builds off of the [`concision_core`] crate, making extensive use of the [`ParamsBase`](cnc::ParamsBase)
+//! type to define the parameters of layers within a network.
 //!
 //! ## Overview
 //!
@@ -14,9 +13,23 @@
 //! below are several key components of the crate:
 //!
 //! - [`Model`]: A trait for defining a neural network model.
-//! - [`ModelParamsBase`]: A dedicated object capable of storing the parameters for both
-//!   shallow and deep neural networks.
 //! - [`StandardModelConfig`]: A standard configuration for the models
+//! - [`ModelFeatures`]: A default implementation of the [`ModelLayout`] trait that
+//!   sufficiently defines both shallow and deep neural networks.
+//!
+//! ### _Model Parameters_
+//!
+//! Additionally, the crate defines a sequential
+//!
+//! **Note**: You should stick with the type aliases for the [`ModelParamsBase`] type, as they
+//! drastically simplify the type-face of the model parameters. Attempting to generalize over
+//! the hidden layers of the model might lead to excessive complexity. That being said, there
+//! are provided methods and routines to convert from a shallow to deep model, and vice versa.
+//!
+//! - [`DeepModelParams`]: An owned representation of the [`ModelParamsBase`] for deep
+//!   neural networks.
+//! - [`ShallowModelParams`]: An owned representation of the [`ModelParamsBase`] for shallow
+//!   neural networks.
 //!
 //! ### Traits
 //!

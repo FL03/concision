@@ -36,7 +36,13 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(feature = "nightly", feature(allocator_api))]
 #![crate_type = "lib"]
+
+#[cfg(not(all(feature = "std", feature = "alloc")))]
+compile_error! {
+    "At least one of the 'std' or 'alloc' features must be enabled."
+}
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -126,6 +132,7 @@ pub mod traits {
     mod like;
     mod propagation;
     mod shape;
+    mod store;
     mod wnb;
 
     mod prelude {
@@ -145,6 +152,8 @@ pub mod traits {
         pub use super::propagation::*;
         #[doc(inline)]
         pub use super::shape::*;
+        #[doc(inline)]
+        pub use super::store::*;
         #[doc(inline)]
         pub use super::wnb::*;
     }
