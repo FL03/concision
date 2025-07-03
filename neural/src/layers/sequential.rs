@@ -13,4 +13,3 @@ where
 {
     pub(crate) layers: Vec<ParamsBase<S, D>>,
 }
-

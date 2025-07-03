@@ -2,10 +2,16 @@
     Appellation: predict <module>
     Contrib: @FL03
 */
+use cnc::Forward;
 
-/// [Predict] isn't designed to be implemented directly, rather, as a blanket impl for any
-/// entity that implements the [`Forward`](cnc::Forward) trait. This is primarily used to
-/// define the base functionality of the [`Model`](crate::Model) trait.
+/// The [`Predict`] trait is designed as a _**model-specific**_ interface for making
+/// predictions. In the future, we may consider opening the trait up allowing for an
+/// alternative implementation of the trait, but for now, it is simply implemented for all
+/// implementors of the [`Forward`] trait.
+///
+/// **Note:** The trait is sealed, preventing external implementations, ensuring that only the
+/// library can define how predictions are made. This is to maintain consistency and integrity
+/// across different model implementations.
 pub trait Predict<Rhs> {
     type Output;
 
@@ -14,8 +20,8 @@ pub trait Predict<Rhs> {
     fn predict(&self, input: &Rhs) -> crate::ModelResult<Self::Output>;
 }
 
-/// This trait extends the [`Predict`] trait to include a confidence score for the prediction.
-/// The confidence score is calculated as the inverse of the variance of the output.
+/// The [`PredictWithConfidence`] trait is an extension of the [`Predict`] trait, providing
+/// an additional method to obtain predictions along with a confidence score.
 pub trait PredictWithConfidence<Rhs>: Predict<Rhs> {
     type Confidence;
 
@@ -29,7 +35,6 @@ pub trait PredictWithConfidence<Rhs>: Predict<Rhs> {
  ************* Implementations *************
 */
 
-use cnc::Forward;
 use ndarray::{Array, Dimension, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 

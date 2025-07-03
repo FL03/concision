@@ -257,7 +257,7 @@ checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
 
 [[package]]
 name = "concision"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -277,7 +277,7 @@ dependencies = [
 
 [[package]]
 name = "concision-core"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -308,7 +308,7 @@ dependencies = [
 
 [[package]]
 name = "concision-data"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -328,7 +328,7 @@ dependencies = [
 
 [[package]]
 name = "concision-derive"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -337,7 +337,7 @@ dependencies = [
 
 [[package]]
 name = "concision-ext"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -359,7 +359,7 @@ dependencies = [
 
 [[package]]
 name = "concision-init"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -383,7 +383,7 @@ dependencies = [
 
 [[package]]
 name = "concision-kan"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -395,7 +395,7 @@ dependencies = [
 
 [[package]]
 name = "concision-macros"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -404,7 +404,7 @@ dependencies = [
 
 [[package]]
 name = "concision-models"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -423,7 +423,7 @@ dependencies = [
 
 [[package]]
 name = "concision-neural"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -454,7 +454,7 @@ dependencies = [
 
 [[package]]
 name = "concision-s4"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -466,7 +466,7 @@ dependencies = [
 
 [[package]]
 name = "concision-transformer"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -478,7 +478,7 @@ dependencies = [
 
 [[package]]
 name = "concision-utils"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "approx",
@@ -1044,6 +1044,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "io-uring"
+version = "0.7.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b86e202f00093dcba4275d4636b93ef9dd75d025ae560d2521b45ea28ab49013"
+dependencies = [
+ "bitflags",
+ "cfg-if",
+ "libc",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1600,9 +1611,9 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
 name = "reqwest"
-version = "0.12.20"
+version = "0.12.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eabf4c97d9130e2bf606614eb937e86edac8292eaa6f422f995d7e8de1eb1813"
+checksum = "cbc931937e6ca3a06e3b6c0aa7841849b160a90351d6ab467a8b9b9959767531"
 dependencies = [
  "base64",
  "bytes",
@@ -1884,6 +1895,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
 
 [[package]]
+name = "slab"
+version = "0.4.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "04dc19736151f35336d325007ac991178d504a119863a2fcb3758cdb5e52c50d"
+
+[[package]]
 name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2064,14 +2081,16 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.45.1"
+version = "1.46.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75ef51a33ef1da925cea3e4eb122833cb377c61439ca401b770f54902b806779"
+checksum = "1140bb80481756a8cbe10541f37433b459c5aa1e727b4c020fbfebdc25bf3ec4"
 dependencies = [
  "backtrace",
+ "io-uring",
  "libc",
  "mio",
  "pin-project-lite",
+ "slab",
  "socket2",
  "windows-sys 0.52.0",
 ]

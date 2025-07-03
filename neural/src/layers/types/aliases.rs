@@ -2,7 +2,9 @@
     appellation: aliases <module>
     authors: @FL03
 */
-use crate::layers::{Activator, LayerBase, Linear, ReLU, Sigmoid, Tanh};
+#[cfg(feature = "alloc")]
+use crate::layers::Activator;
+use crate::layers::{LayerBase, Linear, ReLU, Sigmoid, Tanh};
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
 
