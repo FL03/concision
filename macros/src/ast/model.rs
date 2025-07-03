@@ -15,11 +15,16 @@ use syn::{Ident, braced, token};
 /// ```ignore
 /// model! {
 ///     model {
+///         config: {
+///             decay: f64;
+///             learning_rate: f64 = 0.001;
+///             ... // declare other hyperparameters here; optionally, set their default values
+///         }
 ///         params: {
 ///             ...
 ///         };
 ///         layers: {
-///            ...
+///             ...
 ///         };
 ///     }
 /// }

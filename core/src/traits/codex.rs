@@ -1,8 +1,12 @@
+/*
+    appellation: codex <module>
+    authors: @FL03
+*/
 /// [Decode] defines a standard interface for decoding data.
 pub trait Decode<Rhs> {
     type Output;
 
-    fn decode(&self, values: Rhs) -> Self::Output;
+    fn decode(values: Rhs) -> Self::Output;
 }
 
 /// [Encode] defines a standard interface for encoding data.
@@ -13,10 +17,10 @@ pub trait Encode<Rhs> {
 }
 
 pub trait Codex<A, B> {
-    type Encoder: Encode<A, Output = B>;
-    type Decoder: Decode<B, Output = A>;
+    type Encoder<U, V>: Encode<U, Output = V>;
+    type Decoder<U, V>: Decode<U, Output = V>;
 
-    fn encode(&self, values: A) -> B;
+    fn encode(&self) -> Self::Encoder<A, B>;
 
-    fn decode(&self, values: B) -> A;
+    fn decode() -> Self::Decoder<B, A>;
 }

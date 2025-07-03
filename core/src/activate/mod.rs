@@ -2,9 +2,15 @@
     Appellation: activate <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! This module implements various activation functions for neural networks.
+//! Activation functions for neural networks and their components. These functions are often
+//! used to introduce non-linearity into the model, allowing it to learn more complex patterns
+//! in the data.
 //!
-//! ## Traits
+//! ## Overview
+//!
+//! This module works to provide a complete set of activation utilities for neural networks,
+//! manifesting in a number of traits, utilities, and other primitives used to define various
+//! approaches to activation functions.
 //!
 //! - [Heavyside]
 //! - [LinearActivation]

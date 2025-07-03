@@ -36,7 +36,13 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(feature = "nightly", feature(allocator_api))]
 #![crate_type = "lib"]
+
+#[cfg(not(all(feature = "std", feature = "alloc")))]
+compile_error! {
+    "At least one of the 'std' or 'alloc' features must be enabled."
+}
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -57,6 +63,8 @@ pub use concision_init as init;
 #[doc(inline)]
 #[cfg(feature = "cnc_utils")]
 pub use concision_utils as utils;
+/// An n-dimensional tensor
+pub use ndtensor as tensor;
 
 #[cfg(feature = "cnc_init")]
 pub use self::init::prelude::*;
@@ -83,8 +91,6 @@ pub mod loss;
 /// this module provides the [`ParamsBase`] type for the library, which is used to define the
 /// parameters of a neural network.
 pub mod params;
-/// the [`tensor`] module provides various traits and types for handling n-dimensional tensors.
-pub mod tensor;
 
 pub mod ops {
     //! This module provides the core operations for tensors, including filling, padding,
@@ -126,6 +132,7 @@ pub mod traits {
     mod like;
     mod propagation;
     mod shape;
+    mod store;
     mod wnb;
 
     mod prelude {
@@ -146,6 +153,8 @@ pub mod traits {
         #[doc(inline)]
         pub use super::shape::*;
         #[doc(inline)]
+        pub use super::store::*;
+        #[doc(inline)]
         pub use super::wnb::*;
     }
 }
@@ -156,6 +165,7 @@ pub mod prelude {
     pub use concision_init::prelude::*;
     #[cfg(feature = "cnc_utils")]
     pub use concision_utils::prelude::*;
+    pub use ndtensor::prelude::*;
 
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
@@ -165,8 +175,6 @@ pub mod prelude {
     pub use crate::ops::prelude::*;
     #[doc(no_inline)]
     pub use crate::params::prelude::*;
-    #[doc(inline)]
-    pub use crate::tensor::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::*;
 }

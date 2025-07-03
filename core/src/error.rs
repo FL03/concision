@@ -10,8 +10,10 @@ use alloc::{
     string::{String, ToString},
 };
 
-/// a type alias for a [Result] with a [Error]
-pub type Result<T = ()> = core::result::Result<T, Error>;
+#[allow(dead_code)]
+/// a type alias for a [Result](core::result::Result) configured with an [`Error`] as its error
+/// type.
+pub type Result<T> = core::result::Result<T, Error>;
 
 /// The [`Error`] type enumerates various errors that can occur within the framework.
 #[derive(Debug, thiserror::Error)]
@@ -25,6 +27,8 @@ pub enum Error {
     #[error(transparent)]
     #[cfg(feature = "cnc_init")]
     InitError(#[from] concision_init::error::InitError),
+    #[error(transparent)]
+    TensorError(#[from] ndtensor::error::TensorError),
     #[error(transparent)]
     #[cfg(feature = "cnc_utils")]
     UtilityError(#[from] concision_utils::error::UtilityError),

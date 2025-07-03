@@ -2,12 +2,22 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
-use super::{Activator, ActivatorGradient, Layer};
+//! this module defines the [`LayerBase`] struct, a generic representation of a neural network
+//! layer essentially wrapping a [`ParamsBase`] with some _activation function_, `F`.
+//!
+
+mod impl_layer;
+mod impl_layer_repr;
+
+#[allow(deprecated)]
+mod impl_layer_deprecated;
+
+use super::Activator;
 use cnc::{Forward, ParamsBase};
-use ndarray::{Dimension, Ix2, RawData};
+use ndarray::{DataOwned, Dimension, Ix2, RawData, RemoveAxis, ShapeBuilder};
 
-pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activator<A, Output = A> + 'static>, S, D>;
-
+/// The [`LayerBase`] struct is a base representation of a neural network layer, essentially
+/// binding an activation function, `F`, to a set of parameters, `ParamsBase<S, D>`.
 pub struct LayerBase<F, S, D = Ix2>
 where
     D: Dimension,
@@ -15,59 +25,8 @@ where
 {
     /// the activation function of the layer
     pub(crate) rho: F,
+    /// the parameters of the layer is an object consisting of both a weight and a bias tensor.
     pub(crate) params: ParamsBase<S, D>,
-}
-
-impl<S, D> LayerBase<super::Linear, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
-    pub fn linear(params: ParamsBase<S, D>) -> Self {
-        Self {
-            rho: super::Linear,
-            params,
-        }
-    }
-}
-
-impl<S, D> LayerBase<super::Sigmoid, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
-    pub fn sigmoid(params: ParamsBase<S, D>) -> Self {
-        Self {
-            rho: super::Sigmoid,
-            params,
-        }
-    }
-}
-
-impl<S, D> LayerBase<super::Tanh, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
-    pub fn tanh(params: ParamsBase<S, D>) -> Self {
-        Self {
-            rho: super::Tanh,
-            params,
-        }
-    }
-}
-
-impl<S, D> LayerBase<super::ReLU, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
-    pub fn relu(params: ParamsBase<S, D>) -> Self {
-        Self {
-            rho: super::ReLU,
-            params,
-        }
-    }
 }
 
 impl<F, S, A, D> LayerBase<F, S, D>
@@ -75,24 +34,60 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn new(rho: F, params: ParamsBase<S, D>) -> Self {
+    /// create a new [`LayerBase`] from the given activation function and parameters.
+    pub const fn new(rho: F, params: ParamsBase<S, D>) -> Self {
         Self { rho, params }
     }
+    /// create a new [`LayerBase`] from the given parameters assuming the logical default for
+    /// the activation of type `F`.
+    pub fn from_params(params: ParamsBase<S, D>) -> Self
+    where
+        F: Default,
+    {
+        Self {
+            rho: F::default(),
+            params,
+        }
+    }
+    /// create a new [`LayerBase`] from the given activation function and shape.
+    pub fn from_rho<Sh>(rho: F, shape: Sh) -> Self
+    where
+        A: Clone + Default,
+        S: DataOwned,
+        D: RemoveAxis,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        Self {
+            rho,
+            params: ParamsBase::default(shape),
+        }
+    }
     /// returns an immutable reference to the layer's parameters
-    pub fn params(&self) -> &ParamsBase<S, D> {
+    pub const fn params(&self) -> &ParamsBase<S, D> {
         &self.params
     }
     /// returns a mutable reference to the layer's parameters
-    pub fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
+    pub const fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
         &mut self.params
     }
     /// returns an immutable reference to the activation function of the layer
-    pub fn rho(&self) -> &F {
+    pub const fn rho(&self) -> &F {
         &self.rho
     }
     /// returns a mutable reference to the activation function of the layer
-    pub fn rho_mut(&mut self) -> &mut F {
+    pub const fn rho_mut(&mut self) -> &mut F {
         &mut self.rho
+    }
+    /// consumes the current instance and returns another with the given parameters.
+    pub fn with_params<S2, D2>(self, params: ParamsBase<S2, D2>) -> LayerBase<F, S2, D2>
+    where
+        S2: RawData<Elem = S::Elem>,
+        D2: Dimension,
+    {
+        LayerBase {
+            rho: self.rho,
+            params,
+        }
     }
     /// consumes the current instance and returns another with the given activation function.
     /// This is useful during the creation of the model, when the activation function is not known yet.
@@ -115,71 +110,5 @@ where
         Y: Clone,
     {
         Forward::forward(&self.params, input).map(|x| self.rho.activate(x))
-    }
-}
-
-impl<F, S, D> core::ops::Deref for LayerBase<F, S, D>
-where
-    D: Dimension,
-    S: RawData,
-{
-    type Target = ParamsBase<S, D>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.params
-    }
-}
-
-impl<F, S, D> core::ops::DerefMut for LayerBase<F, S, D>
-where
-    D: Dimension,
-    S: RawData,
-{
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.params
-    }
-}
-
-impl<U, V, F, S, D> Activator<U> for LayerBase<F, S, D>
-where
-    F: Activator<U, Output = V>,
-    D: Dimension,
-    S: RawData,
-{
-    type Output = V;
-
-    fn activate(&self, x: U) -> Self::Output {
-        self.rho().activate(x)
-    }
-}
-
-impl<U, F, S, D> ActivatorGradient<U> for LayerBase<F, S, D>
-where
-    F: ActivatorGradient<U>,
-    D: Dimension,
-    S: RawData,
-{
-    type Input = F::Input;
-    type Delta = F::Delta;
-
-    fn activate_gradient(&self, inputs: F::Input) -> F::Delta {
-        self.rho().activate_gradient(inputs)
-    }
-}
-
-impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D>
-where
-    F: ActivatorGradient<A>,
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    type Scalar = A;
-
-    fn params(&self) -> &ParamsBase<S, D> {
-        &self.params
-    }
-
-    fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
-        &mut self.params
     }
 }

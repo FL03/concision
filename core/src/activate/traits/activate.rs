@@ -4,227 +4,137 @@
 */
 use super::unary::*;
 
-use ndarray::prelude::*;
-use ndarray::{Data, DataMut, ScalarOperand};
-use num::complex::ComplexFloat;
+use crate::Apply;
+#[cfg(feature = "complex")]
+use num_complex::ComplexFloat;
+use num_traits::One;
 
-/// The [`Activate`] trait establishes a common interface for entities that can be _activated_
-/// according to some function
-pub trait Activate<A> {
-    type Cont<B>;
-
-    fn activate<V, F>(&self, f: F) -> Self::Cont<V>
-    where
-        F: Fn(A) -> V;
-}
-/// A trait for establishing a common mechanism to activate entities in-place.
-pub trait ActivateMut<A> {
-    type Cont<B>;
-
-    fn activate_inplace<'a, F>(&'a mut self, f: F)
-    where
-        A: 'a,
-        F: FnMut(A) -> A;
-}
-/// This trait extends the [`Activate`] trait with a number of additional activation functions
-/// and their derivatives. _**Note:**_ this trait is automatically implemented for any type
-/// that implements the [`Activate`] trait eliminating the need to implement it manually.
-pub trait ActivateExt<U>: Activate<U> {
-    fn linear(&self) -> Self::Cont<U::Output>
-    where
-        U: LinearActivation,
-    {
-        self.activate(|x| x.linear())
+/// The [`Rho`] trait defines a set of activation functions that can be applied to an
+/// implementor of the [`Apply`] trait. It provides methods for common activation functions
+/// such as linear, heavyside, ReLU, sigmoid, and tanh, along with their derivatives.
+/// The trait is generic over a type `U`, which represents the data type of the input to the
+/// activation functions. The trait also inherits a type alias `Cont<U>` to allow for variance
+/// w.r.t. the outputs of defined methods.
+pub trait Rho<U>: Apply<U> {
+    /// the linear activation function is essentially a passthrough function, simply cloning
+    /// the content.
+    fn linear(&self) -> Self::Cont<U> {
+        self.apply(|x| x)
     }
 
     fn linear_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: LinearActivation,
+        U: One,
     {
-        self.activate(|x| x.linear_derivative())
+        self.apply(|_| <U>::one())
     }
 
     fn heavyside(&self) -> Self::Cont<U::Output>
     where
         U: Heavyside,
     {
-        self.activate(|x| x.heavyside())
+        self.apply(|x| x.heavyside())
     }
 
     fn heavyside_derivative(&self) -> Self::Cont<U::Output>
     where
         U: Heavyside,
     {
-        self.activate(|x| x.heavyside_derivative())
+        self.apply(|x| x.heavyside_derivative())
     }
 
     fn relu(&self) -> Self::Cont<U::Output>
     where
         U: ReLU,
     {
-        self.activate(|x| x.relu())
+        self.apply(|x| x.relu())
     }
 
     fn relu_derivative(&self) -> Self::Cont<U::Output>
     where
         U: ReLU,
     {
-        self.activate(|x| x.relu_derivative())
+        self.apply(|x| x.relu_derivative())
     }
 
     fn sigmoid(&self) -> Self::Cont<U::Output>
     where
         U: Sigmoid,
     {
-        self.activate(|x| x.sigmoid())
+        self.apply(|x| x.sigmoid())
     }
 
     fn sigmoid_derivative(&self) -> Self::Cont<U::Output>
     where
         U: Sigmoid,
     {
-        self.activate(|x| x.sigmoid_derivative())
+        self.apply(|x| x.sigmoid_derivative())
     }
 
     fn tanh(&self) -> Self::Cont<U::Output>
     where
         U: Tanh,
     {
-        self.activate(|x| x.tanh())
+        self.apply(|x| x.tanh())
     }
 
     fn tanh_derivative(&self) -> Self::Cont<U::Output>
     where
         U: Tanh,
     {
-        self.activate(|x| x.tanh_derivative())
+        self.apply(|x| x.tanh_derivative())
+    }
+}
+
+#[cfg(feature = "complex")]
+/// The [`RhoComplex`] trait is similar to the [`Rho`] trait in that it provides various
+/// activation functions for implementos of the [`Apply`] trait, however, instead of being
+/// truly generic over a type `U`, it is generic over a type `U` that implements the
+/// [`ComplexFloat`] trait. This enables the use of complex numbers in the activation
+/// functions, something particularly useful for signal-based workloads.
+///
+/// **note**: The [`Rho`] and [`RhoComplex`] traits are not intended to be used together, hence
+/// why the implemented methods are not given alternative or unique name between the two
+/// traits. If you happen to import both within the same file, you will more than likely need
+/// to use a fully qualified syntax to disambiguate the two traits. If this becomes a problem,
+/// we may consider renaming the _complex_ methods accordingly to differentiate them from the
+/// _standard_ methods.
+pub trait RhoComplex<U>: Apply<U>
+where
+    U: ComplexFloat,
+{
+    fn sigmoid(&self) -> Self::Cont<U> {
+        self.apply(|x| U::one() / (U::one() + (-x).exp()))
     }
 
-    fn sigmoid_complex(&self) -> Self::Cont<U>
-    where
-        U: ComplexFloat,
-    {
-        self.activate(|x| U::one() / (U::one() + (-x).exp()))
-    }
-
-    fn sigmoid_complex_derivative(&self) -> Self::Cont<U>
-    where
-        U: ComplexFloat,
-    {
-        self.activate(|x| {
+    fn sigmoid_derivative(&self) -> Self::Cont<U> {
+        self.apply(|x| {
             let s = U::one() / (U::one() + (-x).exp());
             s * (U::one() - s)
         })
     }
 
-    fn tanh_complex(&self) -> Self::Cont<U>
-    where
-        U: ComplexFloat,
-    {
-        self.activate(|x| x.tanh())
+    fn tanh(&self) -> Self::Cont<U> {
+        self.apply(|x| x.tanh())
     }
 
-    fn tanh_complex_derivative(&self) -> Self::Cont<U>
-    where
-        U: ComplexFloat,
-    {
-        self.activate(|x| {
+    fn tanh_derivative(&self) -> Self::Cont<U> {
+        self.apply(|x| {
             let s = x.tanh();
             U::one() - s * s
         })
     }
 }
 
-pub trait NdActivateMut<A, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-{
-    type Data: DataMut<Elem = A>;
-}
 /*
  ************* Implementations *************
 */
-impl<U, S> ActivateExt<U> for S where S: Activate<U> {}
+impl<U, S> Rho<U> for S where S: Apply<U> {}
 
-impl<A, S, D> Activate<A> for ArrayBase<S, D>
+#[cfg(feature = "complex")]
+impl<U, S> RhoComplex<U> for S
 where
-    A: ScalarOperand,
-    D: Dimension,
-    S: Data<Elem = A>,
+    S: Apply<U>,
+    U: ComplexFloat,
 {
-    type Cont<V> = Array<V, D>;
-
-    fn activate<V, F>(&self, f: F) -> Self::Cont<V>
-    where
-        F: Fn(A) -> V,
-    {
-        self.mapv(f)
-    }
-}
-
-impl<A, S, D> Activate<A> for &ArrayBase<S, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-    S: Data<Elem = A>,
-{
-    type Cont<V> = Array<V, D>;
-
-    fn activate<B, F>(&self, f: F) -> Array<B, D>
-    where
-        F: Fn(A) -> B,
-    {
-        self.mapv(f)
-    }
-}
-
-impl<A, S, D> Activate<A> for &mut ArrayBase<S, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-    S: Data<Elem = A>,
-{
-    type Cont<V> = Array<V, D>;
-
-    fn activate<B, F>(&self, f: F) -> Array<B, D>
-    where
-        F: Fn(A) -> B,
-    {
-        self.mapv(f)
-    }
-}
-
-impl<A, S, D> ActivateMut<A> for ArrayBase<S, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-    S: DataMut<Elem = A>,
-{
-    type Cont<V> = Array<V, D>;
-
-    fn activate_inplace<'a, F>(&'a mut self, f: F)
-    where
-        A: 'a,
-        F: FnMut(A) -> A,
-    {
-        self.mapv_inplace(f)
-    }
-}
-
-impl<A, S, D> ActivateMut<A> for &mut ArrayBase<S, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-    S: DataMut<Elem = A>,
-{
-    type Cont<V> = Array<V, D>;
-
-    fn activate_inplace<'b, F>(&'b mut self, f: F)
-    where
-        A: 'b,
-        F: FnMut(A) -> A,
-    {
-        self.mapv_inplace(f)
-    }
 }

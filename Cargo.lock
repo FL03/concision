@@ -257,7 +257,7 @@ checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
 
 [[package]]
 name = "concision"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -277,7 +277,7 @@ dependencies = [
 
 [[package]]
 name = "concision-core"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -286,6 +286,7 @@ dependencies = [
  "getrandom",
  "lazy_static",
  "ndarray",
+ "ndtensor",
  "num",
  "num-complex",
  "num-traits",
@@ -293,6 +294,7 @@ dependencies = [
  "rand 0.9.1",
  "rand_distr",
  "rayon",
+ "rustfft",
  "scsys",
  "scsys-derive",
  "serde",
@@ -306,7 +308,7 @@ dependencies = [
 
 [[package]]
 name = "concision-data"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -326,7 +328,7 @@ dependencies = [
 
 [[package]]
 name = "concision-derive"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -335,7 +337,7 @@ dependencies = [
 
 [[package]]
 name = "concision-ext"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -357,7 +359,7 @@ dependencies = [
 
 [[package]]
 name = "concision-init"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -381,7 +383,7 @@ dependencies = [
 
 [[package]]
 name = "concision-kan"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -393,7 +395,7 @@ dependencies = [
 
 [[package]]
 name = "concision-macros"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -402,7 +404,7 @@ dependencies = [
 
 [[package]]
 name = "concision-models"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -421,7 +423,7 @@ dependencies = [
 
 [[package]]
 name = "concision-neural"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -452,7 +454,7 @@ dependencies = [
 
 [[package]]
 name = "concision-s4"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -464,7 +466,7 @@ dependencies = [
 
 [[package]]
 name = "concision-transformer"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -476,7 +478,7 @@ dependencies = [
 
 [[package]]
 name = "concision-utils"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "approx",
@@ -1184,6 +1186,34 @@ dependencies = [
  "rawpointer",
  "rayon",
  "serde",
+]
+
+[[package]]
+name = "ndtensor"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ea8ab4dd20883ddf58cdbade1810f8840d0d420f33e5143b407ec7c3102ae2ec"
+dependencies = [
+ "anyhow",
+ "approx",
+ "getrandom",
+ "ndarray",
+ "num",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "rand 0.9.1",
+ "rand_distr",
+ "rayon",
+ "scsys",
+ "scsys-derive",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "smart-default",
+ "strum",
+ "thiserror",
+ "tracing",
 ]
 
 [[package]]

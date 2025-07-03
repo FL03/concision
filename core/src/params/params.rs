@@ -8,9 +8,9 @@ use ndarray::{
 };
 
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
-/// model. The implementation is designed around the [`ArrayBase`] type from the
-/// `ndarray` crate, which allows for flexible and efficient storage of multi-dimensional
-/// arrays.
+/// model where the bias tensor is always `n-1` dimensions smaller than the `weights` tensor.
+/// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
+/// that can be reduced by one axis (i.e. $`\mbox{rank}(D)>0`$), which is typically the "zero-th" axis.
 pub struct ParamsBase<S, D = ndarray::Ix2>
 where
     D: Dimension,
@@ -88,7 +88,7 @@ where
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] from the given shape and element;
-    pub fn from_elems<Sh>(shape: Sh, elem: A) -> Self
+    pub fn from_elem<Sh>(shape: Sh, elem: A) -> Self
     where
         A: Clone,
         D: RemoveAxis,
@@ -109,7 +109,7 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        Self::from_elems(shape, A::default())
+        Self::from_elem(shape, A::default())
     }
     /// initialize the parameters with all values set to zero
     pub fn ones<Sh>(shape: Sh) -> Self
@@ -119,7 +119,7 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        Self::from_elems(shape, A::one())
+        Self::from_elem(shape, A::one())
     }
     /// create an instance of the parameters with all values set to zero
     pub fn zeros<Sh>(shape: Sh) -> Self
@@ -129,7 +129,7 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        Self::from_elems(shape, A::zero())
+        Self::from_elem(shape, A::zero())
     }
     /// returns an immutable reference to the bias
     pub const fn bias(&self) -> &ArrayBase<S, D::Smaller> {

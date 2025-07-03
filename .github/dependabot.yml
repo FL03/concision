@@ -13,6 +13,7 @@ updates:
       - /init
       - /macros
       - /neural
+      - /tensor
       - /utils
       - /ext
       - /models/*

@@ -3,6 +3,8 @@
     Contrib: @FL03
 */
 
+/// the [`ParamsError`] enumerates various errors that can occur within the parameters of a
+/// neural network.
 #[derive(Debug, thiserror::Error)]
 pub enum ParamsError {
     #[error("Dimension Error: {0}")]

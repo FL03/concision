@@ -16,16 +16,16 @@ where
     fn count(&self) -> usize;
 }
 
-/// The [`ShallowNeuralStore`] trait for shallow neural networks
-pub trait ShallowNeuralStore<S, D>: RawHidden<S, D>
+/// The [`ShallowModelRepr`] trait for shallow neural networks
+pub trait ShallowModelRepr<S, D>: RawHidden<S, D>
 where
     S: RawData,
     D: Dimension,
 {
     private!();
 }
-/// The [`DeepNeuralStore`] trait for deep neural networks
-pub trait DeepNeuralStore<S, D>: RawHidden<S, D>
+/// The [`DeepModelRepr`] trait for deep neural networks
+pub trait DeepModelRepr<S, D>: RawHidden<S, D>
 where
     S: RawData,
     D: Dimension,
@@ -44,7 +44,7 @@ where
  ************* Implementations *************
 */
 
-impl<X, A, S, D> DeepNeuralStore<S, D> for X
+impl<X, A, S, D> DeepModelRepr<S, D> for X
 where
     S: RawData<Elem = A>,
     D: Dimension,
@@ -129,7 +129,7 @@ macro_rules! impl_raw_hidden_params {
             }
         }
 
-        impl<S, D> ShallowNeuralStore<S, D> for $($rest)*
+        impl<S, D> ShallowModelRepr<S, D> for $($rest)*
         where
             S: RawData,
             D: Dimension,

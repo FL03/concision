@@ -2,12 +2,12 @@
     appellation: attention <test>
     authors: @FL03
 */
-use concision_neural::attention::{Qkv, ScaledDotProductAttention};
+use concision_ext::attention::{Qkv, ScaledDotProductAttention};
 
 use ndarray::prelude::*;
 
 #[test]
-fn test_attention() {
+fn test_scaled_dot_product_attention() {
     let (m, n) = (7, 10);
     let qkv = Qkv::<f64>::ones((m, n));
     // initialize the scaled dot-product attention layer
