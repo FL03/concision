@@ -8,16 +8,15 @@ use crate::{Predict, Train};
 use concision_core::params::Params;
 use concision_data::DatasetBase;
 
-/// The base interface for all models; each model provides access to a configuration object
-/// defined as the associated type [`Config`](Model::Config). The configuration object is used
-/// to provide hyperparameters and other control related parameters. In addition, the model's
-/// layout is defined by the [`features`](Model::features) method which aptly returns a copy of
-/// its [ModelFeatures] object.
+/// The [`Model`] trait defines the core interface for all models; implementors will need to
+/// provide the type of configuration used by the model, the type of layout used by the model,
+/// and the type of parameters used by the model. The crate provides standard, or default,
+/// definitions of both the configuration and layout types, however, for
 pub trait Model<T = f32> {
-    /// The configuration type for the model
+    /// The type of configuration used for the model
     type Config: NetworkConfig<T>;
-    /// the type of layout used by the model
-    type Layout;
+    /// The type of [`ModelLayout`] used by the model for this implementation.
+    type Layout: ModelLayout;
     /// returns an immutable reference to the models configuration; this is typically used to
     /// access the models hyperparameters (i.e. learning rate, momentum, etc.) and other
     /// related control parameters.
@@ -41,7 +40,7 @@ pub trait Model<T = f32> {
     /// By default, the trait simply passes each output from one layer to the next, however,
     /// custom models will likely override this method to inject activation methods and other
     /// related logic
-    fn predict<U, V>(&self, inputs: &U) -> crate::NeuralResult<V>
+    fn predict<U, V>(&self, inputs: &U) -> crate::ModelResult<V>
     where
         Self: Predict<U, Output = V>,
     {
@@ -49,7 +48,7 @@ pub trait Model<T = f32> {
     }
     /// a convience method that trains the model using the provided dataset; this method
     /// requires that the model implements the [`Train`] trait and that the dataset
-    fn train<U, V, W>(&mut self, dataset: &DatasetBase<U, V>) -> crate::NeuralResult<W>
+    fn train<U, V, W>(&mut self, dataset: &DatasetBase<U, V>) -> crate::ModelResult<W>
     where
         Self: Train<U, V, Output = W>,
     {
@@ -57,10 +56,7 @@ pub trait Model<T = f32> {
     }
 }
 
-pub trait ModelExt<T>: Model<T>
-where
-    Self::Layout: ModelLayout,
-{
+pub trait ModelExt<T>: Model<T> {
     /// [`replace`](core::mem::replace) the current configuration and returns the old one;
     fn replace_config(&mut self, config: Self::Config) -> Self::Config {
         core::mem::replace(self.config_mut(), config)

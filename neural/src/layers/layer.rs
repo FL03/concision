@@ -2,9 +2,17 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
+//! this module defines the [`LayerBase`] struct, a generic representation of a neural network
+//! layer essentially wrapping a [`ParamsBase`] with some _activation function_, `F`.
+//!
+
+mod impl_layer;
 mod impl_layer_repr;
 
-use super::{Activator, ActivatorGradient, Layer};
+#[allow(deprecated)]
+mod impl_layer_deprecated;
+
+use super::Activator;
 use cnc::{Forward, ParamsBase};
 use ndarray::{DataOwned, Dimension, Ix2, RawData, RemoveAxis, ShapeBuilder};
 
@@ -102,71 +110,5 @@ where
         Y: Clone,
     {
         Forward::forward(&self.params, input).map(|x| self.rho.activate(x))
-    }
-}
-
-impl<F, S, D> core::ops::Deref for LayerBase<F, S, D>
-where
-    D: Dimension,
-    S: RawData,
-{
-    type Target = ParamsBase<S, D>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.params
-    }
-}
-
-impl<F, S, D> core::ops::DerefMut for LayerBase<F, S, D>
-where
-    D: Dimension,
-    S: RawData,
-{
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.params
-    }
-}
-
-impl<U, V, F, S, D> Activator<U> for LayerBase<F, S, D>
-where
-    F: Activator<U, Output = V>,
-    D: Dimension,
-    S: RawData,
-{
-    type Output = V;
-
-    fn activate(&self, x: U) -> Self::Output {
-        self.rho().activate(x)
-    }
-}
-
-impl<U, F, S, D> ActivatorGradient<U> for LayerBase<F, S, D>
-where
-    F: ActivatorGradient<U>,
-    D: Dimension,
-    S: RawData,
-{
-    type Input = F::Input;
-    type Delta = F::Delta;
-
-    fn activate_gradient(&self, inputs: F::Input) -> F::Delta {
-        self.rho().activate_gradient(inputs)
-    }
-}
-
-impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D>
-where
-    F: ActivatorGradient<A>,
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    type Scalar = A;
-
-    fn params(&self) -> &ParamsBase<S, D> {
-        &self.params
-    }
-
-    fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
-        &mut self.params
     }
 }

@@ -8,37 +8,44 @@ use cnc::params::ParamsBase;
 use cnc::tensor::NdTensor;
 use cnc::{Backward, Forward};
 use ndarray::{Data, Dimension, RawData};
-/// A layer within a neural-network containing a set of parameters and an activation function.
-/// Here, this manifests as a wrapper around the parameters of the layer with a generic
-/// activation function and corresponding traits to denote desired behaviors.
-///
+
+/// A generic trait defining the composition of a _layer_ within a neural network.
 pub trait Layer<S, D>
 where
     D: Dimension,
-    S: RawData<Elem = Self::Scalar>,
+    S: RawData<Elem = Self::Elem>,
 {
-    type Scalar;
+    /// the type of element used within the layer; typically a floating-point variant like
+    /// [`f32`] or [`f64`].
+    type Elem;
+    /// The type of activator used by the layer; the type must implement [`ActivatorGradient`]
+    type Rho: Activator<Self::Elem>;
 
+    fn rho(&self) -> &Self::Rho;
     /// returns an immutable reference to the parameters of the layer
     fn params(&self) -> &ParamsBase<S, D>;
     /// returns a mutable reference to the parameters of the layer
     fn params_mut(&mut self) -> &mut ParamsBase<S, D>;
+}
+/// The [`LayerExt`] trait extends the base [`Layer`] trait with additional methods that
+/// are commonly used in neural network layers. It provides methods for setting parameters,
+/// performing backward propagation of errors, and completing a forward pass through the layer.
+pub trait LayerExt<S, D>: Layer<S, D>
+where
+    D: Dimension,
+    S: RawData<Elem = Self::Elem>,
+{
     /// update the layer parameters
     fn set_params(&mut self, params: ParamsBase<S, D>) {
         *self.params_mut() = params;
     }
     /// backward propagate error through the layer
-    fn backward<X, Y, Z, Delta>(
-        &mut self,
-        input: X,
-        error: Y,
-        gamma: Self::Scalar,
-    ) -> cnc::Result<Z>
+    fn backward<X, Y, Z, Dt>(&mut self, input: X, error: Y, gamma: Self::Elem) -> cnc::Result<Z>
     where
         S: Data,
-        Self: ActivatorGradient<X, Input = Y, Delta = Delta>,
-        Self::Scalar: Clone,
-        ParamsBase<S, D>: Backward<X, Delta, Elem = Self::Scalar, Output = Z>,
+        Self: ActivatorGradient<X, Input = Y, Output = Z, Delta = Dt>,
+        Self::Elem: Clone,
+        ParamsBase<S, D>: Backward<X, Dt, Elem = Self::Elem, Output = Z>,
     {
         // compute the delta using the activation function
         let delta = self.activate_gradient(error);

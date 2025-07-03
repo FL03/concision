@@ -23,11 +23,30 @@ pub trait ActivatorGradient<T>: Activator<T> {
 /*
  ************* Implementations *************
 */
-
-impl<X, Y, F> Activator<X> for F
+impl<A, B, T> Activator<A> for &T
 where
-    F: Fn(X) -> Y,
+    T: Activator<A, Output = B>,
 {
+    type Output = B;
+
+    fn activate(&self, rhs: A) -> Self::Output {
+        (*self).activate(rhs)
+    }
+}
+
+impl<A, B, C, T> ActivatorGradient<A> for &T
+where
+    T: ActivatorGradient<A, Input = B, Delta = C>,
+{
+    type Input = B;
+    type Delta = C;
+
+    fn activate_gradient(&self, inputs: Self::Input) -> Self::Delta {
+        (*self).activate_gradient(inputs)
+    }
+}
+
+impl<X, Y> Activator<X> for dyn Fn(X) -> Y {
     type Output = Y;
 
     fn activate(&self, rhs: X) -> Self::Output {
