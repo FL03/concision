@@ -1,13 +1,43 @@
 /*
-    appellation: impl_model_params <module>
-    authors: @FL03
+    Appellation: store <module>
+    Contrib: @FL03
 */
-use crate::model::params::ModelParamsBase;
 
-use crate::{DeepNeuralStore, RawHidden};
 use cnc::params::ParamsBase;
-use ndarray::{ArrayBase, Data, Dimension, RawData, RawDataClone};
+use ndarray::{ArrayBase, Dimension, RawData};
 
+use crate::{DeepModelRepr, RawHidden};
+
+/// The [`ModelParamsBase`] object is a generic container for storing the parameters of a
+/// neural network, regardless of the layout (e.g. shallow or deep). This is made possible
+/// through the introduction of a generic hidden layer type, `H`, that allows us to define
+/// aliases and additional traits for contraining the hidden layer type. That being said, we
+/// don't reccoment using this type directly, but rather use the provided type aliases such as
+/// [`DeepModelParams`] or [`ShallowModelParams`] or their owned variants. These provide a much
+/// more straighforward interface for typing the parameters of a neural network. We aren't too
+/// worried about the transmutation between the two since users desiring this ability should
+/// simply stick with a _deep_ representation, initializing only a single layer within the
+/// respective container.
+///
+/// This type also enables us to define a set of common initialization routines and introduce
+/// other standards for dealing with parameters in a neural network.
+pub struct ModelParamsBase<S, D, H>
+where
+    D: Dimension,
+    S: RawData,
+    H: RawHidden<S, D>,
+{
+    /// the input layer of the model
+    pub(crate) input: ParamsBase<S, D>,
+    /// a sequential stack of params for the model's hidden layers
+    pub(crate) hidden: H,
+    /// the output layer of the model
+    pub(crate) output: ParamsBase<S, D>,
+}
+/// The base implementation for the [`ModelParamsBase`] type, which is generic over the
+/// storage type `S`, the dimension `D`, and the hidden layer type `H`. This implementation
+/// focuses on providing basic initialization routines and accessors for the various layers
+/// within the model.
 impl<S, D, H, A> ModelParamsBase<S, D, H>
 where
     D: Dimension,
@@ -84,7 +114,7 @@ where
     #[inline]
     pub fn hidden_as_slice(&self) -> &[ParamsBase<S, D>]
     where
-        H: DeepNeuralStore<S, D>,
+        H: DeepModelRepr<S, D>,
     {
         self.hidden().as_slice()
     }
@@ -140,93 +170,5 @@ where
     #[inline]
     pub fn len(&self) -> usize {
         self.count_hidden() + 2 // +2 for input and output layers
-    }
-}
-
-impl<A, S, D, H> Clone for ModelParamsBase<S, D, H>
-where
-    D: Dimension,
-    H: RawHidden<S, D> + Clone,
-    S: RawDataClone<Elem = A>,
-    A: Clone,
-{
-    fn clone(&self) -> Self {
-        Self {
-            input: self.input().clone(),
-            hidden: self.hidden().clone(),
-            output: self.output().clone(),
-        }
-    }
-}
-
-impl<A, S, D, H> core::fmt::Debug for ModelParamsBase<S, D, H>
-where
-    D: Dimension,
-    H: RawHidden<S, D> + core::fmt::Debug,
-    S: Data<Elem = A>,
-    A: core::fmt::Debug,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        f.debug_struct("ModelParams")
-            .field("input", self.input())
-            .field("hidden", self.hidden())
-            .field("output", self.output())
-            .finish()
-    }
-}
-
-impl<A, S, D, H> core::fmt::Display for ModelParamsBase<S, D, H>
-where
-    D: Dimension,
-    H: RawHidden<S, D> + core::fmt::Debug,
-    S: Data<Elem = A>,
-    A: core::fmt::Display,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(
-            f,
-            "{{ input: {i}, hidden: {h:?}, output: {o} }}",
-            i = self.input(),
-            h = self.hidden(),
-            o = self.output()
-        )
-    }
-}
-
-impl<A, S, D, H> core::ops::Index<usize> for ModelParamsBase<S, D, H>
-where
-    D: Dimension,
-    S: Data<Elem = A>,
-    H: DeepNeuralStore<S, D>,
-    A: Clone,
-{
-    type Output = ParamsBase<S, D>;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        if index == 0 {
-            self.input()
-        } else if index == self.count_hidden() + 1 {
-            self.output()
-        } else {
-            &self.hidden().as_slice()[index - 1]
-        }
-    }
-}
-
-impl<A, S, D, H> core::ops::IndexMut<usize> for ModelParamsBase<S, D, H>
-where
-    D: Dimension,
-    S: Data<Elem = A>,
-    H: DeepNeuralStore<S, D>,
-    A: Clone,
-{
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        if index == 0 {
-            self.input_mut()
-        } else if index == self.count_hidden() + 1 {
-            self.output_mut()
-        } else {
-            &mut self.hidden_mut().as_mut_slice()[index - 1]
-        }
     }
 }

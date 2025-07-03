@@ -6,7 +6,7 @@ use crate::params::ParamsBase;
 
 use ndarray::{CowRepr, Ix2, OwnedArcRepr, OwnedRepr, RawViewRepr, ViewRepr};
 
-/// A type alias for owned parameters
+/// A type alias for a [`ParamsBase`] with an owned internal layout
 pub type Params<A, D = Ix2> = ParamsBase<OwnedRepr<A>, D>;
 /// A type alias for shared parameters
 pub type ArcParams<A, D = Ix2> = ParamsBase<OwnedArcRepr<A>, D>;

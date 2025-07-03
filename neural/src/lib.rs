@@ -49,7 +49,9 @@ pub use self::{
     config::prelude::*,
     error::*,
     layers::{Layer, LayerBase},
-    model::prelude::*,
+    layout::prelude::*,
+    params::prelude::*,
+    train::prelude::*,
     traits::*,
     types::*,
 };
@@ -63,23 +65,25 @@ pub(crate) mod macros {
 pub mod config;
 pub mod error;
 pub mod layers;
-pub mod model;
+pub mod layout;
+pub mod params;
+pub mod train;
 
 pub(crate) mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub(crate) mod hidden;
-    pub(crate) mod predict;
-    pub(crate) mod train;
+    mod hidden;
+    mod models;
+    mod predict;
 
     mod prelude {
         #[doc(inline)]
         pub use super::hidden::*;
         #[doc(inline)]
-        pub use super::predict::*;
+        pub use super::models::*;
         #[doc(inline)]
-        pub use super::train::*;
+        pub use super::predict::*;
     }
 }
 
@@ -105,7 +109,11 @@ pub mod prelude {
     #[doc(hidden)]
     pub use crate::layers::prelude::*;
     #[doc(no_inline)]
-    pub use crate::model::prelude::*;
+    pub use crate::layout::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::params::prelude::*;
+    #[doc(no_inline)]
+    pub use crate::train::prelude::*;
     #[doc(no_inline)]
     pub use crate::traits::*;
     #[doc(no_inline)]

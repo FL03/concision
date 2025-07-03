@@ -2,10 +2,10 @@
     appellation: impl_model_params <module>
     authors: @FL03
 */
-use crate::model::{DeepParamsBase, ModelParamsBase};
+use crate::{DeepParamsBase, ModelParamsBase};
 
-use crate::model::ModelFeatures;
-use crate::traits::DeepNeuralStore;
+use crate::ModelFeatures;
+use crate::traits::DeepModelRepr;
 use cnc::params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
 use num_traits::{One, Zero};
@@ -14,7 +14,7 @@ impl<S, D, H, A> ModelParamsBase<S, D, H>
 where
     D: Dimension,
     S: RawData<Elem = A>,
-    H: DeepNeuralStore<S, D>,
+    H: DeepModelRepr<S, D>,
 {
     /// create a new instance of the [`ModelParamsBase`] instance
     pub const fn deep(input: ParamsBase<S, D>, hidden: H, output: ParamsBase<S, D>) -> Self {

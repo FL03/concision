@@ -2,7 +2,9 @@
     Appellation: train <module>
     Contrib: @FL03
 */
-use crate::error::{NeuralResult, TrainingError};
+use crate::train::error::TrainingError;
+
+use crate::error::NeuralResult;
 
 /// This trait defines the training process for the network
 pub trait Train<X, Y> {

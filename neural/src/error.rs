@@ -24,6 +24,23 @@ pub type NeuralResult<T> = core::result::Result<T, NeuralError>;
 #[derive(Debug, scsys::VariantConstructors, thiserror::Error)]
 #[non_exhaustive]
 pub enum NeuralError {
+    /// The model is not initialized
+    #[error("The model is not initialized")]
+    NotInitialized,
+    #[error("The model is not trained")]
+    /// The model is not trained
+    NotTrained,
+    #[error("Invalid model configuration")]
+    /// The model is not valid
+    InvalidModelConfig,
+    #[error("Unsupported model")]
+    /// The model is not supported
+    UnsupportedModel,
+    #[error("The model is not supported for the given input")]
+    /// The model is not compatible with the given input
+    IncompatibleInput,
+    #[error("An unsupported operation was attempted")]
+    UnsupportedOperation,
     #[error("Invalid Batch Size")]
     InvalidBatchSize,
     #[error("Invalid Input Shape")]
@@ -31,20 +48,12 @@ pub enum NeuralError {
     #[error("Invalid Output Shape")]
     InvalidOutputShape,
     #[error(transparent)]
-    TrainingError(#[from] TrainingError),
+    TrainingError(#[from] crate::train::TrainingError),
     #[error(transparent)]
     CoreError(#[from] concision_core::error::Error),
     #[cfg(feature = "alloc")]
     #[error("Parameter Error")]
     ParameterError(String),
-}
-
-#[derive(Debug, scsys::VariantConstructors, thiserror::Error)]
-pub enum TrainingError {
-    #[error("Invalid Training Data")]
-    InvalidTrainingData,
-    #[error("Training Failed")]
-    TrainingFailed,
 }
 
 impl From<NeuralError> for concision_core::error::Error {

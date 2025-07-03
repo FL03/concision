@@ -2,7 +2,7 @@
     appellation: impl_model_params_serde <module>
     authors: @FL03
 */
-use crate::model::ModelParamsBase;
+use crate::ModelParamsBase;
 
 use crate::RawHidden;
 use core::marker::PhantomData;

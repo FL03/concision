@@ -16,7 +16,7 @@ fn main() -> anyhow::Result<()> {
         .init();
     tracing::info!("Setting up the model...");
     // define the models features
-    let features = ModelFeatures::deep(3, 9, 9, 2);
+    let features = ModelFeatures::deep(3, 9, 2, 6);
     tracing::debug!("Model Features: {features:?}");
     // initialize the models configuration
     let mut config = StandardModelConfig::new()

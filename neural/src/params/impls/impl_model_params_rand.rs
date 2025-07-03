@@ -3,9 +3,9 @@
     authors: @FL03
 */
 
-use crate::model::params::{DeepParamsBase, ShallowParamsBase};
+use crate::params::{DeepParamsBase, ShallowParamsBase};
 
-use crate::model::ModelFeatures;
+use crate::ModelFeatures;
 use cnc::init::{self, Initialize};
 use cnc::params::ParamsBase;
 use ndarray::{DataOwned, Ix2};

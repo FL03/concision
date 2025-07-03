@@ -2,7 +2,7 @@
     Appellation: layout <module>
     Contrib: @FL03
 */
-use super::ModelLayout;
+use super::{ModelFormat, ModelLayout};
 
 /// verify if the input and hidden dimensions are compatible by checking:
 ///
@@ -25,25 +25,6 @@ where
     valid
 }
 
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    scsys::VariantConstructors,
-    strum::EnumCount,
-    strum::EnumIs,
-)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub enum ModelFormat {
-    Shallow { hidden: usize },
-    Deep { hidden: usize, layers: usize },
-}
-
 /// The [`ModelFeatures`] provides a common way of defining the layout of a model. This is
 /// used to define the number of input features, the number of hidden layers, the number of
 /// hidden features, and the number of output features.
@@ -58,106 +39,23 @@ pub struct ModelFeatures {
     pub(crate) output: usize,
 }
 
-impl ModelFormat {
-    /// returns a copy of the number of hidden features
-    pub const fn hidden(&self) -> usize {
-        match self {
-            ModelFormat::Shallow { hidden } => *hidden,
-            ModelFormat::Deep { hidden, .. } => *hidden,
-        }
-    }
-    /// returns a mutable reference to the hidden features for the model
-    pub const fn hidden_mut(&mut self) -> &mut usize {
-        match self {
-            ModelFormat::Shallow { hidden } => hidden,
-            ModelFormat::Deep { hidden, .. } => hidden,
-        }
-    }
-    /// returns a copy of the number of layers for the model; if the variant is
-    /// [`Shallow`](ModelFormat::Shallow), it returns 1
-    /// returns `n` if the variant is [`Deep`](ModelFormat::Deep)
-    pub const fn layers(&self) -> usize {
-        match self {
-            ModelFormat::Shallow { .. } => 1,
-            ModelFormat::Deep { layers, .. } => *layers,
-        }
-    }
-    /// returns a mutable reference to the number of layers for the model; this will panic on
-    /// [`Shallow`](ModelFormat::Shallow) variants
-    pub const fn layers_mut(&mut self) -> &mut usize {
-        match self {
-            ModelFormat::Shallow { .. } => panic!("Cannot mutate layers of a shallow model"),
-            ModelFormat::Deep { layers, .. } => layers,
-        }
-    }
-    /// update the number of hidden features for the model
-    pub fn set_hidden(&mut self, value: usize) -> &mut Self {
-        match self {
-            ModelFormat::Shallow { hidden } => {
-                *hidden = value;
-            }
-            ModelFormat::Deep { hidden, .. } => {
-                *hidden = value;
-            }
-        }
-        self
-    }
-    /// update the number of layers for the model;
-    ///
-    /// **note:** this method will automatically convert the model to a [`Deep`](ModelFormat::Deep)
-    /// variant if it is currently a [`Shallow`](ModelFormat::Shallow) variant and the number
-    /// of layers becomes greater than 1
-    pub fn set_layers(&mut self, value: usize) -> &mut Self {
-        match self {
-            ModelFormat::Shallow { hidden } => {
-                if value > 1 {
-                    *self = ModelFormat::Deep {
-                        hidden: *hidden,
-                        layers: value,
-                    };
-                }
-                // if the value is 1, we do not change the model format
-            }
-            ModelFormat::Deep { layers, .. } => {
-                *layers = value;
-            }
-        }
-        self
-    }
-    /// consumes the current instance and returns a new instance with the given hidden
-    /// features
-    pub fn with_hidden(self, hidden: usize) -> Self {
-        match self {
-            ModelFormat::Shallow { .. } => ModelFormat::Shallow { hidden },
-            ModelFormat::Deep { layers, .. } => ModelFormat::Deep { hidden, layers },
-        }
-    }
-    /// consumes the current instance and returns a new instance with the given number of
-    /// hidden layers
-    ///
-    /// **note:** this method will automatically convert the model to a [`Deep`](ModelFormat::Deep)
-    /// variant if it is currently a [`Shallow`](ModelFormat::Shallow) variant and the number
-    /// of layers becomes greater than 1
-    pub fn with_layers(self, layers: usize) -> Self {
-        match self {
-            ModelFormat::Shallow { hidden } => {
-                if layers > 1 {
-                    ModelFormat::Deep { hidden, layers }
-                } else {
-                    ModelFormat::Shallow { hidden }
-                }
-            }
-            ModelFormat::Deep { hidden, .. } => ModelFormat::Deep { hidden, layers },
-        }
-    }
-}
-
 impl ModelFeatures {
-    pub const fn deep(input: usize, hidden: usize, layers: usize, output: usize) -> Self {
+    /// creates a new instance of [`ModelFeatures`] for a deep neurao network, using the given
+    /// input, hidden, and output features with the given number of hidden layers
+    pub const fn deep(input: usize, hidden: usize, output: usize, layers: usize) -> Self {
         Self {
             input,
             output,
-            inner: ModelFormat::Deep { hidden, layers },
+            inner: ModelFormat::deep(hidden, layers),
+        }
+    }
+    /// returns a new instance of [`ModelFeatures`] for a shallow neural network, using the
+    /// given features for the input, output, and single hidden layer
+    pub const fn shallow(input: usize, hidden: usize, output: usize) -> Self {
+        Self {
+            input,
+            output,
+            inner: ModelFormat::shallow(hidden),
         }
     }
     /// returns a copy of the input features for the model
@@ -283,35 +181,33 @@ impl ModelLayout for ModelFeatures {
     fn input(&self) -> usize {
         self.input()
     }
+
     fn input_mut(&mut self) -> &mut usize {
         self.input_mut()
     }
+
     fn hidden(&self) -> usize {
         self.hidden()
     }
+
     fn hidden_mut(&mut self) -> &mut usize {
         self.hidden_mut()
     }
+
     fn layers(&self) -> usize {
         self.layers()
     }
+
     fn layers_mut(&mut self) -> &mut usize {
         self.layers_mut()
     }
+
     fn output(&self) -> usize {
         self.output()
     }
+
     fn output_mut(&mut self) -> &mut usize {
         self.output_mut()
-    }
-}
-
-impl Default for ModelFormat {
-    fn default() -> Self {
-        Self::Deep {
-            hidden: 16,
-            layers: 1,
-        }
     }
 }
 
@@ -327,18 +223,6 @@ impl Default for ModelFeatures {
         }
     }
 }
-
-impl core::fmt::Display for ModelFormat {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(
-            f,
-            "{{ hidden: {}, layers: {} }}",
-            self.hidden(),
-            self.layers()
-        )
-    }
-}
-
 impl core::fmt::Display for ModelFeatures {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(

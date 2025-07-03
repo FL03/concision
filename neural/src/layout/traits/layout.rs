@@ -1,8 +1,11 @@
-#[doc(inline)]
-pub use self::features::ModelFeatures;
+/*
+    appellation: layout <module>
+    authors: @FL03
+*/
 
-mod features;
-
+/// The [`ModelLayout`] trait defines an interface for object capable of representing the
+/// _layout_; i.e. the number of input, hidden, and output features of a neural network model
+/// containing some number of hidden layers.
 pub trait ModelLayout: Copy + core::fmt::Debug {
     /// returns a copy of the input features for the model
     fn input(&self) -> usize;
@@ -21,25 +24,29 @@ pub trait ModelLayout: Copy + core::fmt::Debug {
     /// returns a mutable reference to the output features for the model
     fn output_mut(&mut self) -> &mut usize;
     #[inline]
-    /// sets the input features for the model
+    /// update the number of input features for the model and return a mutable reference to the
+    /// current layout.
     fn set_input(&mut self, input: usize) -> &mut Self {
         *self.input_mut() = input;
         self
     }
     #[inline]
-    /// sets the hidden features for the model
+    /// update the number of hidden features for the model and return a mutable reference to
+    /// the current layout.
     fn set_hidden(&mut self, hidden: usize) -> &mut Self {
         *self.hidden_mut() = hidden;
         self
     }
     #[inline]
-    /// sets the number of hidden layers for the model
+    /// update the number of hidden layers for the model and return a mutable reference to
+    /// the current layout.
     fn set_layers(&mut self, layers: usize) -> &mut Self {
         *self.layers_mut() = layers;
         self
     }
     #[inline]
-    /// sets the output features for the model
+    /// update the number of output features for the model and return a mutable reference to
+    /// the current layout.
     fn set_output(&mut self, output: usize) -> &mut Self {
         *self.output_mut() = output;
         self
