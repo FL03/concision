@@ -138,10 +138,6 @@ pub trait ModelExt<T>: Model<T> {
     }
 }
 
-/// The [`DeepNeuralNetwork`] trait is a specialization of the [`Model`] trait that
-/// provides additional functionality for deep neural networks. This trait is
-pub trait DeepNeuralNetwork<T = f32>: Model<T> {}
-
 impl<M, T> ModelExt<T> for M
 where
     M: Model<T>,

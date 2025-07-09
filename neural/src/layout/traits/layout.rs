@@ -7,13 +7,13 @@
 /// _layout_; i.e. the number of input, hidden, and output features of a neural network model
 /// containing some number of hidden layers.
 pub trait ModelLayout: Copy + core::fmt::Debug {
-    /// returns a copy of the input features for the model
+    /// returns a copy of the number of input features for the model
     fn input(&self) -> usize;
-    /// returns a mutable reference to the input features for the model
+    /// returns a mutable reference to number of the input features for the model
     fn input_mut(&mut self) -> &mut usize;
-    /// returns a copy of the hidden features for the model
+    /// returns a copy of the number of hidden features for the model
     fn hidden(&self) -> usize;
-    /// returns a mutable reference to the hidden features for the model
+    /// returns a mutable reference to the number of hidden features for the model
     fn hidden_mut(&mut self) -> &mut usize;
     /// returns a copy of the number of hidden layers for the model
     fn layers(&self) -> usize;
