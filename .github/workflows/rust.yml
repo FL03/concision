@@ -75,7 +75,7 @@ jobs:
       -
         name: Benchmark the workspace
         id: cargo-bench
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           event-type: cargo-bench
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
