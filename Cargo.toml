@@ -53,20 +53,21 @@ concision-utils = { default-features = false, path = "utils", version = "0.2.8" 
 # extras
 concision-ext = { default-features = false, path = "ext", version = "0.2.8" }
 # models
-concision-models = { default-features = false, path = "macros", version = "0.2.8" }
+concision-models = { default-features = false, path = "models/models", version = "0.2.8" }
 concision-kan = { default-features = false, path = "models/kan", version = "0.2.8" }
 concision-s4 = { default-features = false, path = "models/s4", version = "0.2.8" }
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.8" }
 
 # custom
-ndtensor = { default-features = false, version = "0.1.1" }
-scsys = { default-features = false, features = ["derive"], version = "0.3.1" }
-scsys-derive = { default-features = false, version = "0.3.1" }
+# ndtensor = { default-features = false, version = "0.1.1" }
+opper = { default-features = false, version = "0.0.0" }
+scsys = { default-features = false, features = ["derive"], version = "0.3.2" }
+scsys-derive = { default-features = false, version = "0.3.2" }
 # async
 futures = { default-features = false, version = "0.3" }
 tokio = { default-features = false, version = "1" }
 # benchmarking
-criterion = { version = "0.6" }
+criterion = { version = "0.7" }
 # concurrency & parallelism
 crossbeam = { default-features = false, version = "0.8" }
 rayon = { default-features = false, version = "1" }

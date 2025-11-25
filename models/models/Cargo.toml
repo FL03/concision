@@ -108,7 +108,6 @@ anyhow = [
     "concision-kan?/anyhow",
     "concision-s4?/anyhow",
     "concision-transformer?/anyhow",
-    "scsys/anyhow",
 ]
 
 approx = [

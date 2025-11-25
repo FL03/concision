@@ -1,3 +1,8 @@
+/*
+    Appellation: neuron <module>
+    Created At: 2025.11.25:09:33:30
+    Contrib: @FL03
+*/
 //! Single spiking neuron (LIF + adaptation + exponential synapse) example in pure Rust.
 //!
 //! Model (forward-Euler integration; units are arbitrary but consistent):
@@ -9,22 +14,7 @@
 //! I_syn = s
 //!
 //! The implementation is conservative with allocations and idiomatic Rust.
-
-/// Result of a single integration step.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct StepResult {
-    /// Whether the neuron emitted a spike on this step.
-    pub spiked: bool,
-    /// The membrane potential after the step (mV or arbitrary units).
-    pub v: f64,
-}
-
-/// A simple synaptic event: weight added to synaptic variable `s` when it arrives.
-#[derive(Debug, Clone, Copy)]
-pub struct SynapticEvent {
-    /// instantaneous weight added to synaptic variable `s`.
-    pub weight: f64,
-}
+use super::types::{StepResult, SynapticEvent};
 
 /// Leaky Integrate-and-Fire neuron with an adaptation term and exponential synaptic current.
 ///
@@ -63,24 +53,6 @@ pub struct SpikingNeuron {
     // ---- Optional numerical safeguards ----
     /// Minimum allowed dt for integration (ms)
     pub min_dt: f64,
-}
-
-impl core::fmt::Debug for SpikingNeuron {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        f.debug_struct("SpikingNeuron")
-            .field("tau_m", &self.tau_m)
-            .field("resistance", &self.resistance)
-            .field("v_rest", &self.v_rest)
-            .field("v_thresh", &self.v_thresh)
-            .field("v_reset", &self.v_reset)
-            .field("tau_w", &self.tau_w)
-            .field("b", &self.b)
-            .field("tau_s", &self.tau_s)
-            .field("v", &self.v)
-            .field("w", &self.w)
-            .field("s", &self.s)
-            .finish()
-    }
 }
 
 impl SpikingNeuron {

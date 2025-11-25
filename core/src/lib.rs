@@ -40,7 +40,7 @@
 #![crate_type = "lib"]
 
 #[cfg(not(all(feature = "std", feature = "alloc")))]
-compile_error! {
+compiler_error! {
     "At least one of the 'std' or 'alloc' features must be enabled."
 }
 

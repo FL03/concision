@@ -11,6 +11,19 @@ pub use self::neuron::SpikingNeuron;
 
 pub mod neuron;
 
+pub mod types {
+    pub use self::{event::*, result::*};
+
+    mod event;
+    mod result;
+}
+
+#[allow(unused_imports)]
+pub(crate) mod prelude {
+    pub use super::neuron::SpikingNeuron;
+    pub use super::types::*;
+}
+
 #[cfg(test)]
 mod tests {
     use super::SpikingNeuron;

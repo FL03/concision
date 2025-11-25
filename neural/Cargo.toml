@@ -152,7 +152,6 @@ anyhow = [
     "dep:anyhow", 
     "concision-core/anyhow", 
     "concision-data/anyhow", 
-    "scsys/anyhow",
 ]
 
 approx = [

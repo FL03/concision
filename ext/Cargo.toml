@@ -38,6 +38,7 @@ test = true
 # local
 concision = { features = ["neural"], workspace = true }
 # custom
+opper = { workspace = true }
 scsys = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
@@ -139,7 +140,6 @@ alloc = [
 anyhow = [
     "dep:anyhow",
     "concision/anyhow",
-    "scsys/anyhow",
 ]
 
 approx = [

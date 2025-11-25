@@ -39,7 +39,7 @@ test = true
 concision-init = { optional = true, workspace = true }
 concision-utils = {  optional = true, workspace = true }
 # custom
-ndtensor = { workspace = true }
+# ndtensor = { workspace = true }
 scsys = { workspace = true }
 scsys-derive = { workspace = true }
 # concurrency & parallelism
@@ -92,7 +92,6 @@ full = [
 
 nightly = [
     "concision-init?/nightly",
-    "ndtensor/nightly",
     "concision-utils?/nightly",
 ]
 
@@ -107,7 +106,6 @@ json = [
     "serde",
     "serde_json",
     "scsys/json",
-    "ndtensor/json",
 ]
 
 signal =[
@@ -131,7 +129,6 @@ std = [
     "concision-init?/std",
     "concision-utils?/std",
     "ndarray/std",
-    "ndtensor/std",
     "num/std",
     "num-complex?/std",
     "num-traits/std",
@@ -147,7 +144,6 @@ std = [
 wasi = [
     "concision-init?/wasi",
     "concision-utils?/wasi",
-    "ndtensor/wasi",
     "scsys/wasi",
 ]
 
@@ -155,14 +151,12 @@ wasm = [
     "getrandom?/wasm_js",
     "concision-init?/wasm",
     "concision-utils?/wasm",
-    "ndtensor/wasm",
     "scsys/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
     "concision-init?/alloc",
     "concision-utils?/alloc",
-    "ndtensor/alloc",
     "num/alloc",
     "serde?/alloc",
     "serde_json?/alloc",
@@ -171,8 +165,6 @@ alloc = [
 
 anyhow = [
     "dep:anyhow",
-    "ndtensor/anyhow",
-    "scsys/anyhow",
 ]
 
 approx = [
@@ -180,21 +172,18 @@ approx = [
     "concision-init?/approx",
     "concision-utils?/approx",
     "ndarray/approx",
-    "ndtensor/approx",
 ]
 
 blas = [
     "concision-init?/blas",
     "concision-utils?/blas",
     "ndarray/blas",
-    "ndtensor/blas",
 ]
 
 complex = [
     "dep:num-complex",
     "concision-init?/complex",
     "concision-utils?/complex",
-    "ndtensor/complex",
 ]
 
 rand = [
@@ -202,7 +191,6 @@ rand = [
     "dep:rand_distr",
     "concision-init?/rand",
     "concision-utils?/rand",
-    "ndtensor/rand",
     "num/rand",
     "num-complex?/rand",
     "rng",
@@ -213,14 +201,12 @@ rayon = [
     "dep:rayon",
     "concision-utils?/rayon",
     "ndarray/rayon",
-    "ndtensor/rayon",
 ]
 
 rng = [
     "dep:getrandom",
     "concision-init?/rng",
     "concision-utils?/rng",
-    "ndtensor/rng",
     "rand?/small_rng",
     "rand?/thread_rng",
     "scsys/rng",
@@ -234,7 +220,6 @@ serde = [
     "dep:serde",
     "dep:serde_derive",
     "ndarray/serde",
-    "ndtensor/serde",
     "num/serde",
     "num-complex?/serde",
     "rand?/serde",
@@ -248,7 +233,6 @@ tracing = [
     "concision-init?/tracing",
     "concision-utils?/tracing",
     "dep:tracing",
-    "ndtensor/tracing",
     "scsys/tracing",
 ]
 
