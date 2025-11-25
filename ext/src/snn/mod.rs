@@ -4,8 +4,8 @@
     Contrib: @FL03
 */
 //! # Spiked Neural Networks (SNN)
-//! 
-//! 
+//!
+//!
 
 pub use self::neuron::SpikingNeuron;
 
@@ -40,10 +40,11 @@ mod tests {
     fn test_spiking_with_sufficient_input() {
         let mut n = SpikingNeuron::new_default();
         let dt = 0.1;
+        let i_ext = 10.0;
         // apply strong constant external current for a while
         let mut spiked = false;
         for _ in 0..10000 {
-            let res = n.step(dt, 5.0); // large i_ext to force spiking
+            let res = n.step(dt, i_ext); // large i_ext to force spiking
             if res.spiked {
                 spiked = true;
                 break;

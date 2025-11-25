@@ -222,6 +222,33 @@ impl SpikingNeuron {
     }
 }
 
+impl Default for SpikingNeuron {
+    fn default() -> Self {
+                let tau_m = 20.0; // ms
+        let resistance = 1.0; // arbitrary
+        let v_rest = -65.0; // mV
+        let v_thresh = -50.0; // mV
+        let v_reset = -65.0; // mV
+        let tau_w = 200.0; // ms (slow adaptation)
+        let b = 0.5; // adaptation increment
+        let tau_s = 5.0; // ms (fast synapse)
+        Self {
+            tau_m,
+            resistance,
+            v_rest,
+            v_thresh,
+            v_reset,
+            tau_w,
+            b,
+            tau_s,
+            v: v_rest,
+            w: 0.0,
+            s: 0.0,
+            min_dt: 1e-6,
+        }
+    }
+}
+
 #[allow(dead_code)]
 /// Minimal demonstration of neuron usage. Simulates a neuron for `t_sim` ms with dt,
 /// injects a constant external current `i_ext`, and injects discrete synaptic events at specified times.
