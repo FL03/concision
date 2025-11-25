@@ -147,13 +147,13 @@ where
     }
 
     fn std(&self) -> Self::Output {
-        let mean = self.mean().unwrap_or_else(A::zero);
+        let mean = self.mean();
         let sum = self.iter().copied().map(|x| (x - mean).pow(2)).sum::<A>();
         (sum / self.elems()).sqrt()
     }
 
     fn var(&self) -> Self::Output {
-        let mean = self.mean().unwrap_or_else(A::zero);
+        let mean = self.mean();
         let sum = self.iter().copied().map(|x| (x - mean).pow(2)).sum::<A>();
         sum / self.elems()
     }

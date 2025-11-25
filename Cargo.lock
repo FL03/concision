@@ -238,7 +238,7 @@ dependencies = [
  "concision-neural",
  "criterion",
  "lazy_static",
- "ndarray",
+ "ndarray 0.17.1",
  "num",
  "serde",
  "tracing",
@@ -255,7 +255,7 @@ dependencies = [
  "concision-utils",
  "getrandom",
  "lazy_static",
- "ndarray",
+ "ndarray 0.17.1",
  "ndtensor",
  "num",
  "num-complex",
@@ -283,7 +283,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision-core",
- "ndarray",
+ "ndarray 0.17.1",
  "num",
  "num-complex",
  "num-traits",
@@ -313,7 +313,7 @@ dependencies = [
  "approx",
  "concision",
  "lazy_static",
- "ndarray",
+ "ndarray 0.17.1",
  "num",
  "num-complex",
  "num-traits",
@@ -336,7 +336,7 @@ dependencies = [
  "approx",
  "getrandom",
  "lazy_static",
- "ndarray",
+ "ndarray 0.17.1",
  "num",
  "num-complex",
  "num-traits",
@@ -359,7 +359,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
- "ndarray",
+ "ndarray 0.17.1",
  "num-traits",
  "tracing",
 ]
@@ -385,7 +385,7 @@ dependencies = [
  "concision-s4",
  "concision-transformer",
  "lazy_static",
- "ndarray",
+ "ndarray 0.17.1",
  "num-traits",
  "scsys",
  "tracing",
@@ -403,7 +403,7 @@ dependencies = [
  "either",
  "getrandom",
  "lazy_static",
- "ndarray",
+ "ndarray 0.17.1",
  "num",
  "num-complex",
  "num-traits",
@@ -430,7 +430,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
- "ndarray",
+ "ndarray 0.17.1",
  "num-traits",
  "tracing",
 ]
@@ -442,7 +442,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
- "ndarray",
+ "ndarray 0.17.1",
  "num-traits",
  "tracing",
 ]
@@ -454,7 +454,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
- "ndarray",
+ "ndarray 0.17.1",
  "num-traits",
  "tracing",
 ]
@@ -467,7 +467,7 @@ dependencies = [
  "approx",
  "getrandom",
  "lazy_static",
- "ndarray",
+ "ndarray 0.17.1",
  "num",
  "num-complex",
  "num-traits",
@@ -1153,6 +1153,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "ndarray"
+version = "0.17.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c7c9125e8f6f10c9da3aad044cc918cf8784fa34de857b1aa68038eb05a50a9"
+dependencies = [
+ "approx",
+ "cblas-sys",
+ "libc",
+ "matrixmultiply",
+ "num-complex",
+ "num-integer",
+ "num-traits",
+ "portable-atomic",
+ "portable-atomic-util",
+ "rawpointer",
+ "rayon",
+ "serde",
+]
+
+[[package]]
 name = "ndtensor"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1161,7 +1181,7 @@ dependencies = [
  "anyhow",
  "approx",
  "getrandom",
- "ndarray",
+ "ndarray 0.16.1",
  "num",
  "num-complex",
  "num-traits",

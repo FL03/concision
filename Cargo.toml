@@ -56,6 +56,7 @@ concision-ext = { default-features = false, path = "ext", version = "0.2.8" }
 concision-models = { default-features = false, path = "models/models", version = "0.2.8" }
 concision-kan = { default-features = false, path = "models/kan", version = "0.2.8" }
 concision-s4 = { default-features = false, path = "models/s4", version = "0.2.8" }
+concision-snn = { default-features = false, path = "models/snn", version = "0.2.8" }
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.8" }
 
 # custom
@@ -77,8 +78,8 @@ serde_derive = { default-features = false, version = "1" }
 serde_json = { default-features = false, version = "1" }
 # math
 approx = { version = "0.5" }
-ndarray = { default-features = false, version = "0.16" }
-ndarray-linalg = { default-features = false, version = "0.17" }
+ndarray = { default-features = false, version = "0.17" }
+ndarray-linalg = { default-features = false, version = "0.18" }
 ndarray-stats = "0.6"
 num = { default-features = false, version = "0.4" }
 num-complex = { default-features = false, version = "0.4" }
