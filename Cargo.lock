@@ -256,6 +256,7 @@ dependencies = [
  "getrandom",
  "lazy_static",
  "ndarray",
+ "ndtensor",
  "num",
  "num-complex",
  "num-traits",
@@ -435,6 +436,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "concision-snn"
+version = "0.2.8"
+dependencies = [
+ "anyhow",
+ "approx",
+ "concision",
+ "ndarray",
+ "num-traits",
+ "tracing",
+]
+
+[[package]]
 name = "concision-transformer"
 version = "0.2.8"
 dependencies = [
@@ -491,50 +504,6 @@ name = "constant_time_eq"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
-
-[[package]]
-name = "contained"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a0a9ba5ab57000eeb80eb10b61b1f6a537efd57375049050b6d20a32fc601cd"
-dependencies = [
- "contained-core",
- "contained-derive",
- "contained-macros",
-]
-
-[[package]]
-name = "contained-core"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "864867f1a5d3cbb62643bd141eeb6e37aa4d7fe9bc742b35fbe1cfebb1546eb8"
-dependencies = [
- "serde",
- "serde_json",
- "thiserror",
-]
-
-[[package]]
-name = "contained-derive"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a0d713fb46a1a26564417a4a1d1c0fd40597a6c2409cd2cb0ea32be74ba38bd"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "contained-macros"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31a65fefd06ee0347d67c0d43ada8679ad0d6becf75c826be7f0fb3f3cc98aa7"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "core-foundation-sys"
@@ -658,8 +627,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ececcb659e7ba858fb4f10388c250a7252eb0a27373f1a72b8748afdd248e587"
 dependencies = [
  "powerfmt",
- "rand 0.8.5",
- "rand 0.9.2",
  "serde_core",
 ]
 
@@ -1186,6 +1153,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "ndtensor"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ea8ab4dd20883ddf58cdbade1810f8840d0d420f33e5143b407ec7c3102ae2ec"
+dependencies = [
+ "anyhow",
+ "approx",
+ "getrandom",
+ "ndarray",
+ "num",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "rand 0.9.2",
+ "rand_distr",
+ "rayon",
+ "scsys",
+ "scsys-derive",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "smart-default",
+ "strum",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "nu-ansi-term"
 version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1611,9 +1606,9 @@ dependencies = [
 
 [[package]]
 name = "scsys"
-version = "0.3.2"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "861746d3ce946c7650bcef8d8f1dfff1339f988de5d866f5cf83a6da3de03a41"
+checksum = "00fffd67a93106e087d1863df313f6f9d2d65b415bf6e684c8fb33c5b0c5cf36"
 dependencies = [
  "scsys-config",
  "scsys-core",
@@ -1625,10 +1620,11 @@ dependencies = [
 
 [[package]]
 name = "scsys-config"
-version = "0.3.2"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6a7dcf61afd8ce04acd1e7a02f9f07fece4a97aa348a478b44e86fd0f683f88"
+checksum = "76a2cac05dfdbdefee1b2c9da644ec51c862fa37bef6a6611f2c89fb2f15973e"
 dependencies = [
+ "anyhow",
  "config",
  "scsys-core",
  "serde",
@@ -1644,24 +1640,24 @@ dependencies = [
 
 [[package]]
 name = "scsys-core"
-version = "0.3.2"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e449b8803b2219d1a17d480022dab0c5167291663d26962cee99a70ef1bb1ef6"
+checksum = "dccf5713c694fb005f4ba8bd8987cdf05da2494d1e6fe8ad8e6a48ff2564f2b9"
 dependencies = [
- "contained",
+ "anyhow",
+ "chrono",
  "getrandom",
  "num-traits",
  "paste",
  "rand 0.9.2",
  "rand_distr",
- "scsys-state",
- "scsys-time",
  "serde",
  "serde_derive",
  "serde_json",
  "smart-default",
  "strum",
  "thiserror",
+ "time",
  "tracing",
  "uuid",
  "wasm-bindgen",
@@ -1669,10 +1665,11 @@ dependencies = [
 
 [[package]]
 name = "scsys-crypto"
-version = "0.3.2"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b5043a24f5e9e3fbcac1a8ac83ced57610d0b5f8788f689963ca8bfa3b53c41"
+checksum = "5ea33a001aaeca8617c3622d79256c1a33065af3ac55f37db9df46229ca64a1d"
 dependencies = [
+ "anyhow",
  "bincode",
  "blake3",
  "chrono",
@@ -1704,47 +1701,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "scsys-state"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adfe9d5eb3b8064713bbb317d496febed60399e96957e5fddf8a72471eea1aed"
-dependencies = [
- "contained",
- "getrandom",
- "num-traits",
- "paste",
- "rand 0.9.2",
- "rand_distr",
- "serde",
- "serde_derive",
- "serde_json",
- "smart-default",
- "strum",
- "thiserror",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "scsys-time"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b8d8bf764010dbd3f28687a75bd282ac60f7a398036536a0a6722ecc52767be"
-dependencies = [
- "chrono",
- "contained",
- "num-traits",
- "paste",
- "serde",
- "serde_derive",
- "serde_json",
- "smart-default",
- "strum",
- "thiserror",
- "time",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -2008,8 +1964,6 @@ dependencies = [
  "js-sys",
  "num-conv",
  "powerfmt",
- "rand 0.8.5",
- "rand 0.9.2",
  "serde",
  "time-core",
  "time-macros",

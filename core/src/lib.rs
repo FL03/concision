@@ -66,6 +66,8 @@ pub use concision_utils as utils;
 /// An n-dimensional tensor
 pub use ndtensor as tensor;
 
+pub use ndtensor::prelude::*;
+
 #[cfg(feature = "cnc_init")]
 pub use self::init::prelude::*;
 #[cfg(feature = "cnc_utils")]
@@ -74,7 +76,7 @@ pub use self::utils::prelude::*;
 #[doc(inline)]
 pub use self::{
     activate::prelude::*, error::*, loss::prelude::*, ops::prelude::*, params::prelude::*,
-    tensor::prelude::*, traits::*,
+    traits::*,
 };
 
 #[macro_use]
