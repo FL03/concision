@@ -13,6 +13,9 @@ where
 {
     type Config: NetworkConfig<S::Elem>;
     type Hidden: RawHidden<S, D>;
+
+    fn config(&self) -> &Self::Config;
+    fn config_mut(&mut self) -> &mut Self::Config;
 }
 
 pub trait ShallowNeuralNetwork<S, D>: NeuralNetwork<S, D>

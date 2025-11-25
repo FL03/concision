@@ -25,6 +25,8 @@ pub use self::attention::prelude::*;
 #[cfg(feature = "attention")]
 pub mod attention;
 
+pub mod snn;
+
 // pub mod simple;
 
 pub mod prelude {
