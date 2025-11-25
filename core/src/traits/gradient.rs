@@ -92,7 +92,8 @@ where
         } else {
             A::one()
         };
-        self.scaled_add(lr / batch_size, &(grad + &*self * decay));
+        let rhs = grad + &*self * decay;
+        self.scaled_add(lr / batch_size, &rhs);
         Ok(())
     }
 }

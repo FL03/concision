@@ -61,7 +61,6 @@ pub trait ApplyMut<T> {
  ************* Implementations *************
 */
 use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand};
-use ndtensor::{Tensor, TensorBase};
 
 impl<T> CallInto<T> for T {
     type Output = T;
@@ -114,21 +113,21 @@ where
     }
 }
 
-impl<A, S, D> Apply<A> for TensorBase<S, D>
-where
-    A: ScalarOperand,
-    D: Dimension,
-    S: Data<Elem = A>,
-{
-    type Cont<V> = Tensor<V, D>;
+// impl<A, S, D> Apply<A> for TensorBase<S, D>
+// where
+//     A: ScalarOperand,
+//     D: Dimension,
+//     S: Data<Elem = A>,
+// {
+//     type Cont<V> = Tensor<V, D>;
 
-    fn apply<V, F>(&self, f: F) -> Self::Cont<V>
-    where
-        F: Fn(A) -> V,
-    {
-        self.map(f)
-    }
-}
+//     fn apply<V, F>(&self, f: F) -> Self::Cont<V>
+//     where
+//         F: Fn(A) -> V,
+//     {
+//         self.map(f)
+//     }
+// }
 
 impl<A, S, D> Apply<A> for &ArrayBase<S, D>
 where

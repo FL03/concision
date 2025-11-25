@@ -230,13 +230,13 @@ where
         self.weights().raw_dim()
     }
     /// returns the shape of the parameters; uses the shape of the weight tensor
-    pub fn shape(&self) -> &[usize] {
-        self.weights().shape()
+    pub fn shape<'a>(&'a self) -> &'a [usize] where A: 'a {
+        self.weights.shape()
     }
     /// returns the shape of the bias tensor; the shape should be equivalent to that of the
     /// weight tensor minus the "zero-th" axis
-    pub fn shape_bias(&self) -> &[usize] {
-        self.bias().shape()
+    pub fn shape_bias(&self) -> &[usize] where A: 'static {
+        self.bias.shape()
     }
     /// returns the total number of parameters within the layer
     pub fn size(&self) -> usize {
