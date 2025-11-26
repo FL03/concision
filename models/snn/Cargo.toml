@@ -27,6 +27,10 @@ concision = { features = ["neural"], workspace = true }
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
 num-traits = { workspace = true }
+# serialization
+serde = { optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
 
@@ -36,17 +40,39 @@ anyhow = { features = ["std"], workspace = true }
 [features]
 default = ["std"]
 
-full = ["default", "rand", "serde", "tracing"]
+full = [
+  "default", 
+  "json",
+  "rand", 
+  "serde", 
+  "tracing"
+  ]
+
+json = ["alloc", "serde", "serde_json"]
 
 # ************* [FF:Environments] *************
-std = ["concision/std", "ndarray/std", "num-traits/std", "tracing/std"]
+std = [
+  "alloc",
+  "concision/std",
+  "ndarray/std", 
+  "num-traits/std", 
+  "tracing/std"
+  ]
 
 wasi = ["concision/wasi"]
 
 wasm = ["concision/wasm"]
 
 # ************* [FF:Dependencies] *************
-approx = ["concision/approx", "dep:approx", "ndarray/approx"]
+alloc = [
+  "concision/alloc", 
+]
+
+approx = [
+  "concision/approx", 
+  "dep:approx", 
+  "ndarray/approx"
+]
 
 blas = ["concision/blas", "ndarray/blas"]
 
@@ -54,7 +80,13 @@ rand = ["concision/rand"]
 
 rayon = ["concision/rayon", "ndarray/rayon"]
 
-serde = ["concision/serde"]
+serde = [
+  "dep:serde", 
+  "dep:serde_derive", 
+  "concision/serde",
+]
+
+serde_json = ["dep:serde_json"]
 
 tracing = ["concision/tracing", "dep:tracing"]
 

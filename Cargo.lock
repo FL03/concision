@@ -391,6 +391,9 @@ dependencies = [
  "concision",
  "ndarray",
  "num-traits",
+ "serde",
+ "serde_derive",
+ "serde_json",
  "tracing",
 ]
 
