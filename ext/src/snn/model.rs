@@ -16,8 +16,7 @@ pub struct SpikingNeuralNetwork<T = f64> {
     pub params: DeepModelParams<T>,
 }
 
-impl<T> SpikingNeuralNetwork<T>
-{
+impl<T> SpikingNeuralNetwork<T> {
     pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self
     where
         T: Clone + Default,
@@ -28,15 +27,6 @@ impl<T> SpikingNeuralNetwork<T>
             features,
             params,
         }
-    }
-    #[cfg(feature = "rand")]
-    pub fn init(self) -> Self
-    where
-        T: 'static + Float + FromPrimitive,
-        rand_distr::StandardNormal: rand_distr::Distribution<T>,
-    {
-        let params = DeepModelParams::glorot_normal(self.features());
-        SpikingNeuralNetwork { params, ..self }
     }
     /// returns a reference to the model configuration
     pub const fn config(&self) -> &StandardModelConfig<T> {
@@ -88,6 +78,20 @@ impl<T> SpikingNeuralNetwork<T>
     /// consumes the current instance to create another with the given parameters
     pub fn with_params(self, params: DeepModelParams<T>) -> Self {
         Self { params, ..self }
+    }
+}
+
+impl<T> SpikingNeuralNetwork<T>
+where
+    T: 'static + Float + FromPrimitive,
+{
+    #[cfg(feature = "rand")]
+    pub fn init(self) -> Self
+    where
+        rand_distr::StandardNormal: rand_distr::Distribution<T>,
+    {
+        let params = DeepModelParams::glorot_normal(self.features());
+        SpikingNeuralNetwork { params, ..self }
     }
 }
 

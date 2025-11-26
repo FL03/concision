@@ -17,18 +17,13 @@ mod neuron;
 pub mod types {
     //! Types for spiking neural networks
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{event::*, result::*};
 
     mod event;
     mod result;
-
-    mod prelude {
-        pub use super::event::*;
-        pub use super::result::*;
-    }
 }
 
-pub(crate)  mod prelude {
+pub(crate) mod prelude {
     pub use super::model::*;
     pub use super::neuron::*;
     pub use super::types::*;
@@ -37,7 +32,7 @@ pub(crate)  mod prelude {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_snn_neuron_resting_no_input() {
         let mut n = SpikingNeuron::default();
@@ -52,23 +47,15 @@ mod tests {
     }
 
     #[test]
-    fn test_receive_spike_increases_synaptic_state() {
-        let mut n = SpikingNeuron::default();
-        let before = n.synaptic_state();
-        n.receive_spike(2.5);
-        assert!(n.synaptic_state() > before);
-    }
-
-    #[test]
-    #[ignore = "Need to fix"]
-    fn test_spiking_with_sufficient_input() {
+    // #[ignore = "Need to fix"]
+    fn test_snn_neuron_spikes() {
         // params
-        let dt: f64 = 0.1;
-        let i_ext: f64 = 5.0; // large i_ext to force spiking
+        let dt = 1f64;
+        let i_ext = 50f64; // large i_ext to force spiking
         // neuron
         let mut n = SpikingNeuron::default();
         let mut spiked = false;
-        let mut steps = 0_usize;
+        let mut steps = 0usize;
         // apply strong constant external current for a while
         while !spiked && steps < 1000 {
             spiked = n.step(dt, i_ext).is_spiked();

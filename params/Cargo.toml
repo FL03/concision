@@ -30,7 +30,7 @@ name = "params"
 required-features = ["std"]
 
 [dependencies]
-concision-init = { optional = true, workspace = true }
+concision-init = { workspace = true }
 concision-traits = { workspace = true }
 # custom
 variants = { workspace = true }
@@ -62,31 +62,20 @@ full = [
   "default",
   "approx",
   "complex",
-  "init",
   "json",
   "rand",
   "serde",
 ]
 
 nightly = [
-  "concision-init?/nightly",
+  "concision-init/nightly",
   "concision-traits/nightly",
 ]
-
-# ************* [FF:Features] *************
-init = [
-  "concision_init",
-  "rand",
-]
-
-json = ["alloc", "serde", "serde_json"]
-
-concision_init = ["dep:concision-init"]
 
 # ************* [FF:Dependencies] *************
 std = [
   "alloc",
-  "concision-init?/std",
+  "concision-init/std",
   "concision-traits/std",
   "ndarray/std",
   "num-complex?/std",
@@ -99,18 +88,18 @@ std = [
 ]
 
 wasi = [
-  "concision-init?/wasi",
+  "concision-init/wasi",
   "concision-traits/wasi",
 ]
 
 wasm = [
   "getrandom?/wasm_js",
-  "concision-init?/wasm",
+  "concision-init/wasm",
   "concision-traits/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-  "concision-init?/alloc",
+  "concision-init/alloc",
   "concision-traits/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
@@ -119,24 +108,26 @@ alloc = [
 
 approx = [
   "dep:approx",
-  "concision-init?/approx",
+  "concision-init/approx",
   "ndarray/approx",
 ]
 
 blas = [
-  "concision-init?/blas",
+  "concision-init/blas",
   "ndarray/blas",
 ]
 
 complex = [
   "dep:num-complex",
-  "concision-init?/complex",
+  "concision-init/complex",
 ]
+
+json = ["alloc", "serde", "serde_json"]
 
 rand = [
   "dep:rand",
   "dep:rand_distr",
-  "concision-init?/rand",
+  "concision-init/rand",
   "concision-traits/rand",
   "num-complex?/rand",
   "rng",
@@ -149,14 +140,14 @@ rayon = [
 
 rng = [
   "dep:getrandom",
-  "concision-init?/rng",
+  "concision-init/rng",
   "concision-traits/rng",
   "rand?/small_rng",
   "rand?/thread_rng",
 ]
 
 serde = [
-  "concision-init?/serde",
+  "concision-init/serde",
   "dep:serde",
   "dep:serde_derive",
   "ndarray/serde",

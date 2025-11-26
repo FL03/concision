@@ -31,6 +31,18 @@ doc = true
 doctest = true
 test = true
 
+[[example]]
+name = "linear"
+required-features = ["linear", "std"]
+
+[[test]]
+name = "attention"
+required-features = ["approx", "attention", "rand", "std"]
+
+[[test]]
+name = "snn"
+required-features = ["std", "snn"]
+
 [dependencies]
 concision = { features = ["neural"], workspace = true }
 # custom
@@ -67,7 +79,6 @@ full = [
   "rand", 
   "serde", 
   "tracing",
-  "models",
 ]
 
 models = [
@@ -155,12 +166,3 @@ serde = [
 serde_json = ["dep:serde_json"]
 
 tracing = ["concision/tracing", "dep:tracing"]
-
-[[example]]
-name = "linear"
-required-features = ["linear", "std"]
-
-# ************* [Unit Tests] *************
-[[test]]
-name = "attention"
-required-features = ["approx", "attention", "default", "rand"]

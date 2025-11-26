@@ -31,17 +31,16 @@
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+extern crate concision_init as cnc_init;
+extern crate concision_traits as cnc_traits;
+extern crate ndarray as nda;
 
 #[cfg(all(not(feature = "alloc"), not(feature = "std")))]
 compiler_error! {
  "Either the \"alloc\" or \"std\" feature must be enabled for this crate."
 }
 
-#[doc(inline)]
-pub use self::{error::*, params::ParamsBase, types::*};
 
-#[cfg(feature = "init")]
-extern crate concision_init as init;
 
 /// Error handling for parameters
 pub mod error;
@@ -54,7 +53,7 @@ mod impls {
     mod impl_params;
     #[allow(deprecated)]
     mod impl_params_deprecated;
-    #[cfg(feature = "init")]
+    #[cfg(feature = "rand")]
     mod impl_params_init;
     mod impl_params_iter;
     mod impl_params_ops;
@@ -64,22 +63,31 @@ mod impls {
     mod impl_params_serde;
 }
 
-mod types {
-    //! Additional types supporting the params module
-    #[doc(inline)]
-    pub use self::prelude::*;
 
-    mod aliases;
+pub mod traits {
+    //! Traits for working with model parameters
+    pub use self::wnb::*;
 
-    mod prelude {
-        #[doc(inline)]
-        pub use super::aliases::*;
-    }
+    mod wnb;
 }
 
+
+mod types {
+    //! Supporting types and aliases for working with model parameters
+    #[doc(inline)]
+    pub use self::aliases::*;
+
+    mod aliases;
+}
+
+// re-exports
+#[doc(inline)]
+pub use self::{error::*, params::ParamsBase, traits::*, types::*};
+// prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use crate::error::ParamsError;
     pub use crate::params::*;
+    pub use crate::traits::*;
     pub use crate::types::*;
 }

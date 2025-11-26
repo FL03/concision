@@ -10,19 +10,19 @@ use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign};
 
 #[derive(Clone, Debug)]
-pub struct SimpleModel<T = f64> {
+pub struct ElementaryModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: DeepModelParams<T>,
 }
 
-impl<T> SimpleModel<T> {
+impl<T> ElementaryModel<T> {
     pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self
     where
         T: Clone + Default,
     {
         let params = DeepModelParams::default(features);
-        SimpleModel {
+        ElementaryModel {
             config,
             features,
             params,
@@ -79,6 +79,12 @@ impl<T> SimpleModel<T> {
     pub fn with_params(self, params: DeepModelParams<T>) -> Self {
         Self { params, ..self }
     }
+}
+
+impl<T> ElementaryModel<T>
+where
+    T: 'static + Float + FromPrimitive,
+{
     /// initializes the model with Glorot normal distribution
     #[cfg(feature = "rand")]
     pub fn init(self) -> Self
@@ -87,11 +93,11 @@ impl<T> SimpleModel<T> {
         cnc::rand_distr::StandardNormal: cnc::rand_distr::Distribution<T>,
     {
         let params = DeepModelParams::glorot_normal(self.features());
-        SimpleModel { params, ..self }
+        ElementaryModel { params, ..self }
     }
 }
 
-impl<T> Model<T> for SimpleModel<T> {
+impl<T> Model<T> for ElementaryModel<T> {
     type Config = StandardModelConfig<T>;
     type Layout = ModelFeatures;
 
@@ -116,7 +122,7 @@ impl<T> Model<T> for SimpleModel<T> {
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for SimpleModel<A>
+impl<A, S, D> Forward<ArrayBase<S, D>> for ElementaryModel<A>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: Dimension,
@@ -143,7 +149,7 @@ where
     }
 }
 
-impl<A, S, T> Train<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for SimpleModel<A>
+impl<A, S, T> Train<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for ElementaryModel<A>
 where
     A: Float + FromPrimitive + NumAssign + ScalarOperand + core::fmt::Debug,
     S: Data<Elem = A>,
@@ -255,7 +261,7 @@ where
     }
 }
 
-impl<A, S, T> Train<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for SimpleModel<A>
+impl<A, S, T> Train<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for ElementaryModel<A>
 where
     A: Float + FromPrimitive + NumAssign + ScalarOperand + core::fmt::Debug,
     S: Data<Elem = A>,

@@ -6,7 +6,7 @@
 extern crate concision as cnc;
 
 use cnc::nn::{ModelFeatures, Predict, StandardModelConfig, Train};
-use concision_ext::ffn::SimpleModel;
+use concision_ext::elementary::ElementaryModel;
 use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {
@@ -28,11 +28,13 @@ fn main() -> anyhow::Result<()> {
     config.set_decay(0.0001);
     tracing::debug!("Model Config: {config:?}");
     // initialize the model
-    let mut model = SimpleModel::<f64>::new(config, features).init();
+    let mut model = ElementaryModel::<f64>::new(config, features).init();
     // initialize some input data
     let input = Array1::linspace(1.0, 9.0, model.features().input());
     // propagate the input through the model
-    let output = model.predict(&input).expect("Failed to forward the input through the model");
+    let output = model
+        .predict(&input)
+        .expect("Failed to forward the input through the model");
     tracing::info!("output: {:?}", output);
     // verify the output shape
     assert_eq!(output.dim(), (model.features().output()));
@@ -44,7 +46,9 @@ fn main() -> anyhow::Result<()> {
         model.train(&training_input, &expected_output)?;
     }
     // forward the input through the model
-    let output = model.predict(&input).expect("Failed to forward the input through the model");
+    let output = model
+        .predict(&input)
+        .expect("Failed to forward the input through the model");
     tracing::info!("output: {:?}", output);
 
     Ok(())

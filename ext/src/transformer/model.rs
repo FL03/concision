@@ -31,15 +31,6 @@ impl<T> TransformerModel<T> {
             params,
         }
     }
-    #[cfg(feature = "rand")]
-    pub fn init(self) -> Self
-    where
-        T: 'static + Float + FromPrimitive,
-        rand_distr::StandardNormal: rand_distr::Distribution<T>,
-    {
-        let params = DeepModelParams::glorot_normal(self.features());
-        TransformerModel { params, ..self }
-    }
     /// returns a reference to the model configuration
     pub const fn config(&self) -> &StandardModelConfig<T> {
         &self.config
@@ -90,6 +81,21 @@ impl<T> TransformerModel<T> {
     /// consumes the current instance to create another with the given parameters
     pub fn with_params(self, params: DeepModelParams<T>) -> Self {
         Self { params, ..self }
+    }
+}
+
+impl<T> TransformerModel<T>
+where
+    T: 'static + Float + FromPrimitive,
+{
+    #[cfg(feature = "rand")]
+    pub fn init(self) -> Self
+    where
+        T: 'static + Float + FromPrimitive,
+        rand_distr::StandardNormal: rand_distr::Distribution<T>,
+    {
+        let params = DeepModelParams::glorot_normal(self.features());
+        TransformerModel { params, ..self }
     }
 }
 

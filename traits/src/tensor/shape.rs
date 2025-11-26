@@ -38,7 +38,6 @@ pub trait Unsqueeze {
 */
 use ndarray::{ArrayBase, Axis, Dimension, RawData, RawDataClone, RemoveAxis};
 
-
 impl<D> Dim for D
 where
     D: ndarray::Dimension,

@@ -33,7 +33,7 @@ fn test_params_zeros() {
 }
 
 #[test]
-#[cfg(feature = "init")]
+#[cfg(feature = "rand")]
 fn test_params_init() {
     use concision_init::InitRand;
 

@@ -16,8 +16,7 @@ pub struct S4Model<T = f64> {
     pub params: DeepModelParams<T>,
 }
 
-impl<T> S4Model<T>
-{
+impl<T> S4Model<T> {
     pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self
     where
         T: Clone + Default,
@@ -28,15 +27,6 @@ impl<T> S4Model<T>
             features,
             params,
         }
-    }
-    #[cfg(feature = "rand")]
-    pub fn init(self) -> Self
-    where
-        T: 'static + Float + FromPrimitive,
-        rand_distr::StandardNormal: rand_distr::Distribution<T>,
-    {
-        let params = DeepModelParams::glorot_normal(self.features());
-        S4Model { params, ..self }
     }
     /// returns a reference to the model configuration
     pub const fn config(&self) -> &StandardModelConfig<T> {
@@ -91,6 +81,21 @@ impl<T> S4Model<T>
     }
 }
 
+impl<T> S4Model<T>
+where
+    T: 'static + Float + FromPrimitive,
+{
+    /// initialize the model parameters using Glorot normal initialization
+    #[cfg(feature = "rand")]
+    pub fn init(self) -> Self
+    where
+        T: 'static + Float + FromPrimitive,
+        rand_distr::StandardNormal: rand_distr::Distribution<T>,
+    {
+        let params = DeepModelParams::glorot_normal(self.features());
+        S4Model { params, ..self }
+    }
+}
 impl<T> Model<T> for S4Model<T> {
     type Config = StandardModelConfig<T>;
 

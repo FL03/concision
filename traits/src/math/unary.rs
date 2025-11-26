@@ -158,6 +158,20 @@ where
     }
 }
 
+#[cfg(not(feature = "complex"))]
+impl<A, S, D> Exp for &ArrayBase<S, D, A>
+where
+    A: Clone + Exp<Output = A>,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<A, D>;
+
+    fn exp(self) -> Self::Output {
+        self.mapv(|x| x.exp())
+    }
+}
+
 impl<A, B, S, D> Exp for ArrayBase<S, D>
 where
     A: Clone + Exp<Output = B>,

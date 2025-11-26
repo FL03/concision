@@ -4,14 +4,36 @@
     Contrib: @FL03
 */
 //! Single spiking neuron (LIF + adaptation + exponential synapse) example in pure Rust.
+//! 
+//! ## Background
 //!
 //! Model (forward-Euler integration; units are arbitrary but consistent):
-//!   tau_m * dv/dt = -(v - v_rest) + R*(I_ext + I_syn) - w
-//!   tau_w * dw/dt = -w
-//!   tau_s * ds/dt = -s  (+ instantaneous increments when presynaptic spikes arrive)
+//! 
+//! ```math
+//! \tau_m * \frac{dv}{dt} = -(v - v_{rest}) + R*(I_{ext} + I_{syn}) - \omega
+//! ```
+//! 
+//! ```math 
+//! \tau_w * \frac{d\omega}{dt} = -\omega
+//! ```
+//! 
+//! ```math 
+//! \tau_s * \frac{ds}{dt} = -s
+//! ```
+//! 
+//! where: 
+//!     - $`v`$: membrane potential
+//!     - $\omega$: adaptation variable
+//!     - $`s`$: synaptic variable representing total synaptic current
 //!
-//! Spike: when v >= v_thresh -> spike emitted, v <- v_reset, w += b
-//! I_syn = s
+//! If we allow the spike to be represented as $\delta$, then: 
+//! 
+//! ```math
+//! v\geq{v_{thresh}}\rightarrow{\delta},v\leftarrow{v_{reset}},\omega\mathrel{+}=b
+//! ```
+//! 
+//! and where `b` is the adaptation increment added on spike.
+//! The synaptic current is given by: $I_{syn} = s$
 //!
 //! The implementation is conservative with allocations and idiomatic Rust.
 use super::types::{StepResult, SynapticEvent};
