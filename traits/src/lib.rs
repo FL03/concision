@@ -44,9 +44,11 @@ mod store;
 mod tensor_ops;
 mod wnb;
 
-// re-export the traits
+// re-exports
 #[doc(inline)]
-pub use self::{error::*, prelude::*};
+pub use self::error::*;
+#[doc(inline)]
+pub use self::prelude::*;
 
 #[doc(hidden)]
 pub mod prelude {

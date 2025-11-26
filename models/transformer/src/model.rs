@@ -1,5 +1,5 @@
 /*
-    Appellation: transformer <library>
+    Appellation: transformer <module>
     Contrib: @FL03
 */
 
@@ -128,7 +128,7 @@ where
 {
     type Output = V;
 
-    fn forward(&self, input: &U) -> cnc::traits::Result<Self::Output> {
+    fn forward(&self, input: &U) -> Option<Self::Output> {
         let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
 
         for layer in self.params().hidden() {
@@ -139,7 +139,7 @@ where
             .params()
             .output()
             .forward_then(&output, |y| y.sigmoid())?;
-        Ok(y)
+        Some(y)
     }
 }
 

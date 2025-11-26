@@ -65,7 +65,7 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, input: &ArrayBase<S, D>) -> cnc::traits::Result<Self::Output> {
+    fn forward(&self, input: &ArrayBase<S, D>) -> Option<Self::Output> {
         let mut output = self
             .params()
             .input()
@@ -79,7 +79,7 @@ where
             .params()
             .output()
             .forward_then(&output, |y| y.sigmoid())?;
-        Ok(y)
+        Some(y)
     }
 }
 

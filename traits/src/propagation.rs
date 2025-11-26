@@ -8,23 +8,18 @@ pub trait Backward<X, Delta = X> {
     type Elem;
     type Output;
 
-    fn backward(
-        &mut self,
-        input: &X,
-        delta: &Delta,
-        gamma: Self::Elem,
-    ) -> crate::Result<Self::Output>;
+    fn backward(&mut self, input: &X, delta: &Delta, gamma: Self::Elem) -> Option<Self::Output>;
 }
 
 /// This trait denotes entities capable of performing a single forward step
 pub trait Forward<Rhs> {
     type Output;
     /// a single forward step
-    fn forward(&self, input: &Rhs) -> crate::Result<Self::Output>;
+    fn forward(&self, input: &Rhs) -> Option<Self::Output>;
     /// this method enables the forward pass to be generically _activated_ using some closure.
     /// This is useful for isolating the logic of the forward pass from that of the activation
     /// function and is often used by layers and models.
-    fn forward_then<F>(&self, input: &Rhs, then: F) -> crate::Result<Self::Output>
+    fn forward_then<F>(&self, input: &Rhs, then: F) -> Option<Self::Output>
     where
         F: FnOnce(Self::Output) -> Self::Output,
     {
@@ -56,7 +51,7 @@ use ndarray::{ArrayBase, Data, Dimension};
 //         input: &X,
 //         delta: &Y,
 //         gamma: Self::Elem,
-//     ) -> crate::Result<Self::Output> {
+//     ) -> Option<Self::Output> {
 //         let grad = input.dot(delta);
 //         let next = &self + grad * gamma;
 //         self.assign(&next)?;
@@ -74,8 +69,7 @@ where
 {
     type Output = Y;
 
-    fn forward(&self, input: &X) -> crate::Result<Self::Output> {
-        let output = input.dot(self);
-        Ok(output)
+    fn forward(&self, input: &X) -> Option<Self::Output> {
+        Some(input.dot(self))
     }
 }

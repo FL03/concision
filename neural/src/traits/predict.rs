@@ -44,7 +44,7 @@ where
     seal!();
 
     fn predict(&self, input: &U) -> Option<Self::Output> {
-        self.forward(input).ok()
+        self.forward(input)
     }
 }
 

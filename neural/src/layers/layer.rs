@@ -110,8 +110,6 @@ where
         X: Clone,
         Y: Clone,
     {
-        Forward::forward(&self.params, input)
-            .map(|x| self.rho.activate(x))
-            .ok()
+        Forward::forward(&self.params, input).map(|x| self.rho.activate(x))
     }
 }

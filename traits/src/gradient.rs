@@ -17,14 +17,9 @@ pub trait Gradient<T, D> {
 pub trait ApplyGradient<Delta, T> {
     type Output;
 
-    fn apply_gradient(&mut self, grad: &Delta, lr: T) -> crate::Result<Self::Output>;
+    fn apply_gradient(&mut self, grad: &Delta, lr: T) -> Option<Self::Output>;
 
-    fn apply_gradient_with_decay(
-        &mut self,
-        grad: &Delta,
-        lr: T,
-        decay: T,
-    ) -> crate::Result<Self::Output>;
+    fn apply_gradient_with_decay(&mut self, grad: &Delta, lr: T, decay: T) -> Option<Self::Output>;
 }
 
 /// This trait extends the [ApplyGradient] trait by allowing for momentum-based optimization
@@ -37,7 +32,7 @@ pub trait ApplyGradientExt<Delta, T>: ApplyGradient<Delta, T> {
         lr: T,
         momentum: T,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output>;
+    ) -> Option<Self::Output>;
 
     fn apply_gradient_with_decay_and_momentum(
         &mut self,
@@ -46,14 +41,14 @@ pub trait ApplyGradientExt<Delta, T>: ApplyGradient<Delta, T> {
         decay: T,
         momentum: T,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output>;
+    ) -> Option<Self::Output>;
 }
 
 /*
  ************* Implementations *************
 */
 
-use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand, ShapeError};
+use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 
 impl<A, S, T, D> ApplyGradient<ArrayBase<T, D>, A> for ArrayBase<S, D, A>
@@ -65,9 +60,10 @@ where
 {
     type Output = ();
 
-    fn apply_gradient(&mut self, grad: &ArrayBase<T, D>, lr: A) -> crate::Result<Self::Output> {
+    fn apply_gradient(&mut self, grad: &ArrayBase<T, D>, lr: A) -> Option<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
+            // return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
+            return None;
         }
         let batch_size = if !grad.shape().is_empty() {
             A::from_usize(self.shape()[0]).unwrap()
@@ -75,7 +71,7 @@ where
             A::one()
         };
         self.scaled_add(lr / batch_size, grad);
-        Ok(())
+        Some(())
     }
 
     fn apply_gradient_with_decay(
@@ -83,9 +79,10 @@ where
         grad: &ArrayBase<T, D>,
         lr: A,
         decay: A,
-    ) -> crate::Result<Self::Output> {
+    ) -> Option<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
+            // return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
+            return None;
         }
         let batch_size = if !grad.shape().is_empty() {
             A::from_usize(self.shape()[0]).unwrap()
@@ -94,7 +91,7 @@ where
         };
         let rhs = grad + &*self * decay;
         self.scaled_add(lr / batch_size, &rhs);
-        Ok(())
+        Some(())
     }
 }
 
@@ -113,9 +110,10 @@ where
         lr: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output> {
+    ) -> Option<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
+            // return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
+            return None;
         }
         let batch_size = if !grad.shape().is_empty() {
             A::from_usize(self.shape()[0]).unwrap()
@@ -124,7 +122,7 @@ where
         };
         *velocity = &*velocity * momentum + grad * (A::one() - momentum);
         self.scaled_add(lr / batch_size, velocity);
-        Ok(())
+        Some(())
     }
 
     fn apply_gradient_with_decay_and_momentum(
@@ -134,11 +132,10 @@ where
         decay: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> crate::Result<Self::Output> {
+    ) -> Option<Self::Output> {
         if self.shape() != grad.shape() {
-            return Err(
-                ndarray::ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into(),
-            );
+            // return Err(ShapeError::from_kind(ndarray::ErrorKind::IncompatibleShape).into());
+            return None;
         }
         let batch_size = if !grad.shape().is_empty() {
             A::from_usize(self.shape()[0]).unwrap()
@@ -149,6 +146,6 @@ where
         let adjusted_grad = grad + &*self * decay;
         *velocity = &*velocity * momentum + adjusted_grad * (A::one() - momentum);
         self.scaled_add(lr / batch_size, velocity);
-        Ok(())
+        Some(())
     }
 }

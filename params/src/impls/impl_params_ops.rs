@@ -4,7 +4,7 @@
 */
 use crate::{Params, ParamsBase};
 use concision_traits::{
-    ApplyGradient, ApplyGradientExt, Backward, Biased, Forward, Norm, Result, Weighted,
+    ApplyGradient, ApplyGradientExt, Backward, Biased, Forward, Norm, Weighted,
 };
 use ndarray::linalg::Dot;
 use ndarray::{ArrayBase, Data, DataMut, Dimension, ScalarOperand};
@@ -22,14 +22,14 @@ where
     where
         Self: Backward<X, Y, Elem = A, Output = Z>,
     {
-        <Self as Backward<X, Y>>::backward(self, input, grad, lr).ok()
+        <Self as Backward<X, Y>>::backward(self, input, grad, lr)
     }
     /// forward propagation
     pub fn forward<X, Y>(&self, input: &X) -> Option<Y>
     where
         Self: Forward<X, Output = Y>,
     {
-        <Self as Forward<X>>::forward(self, input).ok()
+        <Self as Forward<X>>::forward(self, input)
     }
 }
 
@@ -54,7 +54,7 @@ where
 
     /// a convenience method used to apply a gradient to the parameters using the given
     /// learning rate.
-    pub fn apply_gradient<Delta, Z>(&mut self, grad: &Delta, lr: A) -> Result<Z>
+    pub fn apply_gradient<Delta, Z>(&mut self, grad: &Delta, lr: A) -> Option<Z>
     where
         S: DataMut,
         Self: ApplyGradient<Delta, A, Output = Z>,
@@ -62,7 +62,7 @@ where
         <Self as ApplyGradient<Delta, A>>::apply_gradient(self, grad, lr)
     }
 
-    pub fn apply_gradient_with_decay<Grad, Z>(&mut self, grad: &Grad, lr: A, decay: A) -> Result<Z>
+    pub fn apply_gradient_with_decay<Grad, Z>(&mut self, grad: &Grad, lr: A, decay: A) -> Option<Z>
     where
         S: DataMut,
         Self: ApplyGradient<Grad, A, Output = Z>,
@@ -76,7 +76,7 @@ where
         lr: A,
         momentum: A,
         velocity: &mut V,
-    ) -> Result<Z>
+    ) -> Option<Z>
     where
         S: DataMut,
         Self: ApplyGradientExt<Grad, A, Output = Z, Velocity = V>,
@@ -93,7 +93,7 @@ where
         decay: A,
         momentum: A,
         velocity: &mut V,
-    ) -> Result<Z>
+    ) -> Option<Z>
     where
         S: DataMut,
         Self: ApplyGradientExt<Grad, A, Output = Z, Velocity = V>,
@@ -141,12 +141,12 @@ where
 {
     type Output = ();
 
-    fn apply_gradient(&mut self, grad: &ParamsBase<T, D>, lr: A) -> Result<Self::Output> {
+    fn apply_gradient(&mut self, grad: &ParamsBase<T, D>, lr: A) -> Option<Self::Output> {
         // apply the bias gradient
         self.bias_mut().apply_gradient(grad.bias(), lr)?;
         // apply the weight gradient
         self.weights_mut().apply_gradient(grad.weights(), lr)?;
-        Ok(())
+        Some(())
     }
 
     fn apply_gradient_with_decay(
@@ -154,14 +154,14 @@ where
         grad: &ParamsBase<T, D>,
         lr: A,
         decay: A,
-    ) -> Result<Self::Output> {
+    ) -> Option<Self::Output> {
         // apply the bias gradient
         self.bias_mut()
             .apply_gradient_with_decay(grad.bias(), lr, decay)?;
         // apply the weight gradient
         self.weights_mut()
             .apply_gradient_with_decay(grad.weights(), lr, decay)?;
-        Ok(())
+        Some(())
     }
 }
 
@@ -180,7 +180,7 @@ where
         lr: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> Result<()> {
+    ) -> Option<()> {
         // apply the bias gradient
         self.bias_mut().apply_gradient_with_momentum(
             grad.bias(),
@@ -195,7 +195,7 @@ where
             momentum,
             velocity.weights_mut(),
         )?;
-        Ok(())
+        Some(())
     }
 
     fn apply_gradient_with_decay_and_momentum(
@@ -205,7 +205,7 @@ where
         decay: A,
         momentum: A,
         velocity: &mut Self::Velocity,
-    ) -> Result<()> {
+    ) -> Option<()> {
         // apply the bias gradient
         self.bias_mut().apply_gradient_with_decay_and_momentum(
             grad.bias(),
@@ -222,7 +222,7 @@ where
             momentum,
             velocity.weights_mut(),
         )?;
-        Ok(())
+        Some(())
     }
 }
 
@@ -240,7 +240,7 @@ where
         input: &ArrayBase<S, Ix2>,
         delta: &ArrayBase<T, Ix1>,
         gamma: Self::Elem,
-    ) -> Result<Self::Output> {
+    ) -> Option<Self::Output> {
         // compute the weight gradient
         let weight_delta = delta.t().dot(input);
         // update the weights and bias
@@ -248,11 +248,11 @@ where
         self.bias_mut()
             .apply_gradient(&delta.sum_axis(Axis(0)), gamma)?;
         // return the sum of the squared delta
-        Ok(delta.pow2().sum())
+        Some(delta.pow2().sum())
     }
 }
 
-impl<A, S, T> Backward<ArrayBase<S, Ix1>, ArrayBase<T, Ix0>> for Params<A, Ix1>
+impl<A, S, T> Backward<ArrayBase<S, Ix1, A>, ArrayBase<T, Ix0, A>> for Params<A, Ix1>
 where
     A: Float + FromPrimitive + ScalarOperand,
     S: Data<Elem = A>,
@@ -263,21 +263,21 @@ where
 
     fn backward(
         &mut self,
-        input: &ArrayBase<S, Ix1>,
-        delta: &ArrayBase<T, Ix0>,
+        input: &ArrayBase<S, Ix1, A>,
+        delta: &ArrayBase<T, Ix0, A>,
         gamma: Self::Elem,
-    ) -> Result<Self::Output> {
+    ) -> Option<Self::Output> {
         // compute the weight gradient
         let weight_delta = input * delta;
         // update the weights and bias
         self.weights_mut().apply_gradient(&weight_delta, gamma)?;
         self.bias_mut().apply_gradient(delta, gamma)?;
         // return the sum of the squared delta
-        Ok(delta.pow2().sum())
+        Some(delta.pow2().sum())
     }
 }
 
-impl<A, S, T> Backward<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for Params<A, Ix2>
+impl<A, S, T> Backward<ArrayBase<S, Ix1, A>, ArrayBase<T, Ix1, A>> for Params<A, Ix2>
 where
     A: Float + FromPrimitive + ScalarOperand,
     S: Data<Elem = A>,
@@ -288,21 +288,21 @@ where
 
     fn backward(
         &mut self,
-        input: &ArrayBase<S, Ix1>,
-        delta: &ArrayBase<T, Ix1>,
+        input: &ArrayBase<S, Ix1, A>,
+        delta: &ArrayBase<T, Ix1, A>,
         gamma: Self::Elem,
-    ) -> Result<Self::Output> {
+    ) -> Option<Self::Output> {
         // compute the weight gradient
         let dw = &self.weights * delta.t().dot(input);
         // update the weights and bias
         self.weights_mut().apply_gradient(&dw, gamma)?;
         self.bias_mut().apply_gradient(delta, gamma)?;
         // return the sum of the squared delta
-        Ok(delta.pow2().sum())
+        Some(delta.pow2().sum())
     }
 }
 
-impl<A, S, T> Backward<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for Params<A, Ix2>
+impl<A, S, T> Backward<ArrayBase<S, Ix2, A>, ArrayBase<T, Ix2, A>> for Params<A, Ix2>
 where
     A: Float + FromPrimitive + ScalarOperand,
     S: Data<Elem = A>,
@@ -313,10 +313,10 @@ where
 
     fn backward(
         &mut self,
-        input: &ArrayBase<S, Ix2>,
-        delta: &ArrayBase<T, Ix2>,
+        input: &ArrayBase<S, Ix2, A>,
+        delta: &ArrayBase<T, Ix2, A>,
         gamma: Self::Elem,
-    ) -> Result<Self::Output> {
+    ) -> Option<Self::Output> {
         // compute the weight gradient
         let weight_delta = input.dot(&delta.t());
         // compute the bias gradient
@@ -325,7 +325,9 @@ where
         self.weights_mut().apply_gradient(&weight_delta, gamma)?;
         self.bias_mut().apply_gradient(&bias_delta, gamma)?;
         // return the sum of the squared delta
-        Ok(delta.pow2().sum())
+        let y = input.dot(self.weights()) + self.bias();
+        let res = (&y - delta).pow2().sum();
+        Some(res)
     }
 }
 
@@ -339,8 +341,7 @@ where
 {
     type Output = Z;
 
-    fn forward(&self, input: &X) -> Result<Self::Output> {
-        let output = input.dot(&self.weights) + &self.bias;
-        Ok(output)
+    fn forward(&self, input: &X) -> Option<Self::Output> {
+        Some(input.dot(self.weights()) + self.bias())
     }
 }

@@ -40,13 +40,13 @@ where
 {
     type Output = Y;
 
-    fn forward(&self, inputs: &X) -> cnc::traits::Result<Self::Output> {
+    fn forward(&self, inputs: &X) -> Option<Self::Output> {
         let y = self
             .params()
             .forward(inputs)
             .expect("Forward pass failed in LayerBase");
 
-        Ok(self.rho().activate(y))
+        Some(self.rho().activate(y))
     }
 }
 

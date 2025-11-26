@@ -14,12 +14,8 @@ pub type Result<T> = core::result::Result<T, Error>;
 
 /// The [`Error`] type enumerates various errors that can occur within the framework.
 #[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
 pub enum Error {
-    #[error("Invalid Shape")]
-    InvalidShape,
-    #[cfg(feature = "alloc")]
-    #[error(transparent)]
-    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[error(transparent)]
     FmtError(#[from] core::fmt::Error),
     #[cfg(feature = "std")]
@@ -30,6 +26,9 @@ pub enum Error {
     #[error(transparent)]
     #[cfg(feature = "rand")]
     UniformError(#[from] rand_distr::uniform::Error),
+    #[cfg(feature = "alloc")]
+    #[error(transparent)]
+    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[cfg(feature = "alloc")]
     #[error("Unknown Error: {0}")]
     Unknown(String),
@@ -45,6 +44,6 @@ impl From<String> for Error {
 #[cfg(feature = "alloc")]
 impl From<&str> for Error {
     fn from(value: &str) -> Self {
-        Self::Unknown(String::from(value))
+        String::from(value).into()
     }
 }
