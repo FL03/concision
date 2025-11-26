@@ -35,7 +35,7 @@ fn test_params_zeros() {
 #[test]
 #[cfg(feature = "init")]
 fn test_params_init() {
-    use concision_init::Initialize;
+    use concision_init::InitRand;
 
     let lecun = Params::<f64>::lecun_normal((3, 4));
     assert_eq!(lecun.dim(), (3, 4));

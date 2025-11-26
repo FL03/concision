@@ -6,8 +6,8 @@
 use crate::params::{DeepParamsBase, ShallowParamsBase};
 
 use crate::ModelFeatures;
-use cnc::init::{self, Initialize};
-use cnc::params::ParamsBase;
+use concision_core::init::{self, InitRand};
+use concision_core::params::ParamsBase;
 use ndarray::{DataOwned, Ix2};
 use num_traits::{Float, FromPrimitive};
 
@@ -58,7 +58,7 @@ where
         StandardNormal: Distribution<A>,
     {
         Self::init_rand(features, |(rows, cols)| {
-            cnc::init::XavierNormal::new(rows, cols)
+            init::XavierNormal::new(rows, cols)
         })
     }
     /// initialize the model parameters using a glorot uniform distribution
@@ -102,7 +102,7 @@ where
         StandardNormal: Distribution<A>,
     {
         Self::init_rand(features, |(rows, cols)| {
-            cnc::init::XavierNormal::new(rows, cols)
+            init::XavierNormal::new(rows, cols)
         })
     }
     /// initialize the model parameters using a glorot uniform distribution

@@ -7,7 +7,7 @@ use concision_snn::SpikingNeuron;
 
 #[test]
 fn test_snn_neuron_resting_no_input() {
-    let mut n = SpikingNeuron::new_default();
+    let mut n = SpikingNeuron::default();
     let dt = 1.0;
     // simulate 100 ms with no input -> should not spike and v near v_rest
     for _ in 0..100 {
@@ -20,7 +20,7 @@ fn test_snn_neuron_resting_no_input() {
 
 #[test]
 fn test_receive_spike_increases_synaptic_state() {
-    let mut n = SpikingNeuron::new_default();
+    let mut n = SpikingNeuron::default();
     let before = n.synaptic_state();
     n.receive_spike(2.5);
     assert!(n.synaptic_state() > before);
@@ -33,7 +33,7 @@ fn test_spiking_with_sufficient_input() {
     let dt: f64 = 0.1;
     let i_ext: f64 = 5.0; // large i_ext to force spiking
     // neuron
-    let mut n = SpikingNeuron::new_default();
+    let mut n = SpikingNeuron::default();
     let mut spiked = false;
     let mut steps = 0_usize;
     // apply strong constant external current for a while

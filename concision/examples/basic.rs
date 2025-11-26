@@ -4,7 +4,7 @@
 */
 extern crate concision as cnc;
 
-use cnc::init::Initialize;
+use cnc::init::InitRand;
 use cnc::params::Params;
 
 use ndarray::prelude::*;

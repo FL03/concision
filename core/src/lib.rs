@@ -64,7 +64,7 @@ pub use concision_params as params;
 pub use self::{
     activate::prelude::*,
     error::*,
-    init::{Init, InitInplace, Initialize},
+    init::{Init, InitInplace, InitRand},
     ops::prelude::*,
     params::prelude::*,
     traits::prelude::*,

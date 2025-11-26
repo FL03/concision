@@ -3,7 +3,7 @@
     authors: @FL03
 */
 extern crate concision as cnc;
-use cnc::init::Initialize;
+use cnc::init::InitRand;
 
 use core::hint::black_box;
 use criterion::{BatchSize, BenchmarkId, Criterion};

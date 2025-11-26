@@ -4,7 +4,7 @@
 */
 use crate::params::ParamsBase;
 
-use concision_init::Initialize;
+use concision_init::InitRand;
 use ndarray::{
     ArrayBase, Axis, DataOwned, Dimension, RawData, RemoveAxis, ScalarOperand, ShapeBuilder,
 };
@@ -33,7 +33,7 @@ where
     }
 }
 
-impl<A, S, D> Initialize<S, D> for ParamsBase<S, D, A>
+impl<A, S, D> InitRand<S, D, A> for ParamsBase<S, D, A>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,

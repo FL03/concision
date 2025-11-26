@@ -26,7 +26,7 @@ impl LecunNormal {
     }
     /// Create a [truncated normal](TruncatedNormal) [distribution](Distribution) centered at 0;
     /// See [Self::std_dev] for the standard deviation calculations.
-    pub fn distr<F>(&self) -> crate::Result<TruncatedNormal<F>>
+    pub fn distr<F>(&self) -> crate::InitResult<TruncatedNormal<F>>
     where
         F: Float,
         StandardNormal: Distribution<F>,

@@ -56,11 +56,12 @@ pub struct SpikingNeuron {
 }
 
 impl SpikingNeuron {
+    #[allow(clippy::should_implement_trait)]
     /// Create a new neuron with common default parameters (units: ms and mV-like).
     ///
     /// Many fields are set to common neuroscience-like defaults but these are research parameters
     /// and should be tuned for your experiments.
-    pub fn new_default() -> Self {
+    pub fn default() -> Self {
         let tau_m = 20.0; // ms
         let resistance = 1.0; // arbitrary
         let v_rest = -65.0; // mV
@@ -86,7 +87,7 @@ impl SpikingNeuron {
     }
 
     /// Create a neuron with explicit parameters and initial state.
-    pub fn new(
+    pub const fn new(
         tau_m: f64,
         resistance: f64,
         v_rest: f64,
@@ -97,7 +98,11 @@ impl SpikingNeuron {
         tau_s: f64,
         initial_v: Option<f64>,
     ) -> Self {
-        let v0 = initial_v.unwrap_or(v_rest);
+        let v0 = if let Some(v_init) = initial_v {
+            v_init
+        } else {
+            v_rest
+        };
         Self {
             tau_m,
             resistance,
@@ -231,7 +236,7 @@ fn example() {
     let steps = (t_sim / dt) as usize;
 
     // Create neuron with defaults
-    let mut neuron = SpikingNeuron::new_default();
+    let mut neuron = SpikingNeuron::default();
 
     // Example external current (constant)
     let i_ext = 1.8; // tune to see spiking (units consistent with resistance & s)
