@@ -2,7 +2,6 @@
 build = "build.rs"
 description = "this crate provides additional tools for working with datasets"
 name = "concision-data"
-
 authors.workspace = true
 categories.workspace = true
 edition.workspace = true
@@ -14,33 +13,26 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
-[package.metadata.docs.rs]
-all-features = false
-doc-scrape-examples = true
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
-
-[package.metadata.release]
-no-dev-version = true
-tag-name = "{{version}}"
-
 [lib]
-crate-type = [
-    "cdylib",
-    "rlib",
-]
+crate-type = ["cdylib","rlib"]
 bench = false
 doc = true
 doctest = true
 test = true
 
+# ************* [Unit Tests] *************
+[[test]]
+name = "default"
+
+[[test]]
+name = "loader"
+required-features = ["loader"]
+
 [dependencies]
 concision-core = { workspace = true }
 # custom
-scsys = { workspace = true }
+variants = { workspace = true }
 # error handling
-anyhow = { optional = true, workspace = true }
 thiserror = { workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
@@ -65,7 +57,6 @@ default = [
 
 full = [
     "default",
-    "anyhow",
     "approx",
     "complex",
     "json",
@@ -91,33 +82,26 @@ std = [
     "ndarray/std",
     "num/std",
     "num-complex?/std",
-    "scsys/std",
     "serde?/std",
     "serde_json?/std",
     "tracing?/std",
+    "variants/std",
 ]
 
 wasi = [
     "concision-core/wasi",
-    "scsys/wasi",
 ]
 
 wasm = [
     "concision-core/wasm",
-    "scsys/wasm",
 ]
 
 # ************* [FF:Dependencies] *************
 alloc = [
     "concision-core/alloc",
     "num/alloc",
-    "serde?/alloc"
-]
-
-anyhow = [
-    "dep:anyhow", 
-    "concision-core/anyhow",
-    "scsys/anyhow",
+    "serde?/alloc",
+    "variants/alloc",
 ]
 
 approx = [
@@ -142,7 +126,6 @@ json = [
     "serde_json",
     "concision-core/json",
     "reqwest?/json",
-    "scsys/json",
 ]
 
 rayon = [
@@ -153,12 +136,10 @@ rayon = [
 rand = [
     "concision-core/rand", 
     "rng",
-    "scsys/rand",
 ]
 
 rng = [
     "concision-core/rng",
-    "scsys/rng",
 ]
 
 reqwest = ["dep:reqwest"]
@@ -169,7 +150,6 @@ serde = [
     "ndarray/serde",
     "num/serde",
     "num-complex?/serde",
-    "scsys/serde",
 ]
 
 serde_json = ["dep:serde_json"]
@@ -177,13 +157,16 @@ serde_json = ["dep:serde_json"]
 tracing = [
     "concision-core/tracing",
     "dep:tracing",
-    "scsys/tracing",
 ]
 
-# ************* [Unit Tests] *************
-[[test]]
-name = "default"
+# ********* [Metadata] *********
+[package.metadata.docs.rs]
+all-features = false
+doc-scrape-examples = true
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
 
-[[test]]
-name = "loader"
-required-features = ["loader"]
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"

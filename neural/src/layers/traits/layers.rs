@@ -5,7 +5,6 @@
 use super::{Activator, ActivatorGradient};
 
 use cnc::params::ParamsBase;
-use cnc::tensor::NdTensor;
 use cnc::{Backward, Forward};
 use ndarray::{Data, Dimension, RawData};
 
@@ -40,7 +39,7 @@ where
         *self.params_mut() = params;
     }
     /// backward propagate error through the layer
-    fn backward<X, Y, Z, Dt>(&mut self, input: X, error: Y, gamma: Self::Elem) -> cnc::Result<Z>
+    fn backward<X, Y, Z, Dt>(&mut self, input: X, error: Y, gamma: Self::Elem) -> Option<Z>
     where
         S: Data,
         Self: ActivatorGradient<X, Input = Y, Output = Z, Delta = Dt>,
@@ -53,9 +52,8 @@ where
         self.params_mut().backward(&input, &delta, gamma)
     }
     /// complete a forward pass through the layer
-    fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
+    fn forward<X, Y>(&self, input: &X) -> Option<Y>
     where
-        Y: NdTensor<S::Elem, D, Repr = S>,
         ParamsBase<S, D>: Forward<X, Output = Y>,
         Self: Activator<Y, Output = Y>,
     {

@@ -52,7 +52,6 @@ toggle! {
     Ord,
     PartialEq,
     PartialOrd,
-    scsys::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumCount,
@@ -61,6 +60,7 @@ toggle! {
     strum::EnumString,
     strum::VariantArray,
     strum::VariantNames,
+    variants::VariantConstructors,
 )]
 #[cfg_attr(
     feature = "serde",
@@ -85,7 +85,6 @@ pub enum FftMode {
     Ord,
     PartialEq,
     PartialOrd,
-    scsys::VariantConstructors,
     strum::AsRefStr,
     strum::Display,
     strum::EnumCount,
@@ -94,6 +93,7 @@ pub enum FftMode {
     strum::EnumString,
     strum::VariantArray,
     strum::VariantNames,
+    variants::VariantConstructors,
 )]
 #[cfg_attr(
     feature = "serde",

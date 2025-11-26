@@ -11,7 +11,7 @@ pub trait RawConfig {
 
 /// The [`NetworkConfig`] trait extends the [`RawConfig`] trait to provide a more robust
 /// interface for neural network configurations.
-pub trait NetworkConfig<T>: RawConfig<Ctx = T> {
+pub trait NetworkConfig<T>: RawConfig {
     fn get<K>(&self, key: K) -> Option<&T>
     where
         K: AsRef<str>;

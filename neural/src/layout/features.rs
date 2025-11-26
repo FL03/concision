@@ -40,7 +40,16 @@ pub struct ModelFeatures {
 }
 
 impl ModelFeatures {
-    /// creates a new instance of [`ModelFeatures`] for a deep neurao network, using the given
+    /// creates a new instance of [`ModelFeatures`] for a neural network with `n` layers. If
+    /// the number of layers is `<=1` then the [`ModelFormat`] is automatically
+    /// configured as a _shallow_ neural network.
+    pub const fn new(input: usize, hidden: usize, output: usize, layers: usize) -> Self {
+        match layers {
+            0 | 1 => Self::shallow(input, hidden, output),
+            _ => Self::deep(input, hidden, output, layers),
+        }
+    }
+    /// creates a new instance of [`ModelFeatures`] for a deep neural network, using the given
     /// input, hidden, and output features with the given number of hidden layers
     pub const fn deep(input: usize, hidden: usize, output: usize, layers: usize) -> Self {
         Self {

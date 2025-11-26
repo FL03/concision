@@ -2,26 +2,29 @@ name: Release
 
 on:
   release:
-    types:
-      - published
+    types: [published]
   repository_dispatch:
-    types: [ release ]
+    types: [release]
   workflow_dispatch:
     inputs:
       draft:
         default: false
-        description: 'Create a draft release'
+        description: "Create a draft release"
         required: true
         type: boolean
       prerelease:
         default: false
-        description: 'Create a prerelease'
+        description: "Create a prerelease"
         required: true
         type: boolean
 
 permissions:
   contents: write
   discussions: write
+
+env:
+  IS_DRAFT: ${{ github.event.inputs.draft || github.event.release.draft || false }}
+  IS_PRERELEASE: ${{ github.event.inputs.prerelease || github.event.release.prerelease || false }}
 
 jobs:
   publish:
@@ -30,33 +33,19 @@ jobs:
       url: https://crates.io/crates/concision
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
           repository: ${{ github.repository }}
-      - 
-        name: Publish to crates.io
+      - name: Publish to crates.io
         uses: peter-evans/repository-dispatch@v3
         with:
           event-type: cargo-publish
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
           token: ${{ github.token }}
-  release:
-    continue-on-error: true
-    needs: publish
-    env:
-      IS_PRERELEASE: ${{ github.event.inputs.prerelease || false }}
-      IS_DRAFT: ${{ github.event.inputs.draft || false }}
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Create release
+      - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           append_body: false

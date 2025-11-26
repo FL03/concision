@@ -5,7 +5,7 @@ pub(crate) type TrainingResult<T> = Result<T, TrainingError>;
 
 /// The [`TrainingError`] type enumerates the various errors that can occur during the
 /// training process.
-#[derive(Debug, scsys::VariantConstructors, thiserror::Error)]
+#[derive(Debug, thiserror::Error, variants::VariantConstructors)]
 #[non_exhaustive]
 pub enum TrainingError {
     #[error("Invalid Training Data")]

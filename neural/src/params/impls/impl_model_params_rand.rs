@@ -14,7 +14,7 @@ use num_traits::{Float, FromPrimitive};
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Distribution, StandardNormal};
 
-impl<A, S> ShallowParamsBase<S, Ix2>
+impl<A, S> ShallowParamsBase<S, Ix2, A>
 where
     S: DataOwned<Elem = A>,
 {
@@ -74,7 +74,7 @@ where
     }
 }
 
-impl<A, S> DeepParamsBase<S, Ix2>
+impl<A, S> DeepParamsBase<S, Ix2, A>
 where
     S: DataOwned<Elem = A>,
 {

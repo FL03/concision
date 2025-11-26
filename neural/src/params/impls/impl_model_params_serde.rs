@@ -14,16 +14,16 @@ use serde::ser::{Serialize, SerializeStruct, Serializer};
 /// serialization and deserialization.
 const FIELDS: [&str; 3] = ["input", "hidden", "output"];
 
-struct ModelParamsBaseVisitor<S, D, H>
+struct ModelParamsBaseVisitor<S, D, H, A = <S as RawData>::Elem>
 where
     D: Dimension,
-    S: RawData,
+    S: RawData<Elem = A>,
     H: RawHidden<S, D>,
 {
-    marker: PhantomData<(S, D, H)>,
+    marker: PhantomData<(S, D, H, A)>,
 }
 
-impl<'a, A, S, D, H> Visitor<'a> for ModelParamsBaseVisitor<S, D, H>
+impl<'a, A, S, D, H> Visitor<'a> for ModelParamsBaseVisitor<S, D, H, A>
 where
     A: Deserialize<'a>,
     D: Dimension + Deserialize<'a>,
@@ -31,7 +31,7 @@ where
     H: RawHidden<S, D> + Deserialize<'a>,
     <D as Dimension>::Smaller: Deserialize<'a>,
 {
-    type Value = ModelParamsBase<S, D, H>;
+    type Value = ModelParamsBase<S, D, H, A>;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         formatter.write_str("The visitor is expecting to receive a `ModelParamsBase` object.")
@@ -59,7 +59,7 @@ where
     }
 }
 
-impl<'a, A, S, D, H> Deserialize<'a> for ModelParamsBase<S, D, H>
+impl<'a, A, S, D, H> Deserialize<'a> for ModelParamsBase<S, D, H, A>
 where
     A: Deserialize<'a>,
     D: Dimension + Deserialize<'a>,
@@ -81,7 +81,7 @@ where
     }
 }
 
-impl<A, S, D, H> Serialize for ModelParamsBase<S, D, H>
+impl<A, S, D, H> Serialize for ModelParamsBase<S, D, H, A>
 where
     A: Serialize,
     D: Dimension + Serialize,

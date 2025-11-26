@@ -33,7 +33,7 @@ fn main() -> anyhow::Result<()> {
     assert_eq!(params.bias().shape(), &[n]);
     tracing::info!("Randomized parameters: {params:?}");
 
-    let y = params.forward(&inputs)?;
+    let y = params.forward(&inputs).expect("forward pass failed");
     assert_eq!(y.shape(), &[n]);
     tracing::info!("Forward pass: {y:?}");
 

@@ -33,7 +33,7 @@ pub trait MeanSquaredError {
 use ndarray::{ArrayBase, Data, Dimension, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 
-impl<A, S, D> MeanAbsoluteError for ArrayBase<S, D>
+impl<A, S, D> MeanAbsoluteError for ArrayBase<S, D, A>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: Dimension,
@@ -46,7 +46,7 @@ where
     }
 }
 
-impl<A, S, D> MeanSquaredError for ArrayBase<S, D>
+impl<A, S, D> MeanSquaredError for ArrayBase<S, D, A>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: Dimension,

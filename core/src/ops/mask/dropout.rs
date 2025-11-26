@@ -6,7 +6,7 @@ pub trait DropOut {
 }
 
 #[cfg(feature = "init")]
-impl<A, S, D> DropOut for ndarray::ArrayBase<S, D>
+impl<A, S, D> DropOut for ndarray::ArrayBase<S, D, A>
 where
     A: num_traits::Num + ndarray::ScalarOperand,
     D: ndarray::Dimension,
@@ -15,7 +15,7 @@ where
     type Output = ndarray::Array<A, D>;
 
     fn dropout(&self, p: f64) -> Self::Output {
-        pub use crate::init::Initialize;
+        pub use concision_init::Initialize;
         use ndarray::Array;
         let dim = self.dim();
         // Create a mask of the same shape as the input array

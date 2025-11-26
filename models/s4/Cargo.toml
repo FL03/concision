@@ -24,20 +24,14 @@ version = "v{{version}}"
 no-dev-version = true
 tag-name = "{{version}}"
 [lib]
-crate-type = [
-    "cdylib",
-    "rlib",
-]
 bench = false
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
 
 [dependencies]
-# sdk
 concision = { features = ["neural"], workspace = true }
-# error
-anyhow = { optional = true, workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
@@ -45,64 +39,30 @@ num-traits = { workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
 
-[features]
-default = [
-    "std",
-]
+[dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
 
-full = [
-    "default",
-    "rand",
-    "serde",
-    "tracing"
-]
+[features]
+default = ["std"]
+
+full = ["default", "rand", "serde", "tracing"]
 
 # ************* [FF:Environments] *************
-std = [
-    "concision/std",
-    "ndarray/std",
-    "num-traits/std",
-    "tracing/std",
-]
+std = ["concision/std", "ndarray/std", "num-traits/std", "tracing/std"]
 
-wasi = [
-    "concision/wasi",
-]
+wasi = ["concision/wasi"]
 
-wasm = [
-    "concision/wasm",
-]
+wasm = ["concision/wasm"]
 
 # ************* [FF:Dependencies] *************
-anyhow = [
-    "dep:anyhow",
-    "concision/anyhow",
-]
-approx = [
-    "dep:approx",
-    "concision/approx",
-    "ndarray/approx",
-]
+approx = ["concision/approx", "dep:approx", "ndarray/approx"]
 
-blas = [
-    "concision/blas",
-    "ndarray/blas"
-]
+blas = ["concision/blas", "ndarray/blas"]
 
-rand = [
-    "concision/rand",
-]
+rand = ["concision/rand"]
 
-rayon = [
-    "concision/rayon",
-    "ndarray/rayon"
-]
+rayon = ["concision/rayon", "ndarray/rayon"]
 
-serde = [
-    "concision/serde",
-]
+serde = ["concision/serde"]
 
-tracing = [
-    "dep:tracing",
-    "concision/tracing",
-]
+tracing = ["concision/tracing", "dep:tracing"]

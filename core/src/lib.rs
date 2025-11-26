@@ -40,7 +40,7 @@
 #![crate_type = "lib"]
 
 #[cfg(not(all(feature = "std", feature = "alloc")))]
-compile_error! {
+compiler_error! {
     "At least one of the 'std' or 'alloc' features must be enabled."
 }
 
@@ -54,27 +54,33 @@ pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
+#[doc(inline)]
+pub use concision_traits as traits;
+
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]
-#[cfg(feature = "cnc_init")]
 pub use concision_init as init;
+/// The [`params`] module works to provide a generic structure for handling weights and biases
+#[doc(inline)]
+pub use concision_params as params;
 /// this module implements various utilities useful for developing machine learning models
 #[doc(inline)]
-#[cfg(feature = "cnc_utils")]
+#[cfg(feature = "concision_utils")]
 pub use concision_utils as utils;
-/// An n-dimensional tensor
-pub use ndtensor as tensor;
 
-#[cfg(feature = "cnc_init")]
-pub use self::init::prelude::*;
-#[cfg(feature = "cnc_utils")]
+#[cfg(feature = "concision_utils")]
 pub use self::utils::prelude::*;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, error::*, loss::prelude::*, ops::prelude::*, params::prelude::*,
-    tensor::prelude::*, traits::*,
+    activate::prelude::*,
+    error::*,
+    init::{Init, InitInplace, Initialize},
+    loss::prelude::*,
+    ops::prelude::*,
+    params::prelude::*,
+    traits::prelude::*,
 };
 
 #[macro_use]
@@ -88,9 +94,6 @@ pub mod activate;
 pub mod error;
 /// this module focuses on the loss functions used in training neural networks.
 pub mod loss;
-/// this module provides the [`ParamsBase`] type for the library, which is used to define the
-/// parameters of a neural network.
-pub mod params;
 
 pub mod ops {
     //! This module provides the core operations for tensors, including filling, padding,
@@ -98,74 +101,24 @@ pub mod ops {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    pub mod fill;
     pub mod mask;
-    pub mod norm;
     pub mod pad;
-    pub mod reshape;
 
     pub(crate) mod prelude {
         #[doc(inline)]
-        pub use super::fill::*;
-        #[doc(inline)]
         pub use super::mask::*;
         #[doc(inline)]
-        pub use super::norm::*;
-        #[doc(inline)]
         pub use super::pad::*;
-        #[doc(inline)]
-        pub use super::reshape::*;
-    }
-}
-
-pub mod traits {
-    //! This module provides the core traits for the library, such as  [`Backward`] and
-    //! [`Forward`]
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    mod apply;
-    mod clip;
-    mod codex;
-    mod convert;
-    mod gradient;
-    mod like;
-    mod propagation;
-    mod shape;
-    mod store;
-    mod wnb;
-
-    mod prelude {
-        #[doc(inline)]
-        pub use super::apply::*;
-        #[doc(inline)]
-        pub use super::clip::*;
-        #[doc(inline)]
-        pub use super::codex::*;
-        #[doc(inline)]
-        pub use super::convert::*;
-        #[doc(inline)]
-        pub use super::gradient::*;
-        #[doc(inline)]
-        pub use super::like::*;
-        #[doc(inline)]
-        pub use super::propagation::*;
-        #[doc(inline)]
-        pub use super::shape::*;
-        #[doc(inline)]
-        pub use super::store::*;
-        #[doc(inline)]
-        pub use super::wnb::*;
     }
 }
 
 #[doc(hidden)]
 pub mod prelude {
-    #[cfg(feature = "cnc_init")]
     pub use concision_init::prelude::*;
-    #[cfg(feature = "cnc_utils")]
+    pub use concision_params::prelude::*;
+    pub use concision_traits::prelude::*;
+    #[cfg(feature = "concision_utils")]
     pub use concision_utils::prelude::*;
-    pub use ndtensor::prelude::*;
 
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;
@@ -173,8 +126,4 @@ pub mod prelude {
     pub use crate::loss::prelude::*;
     #[doc(no_inline)]
     pub use crate::ops::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::params::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::traits::*;
 }

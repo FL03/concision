@@ -1,0 +1,111 @@
+[package]
+build = "build.rs"
+description = "Synaptic Neural Networks for the Concision Machine Learning Framework"
+name = "concision-snn"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+bench = false
+crate-type = ["cdylib", "rlib"]
+doc = true
+doctest = true
+test = true
+
+# ********* [Unit Tests] *********
+[[test]]
+name = "neurons"
+required-features = ["default"]
+
+[dependencies]
+concision = { features = ["neural"], workspace = true }
+# mathematics
+approx = { optional = true, workspace = true }
+ndarray = { workspace = true }
+num-traits = { workspace = true }
+# serialization
+serde = { optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
+# logging
+tracing = { optional = true, workspace = true }
+
+[dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
+
+[features]
+default = ["std"]
+
+full = [
+  "default", 
+  "json",
+  "rand", 
+  "serde", 
+  "tracing"
+]
+
+json = ["alloc", "serde", "serde_json"]
+
+# ************* [FF:Environments] *************
+std = [
+  "alloc",
+  "concision/std",
+  "ndarray/std", 
+  "num-traits/std", 
+  "serde?/std",
+  "serde_json?/std",
+  "tracing/std"
+  ]
+
+wasi = ["concision/wasi"]
+
+wasm = ["concision/wasm"]
+
+# ************* [FF:Dependencies] *************
+alloc = [
+  "concision/alloc", 
+  "serde?/alloc",
+  "serde_json?/alloc",
+]
+
+approx = [
+  "concision/approx", 
+  "dep:approx", 
+  "ndarray/approx"
+]
+
+blas = ["concision/blas", "ndarray/blas"]
+
+rand = ["concision/rand"]
+
+rayon = ["concision/rayon", "ndarray/rayon"]
+
+serde = [
+  "dep:serde", 
+  "dep:serde_derive", 
+  "concision/serde",
+]
+
+serde_json = ["dep:serde_json"]
+
+tracing = ["concision/tracing", "dep:tracing"]
+
+# ********* [Metadata] *********
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"

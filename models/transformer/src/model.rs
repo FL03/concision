@@ -1,9 +1,9 @@
 /*
-    Appellation: transformer <library>
+    Appellation: transformer <module>
     Contrib: @FL03
 */
 
-use cnc::nn::{DeepModelParams, Model, ModelError, ModelFeatures, StandardModelConfig, Train};
+use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
 #[cfg(feature = "rand")]
 use cnc::rand_distr;
 use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
@@ -128,7 +128,7 @@ where
 {
     type Output = V;
 
-    fn forward(&self, input: &U) -> cnc::Result<Self::Output> {
+    fn forward(&self, input: &U) -> Option<Self::Output> {
         let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
 
         for layer in self.params().hidden() {
@@ -139,7 +139,7 @@ where
             .params()
             .output()
             .forward_then(&output, |y| y.sigmoid())?;
-        Ok(y)
+        Some(y)
     }
 }
 
@@ -164,12 +164,12 @@ where
         &mut self,
         input: &ArrayBase<S, Ix1>,
         target: &ArrayBase<T, Ix1>,
-    ) -> Result<Self::Output, ModelError> {
+    ) -> Result<Self::Output, NeuralError> {
         if input.len() != self.features().input() {
-            return Err(ModelError::InvalidInputShape);
+            return Err(NeuralError::InvalidInputShape);
         }
         if target.len() != self.features().output() {
-            return Err(ModelError::InvalidOutputShape);
+            return Err(NeuralError::InvalidOutputShape);
         }
         // get the learning rate from the model's configuration
         let lr = self
@@ -186,15 +186,28 @@ where
         let mut activations = Vec::new();
         activations.push(input.to_owned());
 
-        let mut output = self.params().input().forward(&input)?.relu();
+        let mut output = self
+            .params()
+            .input()
+            .forward(&input)
+            .expect("Output layer failed to forward propagate during training...")
+            .relu();
         activations.push(output.to_owned());
         // collect the activations of the hidden
         for layer in self.params().hidden() {
-            output = layer.forward(&output)?.relu();
+            output = layer
+                .forward(&output)
+                .expect("Hidden layer failed to forward propagate during training...")
+                .relu();
             activations.push(output.to_owned());
         }
 
-        output = self.params().output().forward(&output)?.sigmoid();
+        output = self
+            .params()
+            .output()
+            .forward(&output)
+            .expect("Input layer failed to forward propagate during training...")
+            .sigmoid();
         activations.push(output.to_owned());
 
         // Calculate output layer error
@@ -208,7 +221,8 @@ where
         // Update output weights
         self.params_mut()
             .output_mut()
-            .backward(activations.last().unwrap(), &delta, lr)?;
+            .backward(activations.last().unwrap(), &delta, lr)
+            .expect("Backward propagation failed...");
 
         let num_hidden = self.features().layers();
         // Iterate through hidden layers in reverse order
@@ -224,7 +238,9 @@ where
             };
             // Normalize delta to prevent exploding gradients
             delta /= delta.l2_norm();
-            self.params_mut().hidden_mut()[i].backward(&activations[i + 1], &delta, lr)?;
+            self.params_mut().hidden_mut()[i]
+                .backward(&activations[i + 1], &delta, lr)
+                .expect("Backward propagation failed...");
         }
         /*
             Backpropagate to the input layer
@@ -237,7 +253,8 @@ where
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
         self.params_mut()
             .input_mut()
-            .backward(&activations[1], &delta, lr)?;
+            .backward(&activations[1], &delta, lr)
+            .expect("Input layer backward pass failed");
 
         Ok(loss)
     }
@@ -265,15 +282,15 @@ where
         &mut self,
         input: &ArrayBase<S, Ix2>,
         target: &ArrayBase<T, Ix2>,
-    ) -> Result<Self::Output, ModelError> {
+    ) -> Result<Self::Output, NeuralError> {
         if input.nrows() == 0 || target.nrows() == 0 {
-            return Err(ModelError::InvalidBatchSize);
+            return Err(NeuralError::InvalidBatchSize);
         }
         if input.ncols() != self.features().input() {
-            return Err(ModelError::InvalidInputShape);
+            return Err(NeuralError::InvalidInputShape);
         }
         if target.ncols() != self.features().output() || target.nrows() != input.nrows() {
-            return Err(ModelError::InvalidOutputShape);
+            return Err(NeuralError::InvalidOutputShape);
         }
         let mut loss = A::zero();
 

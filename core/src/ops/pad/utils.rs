@@ -19,7 +19,7 @@ fn reader(nb_dim: usize, pad: &[[usize; 2]]) -> Result<Vec<[usize; 2]>, PadError
 }
 
 pub fn pad<A, S, D>(
-    data: &ArrayBase<S, D>,
+    data: &ArrayBase<S, D, A>,
     pad: &[[usize; 2]],
     mode: PadMode<A>,
 ) -> Result<Array<A, D>, PadError>
@@ -40,7 +40,7 @@ where
 }
 
 pub fn pad_to<A, S, D>(
-    data: &ArrayBase<S, D>,
+    data: &ArrayBase<S, D, A>,
     pad: &[[usize; 2]],
     mode: PadMode<A>,
     output: &mut Array<A, D>,

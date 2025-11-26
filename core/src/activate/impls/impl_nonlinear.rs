@@ -7,7 +7,7 @@ use crate::activate::{ReLU, Sigmoid, Softmax, Tanh, utils::sigmoid_derivative};
 use ndarray::{Array, ArrayBase, Data, Dimension, ScalarOperand};
 use num_traits::{Float, One, Zero};
 
-impl<A, S, D> ReLU for ArrayBase<S, D>
+impl<A, S, D> ReLU for ArrayBase<S, D, A>
 where
     A: Copy + PartialOrd + Zero + One,
     S: Data<Elem = A>,
@@ -24,7 +24,7 @@ where
     }
 }
 
-impl<A, S, D> Sigmoid for ArrayBase<S, D>
+impl<A, S, D> Sigmoid for ArrayBase<S, D, A>
 where
     A: ScalarOperand + Float,
     S: Data<Elem = A>,
@@ -44,7 +44,7 @@ where
     }
 }
 
-impl<A, S, D> Softmax for ArrayBase<S, D>
+impl<A, S, D> Softmax for ArrayBase<S, D, A>
 where
     A: ScalarOperand + Float,
     S: Data<Elem = A>,
@@ -67,7 +67,7 @@ where
     }
 }
 
-impl<A, S, D> Tanh for ArrayBase<S, D>
+impl<A, S, D> Tanh for ArrayBase<S, D, A>
 where
     A: ScalarOperand + Float,
     S: Data<Elem = A>,

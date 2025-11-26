@@ -40,7 +40,7 @@ pub trait Model<T = f32> {
     /// By default, the trait simply passes each output from one layer to the next, however,
     /// custom models will likely override this method to inject activation methods and other
     /// related logic
-    fn predict<U, V>(&self, inputs: &U) -> crate::ModelResult<V>
+    fn predict<U, V>(&self, inputs: &U) -> Option<V>
     where
         Self: Predict<U, Output = V>,
     {
@@ -48,7 +48,7 @@ pub trait Model<T = f32> {
     }
     /// a convience method that trains the model using the provided dataset; this method
     /// requires that the model implements the [`Train`] trait and that the dataset
-    fn train<U, V, W>(&mut self, dataset: &DatasetBase<U, V>) -> crate::ModelResult<W>
+    fn train<U, V, W>(&mut self, dataset: &DatasetBase<U, V>) -> crate::NeuralResult<W>
     where
         Self: Train<U, V, Output = W>,
     {
@@ -137,10 +137,6 @@ pub trait ModelExt<T>: Model<T> {
         self.layout().dim_output()
     }
 }
-
-/// The [`DeepNeuralNetwork`] trait is a specialization of the [`Model`] trait that
-/// provides additional functionality for deep neural networks. This trait is
-pub trait DeepNeuralNetwork<T = f32>: Model<T> {}
 
 impl<M, T> ModelExt<T> for M
 where

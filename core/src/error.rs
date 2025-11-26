@@ -23,18 +23,14 @@ pub enum Error {
     #[error(transparent)]
     PadError(#[from] crate::ops::pad::error::PadError),
     #[error(transparent)]
-    ParamError(#[from] crate::params::error::ParamsError),
+    TraitError(#[from] concision_traits::Error),
     #[error(transparent)]
-    #[cfg(feature = "cnc_init")]
-    InitError(#[from] concision_init::error::InitError),
+    ParamError(#[from] concision_params::ParamsError),
     #[error(transparent)]
-    TensorError(#[from] ndtensor::error::TensorError),
+    InitError(#[from] concision_init::InitError),
     #[error(transparent)]
-    #[cfg(feature = "cnc_utils")]
+    #[cfg(feature = "concision_utils")]
     UtilityError(#[from] concision_utils::error::UtilityError),
-    #[cfg(feature = "anyhow")]
-    #[error(transparent)]
-    AnyError(#[from] anyhow::Error),
     #[cfg(feature = "alloc")]
     #[error(transparent)]
     BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
@@ -76,6 +72,7 @@ impl Error {
         Self::Unknown(error.to_string())
     }
 }
+
 #[cfg(feature = "alloc")]
 impl From<String> for Error {
     fn from(value: String) -> Self {

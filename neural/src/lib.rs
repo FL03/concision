@@ -88,6 +88,7 @@ pub(crate) mod traits {
 
     mod hidden;
     mod models;
+    mod network;
     mod predict;
 
     mod prelude {
@@ -95,6 +96,8 @@ pub(crate) mod traits {
         pub use super::hidden::*;
         #[doc(inline)]
         pub use super::models::*;
+        #[doc(inline)]
+        pub use super::network::*;
         #[doc(inline)]
         pub use super::predict::*;
     }

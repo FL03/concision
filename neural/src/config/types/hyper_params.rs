@@ -28,7 +28,6 @@ use crate::types::KeyValue;
         Hash,
         Ord,
         PartialOrd,
-        scsys::VariantConstructors,
         strum::AsRefStr,
         strum::Display,
         strum::EnumCount,
@@ -37,6 +36,7 @@ use crate::types::KeyValue;
         strum::EnumString,
         strum::VariantArray,
         strum::VariantNames,
+        variants::VariantConstructors,
     ),
     strum(serialize_all = "snake_case")
 )]
