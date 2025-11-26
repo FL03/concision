@@ -65,7 +65,7 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, input: &ArrayBase<S, D>) -> cnc::Result<Self::Output> {
+    fn forward(&self, input: &ArrayBase<S, D>) -> cnc::traits::Result<Self::Output> {
         let mut output = self
             .params()
             .input()
@@ -121,15 +121,28 @@ where
         let mut activations = Vec::new();
         activations.push(input.to_owned());
 
-        let mut output = self.params().input().forward(&input)?.relu();
+        let mut output = self
+            .params()
+            .input()
+            .forward(&input)
+            .expect("Failed to complete the forward pass for the input layer")
+            .relu();
         activations.push(output.to_owned());
         // collect the activations of the hidden
         for layer in self.params().hidden() {
-            output = layer.forward(&output)?.relu();
+            output = layer
+                .forward(&output)
+                .expect("failed to complete the forward pass for the hidden layer")
+                .relu();
             activations.push(output.to_owned());
         }
 
-        output = self.params().output().forward(&output)?.sigmoid();
+        output = self
+            .params()
+            .output()
+            .forward(&output)
+            .expect("Output layer failed to forward propagate")
+            .sigmoid();
         activations.push(output.to_owned());
 
         // Calculate output layer error
@@ -143,7 +156,8 @@ where
         // Update output weights
         self.params_mut()
             .output_mut()
-            .backward(activations.last().unwrap(), &delta, lr)?;
+            .backward(activations.last().unwrap(), &delta, lr)
+            .expect("Output failed training...");
 
         let num_hidden = self.layout().layers();
         // Iterate through hidden layers in reverse order
@@ -159,7 +173,9 @@ where
             };
             // Normalize delta to prevent exploding gradients
             delta /= delta.l2_norm();
-            self.params_mut().hidden_mut()[i].backward(&activations[i + 1], &delta, lr)?;
+            self.params_mut().hidden_mut()[i]
+                .backward(&activations[i + 1], &delta, lr)
+                .expect("Hidden failed training...");
         }
         /*
             Backpropagate to the input layer
@@ -172,7 +188,8 @@ where
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
         self.params_mut()
             .input_mut()
-            .backward(&activations[1], &delta, lr)?;
+            .backward(&activations[1], &delta, lr)
+            .expect("failed to backpropagate input layer during training...");
 
         Ok(loss)
     }

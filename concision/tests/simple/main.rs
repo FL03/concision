@@ -47,7 +47,7 @@ fn test_simple_model() -> anyhow::Result<()> {
     let expected = Array1::from_elem(model.layout().output(), 0.5);
 
     // forward the input through the model
-    let output = model.predict(&input)?;
+    let output = model.predict(&input).expect("prediction failed");
     // verify the output shape
     assert_eq!(output.dim(), (features.output()));
     // compare the results to what we expected

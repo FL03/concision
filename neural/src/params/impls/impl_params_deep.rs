@@ -6,7 +6,6 @@ use crate::{DeepParamsBase, ModelParamsBase};
 
 use crate::ModelFeatures;
 use crate::traits::DeepModelRepr;
-use concision_core::Forward;
 use concision_params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
 use num_traits::{One, Zero};
@@ -102,7 +101,7 @@ where
     /// sequentially forwards the input through the model without any activations or other
     /// complexities in-between. not overly usefuly, but it is here for completeness
     #[inline]
-    pub fn forward<X, Y>(&self, input: &X) -> cnc::traits::Result<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> Option<Y>
     where
         A: Clone,
         S: Data,

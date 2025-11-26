@@ -5,10 +5,7 @@
 //! This module implements the core [`Error`] type for the framework and provides a [`Result`]
 //! type alias for convenience.
 #[cfg(feature = "alloc")]
-use alloc::{
-    boxed::Box,
-    string::String,
-};
+use alloc::{boxed::Box, string::String};
 
 #[allow(dead_code)]
 /// a type alias for a [Result](core::result::Result) configured with an [`Error`] as its error

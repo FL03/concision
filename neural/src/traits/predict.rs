@@ -17,7 +17,7 @@ pub trait Predict<Rhs> {
 
     private!();
 
-    fn predict(&self, input: &Rhs) -> crate::NeuralResult<Self::Output>;
+    fn predict(&self, input: &Rhs) -> Option<Self::Output>;
 }
 
 /// The [`PredictWithConfidence`] trait is an extension of the [`Predict`] trait, providing
@@ -25,10 +25,7 @@ pub trait Predict<Rhs> {
 pub trait PredictWithConfidence<Rhs>: Predict<Rhs> {
     type Confidence;
 
-    fn predict_with_confidence(
-        &self,
-        input: &Rhs,
-    ) -> crate::NeuralResult<(Self::Output, Self::Confidence)>;
+    fn predict_with_confidence(&self, input: &Rhs) -> Option<(Self::Output, Self::Confidence)>;
 }
 
 /*
@@ -46,8 +43,8 @@ where
 
     seal!();
 
-    fn predict(&self, input: &U) -> crate::NeuralResult<Self::Output> {
-        self.forward(input).map_err(core::convert::Into::into)
+    fn predict(&self, input: &U) -> Option<Self::Output> {
+        self.forward(input).ok()
     }
 }
 
@@ -59,10 +56,7 @@ where
 {
     type Confidence = A;
 
-    fn predict_with_confidence(
-        &self,
-        input: &U,
-    ) -> Result<(Self::Output, Self::Confidence), crate::NeuralError> {
+    fn predict_with_confidence(&self, input: &U) -> Option<(Self::Output, Self::Confidence)> {
         // Get the base prediction
         let prediction = Predict::predict(self, input)?;
         let shape = prediction.shape();
@@ -83,6 +77,6 @@ where
         // Confidence: inverse of variance (clipped to avoid division by zero)
         let confidence = (A::one() + avg_variance).recip();
 
-        Ok((prediction, confidence))
+        Some((prediction, confidence))
     }
 }

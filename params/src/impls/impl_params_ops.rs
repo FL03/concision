@@ -3,12 +3,35 @@
     Contrib: @FL03
 */
 use crate::{Params, ParamsBase};
-use concision_traits::{ApplyGradient, ApplyGradientExt, Backward, Forward, Norm, Biased, Weighted, Result};
+use concision_traits::{
+    ApplyGradient, ApplyGradientExt, Backward, Biased, Forward, Norm, Result, Weighted,
+};
 use ndarray::linalg::Dot;
-use ndarray::{RawData, prelude::*};
 use ndarray::{ArrayBase, Data, DataMut, Dimension, ScalarOperand};
+use ndarray::{RawData, prelude::*};
 use num_traits::{Float, FromPrimitive};
 
+impl<A, S, D> ParamsBase<S, D, A>
+where
+    A: Clone,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    /// perform a single backpropagation step
+    pub fn backward<X, Y, Z>(&mut self, input: &X, grad: &Y, lr: A) -> Option<Z>
+    where
+        Self: Backward<X, Y, Elem = A, Output = Z>,
+    {
+        <Self as Backward<X, Y>>::backward(self, input, grad, lr).ok()
+    }
+    /// forward propagation
+    pub fn forward<X, Y>(&self, input: &X) -> Option<Y>
+    where
+        Self: Forward<X, Output = Y>,
+    {
+        <Self as Forward<X>>::forward(self, input).ok()
+    }
+}
 
 impl<A, S, D> ParamsBase<S, D, A>
 where
@@ -39,12 +62,7 @@ where
         <Self as ApplyGradient<Delta, A>>::apply_gradient(self, grad, lr)
     }
 
-    pub fn apply_gradient_with_decay<Grad, Z>(
-        &mut self,
-        grad: &Grad,
-        lr: A,
-        decay: A,
-    ) -> Result<Z>
+    pub fn apply_gradient_with_decay<Grad, Z>(&mut self, grad: &Grad, lr: A, decay: A) -> Result<Z>
     where
         S: DataMut,
         Self: ApplyGradient<Grad, A, Output = Z>,

@@ -82,7 +82,7 @@ where
         }
     }
     /// forward input through the controller network
-    pub fn forward(&self, input: &Array1<A>) -> cnc::traits::Result<Array1<A>>
+    pub fn forward(&self, input: &Array1<A>) -> Option<Array1<A>>
     where
         A: Float + ScalarOperand,
         S: Data,
@@ -94,7 +94,7 @@ where
         // forward the input through the output layer; activate using sigmoid
         output = self.output().forward(&output)?.sigmoid();
 
-        Ok(output)
+        Some(output)
     }
 }
 

@@ -129,7 +129,7 @@ where
 {
     type Output = Z;
 
-    fn forward(&self, input: &X) -> cnc::Result<Self::Output> {
+    fn forward(&self, input: &X) -> cnc::traits::Result<Self::Output> {
         let query = input.dot(&self.query);
         let key = input.dot(&self.key);
         let value = input.dot(&self.value);

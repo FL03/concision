@@ -282,6 +282,4 @@ where
     {
         ParamsBase::new(self.bias.view_mut(), self.weights.view_mut())
     }
-
-    pub fn forward<X
 }
