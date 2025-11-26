@@ -14,21 +14,8 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
-[package.metadata.docs.rs]
-all-features = false
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
-
-[package.metadata.release]
-no-dev-version = true
-tag-name = "{{version}}"
-
 [lib]
-crate-type = [
-    "cdylib", 
-    "rlib"
-]
+crate-type = ["cdylib",  "rlib"]
 bench = false
 doc = true
 doctest = true
@@ -38,8 +25,6 @@ test = true
 concision-core = { workspace = true }
 concision-data = { workspace = true }
 # custom
-scsys = { workspace = true }
-scsys-derive = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
@@ -70,146 +55,145 @@ thiserror = { workspace = true }
 tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
 lazy_static = { workspace = true }
 
 [features]
-default = [
-    "std",
-]
+default = ["std"]
 
 full = [
-    "default", 
-    "approx", 
-    "complex", 
-    "init",
-    "rand", 
-    "rustfft", 
-    "serde", 
-    "tracing"
+  "default", 
+  "approx", 
+  "complex", 
+  "init",
+  "rand", 
+  "rustfft", 
+  "serde", 
+  "tracing"
 ]
 
 nightly = [
-    "concision-core/nightly",
-    "concision-data/nightly",
-    "scsys/nightly",
-    "variants/nightly",
+  "concision-core/nightly",
+  "concision-data/nightly",
+  "variants/nightly",
 ]
 
 # ************* [FF:Features] *************
-init = [
-    "concision-core/init"
-]
+init = ["concision-core/init"]
 
 json = [
-    "alloc",
-    "concision-core/json", 
-    "concision-data/json",
-    "serde_json",
+  "alloc",
+  "concision-core/json", 
+  "concision-data/json",
+  "serde_json",
 ]
 # ************* [FF:Environments] *************
 std = [
-    "concision-core/std",
-    "concision-data/std",
-    "ndarray/std",
-    "num/std",
-    "num-traits/std",
-    "num-complex?/std",
-    "rand?/std",
-    "rand?/std_rng",
-    "scsys/std",
-    "serde?/std",
-    "serde_json?/std",
-    "strum/std",
-    "thiserror/std",
-    "tracing?/std",
-    "variants/std",
+  "concision-core/std",
+  "concision-data/std",
+  "ndarray/std",
+  "num/std",
+  "num-traits/std",
+  "num-complex?/std",
+  "rand?/std",
+  "rand?/std_rng",
+  "serde?/std",
+  "serde_json?/std",
+  "strum/std",
+  "thiserror/std",
+  "tracing?/std",
+  "variants/std",
 ]
 
 wasi = [
-    "concision-core/wasi",
-    "concision-data/wasi",
-    "scsys/wasi",
+  "concision-core/wasi",
+  "concision-data/wasi",
 ]
 
 wasm = [
-    "concision-core/wasm",
-    "concision-data/wasm",
-    "getrandom?/wasm_js",
-    "rayon?/web_spin_lock",
-    "scsys/wasm",
+  "concision-core/wasm",
+  "concision-data/wasm",
+  "getrandom?/wasm_js",
+  "rayon?/web_spin_lock",
 ]
 
 # ************* [FF:Dependencies] *************
 alloc = [
-    "concision-core/alloc",
-    "concision-data/alloc",
-    "serde?/alloc",
-    "serde_json?/alloc",
-    "num/alloc",
-    "scsys/alloc",
-    "variants/alloc",
+  "concision-core/alloc",
+  "concision-data/alloc",
+  "serde?/alloc",
+  "serde_json?/alloc",
+  "num/alloc",
+  "variants/alloc",
 ]
 
 approx = [
-    "concision-core/approx", 
-    "concision-data/approx", 
-    "dep:approx", 
-    "ndarray/approx",
+  "concision-core/approx", 
+  "concision-data/approx", 
+  "dep:approx", 
+  "ndarray/approx",
 ]
 
 blas = [
-    "concision-core/blas", 
-    "concision-data/blas", 
-    "ndarray/blas"
+  "concision-core/blas", 
+  "concision-data/blas", 
+  "ndarray/blas"
 ]
 
-complex = [ 
-    "dep:num-complex",
-    "concision-core/complex", 
-    "concision-data/complex",
+complex = [
+  "dep:num-complex",
+  "concision-core/complex", 
+  "concision-data/complex",
 ]
 
 rand = [
-    "dep:rand",
-    "dep:rand_distr",
-    "concision-core/rand", 
-    "concision-data/rand", 
-    "num/rand", 
-    "rng",
-    "scsys/rand",
+  "dep:rand",
+  "dep:rand_distr",
+  "concision-core/rand", 
+  "concision-data/rand", 
+  "num/rand", 
+  "rng",
 ]
 
 rng = [
-    "concision-core/rng", 
-    "concision-data/rng",
-    "scsys/rng",
+  "concision-core/rng", 
+  "concision-data/rng",
 ]
 
 rayon = [
-    "concision-core/rayon", 
-    "concision-data/rayon", 
-    "dep:rayon", 
-    "ndarray/rayon"
+  "concision-core/rayon", 
+  "concision-data/rayon", 
+  "dep:rayon", 
+  "ndarray/rayon"
 ]
 
 serde = [
-    "concision-core/serde", 
-    "concision-data/serde", 
-    "dep:serde", 
-    "dep:serde_derive", 
-    "ndarray/serde", 
-    "num/serde",
-    "scsys/serde",
+  "concision-core/serde", 
+  "concision-data/serde", 
+  "dep:serde", 
+  "dep:serde_derive", 
+  "ndarray/serde", 
+  "num/serde",
 ]
 
 serde_json = ["dep:serde_json"]
 
 tracing = [
-    "dep:tracing",
-    "concision-core/tracing", 
-    "concision-data/tracing",
-    "scsys/tracing",
+  "dep:tracing",
+  "concision-core/tracing", 
+  "concision-data/tracing",
 ]
+
+# ********* [Metadata] *********
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"
 
 # ************* [Unit Tests] *************
 [[test]]

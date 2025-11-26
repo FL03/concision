@@ -105,6 +105,7 @@ pub mod ops {
     pub mod norm;
     pub mod pad;
     pub mod reshape;
+    pub mod tensor_ops;
 
     pub(crate) mod prelude {
         #[doc(inline)]
@@ -117,6 +118,8 @@ pub mod ops {
         pub use super::pad::*;
         #[doc(inline)]
         pub use super::reshape::*;
+        #[doc(inline)]
+        pub use super::tensor_ops::*;
     }
 }
 

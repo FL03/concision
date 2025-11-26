@@ -2,14 +2,12 @@
     appellation: concision-snn <library>
     authors: @FL03
 */
-//! 
+//!
 //!
 //! ## References
 //!
-//! - [Structured State Spaces for Sequence Modeling](https://arxiv.org/abs/2106.08084)
-//! - [Efficiently Modeling Long Sequences with Structured State Spaces](https://arxiv.org/abs/2111.00396)
+//! - [Deep Learning in Spiking Neural Networks](https://arxiv.org/abs/1804.08150)
 //!
-#![crate_name = "concision_s4"]
 #![crate_type = "lib"]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::module_inception)]

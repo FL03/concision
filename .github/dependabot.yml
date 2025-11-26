@@ -5,17 +5,7 @@ updates:
     schedule:
       interval: monthly
     directories:
-      - /
-      - /concision
-      - /core
-      - /data
-      - /derive
-      - /init
-      - /macros
-      - /neural
-      - /tensor
-      - /utils
-      - /ext
+      - /*
       - /models/*
   - package-ecosystem: devcontainers
     directory: /

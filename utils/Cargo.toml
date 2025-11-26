@@ -14,21 +14,8 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
-[package.metadata.docs.rs]
-all-features = false
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
-
-[package.metadata.release]
-no-dev-version = true
-tag-name = "{{version}}"
-
 [lib]
-crate-type = [
-    "cdylib", 
-    "rlib"
-]
+crate-type = ["cdylib", "rlib"]
 bench = false
 doc = true
 doctest = true
@@ -36,8 +23,7 @@ test = true
 
 [dependencies]
 # custom
-scsys = { workspace = true }
-scsys-derive = { workspace = true }
+variants = { workspace = true}
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # data & serialization
@@ -66,128 +52,106 @@ rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 
 [dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
 lazy_static = { workspace = true }
-
 
 [features]
 default = [ 
-    "std",
+  "std",
 ]
 
 full = [
-    "approx",
-    "complex",
-    "default",
-    "json",
-    "rand",
-    "serde",
-    "tracing",
+  "approx",
+  "complex",
+  "default",
+  "json",
+  "rand",
+  "serde",
+  "tracing",
 ]
 
 nightly = []
 
 # ************* [FF:Features] *************
 signal =[
-    "complex",
-    "rustfft",
+  "complex",
+  "rustfft",
 ]
 
 # ************* [FF:Dependencies] *************
 std = [
-    "alloc",
-    "ndarray/std",
-    "num/std",
-    "num-complex?/std",
-    "num-traits/std",
-    "rand?/std",
-    "rand?/std_rng",
-    "serde/std",
-    "scsys/std",
-    "strum/std",
-    "thiserror/std",
-    "tracing?/std",
+  "alloc",
+  "ndarray/std",
+  "num/std",
+  "num-complex?/std",
+  "num-traits/std",
+  "rand?/std",
+  "rand?/std_rng",
+  "serde/std",
+  "strum/std",
+  "thiserror/std",
+  "tracing?/std",
 ]
 
-wasi = [
-    "scsys/wasi",
-]
+wasi = []
 
 wasm = [
-    "getrandom?/wasm_js",
-    "scsys/wasm",
+  "getrandom?/wasm_js",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-    "num/alloc",
-    "serde?/alloc",
-    "serde_json?/alloc",
-    "scsys/alloc",
+  "num/alloc",
+  "serde?/alloc",
+  "serde_json?/alloc",
 ]
 
-approx = [
-    "dep:approx",
-    "ndarray/approx",
-]
+approx = ["dep:approx", "ndarray/approx"]
 
-blas = [
-    "ndarray/blas",
-]
+blas = ["ndarray/blas"]
 
 complex = ["dep:num-complex"]
 
 json = [
-    "alloc",
-    "scsys/json",
-    "serde",
-    "serde_json",
+  "alloc",
+  "serde",
+  "serde_json",
 ]
 
 rand = [
-    "dep:rand",
-    "dep:rand_distr",
-    "num/rand",
-    "num-complex?/rand",
-    "rng",
-    "scsys/rand",
+  "dep:rand",
+  "dep:rand_distr",
+  "num/rand",
+  "num-complex?/rand",
+  "rng",
 ]
 
-rayon = [
-    "dep:rayon",
-    "ndarray/rayon",
-]
+rayon = ["dep:rayon", "ndarray/rayon"]
 
 rng = [
-    "dep:getrandom",
-    "rand?/small_rng",
-    "rand?/thread_rng",
-    "scsys/rng",
+  "dep:getrandom",
+  "rand?/small_rng",
+  "rand?/thread_rng",
 ]
 
 rustfft = ["dep:rustfft"]
 
 serde = [
-    "dep:serde",
-    "dep:serde_derive",
-    "ndarray/serde",
-    "num/serde",
-    "num-complex?/serde",
-    "rand?/serde",
-    "rand_distr?/serde",
-    "scsys/serde",
+  "dep:serde",
+  "dep:serde_derive",
+  "ndarray/serde",
+  "num/serde",
+  "num-complex?/serde",
+  "rand?/serde",
+  "rand_distr?/serde",
 ]
 
 serde_json = ["dep:serde_json"]
 
-tracing = [
-    "dep:tracing",
-    "scsys/tracing",
-]
+tracing = ["dep:tracing"]
 
-
-# ************* [Unit Tests] *************
+# ********* [Unit Tests] *********
 [[test]]
 name = "default"
-required-features = []
 
 [[test]]
 name = "fft"
@@ -200,3 +164,14 @@ required-features = ["approx", "std", "complex"]
 [[test]]
 name = "traits"
 required-features = ["approx", "std", "complex"]
+
+# ********* [Metadata] *********
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"

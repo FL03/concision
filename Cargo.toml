@@ -60,14 +60,7 @@ concision-snn = { default-features = false, path = "models/snn", version = "0.2.
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.8" }
 
 # custom
-ndtensor = { default-features = false, version = "0.1.1" }
-opper = { default-features = false, version = "0.0.0" }
-scsys = { default-features = false, features = ["derive"], version = "0.3.1" }
-scsys-derive = { default-features = false, version = "0.3.1" }
-variants = { default-features = false, version = "0.0.1" }
-# async
-futures = { default-features = false, version = "0.3" }
-tokio = { default-features = false, version = "1" }
+variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # benchmarking
 criterion = { version = "0.7" }
 # concurrency & parallelism

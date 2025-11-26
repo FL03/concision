@@ -14,26 +14,51 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
-[package.metadata.docs.rs]
-all-features = false
-doc-scrape-examples = true
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
-
-[package.metadata.release]
-no-dev-version = true
-tag-name = "{{version}}"
-
 [lib]
-crate-type = [
-    "cdylib",
-    "rlib"
-]
+crate-type = ["cdylib", "rlib"]
+
 bench = true
 doc = true
 doctest = true
 test = true
+
+# ************* [Benchmarks] *************
+[[bench]]
+harness = false
+name = "default"
+path = "benches/default.rs"
+required-features = ["std"]
+
+[[bench]]
+harness = false
+name = "params"
+path = "benches/params.rs"
+required-features = [
+  "neural",
+  "approx",
+  "rand",
+  "std",
+  "tracing",
+]
+
+# ************* [Examples] *************
+[[example]]
+name = "basic"
+required-features = [
+  "approx",
+  "rand",
+  "std",
+  "tracing",
+]
+
+# ************* [Unit Tests] *************
+[[test]]
+name = "default"
+
+[[test]]
+name = "simple"
+path = "tests/simple/main.rs"
+required-features = ["approx", "default", "neural", "rand"]
 
 [dependencies]
 concision-core = { workspace = true }
@@ -43,7 +68,7 @@ concision-macros = { optional = true, workspace = true }
 concision-neural = { optional = true, workspace = true }
 
 [dev-dependencies]
-anyhow = { workspace = true }
+anyhow = { features = ["std"], workspace = true }
 approx = { workspace = true }
 criterion = { features = ["plotters"], workspace = true }
 lazy_static = { workspace = true }
@@ -55,27 +80,27 @@ tracing-subscriber = { workspace = true }
 
 [features]
 default = [
-    "data",
-    "neural",
-    "std",
-    "utils",
+  "data",
+  "neural",
+  "std",
+  "utils",
 ]
 
 full = [
-    "default",
-    "approx",
-    "data",
-    "derive",
-    "macros",
-    "rand",
-    "serde",
-    "tracing"
+  "default",
+  "approx",
+  "data",
+  "derive",
+  "macros",
+  "rand",
+  "serde",
+  "tracing"
 ]
 
 nightly = [
-    "concision-core/nightly",
-    "concision-data?/nightly",
-    "concision-neural?/nightly",
+  "concision-core/nightly",
+  "concision-data?/nightly",
+  "concision-neural?/nightly",
 ]
 
 # ************* [FF:Features] *************
@@ -87,100 +112,95 @@ data = ["dep:concision-data"]
 
 init = ["concision-core/init"]
 
-neural = [
-    "dep:concision-neural",
-    "alloc",
-]
+neural = ["dep:concision-neural", "alloc"]
 
-utils = [
-    "concision-core/utils"
-]
+utils = ["concision-core/utils"]
 
 # ************* [FF:Environments] *************
 std = [
-    "alloc",
-    "concision-core/std",
-    "concision-data?/std",
-    "concision-neural?/std",
+  "alloc",
+  "concision-core/std",
+  "concision-data?/std",
+  "concision-neural?/std",
 ]
 
 wasi = [
-    "concision-core/wasi",
-    "concision-data?/wasi",
-    "concision-neural?/wasi"
+  "concision-core/wasi",
+  "concision-data?/wasi",
+  "concision-neural?/wasi"
 ]
 
 wasm = [
-    "concision-core/wasm",
-    "concision-data?/wasm",
-    "concision-neural?/wasm"
+  "concision-core/wasm",
+  "concision-data?/wasm",
+  "concision-neural?/wasm"
 ]
 
 # ************* [FF:Dependencies] *************
 alloc = [
-    "concision-core/alloc",
-    "concision-data?/alloc",
-    "concision-neural?/alloc",
+  "concision-core/alloc",
+  "concision-data?/alloc",
+  "concision-neural?/alloc",
 ]
 
 approx = [
-    "concision-core/approx",
-    "concision-data?/approx",
-    "concision-neural?/approx"
+  "concision-core/approx",
+  "concision-data?/approx",
+  "concision-neural?/approx"
 ]
 
 complex = [
-    "concision-core/complex",
-    "concision-data?/complex",
-    "concision-neural?/complex"
+  "concision-core/complex",
+  "concision-data?/complex",
+  "concision-neural?/complex"
 ]
 
 json = [
-    "concision-core/json",
-    "concision-data?/json",
-    "concision-neural?/json"
+  "concision-core/json",
+  "concision-data?/json",
+  "concision-neural?/json"
 ]
 
 rand = [
-    "concision-core/rand",
-    "concision-data?/rand",
-    "concision-neural?/rand"
+  "concision-core/rand",
+  "concision-data?/rand",
+  "concision-neural?/rand"
 ]
 
 rng = [
-    "concision-core/rng",
-    "concision-data?/rng",
-    "concision-neural?/rng"
+  "concision-core/rng",
+  "concision-data?/rng",
+  "concision-neural?/rng"
 ]
 
 rayon = [
-    "concision-core/rayon",
-    "concision-data?/rayon",
-    "concision-neural?/rayon"
+  "concision-core/rayon",
+  "concision-data?/rayon",
+  "concision-neural?/rayon"
 ]
 
 rustfft = [
-    "concision-core/rustfft",
-    "concision-neural?/rustfft"
+  "concision-core/rustfft",
+  "concision-neural?/rustfft"
 ]
 
 serde = [
-    "concision-core/serde",
-    "concision-data?/serde",
-    "concision-neural?/serde"
+  "concision-core/serde",
+  "concision-data?/serde",
+  "concision-neural?/serde"
 ]
 
 tracing = [
-    "concision-core/tracing",
-    "concision-data?/tracing",
-    "concision-neural?/tracing"
+  "concision-core/tracing",
+  "concision-data?/tracing",
+  "concision-neural?/tracing"
 ]
 
 # ********* [FF] Blas *********
 blas = [
-    "concision-core/blas",
-    "concision-data?/blas",
-    "concision-neural?/blas"
+  "concision-core/blas",
+  "concision-data?/blas",
+  "concision-neural?/blas"
 ]
 
 intel-mkl-system = ["blas"]
@@ -195,40 +215,14 @@ openblas-system = ["blas"]
 
 openblas-static = ["blas"]
 
-# ************* [Benchmarks] *************
-[[bench]]
-harness = false
-name = "default"
-path = "benches/default.rs"
-required-features = ["std"]
+# ********* [Metadata] *********
+[package.metadata.docs.rs]
+all-features = false
+doc-scrape-examples = true
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
 
-[[bench]]
-harness = false
-name = "params"
-path = "benches/params.rs"
-required-features = [
-    "neural",
-    "approx",
-    "rand",
-    "std",
-    "tracing",
-]
-
-# ************* [Examples] *************
-[[example]]
-name = "basic"
-required-features = [
-    "approx",
-    "rand",
-    "std",
-    "tracing",
-]
-
-# ************* [Unit Tests] *************
-[[test]]
-name = "default"
-
-[[test]]
-name = "simple"
-path = "tests/simple/main.rs"
-required-features = ["approx", "default", "neural", "rand"]
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"

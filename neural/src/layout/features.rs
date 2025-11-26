@@ -40,8 +40,8 @@ pub struct ModelFeatures {
 }
 
 impl ModelFeatures {
-    /// creates a new instance of [`ModelFeatures`] for a neural network with `n` layers. If 
-    /// the number of layers is `<=1` then the [`ModelFormat`] is automatically 
+    /// creates a new instance of [`ModelFeatures`] for a neural network with `n` layers. If
+    /// the number of layers is `<=1` then the [`ModelFormat`] is automatically
     /// configured as a _shallow_ neural network.
     pub const fn new(input: usize, hidden: usize, output: usize, layers: usize) -> Self {
         match layers {

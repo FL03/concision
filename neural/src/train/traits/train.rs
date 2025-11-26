@@ -4,15 +4,15 @@
 */
 use crate::train::error::TrainingError;
 
-use crate::error::ModelResult;
+use crate::error::NeuralResult;
 
 /// This trait defines the training process for the network
 pub trait Train<X, Y> {
     type Output;
 
-    fn train(&mut self, input: &X, target: &Y) -> ModelResult<Self::Output>;
+    fn train(&mut self, input: &X, target: &Y) -> NeuralResult<Self::Output>;
 
-    fn train_for(&mut self, input: &X, target: &Y, epochs: usize) -> ModelResult<Self::Output> {
+    fn train_for(&mut self, input: &X, target: &Y, epochs: usize) -> NeuralResult<Self::Output> {
         let mut output = None;
 
         for _ in 0..epochs {

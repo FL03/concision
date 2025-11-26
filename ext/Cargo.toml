@@ -25,11 +25,8 @@ no-dev-version = true
 tag-name = "{{version}}"
 
 [lib]
-crate-type = [
-    "cdylib",
-    "rlib",
-]
 bench = false
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
@@ -38,7 +35,7 @@ test = true
 # local
 concision = { features = ["neural"], workspace = true }
 # custom
-scsys = { workspace = true }
+variants = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # data-structures
@@ -58,128 +55,93 @@ tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
 anyhow = { features = ["std"], workspace = true }
-lazy_static ={ workspace = true }
+lazy_static = { workspace = true }
 tracing-subscriber = { features = ["std"], workspace = true }
 
 [features]
-default = [
-    "attention",
-    "std",
-]
+default = ["attention", "std"]
 
 full = [
-    "default",
-    "complex",
-    "rand",
-    "json",
-    "serde",
-    "tracing"
+  "complex", 
+  "default", 
+  "json", 
+  "rand", 
+  "serde", 
+  "tracing"
 ]
 
-nightly = [
-    "concision/nightly",
-]
+nightly = ["concision/nightly"]
 
 # ************* [FF:Features] *************
 attention = []
 
 signal = [
-    "complex",
-    "rustfft"
+  "complex", "rustfft"
 ]
 
 json = [
-    "alloc",
-    "serde",
-    "serde_json",
+  "alloc", "serde", "serde_json"
 ]
 
 init = [
-    "concision/init", 
-    "rand"
+  "concision/init", "rand"
 ]
 # ************* [FF:Environments] *************
 std = [
-    "alloc",
-    "approx?/std",
-    "concision/std",
-    "ndarray/std",
-    "num/std",
-    "num-complex?/std",
-    "num-traits/std",
-    "scsys/std",
-    "serde?/std",
-    "serde_json?/std",
-    "tracing?/std",
+  "alloc", 
+  "approx?/std", 
+  "concision/std", 
+  "ndarray/std", 
+  "num-complex?/std", 
+  "num-traits/std", 
+  "num/std", 
+  "serde?/std", 
+  "serde_json?/std", 
+  "tracing?/std", 
+  "variants/std"
 ]
 
-wasi = [
-    "concision/wasi",
-    "scsys/wasi",
-]
+wasi = ["concision/wasi"]
 
 wasm = [
-    "concision/wasm",
-    "scsys/wasm",
-    "rayon?/web_spin_lock",
+  "concision/wasm", 
+  "rayon?/web_spin_lock"
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-    "concision/alloc",
-    "num/alloc",
-    "scsys/alloc",
-    "serde?/alloc",
-    "serde_json?/alloc",
+  "concision/alloc", 
+  "num/alloc", 
+  "serde?/alloc", 
+  "serde_json?/alloc", 
+  "variants/alloc"
 ]
 
-approx = [
-    "dep:approx",
-    "concision/approx",
-    "ndarray/approx",
-]
+approx = ["concision/approx", "dep:approx", "ndarray/approx"]
 
-blas = [
-    "concision/blas",
-    "ndarray/blas",
-]
+blas = ["concision/blas", "ndarray/blas"]
 
 complex = ["dep:num-complex"]
 
-rand = [
-    "concision/rand",
-    "num/rand",
-    "num-complex?/rand",
-]
+rand = ["concision/rand", "num-complex?/rand", "num/rand"]
 
-rayon = [
-    "concision/rayon",
-    "ndarray/rayon",
-]
+rayon = ["concision/rayon", "ndarray/rayon"]
 
-rng = [
-    "concision/rng",
-    "scsys/rng",
-]
+rng = ["concision/rng"]
 
 rustfft = ["dep:rustfft"]
 
 serde = [
-    "dep:serde",
-    "dep:serde_derive",
-    "concision/serde",
-    "ndarray/serde",
-    "num/serde",
-    "num-complex?/serde",
-    "scsys/serde",
+  "concision/serde", 
+  "dep:serde",
+   "dep:serde_derive", 
+   "ndarray/serde", 
+   "num-complex?/serde", 
+   "num/serde"
 ]
 
 serde_json = ["dep:serde_json"]
 
-tracing = [
-    "dep:tracing",
-    "concision/tracing",
-    "scsys/tracing",
-]
+tracing = ["concision/tracing", "dep:tracing"]
 
 # ************* [Unit Tests] *************
 [[test]]

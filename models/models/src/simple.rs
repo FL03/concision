@@ -2,7 +2,7 @@
     Appellation: simple <module>
     Contrib: @FL03
 */
-use cnc::nn::{DeepModelParams, Model, ModelError, ModelFeatures, StandardModelConfig, Train};
+use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
 use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
 
 use ndarray::prelude::*;
@@ -164,12 +164,12 @@ where
         &mut self,
         input: &ArrayBase<S, Ix1>,
         target: &ArrayBase<T, Ix1>,
-    ) -> Result<Self::Output, ModelError> {
+    ) -> Result<Self::Output, NeuralError> {
         if input.len() != self.features().input() {
-            return Err(ModelError::InvalidInputShape);
+            return Err(NeuralError::InvalidInputShape);
         }
         if target.len() != self.features().output() {
-            return Err(ModelError::InvalidOutputShape);
+            return Err(NeuralError::InvalidOutputShape);
         }
         // get the learning rate from the model's configuration
         let lr = self
@@ -265,15 +265,15 @@ where
         &mut self,
         input: &ArrayBase<S, Ix2>,
         target: &ArrayBase<T, Ix2>,
-    ) -> Result<Self::Output, ModelError> {
+    ) -> Result<Self::Output, NeuralError> {
         if input.nrows() == 0 || target.nrows() == 0 {
-            return Err(ModelError::InvalidBatchSize);
+            return Err(NeuralError::InvalidBatchSize);
         }
         if input.ncols() != self.features().input() {
-            return Err(ModelError::InvalidInputShape);
+            return Err(NeuralError::InvalidInputShape);
         }
         if target.ncols() != self.features().output() || target.nrows() != input.nrows() {
-            return Err(ModelError::InvalidOutputShape);
+            return Err(NeuralError::InvalidOutputShape);
         }
         let mut loss = A::zero();
 

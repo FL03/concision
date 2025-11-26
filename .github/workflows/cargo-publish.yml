@@ -6,12 +6,12 @@ concurrency:
 
 on:
   repository_dispatch:
-    types: [ deploy, publish, cargo-publish, crates-io ]
+    types: [deploy, publish, cargo-publish, crates-io]
   workflow_dispatch:
     inputs:
       publish:
         default: true
-        description: 'Publish the crate(s) to crates.io?'
+        description: "Publish the crate(s) to crates.io?"
         type: boolean
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
     environment:
       name: crates-io
     outputs:
-      url:  ${{ steps.results.outputs.url }}
+      url: ${{ steps.results.outputs.url }}
     permissions:
       contents: read
       deployments: write
@@ -46,23 +46,23 @@ jobs:
           # non-sdk packages
           - concision-kan
           - concision-s4
+          - concision-snn
           - concision-transformer
           - concision-models
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Setup Rust
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      -
-        name: Publish (${{ matrix.package }})
+      - name: Publish (${{ matrix.package }})
         id: publish
         run: cargo publish --locked --package ${{ matrix.package }}
-      -
-        name: Set output(s)
+      - name: Set output(s)
         id: results
-        run:
-          echo "url=https://crates.io/crates/${{ matrix.package }}" >> "$GITHUB_OUTPUT"
+        run: echo "url=https://crates.io/crates/${{ matrix.package }}" >> "$GITHUB_OUTPUT"

@@ -25,11 +25,8 @@ no-dev-version = true
 tag-name = "{{version}}"
 
 [lib]
-crate-type = [
-    "cdylib",
-    "rlib",
-]
 bench = false
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
@@ -40,7 +37,6 @@ serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
 # error-handling
-anyhow = { optional = true, workspace = true }
 thiserror = { workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
@@ -63,80 +59,51 @@ rand_distr = { optional = true, workspace = true }
 lazy_static = { workspace = true }
 
 [features]
-default = [
-    "rand",
-    "std",
-]
+default = ["rand", "std"]
 
-full = [
-    "approx",
-    "complex",
-    "default",
-    "serde",
-    "tracing",
-]
+full = ["approx", "complex", "default", "serde", "tracing"]
 
 nightly = []
 
-
 # ************* [FF:Dependencies] *************
 std = [
-    "alloc",
-    "anyhow?/std",
-    "ndarray/std",
-    "num/std",
-    "num-complex?/std",
-    "num-traits/std",
-    "rand/std",
-    "rand/std_rng",
-    "serde/std",
-    "strum/std",
-    "thiserror/std",
-    "tracing?/std",
+  "alloc", 
+  "ndarray/std", 
+  "num-complex?/std", 
+  "num-traits/std", 
+  "num/std", 
+  "rand/std", 
+  "rand/std_rng", 
+  "serde/std", 
+  "strum/std", 
+  "thiserror/std", 
+  "tracing?/std"
 ]
 
 wasi = []
 
-wasm = [
-    "getrandom?/wasm_js",
-]
+wasm = ["getrandom?/wasm_js"]
 # ************* [FF:Dependencies] *************
-alloc = [
-    "num/alloc",
-    "serde?/alloc",
-]
+alloc = ["num/alloc", "serde?/alloc"]
 
-approx = [
-    "dep:approx",
-    "ndarray/approx",
-]
+approx = ["dep:approx", "ndarray/approx"]
 
 blas = ["ndarray/blas"]
 
 complex = ["dep:num-complex"]
 
-rand = [
-    "dep:rand",
-    "dep:rand_distr",
-    "num/rand",
-    "num-complex?/rand",
-    "rng",
-]
+rand = ["dep:rand", "dep:rand_distr", "num-complex?/rand", "num/rand", "rng"]
 
-rng = [
-    "dep:getrandom",
-    "rand?/small_rng",
-    "rand?/thread_rng",
-]
+rng = ["dep:getrandom", "rand?/small_rng", "rand?/thread_rng"]
 
 serde = [
-    "dep:serde",
-    "dep:serde_derive",
-    "ndarray/serde",
-    "num/serde",
-    "num-complex?/serde",
-    "rand?/serde",
-    "rand_distr?/serde",
+  "dep:serde", 
+  "dep:serde_derive", 
+  "ndarray/serde", 
+  "num-complex?/serde", 
+  "num/serde", 
+  "rand?/serde", 
+  "rand_distr?/serde"
 ]
 
 tracing = ["dep:tracing"]

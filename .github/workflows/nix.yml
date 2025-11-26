@@ -6,24 +6,15 @@ concurrency:
 
 on:
   pull_request:
-    branches:
-      - main
-      - $default-branch
-    types:
-      - opened
-      - reopened
-      - synchronize
+    branches: [main, master]
+    types: [edited, opened, ready_for_review, reopened]
   push:
-    branches:
-      - main
-      - $default-branch
-    tags:
-      - v*.*.*
-      - "*-nightly"
+    branches: [main, master]
+    tags: [v*.*.*, "*-nightly"]
   release:
-    types: [ created, edited ]
+    types: [created, edited]
   repository_dispatch:
-    types: [ nix, nix-build ]
+    types: [nix, nix-build]
   workflow_dispatch:
 
 permissions:
@@ -34,17 +25,13 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
-    -
-      uses: actions/checkout@v4
-    -
-      uses: cachix/install-nix-action@v31
-      with:
-        github_access_token: ${{ secrets.GITHUB_TOKEN }}
-    -
-      name: Build
-      id: build
-      run: nix build
-    -
-      name: Check the flake
-      id: check
-      run: nix flake check
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        id: build
+        run: nix build
+      - name: Check the flake
+        id: check
+        run: nix flake check

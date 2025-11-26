@@ -17,7 +17,7 @@ pub trait Predict<Rhs> {
 
     private!();
 
-    fn predict(&self, input: &Rhs) -> crate::ModelResult<Self::Output>;
+    fn predict(&self, input: &Rhs) -> crate::NeuralResult<Self::Output>;
 }
 
 /// The [`PredictWithConfidence`] trait is an extension of the [`Predict`] trait, providing
@@ -28,7 +28,7 @@ pub trait PredictWithConfidence<Rhs>: Predict<Rhs> {
     fn predict_with_confidence(
         &self,
         input: &Rhs,
-    ) -> crate::ModelResult<(Self::Output, Self::Confidence)>;
+    ) -> crate::NeuralResult<(Self::Output, Self::Confidence)>;
 }
 
 /*
@@ -46,7 +46,7 @@ where
 
     seal!();
 
-    fn predict(&self, input: &U) -> crate::ModelResult<Self::Output> {
+    fn predict(&self, input: &U) -> crate::NeuralResult<Self::Output> {
         self.forward(input).map_err(core::convert::Into::into)
     }
 }
@@ -62,7 +62,7 @@ where
     fn predict_with_confidence(
         &self,
         input: &U,
-    ) -> Result<(Self::Output, Self::Confidence), crate::ModelError> {
+    ) -> Result<(Self::Output, Self::Confidence), crate::NeuralError> {
         // Get the base prediction
         let prediction = Predict::predict(self, input)?;
         let shape = prediction.shape();
