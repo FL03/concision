@@ -122,6 +122,7 @@ impl<A, S> DeepParamsBase<S, Ix2, A>
 where
     S: RawData<Elem = A>,
 {
+    #[allow(clippy::should_implement_trait)]
     /// create a new instance of the model;
     /// all parameters are initialized to their defaults (i.e., zero)
     pub fn default(features: ModelFeatures) -> Self

@@ -10,22 +10,20 @@ use cnc::rand_distr;
 use num_traits::{Float, FromPrimitive};
 
 #[derive(Clone, Debug)]
-pub struct KanModel<T = f64> {
+pub struct S4Model<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: DeepModelParams<T>,
 }
 
-impl<T> KanModel<T>
-where
-    T: Float + FromPrimitive,
+impl<T> S4Model<T>
 {
     pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self
     where
         T: Clone + Default,
     {
         let params = DeepModelParams::default(features);
-        KanModel {
+        S4Model {
             config,
             features,
             params,
@@ -34,10 +32,11 @@ where
     #[cfg(feature = "rand")]
     pub fn init(self) -> Self
     where
+        T: 'static + Float + FromPrimitive,
         rand_distr::StandardNormal: rand_distr::Distribution<T>,
     {
         let params = DeepModelParams::glorot_normal(self.features());
-        KanModel { params, ..self }
+        S4Model { params, ..self }
     }
     /// returns a reference to the model configuration
     pub const fn config(&self) -> &StandardModelConfig<T> {
@@ -92,8 +91,9 @@ where
     }
 }
 
-impl<T> Model<T> for KanModel<T> {
+impl<T> Model<T> for S4Model<T> {
     type Config = StandardModelConfig<T>;
+
     type Layout = ModelFeatures;
 
     fn config(&self) -> &StandardModelConfig<T> {

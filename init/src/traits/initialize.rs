@@ -41,7 +41,6 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-
     fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
     where
         Ds: Distribution<A>,
@@ -166,12 +165,7 @@ where
     }
     /// randomly initialize the object using the [`Uniform`] distribution with values between
     /// the `start` and `stop` params using some random seed.
-    fn uniform_from_seed<Sh>(
-        shape: Sh,
-        start: A,
-        stop: A,
-        key: u64,
-    ) -> crate::InitResult<Self>
+    fn uniform_from_seed<Sh>(shape: Sh, start: A, stop: A, key: u64) -> crate::InitResult<Self>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,

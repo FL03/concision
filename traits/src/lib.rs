@@ -34,47 +34,35 @@ mod clip;
 mod codex;
 mod complex;
 mod convert;
-mod difference;
 mod entropy;
-mod gradient;
 mod loss;
 mod norm;
 mod propagation;
-mod roots;
 mod rounding;
 mod store;
 mod wnb;
 
-pub mod ops {
+pub mod math {
+    //! Mathematically oriented operators and functions useful in machine learning contexts.
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{difference::*, gradient::*, roots::*, stats::*, unary::*};
 
+    mod difference;
+    mod gradient;
+    mod roots;
     mod stats;
     mod unary;
-
-    pub(crate) mod prelude {
-        pub use super::stats::*;
-        pub use super::unary::*;
-    }
 }
 
 pub mod tensor {
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{fill::*, like::*, linalg::*, ndtensor::*, shape::*};
 
     mod fill;
     mod like;
-    mod reshape;
+    mod linalg;
+    mod ndtensor;
     mod shape;
-    mod tensor_ops;
-
-    pub(crate) mod prelude {
-        pub use super::fill::*;
-        pub use super::like::*;
-        pub use super::reshape::*;
-        pub use super::shape::*;
-        pub use super::tensor_ops::*;
-    }
 }
 
 // re-exports
@@ -85,20 +73,17 @@ pub use self::prelude::*;
 
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::ops::*;
+    pub use crate::math::*;
     pub use crate::tensor::*;
 
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
     pub use crate::convert::*;
-    pub use crate::difference::*;
     pub use crate::entropy::*;
-    pub use crate::gradient::*;
     pub use crate::loss::*;
     pub use crate::norm::*;
     pub use crate::propagation::*;
-    pub use crate::roots::*;
     pub use crate::rounding::*;
     pub use crate::store::*;
     pub use crate::wnb::*;

@@ -1,8 +1,11 @@
 /*
-    Appellation: simple <module>
+    Appellation: transformer <module>
     Contrib: @FL03
 */
+
 use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
+#[cfg(feature = "rand")]
+use cnc::rand_distr;
 use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
 
 use ndarray::prelude::*;
@@ -10,23 +13,32 @@ use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign};
 
 #[derive(Clone, Debug)]
-pub struct SimpleModel<T = f64> {
+pub struct TransformerModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: DeepModelParams<T>,
 }
 
-impl<T> SimpleModel<T> {
+impl<T> TransformerModel<T> {
     pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self
     where
         T: Clone + Default,
     {
         let params = DeepModelParams::default(features);
-        SimpleModel {
+        TransformerModel {
             config,
             features,
             params,
         }
+    }
+    #[cfg(feature = "rand")]
+    pub fn init(self) -> Self
+    where
+        T: 'static + Float + FromPrimitive,
+        rand_distr::StandardNormal: rand_distr::Distribution<T>,
+    {
+        let params = DeepModelParams::glorot_normal(self.features());
+        TransformerModel { params, ..self }
     }
     /// returns a reference to the model configuration
     pub const fn config(&self) -> &StandardModelConfig<T> {
@@ -79,19 +91,9 @@ impl<T> SimpleModel<T> {
     pub fn with_params(self, params: DeepModelParams<T>) -> Self {
         Self { params, ..self }
     }
-    /// initializes the model with Glorot normal distribution
-    #[cfg(feature = "rand")]
-    pub fn init(self) -> Self
-    where
-        T: Float + FromPrimitive,
-        cnc::rand_distr::StandardNormal: cnc::rand_distr::Distribution<T>,
-    {
-        let params = DeepModelParams::glorot_normal(self.features());
-        SimpleModel { params, ..self }
-    }
 }
 
-impl<T> Model<T> for SimpleModel<T> {
+impl<T> Model<T> for TransformerModel<T> {
     type Config = StandardModelConfig<T>;
     type Layout = ModelFeatures;
 
@@ -116,20 +118,18 @@ impl<T> Model<T> for SimpleModel<T> {
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for SimpleModel<A>
+impl<A, U, V> Forward<U> for TransformerModel<A>
 where
     A: Float + FromPrimitive + ScalarOperand,
-    D: Dimension,
-    S: Data<Elem = A>,
-    Params<A>: Forward<Array<A, D>, Output = Array<A, D>>,
+    V: ReLU<Output = V> + Sigmoid<Output = V>,
+    Params<A>: Forward<U, Output = V> + Forward<V, Output = V>,
+    for<'a> &'a U: ndarray::linalg::Dot<Array2<A>, Output = V> + core::ops::Add<&'a Array1<A>>,
+    V: for<'a> core::ops::Add<&'a Array1<A>, Output = V>,
 {
-    type Output = Array<A, D>;
+    type Output = V;
 
-    fn forward(&self, input: &ArrayBase<S, D>) -> cnc::Result<Self::Output> {
-        let mut output = self
-            .params()
-            .input()
-            .forward_then(&input.to_owned(), |y| y.relu())?;
+    fn forward(&self, input: &U) -> Option<Self::Output> {
+        let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
 
         for layer in self.params().hidden() {
             output = layer.forward_then(&output, |y| y.relu())?;
@@ -139,11 +139,11 @@ where
             .params()
             .output()
             .forward_then(&output, |y| y.sigmoid())?;
-        Ok(y)
+        Some(y)
     }
 }
 
-impl<A, S, T> Train<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for SimpleModel<A>
+impl<A, S, T> Train<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for TransformerModel<A>
 where
     A: Float + FromPrimitive + NumAssign + ScalarOperand + core::fmt::Debug,
     S: Data<Elem = A>,
@@ -186,15 +186,28 @@ where
         let mut activations = Vec::new();
         activations.push(input.to_owned());
 
-        let mut output = self.params().input().forward(&input)?.relu();
+        let mut output = self
+            .params()
+            .input()
+            .forward(&input)
+            .expect("Output layer failed to forward propagate during training...")
+            .relu();
         activations.push(output.to_owned());
         // collect the activations of the hidden
         for layer in self.params().hidden() {
-            output = layer.forward(&output)?.relu();
+            output = layer
+                .forward(&output)
+                .expect("Hidden layer failed to forward propagate during training...")
+                .relu();
             activations.push(output.to_owned());
         }
 
-        output = self.params().output().forward(&output)?.sigmoid();
+        output = self
+            .params()
+            .output()
+            .forward(&output)
+            .expect("Input layer failed to forward propagate during training...")
+            .sigmoid();
         activations.push(output.to_owned());
 
         // Calculate output layer error
@@ -208,7 +221,8 @@ where
         // Update output weights
         self.params_mut()
             .output_mut()
-            .backward(activations.last().unwrap(), &delta, lr)?;
+            .backward(activations.last().unwrap(), &delta, lr)
+            .expect("Backward propagation failed...");
 
         let num_hidden = self.features().layers();
         // Iterate through hidden layers in reverse order
@@ -224,7 +238,9 @@ where
             };
             // Normalize delta to prevent exploding gradients
             delta /= delta.l2_norm();
-            self.params_mut().hidden_mut()[i].backward(&activations[i + 1], &delta, lr)?;
+            self.params_mut().hidden_mut()[i]
+                .backward(&activations[i + 1], &delta, lr)
+                .expect("Backward propagation failed...");
         }
         /*
             Backpropagate to the input layer
@@ -237,13 +253,14 @@ where
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
         self.params_mut()
             .input_mut()
-            .backward(&activations[1], &delta, lr)?;
+            .backward(&activations[1], &delta, lr)
+            .expect("Input layer backward pass failed");
 
         Ok(loss)
     }
 }
 
-impl<A, S, T> Train<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for SimpleModel<A>
+impl<A, S, T> Train<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for TransformerModel<A>
 where
     A: Float + FromPrimitive + NumAssign + ScalarOperand + core::fmt::Debug,
     S: Data<Elem = A>,
@@ -277,21 +294,14 @@ where
         }
         let mut loss = A::zero();
 
-        for (i, (x, e)) in input.rows().into_iter().zip(target.rows()).enumerate() {
+        for (_i, (x, e)) in input.rows().into_iter().zip(target.rows()).enumerate() {
             loss += match Train::<ArrayView1<A>, ArrayView1<A>>::train(self, &x, &e) {
                 Ok(l) => l,
                 Err(err) => {
                     #[cfg(feature = "tracing")]
                     tracing::error!(
                         "Training failed for batch {}/{}: {:?}",
-                        i + 1,
-                        input.nrows(),
-                        err
-                    );
-                    #[cfg(not(feature = "tracing"))]
-                    eprintln!(
-                        "Training failed for batch {}/{}: {:?}",
-                        i + 1,
+                        _i + 1,
                         input.nrows(),
                         err
                     );

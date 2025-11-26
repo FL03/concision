@@ -2,13 +2,13 @@
     Appellation: concision-init <library>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! One of the most important aspects of training neural networks and machine learning 
-//! lies within the _initialization_ of model parameters. Here, we work to provide additional 
-//! tools and utilities to facilitate effective initialization strategies including various 
-//! random distributions tailored directly to machine learning workloads such as: 
+//! One of the most important aspects of training neural networks and machine learning
+//! lies within the _initialization_ of model parameters. Here, we work to provide additional
+//! tools and utilities to facilitate effective initialization strategies including various
+//! random distributions tailored directly to machine learning workloads such as:
 //! Glorot (Xavier) initialization, LeCun initialization, etc.
-//! 
-//! Implementors of the [`Initialize`] trait can leverage the various initialization 
+//!
+//! Implementors of the [`Initialize`] trait can leverage the various initialization
 //! distributions provided within this crate to initialize their model parameters in a
 //! manner conducive to effective training and convergence.
 //!
@@ -96,7 +96,7 @@ pub mod distr {
 pub mod prelude {
     pub use crate::error::InitError;
     pub use crate::traits::*;
-    
+
     #[cfg(feature = "rand")]
     pub use crate::distr::prelude::*;
     #[cfg(feature = "rand")]

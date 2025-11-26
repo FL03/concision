@@ -57,9 +57,7 @@ where
         A: Float + FromPrimitive,
         StandardNormal: Distribution<A>,
     {
-        Self::init_rand(features, |(rows, cols)| {
-            init::XavierNormal::new(rows, cols)
-        })
+        Self::init_rand(features, |(rows, cols)| init::XavierNormal::new(rows, cols))
     }
     /// initialize the model parameters using a glorot uniform distribution
     pub fn glorot_uniform(features: ModelFeatures) -> Self
@@ -101,9 +99,7 @@ where
         A: Float + FromPrimitive,
         StandardNormal: Distribution<A>,
     {
-        Self::init_rand(features, |(rows, cols)| {
-            init::XavierNormal::new(rows, cols)
-        })
+        Self::init_rand(features, |(rows, cols)| init::XavierNormal::new(rows, cols))
     }
     /// initialize the model parameters using a glorot uniform distribution
     pub fn glorot_uniform(features: ModelFeatures) -> Self

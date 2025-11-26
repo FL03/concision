@@ -32,7 +32,6 @@ doctest = true
 test = true
 
 [dependencies]
-# local
 concision = { features = ["neural"], workspace = true }
 # custom
 variants = { workspace = true }
@@ -67,7 +66,16 @@ full = [
   "json", 
   "rand", 
   "serde", 
-  "tracing"
+  "tracing",
+  "models",
+]
+
+models = [
+  "kan",
+  "linear",
+  "s4",
+  "snn",
+  "transformer",
 ]
 
 nightly = ["concision/nightly"]
@@ -78,6 +86,16 @@ attention = []
 signal = ["complex", "rustfft"]
 
 json = ["alloc", "serde", "serde_json"]
+
+kan = []
+
+linear = []
+
+s4 = []
+
+snn = []
+
+transformer = []
 
 # ************* [FF:Environments] *************
 std = [
@@ -94,7 +112,9 @@ std = [
   "variants/std"
 ]
 
-wasi = ["concision/wasi"]
+wasi = [
+  "concision/wasi",
+]
 
 wasm = [
   "concision/wasm", 
@@ -135,6 +155,10 @@ serde = [
 serde_json = ["dep:serde_json"]
 
 tracing = ["concision/tracing", "dep:tracing"]
+
+[[example]]
+name = "linear"
+required-features = ["linear", "std"]
 
 # ************* [Unit Tests] *************
 [[test]]
