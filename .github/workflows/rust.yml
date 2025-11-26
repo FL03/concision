@@ -11,7 +11,7 @@ env:
 on:
   pull_request:
     branches: [main, master]
-    types: [edited, opened, ready_for_review, reopened]
+    types: [edited, opened, ready_for_review, reopened, synchronize]
   push:
     branches: [main, master]
     tags: [v*.*.*, "*-nightly"]

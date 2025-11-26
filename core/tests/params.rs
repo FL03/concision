@@ -2,7 +2,6 @@
     Appellation: params <test>
     Contrib: @FL03
 */
-use concision_core::Forward;
 use concision_params::Params;
 
 use approx::assert_abs_diff_eq;
