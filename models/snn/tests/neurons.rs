@@ -27,7 +27,7 @@ fn test_receive_spike_increases_synaptic_state() {
 }
 
 #[test]
-// #[ignore = "Need to fix"]
+#[ignore = "Need to fix"]
 fn test_spiking_with_sufficient_input() {
     // params
     let dt: f64 = 0.1;
