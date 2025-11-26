@@ -1,11 +1,14 @@
-extern crate concision_utils as cnc;
-
+/*
+    Appellation: complex <test>
+    Created At: 2025.11.26:12:28:18
+    Contrib: @FL03
+*/
+use concision_traits::{AsComplex, Conjugate};
 use ndarray::prelude::*;
-use num::Complex;
+use num_complex::Complex;
 
 #[test]
 fn test_as_complex() {
-    use cnc::AsComplex;
     let x = 1.0;
     let y = x.as_re();
     assert_eq!(y, Complex::new(1.0, 0.0));
@@ -13,8 +16,6 @@ fn test_as_complex() {
 
 #[test]
 fn test_conj() {
-    use cnc::Conjugate;
-    use num::complex::Complex;
     let data = (1..5).map(|x| x as f64).collect::<Vec<_>>();
     let a = Array2::from_shape_vec((2, 2), data).unwrap();
     let exp = array![[1.0, 2.0], [3.0, 4.0]];

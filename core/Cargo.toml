@@ -36,12 +36,13 @@ test = true
 concision-init = { workspace = true }
 concision-params = { workspace = true }
 concision-traits = { workspace = true }
-concision-utils = {  optional = true, workspace = true }
 # custom
 variants = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
-# data & serialization
+# data structures
+ndarray = { workspace = true }
+# serialization
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
@@ -55,9 +56,8 @@ smart-default = { workspace = true }
 strum = { workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
-ndarray = { workspace = true }
-num = { workspace = true }
 num-complex = { optional = true, workspace = true }
+num-integer = { workspace = true }
 num-traits = { workspace = true }
 rustfft = { optional = true, workspace = true }
 # random
@@ -69,13 +69,12 @@ rand_distr = { optional = true, workspace = true }
 lazy_static = { workspace = true }
 
 [features]
-default = ["std", "utils"]
+default = ["std"]
 
 full = [
   "default",
   "approx",
   "complex",
-  "init",
   "json",
   "rand",
   "serde",
@@ -87,25 +86,14 @@ nightly = [
   "concision-init/nightly",
   "concision-params/nightly",
   "concision-traits/nightly",
-  "concision-utils?/nightly",
 ]
 
 # ************* [FF:Features] *************
-init = [
-  "rand",
-]
+init = ["rand"]
 
 json = ["alloc", "serde", "serde_json"]
 
-signal =[
-  "complex",
-  "concision-utils?/signal",
-  "rustfft",
-]
-
-utils = ["concision_utils"]
-
-concision_utils = ["dep:concision-utils"]
+signal = ["complex", "rustfft"]
 
 # ************* [FF:Dependencies] *************
 std = [
@@ -113,9 +101,8 @@ std = [
   "concision-init/std",
   "concision-params/std",
   "concision-traits/std",
-  "concision-utils?/std",
   "ndarray/std",
-  "num/std",
+  "num-integer/std",
   "num-complex?/std",
   "num-traits/std",
   "rand?/std",
@@ -131,7 +118,6 @@ wasi = [
   "concision-init/wasi",
   "concision-params/wasi",
   "concision-traits/wasi",
-  "concision-utils?/wasi",
 ]
 
 wasm = [
@@ -139,15 +125,13 @@ wasm = [
   "concision-init/wasm",
   "concision-params/wasm",
   "concision-traits/wasm",
-  "concision-utils?/wasm",
 ]
+
 # ************* [FF:Dependencies] *************
 alloc = [
   "concision-init/alloc",
   "concision-params/alloc",
   "concision-traits/alloc",
-  "concision-utils?/alloc",
-  "num/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
@@ -157,14 +141,12 @@ approx = [
   "dep:approx",
   "concision-init/approx",
   "concision-params/approx",
-  "concision-utils?/approx",
   "ndarray/approx",
 ]
 
 blas = [
   "concision-init/blas",
   "concision-params/blas",
-  "concision-utils?/blas",
   "ndarray/blas",
 ]
 
@@ -172,7 +154,6 @@ complex = [
   "dep:num-complex",
   "concision-init/complex",
   "concision-params/complex",
-  "concision-utils?/complex",
 ]
 
 rand = [
@@ -181,8 +162,6 @@ rand = [
   "concision-init/rand",
   "concision-params/rand",
   "concision-traits/rand",
-  "concision-utils?/rand",
-  "num/rand",
   "num-complex?/rand",
   "rng",
 ]
@@ -190,7 +169,6 @@ rand = [
 rayon = [
   "dep:rayon",
   "concision-params/rayon",
-  "concision-utils?/rayon",
   "ndarray/rayon",
 ]
 
@@ -199,7 +177,6 @@ rng = [
   "concision-init/rng",
   "concision-params/rng",
   "concision-traits/rng",
-  "concision-utils?/rng",
   "rand?/small_rng",
   "rand?/thread_rng",
 ]
@@ -211,9 +188,7 @@ serde = [
   "dep:serde_derive",
   "concision-init/serde",
   "concision-params/serde",
-  "concision-utils?/serde",
   "ndarray/serde",
-  "num/serde",
   "num-complex?/serde",
   "rand?/serde",
   "rand_distr?/serde",
@@ -223,18 +198,17 @@ serde_json = ["dep:serde_json"]
 
 tracing = [
   "concision-init/tracing",
-  "concision-utils?/tracing",
   "dep:tracing",
 ]
 
 # ************* [Unit Tests] *************
 [[test]]
-name = "default"
-
-[[test]]
 name = "params"
 required-features = ["approx", "std"]
 
 [[test]]
-name = "traits"
-required-features = ["std"]
+name = "fft"
+required-features = ["alloc", "signal"]
+
+[[test]]
+name = "utils"

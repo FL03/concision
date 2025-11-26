@@ -53,7 +53,7 @@ unary! {
     Sigmoid::sigmoid(self),
     Softmax::softmax(&self),
     ReLU::relu(&self),
-    Tanh::tanh(&self),
+    TanhActivation::tanh(&self),
 }
 
 pub trait SoftmaxAxis: Softmax {

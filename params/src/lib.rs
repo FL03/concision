@@ -1,15 +1,25 @@
 /*
-    Appellation: params <module>
+    Appellation: concision-params <library>
+    Created At: 2025.11.26:13:15:32
     Contrib: @FL03
 */
-//! Parameters for constructing neural network models. This module implements parameters using
-//! the [ParamsBase] struct and its associated types. The [ParamsBase] struct provides:
+//! In machine learning, each layer is composed of some set of neurons that process input data
+//! to produce some meaningful output. Each neuron typically has associated parameters, namely
+//! weights and biases, which are adjusted during training to optimize the model's performance.
+//!
+//! ## Overview
+//!
+//! The [`params`](self) crate provides a generic and flexible structure for handling these
+//! values. At its core, the [`ParamsBase`] object is defined as an object composed of two
+//! independent tensors:
 //!
 //! - An $`n`$ dimensional weight tensor
 //! - An $`n-1`$ dimensional bias tensor
 //!
-//! The associated types follow suite with the [`ndarray`] crate, each of which defines a
-//! different style of representation for the parameters.
+//! These tensors can be of any shape or size, allowing for a wide range of neural network
+//! architectures to be represented. The crate also provides various utilities and traits for
+//! manipulating and interacting with these parameters, making it easier to build and train
+//! neural networks.
 //!
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(

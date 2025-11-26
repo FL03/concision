@@ -11,7 +11,6 @@ members = [
   "neural", 
   "params", 
   "traits",
-  "utils",
   "models/*", 
 ]
 resolver = "3"
@@ -40,7 +39,6 @@ concision-macros = { default-features = false, path = "macros", version = "0.2.9
 concision-neural = { default-features = false, path = "neural", version = "0.2.9" }
 concision-params = { default-features = false, path = "params", version = "0.2.9" }
 concision-traits = { default-features = false, path = "traits", version = "0.2.9" }
-concision-utils = { default-features = false, path = "utils", version = "0.2.9" }
 # extras
 concision-ext = { default-features = false, path = "ext", version = "0.2.9" }
 # models
@@ -52,6 +50,10 @@ concision-transformer = { default-features = false, path = "models/transformer",
 
 # custom
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
+# tensors & arrays
+ndarray = { default-features = false, version = "0.17" }
+ndarray-linalg = { default-features = false, version = "0.18" }
+ndarray-stats = "0.6"
 # benchmarking
 criterion = { version = "0.7" }
 # concurrency & parallelism
@@ -63,11 +65,9 @@ serde_derive = { default-features = false, version = "1" }
 serde_json = { default-features = false, version = "1" }
 # math
 approx = { version = "0.5" }
-ndarray = { default-features = false, version = "0.17" }
-ndarray-linalg = { default-features = false, version = "0.18" }
-ndarray-stats = "0.6"
 num = { default-features = false, version = "0.4" }
 num-complex = { default-features = false, version = "0.4" }
+num-integer = { default-features = false, version = "0.1" }
 num-traits = { default-features = false, version = "0.2" }
 rustfft = { version = "6" }
 # random

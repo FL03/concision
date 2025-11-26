@@ -38,7 +38,6 @@ jobs:
           - concision-traits
           - concision-init
           - concision-params
-          - concision-utils
           - concision-core
           - concision-data
           - concision-neural

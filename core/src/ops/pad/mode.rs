@@ -2,7 +2,7 @@
     Appellation: mode <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use num::Zero;
+use num_traits::Zero;
 
 #[derive(
     Clone,

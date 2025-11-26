@@ -2,8 +2,8 @@
     Appellation: arithmetic <module>
     Contrib: @FL03
 */
-use num::integer::Roots;
-use num::traits::FromPrimitive;
+use num_integer::Roots;
+use num_traits::FromPrimitive;
 
 /// The [`Root`] trait provides methods for computing the nth root of a number.
 pub trait Root {

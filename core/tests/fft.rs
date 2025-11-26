@@ -2,14 +2,12 @@
     Appellation: fft <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-extern crate concision_utils as utils;
-
-use utils::signal::fft::*;
+use concision_core::signal::fft::*;
 
 use approx::assert_abs_diff_eq;
 use lazy_static::lazy_static;
-use num::complex::{Complex, ComplexFloat};
-use num::traits::Float;
+use num_complex::{Complex, ComplexFloat};
+use num_traits::Float;
 
 const EPSILON: f64 = 1e-6;
 

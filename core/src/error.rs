@@ -29,8 +29,7 @@ pub enum Error {
     #[error(transparent)]
     InitError(#[from] concision_init::InitError),
     #[error(transparent)]
-    #[cfg(feature = "concision_utils")]
-    UtilityError(#[from] concision_utils::error::UtilityError),
+    ShapeError(#[from] ndarray::ShapeError),
     #[cfg(feature = "alloc")]
     #[error(transparent)]
     BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
@@ -45,8 +44,6 @@ pub enum Error {
     #[cfg(feature = "std")]
     #[error(transparent)]
     IoError(#[from] std::io::Error),
-    #[error(transparent)]
-    ShapeError(#[from] ndarray::ShapeError),
     #[error(transparent)]
     #[cfg(feature = "rand")]
     UniformError(#[from] rand_distr::uniform::Error),

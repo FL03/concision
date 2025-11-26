@@ -2,8 +2,6 @@
     Appellation: reshape <module>
     Contrib: @FL03
 */
-use ndarray::{ArrayBase, Axis, Dimension, RawData, RawDataClone, RemoveAxis};
-
 /// The [`DecrementAxis`] trait defines a method enabling an axis to decrement itself,
 pub trait DecrementAxis {
     type Output;
@@ -25,9 +23,12 @@ pub trait Unsqueeze {
 
     fn unsqueeze(self, axis: usize) -> Self::Output;
 }
+
 /*
  ************* Implementations *************
 */
+use ndarray::{ArrayBase, Axis, Dimension, RawData, RawDataClone, RemoveAxis};
+
 impl<D> DecrementAxis for D
 where
     D: RemoveAxis,

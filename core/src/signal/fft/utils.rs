@@ -4,8 +4,8 @@
 */
 use super::FftPlan;
 use crate::traits::AsComplex;
-use num::complex::{Complex, ComplexFloat};
-use num::traits::{Float, FloatConst, NumAssignOps, NumCast, NumOps};
+use num_complex::{Complex, ComplexFloat};
+use num_traits::{Float, FloatConst, NumAssignOps, NumCast, NumOps};
 
 pub(crate) fn fft_angle<T>(n: usize) -> T
 where

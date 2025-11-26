@@ -5,7 +5,7 @@
 use super::{PadAction, PadError, PadMode};
 use crate::ArrayLike;
 use ndarray::{Array, ArrayBase, AxisDescription, Data, DataOwned, Dimension, Slice};
-use num::{FromPrimitive, Num};
+use num_traits::{FromPrimitive, Num};
 
 fn reader(nb_dim: usize, pad: &[[usize; 2]]) -> Result<Vec<[usize; 2]>, PadError> {
     if pad.len() == 1 && pad.len() < nb_dim {

@@ -83,7 +83,6 @@ default = [
   "data",
   "neural",
   "std",
-  "utils",
 ]
 
 full = [
@@ -110,11 +109,7 @@ macros = ["dep:concision-macros"]
 
 data = ["dep:concision-data"]
 
-init = ["concision-core/init"]
-
 neural = ["dep:concision-neural", "alloc"]
-
-utils = ["concision-core/utils"]
 
 # ************* [FF:Environments] *************
 std = [

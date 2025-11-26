@@ -16,7 +16,7 @@ pub fn linear_derivative<T>() -> T
 where
     T: One,
 {
-    num::one()
+    <T>::one()
 }
 
 /// Heaviside activation function:

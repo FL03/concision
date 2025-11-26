@@ -30,7 +30,7 @@ pub struct Padding<T> {
 */
 
 use ndarray::{Array, ArrayBase, DataOwned, Dimension};
-use num::traits::{FromPrimitive, Num};
+use num_traits::{FromPrimitive, Num};
 
 impl<A, S, D> Pad<A> for ArrayBase<S, D, A>
 where

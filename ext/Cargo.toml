@@ -75,17 +75,10 @@ nightly = ["concision/nightly"]
 # ************* [FF:Features] *************
 attention = []
 
-signal = [
-  "complex", "rustfft"
-]
+signal = ["complex", "rustfft"]
 
-json = [
-  "alloc", "serde", "serde_json"
-]
+json = ["alloc", "serde", "serde_json"]
 
-init = [
-  "concision/init", "rand"
-]
 # ************* [FF:Environments] *************
 std = [
   "alloc", 

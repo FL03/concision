@@ -116,5 +116,5 @@ activator! {
     pub struct Linear::<cnc::LinearActivation>(linear);
     pub struct ReLU::<cnc::ReLU>(relu);
     pub struct Sigmoid::<cnc::Sigmoid>(sigmoid);
-    pub struct Tanh::<cnc::Tanh>(tanh);
+    pub struct Tanh::<cnc::TanhActivation>(tanh);
 }

@@ -1,11 +1,12 @@
 /*
-    Appellation: summary <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: stats <module>
+    Created At: 2025.11.26:12:23:22
+    Contrib: @FL03
 */
 use crate::Root;
 use core::iter::{Product, Sum};
 use ndarray::{ArrayBase, Data, Dimension};
-use num::traits::{FromPrimitive, Num, NumOps, Pow};
+use num_traits::{FromPrimitive, Num, NumOps, Pow};
 
 /// This trait describes the fundamental methods of summary statistics.
 /// These include the mean, standard deviation, variance, and more.

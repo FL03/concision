@@ -3,8 +3,9 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 #![cfg(feature = "complex")]
-use num::Num;
-use num::complex::Complex;
+
+use num_complex::Complex;
+use num_traits::Num;
 
 pub trait AsComplex<T> {
     type Complex<A>;

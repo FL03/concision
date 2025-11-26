@@ -4,7 +4,7 @@
 */
 use super::unary::*;
 
-use crate::Apply;
+use concision_traits::Apply;
 #[cfg(feature = "complex")]
 use num_complex::ComplexFloat;
 use num_traits::One;
@@ -73,14 +73,14 @@ pub trait Rho<U>: Apply<U> {
 
     fn tanh(&self) -> Self::Cont<U::Output>
     where
-        U: Tanh,
+        U: TanhActivation,
     {
         self.apply(|x| x.tanh())
     }
 
     fn tanh_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: Tanh,
+        U: TanhActivation,
     {
         self.apply(|x| x.tanh_derivative())
     }

@@ -2,7 +2,7 @@
     Appellation: sigmoid <mod>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::activate::{ReLU, Sigmoid, Softmax, Tanh, utils::sigmoid_derivative};
+use crate::activate::{ReLU, Sigmoid, Softmax, TanhActivation, utils::sigmoid_derivative};
 
 use ndarray::{Array, ArrayBase, Data, Dimension, ScalarOperand};
 use num_traits::{Float, One, Zero};
@@ -67,7 +67,7 @@ where
     }
 }
 
-impl<A, S, D> Tanh for ArrayBase<S, D, A>
+impl<A, S, D> TanhActivation for ArrayBase<S, D, A>
 where
     A: ScalarOperand + Float,
     S: Data<Elem = A>,

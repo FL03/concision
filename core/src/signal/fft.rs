@@ -1,6 +1,7 @@
 /*
-    appellation: fft <module>
-    authors: @FL03
+    Appellation: fft <module>
+    Created At: 2025.11.26:13:22:07
+    Contrib: @FL03
 */
 //! this module implements the custom fast-fourier transform (FFT) algorithm
 #[doc(inline)]
