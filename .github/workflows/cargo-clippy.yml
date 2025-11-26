@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [edited, opened, ready_for_review, reopened]
+    types: [opened, ready_for_review, reopened]
   push:
     branches: [main, master]
     tags: [v*.*.*, "*-nightly"]
@@ -27,7 +27,7 @@ jobs:
       statuses: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:

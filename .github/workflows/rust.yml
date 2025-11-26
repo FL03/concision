@@ -12,6 +12,11 @@ on:
   pull_request:
     branches: [main, master]
     types: [edited, opened, ready_for_review, reopened, synchronize]
+    paths:
+      - '**.rs'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - '.github/workflows/rust.yml'
   push:
     branches: [main, master]
     tags: [v*.*.*, "*-nightly"]
@@ -34,7 +39,7 @@ jobs:
         target: [x86_64-unknown-linux-gnu]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
@@ -43,7 +48,7 @@ jobs:
       - name: Build the workspace
         run: cargo build --release --locked --workspace --features full --target ${{ matrix.target }}
   benchmark:
-    if: ${{ inputs.benchmark || github.event_name == 'push' }}
+    if: ${{ inputs.benchmark || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     outputs:
       digest: ${{ steps.artifacts.outputs.artifact-digest }}
@@ -58,7 +63,7 @@ jobs:
         target: [x86_64-unknown-linux-gnu]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
@@ -84,7 +89,7 @@ jobs:
         target: [x86_64-unknown-linux-gnu]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
