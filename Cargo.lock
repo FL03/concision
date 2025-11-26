@@ -238,7 +238,7 @@ dependencies = [
  "concision-neural",
  "criterion",
  "lazy_static",
- "ndarray 0.17.1",
+ "ndarray",
  "num",
  "serde",
  "tracing",
@@ -255,8 +255,7 @@ dependencies = [
  "concision-utils",
  "getrandom",
  "lazy_static",
- "ndarray 0.17.1",
- "ndtensor",
+ "ndarray",
  "num",
  "num-complex",
  "num-traits",
@@ -280,10 +279,9 @@ dependencies = [
 name = "concision-data"
 version = "0.2.8"
 dependencies = [
- "anyhow",
  "approx",
  "concision-core",
- "ndarray 0.17.1",
+ "ndarray",
  "num",
  "num-complex",
  "num-traits",
@@ -313,11 +311,10 @@ dependencies = [
  "approx",
  "concision",
  "lazy_static",
- "ndarray 0.17.1",
+ "ndarray",
  "num",
  "num-complex",
  "num-traits",
- "opper",
  "rayon",
  "rustfft",
  "scsys",
@@ -336,7 +333,7 @@ dependencies = [
  "approx",
  "getrandom",
  "lazy_static",
- "ndarray 0.17.1",
+ "ndarray",
  "num",
  "num-complex",
  "num-traits",
@@ -359,7 +356,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
- "ndarray 0.17.1",
+ "ndarray",
  "num-traits",
  "tracing",
 ]
@@ -385,7 +382,7 @@ dependencies = [
  "concision-s4",
  "concision-transformer",
  "lazy_static",
- "ndarray 0.17.1",
+ "ndarray",
  "num-traits",
  "scsys",
  "tracing",
@@ -396,14 +393,13 @@ dependencies = [
 name = "concision-neural"
 version = "0.2.8"
 dependencies = [
- "anyhow",
  "approx",
  "concision-core",
  "concision-data",
  "either",
  "getrandom",
  "lazy_static",
- "ndarray 0.17.1",
+ "ndarray",
  "num",
  "num-complex",
  "num-traits",
@@ -421,6 +417,7 @@ dependencies = [
  "strum",
  "thiserror",
  "tracing",
+ "variants",
 ]
 
 [[package]]
@@ -430,7 +427,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
- "ndarray 0.17.1",
+ "ndarray",
  "num-traits",
  "tracing",
 ]
@@ -442,7 +439,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
- "ndarray 0.17.1",
+ "ndarray",
  "num-traits",
  "tracing",
 ]
@@ -454,7 +451,7 @@ dependencies = [
  "anyhow",
  "approx",
  "concision",
- "ndarray 0.17.1",
+ "ndarray",
  "num-traits",
  "tracing",
 ]
@@ -467,7 +464,7 @@ dependencies = [
  "approx",
  "getrandom",
  "lazy_static",
- "ndarray 0.17.1",
+ "ndarray",
  "num",
  "num-complex",
  "num-traits",
@@ -1134,26 +1131,6 @@ dependencies = [
 
 [[package]]
 name = "ndarray"
-version = "0.16.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "882ed72dce9365842bf196bdeedf5055305f11fc8c03dee7bb0194a6cad34841"
-dependencies = [
- "approx",
- "cblas-sys",
- "libc",
- "matrixmultiply",
- "num-complex",
- "num-integer",
- "num-traits",
- "portable-atomic",
- "portable-atomic-util",
- "rawpointer",
- "rayon",
- "serde",
-]
-
-[[package]]
-name = "ndarray"
 version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c7c9125e8f6f10c9da3aad044cc918cf8784fa34de857b1aa68038eb05a50a9"
@@ -1170,34 +1147,6 @@ dependencies = [
  "rawpointer",
  "rayon",
  "serde",
-]
-
-[[package]]
-name = "ndtensor"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea8ab4dd20883ddf58cdbade1810f8840d0d420f33e5143b407ec7c3102ae2ec"
-dependencies = [
- "anyhow",
- "approx",
- "getrandom",
- "ndarray 0.16.1",
- "num",
- "num-complex",
- "num-traits",
- "paste",
- "rand 0.9.2",
- "rand_distr",
- "rayon",
- "scsys",
- "scsys-derive",
- "serde",
- "serde_derive",
- "serde_json",
- "smart-default",
- "strum",
- "thiserror",
- "tracing",
 ]
 
 [[package]]
@@ -1305,12 +1254,6 @@ name = "oorandom"
 version = "11.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6790f58c7ff633d8771f42965289203411a5e5c68388703c06e14f24770b41e"
-
-[[package]]
-name = "opper"
-version = "0.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7dd382d937a18a07527643610149273aed2ce7ca74059a0edfd3e2ecc280146e"
 
 [[package]]
 name = "paste"
@@ -1634,6 +1577,7 @@ dependencies = [
  "scsys-core",
  "scsys-crypto",
  "scsys-derive",
+ "scsys-macros",
  "scsys-traits",
  "scsys-util",
 ]
@@ -1644,7 +1588,6 @@ version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "76a2cac05dfdbdefee1b2c9da644ec51c862fa37bef6a6611f2c89fb2f15973e"
 dependencies = [
- "anyhow",
  "config",
  "scsys-core",
  "serde",
@@ -1717,6 +1660,17 @@ name = "scsys-derive"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8be75a73a319d84e3dec10933b2d2b7b4a6526609aac79e6b4e65e56444dea6"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "scsys-macros"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31af0fc37fb5556f43ca2f9e9ebb80ea392807336621f849d1342a7221249543"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2194,6 +2148,40 @@ dependencies = [
  "js-sys",
  "serde",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "variants"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3d2f539cc5b8d5442f7558e2981adabd7462d6f318df8a5a12860a7242587e3"
+dependencies = [
+ "anyhow",
+ "thiserror",
+ "variants-derive",
+ "variants-macros",
+]
+
+[[package]]
+name = "variants-derive"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "def932f16e8fac8b72d08953f57f081006c7006fac129d2aff1e4bebbbcfe9ab"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "variants-macros"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2bd5a945ea1267baa1c77d70e626e8c0268818d0edc1f1671f11def7e6708b4"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

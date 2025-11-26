@@ -40,7 +40,6 @@ concision-core = { workspace = true }
 # custom
 scsys = { workspace = true }
 # error handling
-anyhow = { optional = true, workspace = true }
 thiserror = { workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
@@ -65,7 +64,6 @@ default = [
 
 full = [
     "default",
-    "anyhow",
     "approx",
     "complex",
     "json",
@@ -112,11 +110,6 @@ alloc = [
     "concision-core/alloc",
     "num/alloc",
     "serde?/alloc"
-]
-
-anyhow = [
-    "dep:anyhow", 
-    "concision-core/anyhow",
 ]
 
 approx = [

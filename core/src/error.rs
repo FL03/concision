@@ -28,13 +28,8 @@ pub enum Error {
     #[cfg(feature = "cnc_init")]
     InitError(#[from] concision_init::error::InitError),
     #[error(transparent)]
-    TensorError(#[from] ndtensor::error::TensorError),
-    #[error(transparent)]
     #[cfg(feature = "cnc_utils")]
     UtilityError(#[from] concision_utils::error::UtilityError),
-    #[cfg(feature = "anyhow")]
-    #[error(transparent)]
-    AnyError(#[from] anyhow::Error),
     #[cfg(feature = "alloc")]
     #[error(transparent)]
     BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),

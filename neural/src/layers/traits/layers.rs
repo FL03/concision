@@ -5,7 +5,6 @@
 use super::{Activator, ActivatorGradient};
 
 use cnc::params::ParamsBase;
-use cnc::tensor::NdTensor;
 use cnc::{Backward, Forward};
 use ndarray::{Data, Dimension, RawData};
 
@@ -55,7 +54,6 @@ where
     /// complete a forward pass through the layer
     fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
-        Y: NdTensor<S::Elem, D, Repr = S>,
         ParamsBase<S, D>: Forward<X, Output = Y>,
         Self: Activator<Y, Output = Y>,
     {

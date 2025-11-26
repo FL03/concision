@@ -75,7 +75,6 @@ default = [
 ]
 
 full = [
-    "anyhow",
     "approx",
     "complex",
     "default",
@@ -96,7 +95,6 @@ signal =[
 # ************* [FF:Dependencies] *************
 std = [
     "alloc",
-    "anyhow?/std",
     "ndarray/std",
     "num/std",
     "num-complex?/std",
@@ -124,10 +122,6 @@ alloc = [
     "serde?/alloc",
     "serde_json?/alloc",
     "scsys/alloc",
-]
-
-anyhow = [
-    "dep:anyhow",    
 ]
 
 approx = [

@@ -38,14 +38,11 @@ test = true
 # local
 concision = { features = ["neural"], workspace = true }
 # custom
-opper = { workspace = true }
 scsys = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # data-structures
 ndarray = { workspace = true }
-# error handling
-anyhow = { optional = true, workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
 num = { workspace = true }
@@ -72,7 +69,6 @@ default = [
 
 full = [
     "default",
-    "anyhow",
     "complex",
     "rand",
     "json",
@@ -105,7 +101,6 @@ init = [
 # ************* [FF:Environments] *************
 std = [
     "alloc",
-    "anyhow?/std",
     "approx?/std",
     "concision/std",
     "ndarray/std",
@@ -135,11 +130,6 @@ alloc = [
     "scsys/alloc",
     "serde?/alloc",
     "serde_json?/alloc",
-]
-
-anyhow = [
-    "dep:anyhow",
-    "concision/anyhow",
 ]
 
 approx = [

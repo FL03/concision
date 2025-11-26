@@ -38,7 +38,7 @@ test = true
 # sdk
 concision = { features = ["neural"], workspace = true }
 # error
-anyhow = { optional = true, workspace = true }
+anyhow = { workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
@@ -75,10 +75,6 @@ wasm = [
 ]
 
 # ************* [FF:Dependencies] *************
-anyhow = [
-    "dep:anyhow",
-    "concision/anyhow",
-]
 approx = [
     "dep:approx",
     "concision/approx",

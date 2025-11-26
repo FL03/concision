@@ -63,10 +63,10 @@ pub use concision_init as init;
 #[doc(inline)]
 #[cfg(feature = "cnc_utils")]
 pub use concision_utils as utils;
-/// An n-dimensional tensor
-pub use ndtensor as tensor;
+// /// An n-dimensional tensor
+// pub use ndtensor as tensor;
 
-pub use ndtensor::prelude::*;
+// pub use ndtensor::prelude::*;
 
 #[cfg(feature = "cnc_init")]
 pub use self::init::prelude::*;
@@ -167,7 +167,6 @@ pub mod prelude {
     pub use concision_init::prelude::*;
     #[cfg(feature = "cnc_utils")]
     pub use concision_utils::prelude::*;
-    pub use ndtensor::prelude::*;
 
     #[doc(no_inline)]
     pub use crate::activate::prelude::*;

@@ -44,8 +44,6 @@ concision = { features = ["neural"], workspace = true }
 concision-ext = { workspace = true }
 # custom
 scsys = { workspace = true }
-# error handling
-anyhow = { optional = true, workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
@@ -65,7 +63,6 @@ default = [
 ]
 
 full = [
-    "anyhow",
     "default",
     "models",
     "rand",
@@ -101,15 +98,6 @@ std = [
 ]
 
 # ************* [FF:Dependencies] *************
-anyhow = [
-    "dep:anyhow",
-    "concision/anyhow",
-    "concision-ext/anyhow",
-    "concision-kan?/anyhow",
-    "concision-s4?/anyhow",
-    "concision-transformer?/anyhow",
-]
-
 approx = [
     "dep:approx",
     "concision/approx",

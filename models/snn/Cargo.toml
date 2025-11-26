@@ -34,16 +34,16 @@ doctest = true
 test = true
 
 [dependencies]
-# sdk
 concision = { features = ["neural"], workspace = true }
-# error
-anyhow = { optional = true, workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
 num-traits = { workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
+
+[dev-dependencies]
+anyhow = { features = ["std"], workspace = true }
 
 [features]
 default = [
@@ -74,10 +74,6 @@ wasm = [
 ]
 
 # ************* [FF:Dependencies] *************
-anyhow = [
-    "dep:anyhow",
-    "concision/anyhow",
-]
 approx = [
     "dep:approx",
     "concision/approx",

@@ -21,7 +21,7 @@ pub type ModelResult<T> = core::result::Result<T, ModelError>;
 /// intended to provide a clear and consistent way to handle errors across the neural network
 /// components, making it easier to debug and resolve issues that may occur during the development
 /// and execution of neural network models.
-#[derive(Debug, scsys::VariantConstructors, thiserror::Error)]
+#[derive(Debug, variants::VariantConstructors, thiserror::Error)]
 #[non_exhaustive]
 pub enum ModelError {
     /// The model is not initialized

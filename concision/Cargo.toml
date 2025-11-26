@@ -63,7 +63,6 @@ default = [
 
 full = [
     "default",
-    "anyhow",
     "approx",
     "data",
     "derive",
@@ -122,12 +121,6 @@ alloc = [
     "concision-core/alloc",
     "concision-data?/alloc",
     "concision-neural?/alloc",
-]
-
-anyhow = [
-    "concision-core/anyhow",
-    "concision-data?/anyhow",
-    "concision-neural?/anyhow",
 ]
 
 approx = [
