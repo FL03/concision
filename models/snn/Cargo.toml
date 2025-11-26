@@ -51,7 +51,7 @@ full = [
   "rand", 
   "serde", 
   "tracing"
-  ]
+]
 
 json = ["alloc", "serde", "serde_json"]
 

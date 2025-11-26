@@ -60,7 +60,6 @@ pub use concision_traits as traits;
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]
-#[cfg(feature = "concision_init")]
 pub use concision_init as init;
 /// The [`params`] module works to provide a generic structure for handling weights and biases
 #[doc(inline)]
@@ -70,14 +69,17 @@ pub use concision_params as params;
 #[cfg(feature = "concision_utils")]
 pub use concision_utils as utils;
 
-#[cfg(feature = "concision_init")]
-pub use self::init::prelude::*;
 #[cfg(feature = "concision_utils")]
 pub use self::utils::prelude::*;
 
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, error::*, loss::prelude::*, ops::prelude::*, params::prelude::*,
+    activate::prelude::*,
+    error::*,
+    init::{Init, InitInplace, Initialize},
+    loss::prelude::*,
+    ops::prelude::*,
+    params::prelude::*,
     traits::prelude::*,
 };
 
@@ -112,7 +114,6 @@ pub mod ops {
 
 #[doc(hidden)]
 pub mod prelude {
-    #[cfg(feature = "concision_init")]
     pub use concision_init::prelude::*;
     pub use concision_params::prelude::*;
     pub use concision_traits::prelude::*;

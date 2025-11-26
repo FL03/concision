@@ -6,7 +6,7 @@
 use concision_snn::SpikingNeuron;
 
 #[test]
-fn test_resting_no_input() {
+fn test_snn_neuron_resting_no_input() {
     let mut n = SpikingNeuron::new_default();
     let dt = 1.0;
     // simulate 100 ms with no input -> should not spike and v near v_rest

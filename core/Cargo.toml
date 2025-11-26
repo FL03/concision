@@ -33,7 +33,7 @@ test = true
 
 [dependencies]
 #  local
-concision-init = { optional = true, workspace = true }
+concision-init = { workspace = true }
 concision-params = { workspace = true }
 concision-traits = { workspace = true }
 concision-utils = {  optional = true, workspace = true }
@@ -84,7 +84,7 @@ full = [
 ]
 
 nightly = [
-  "concision-init?/nightly",
+  "concision-init/nightly",
   "concision-params/nightly",
   "concision-traits/nightly",
   "concision-utils?/nightly",
@@ -92,7 +92,6 @@ nightly = [
 
 # ************* [FF:Features] *************
 init = [
-  "concision_init",
   "rand",
 ]
 
@@ -106,14 +105,12 @@ signal =[
 
 utils = ["concision_utils"]
 
-concision_init = ["dep:concision-init"]
-
 concision_utils = ["dep:concision-utils"]
 
 # ************* [FF:Dependencies] *************
 std = [
   "alloc",
-  "concision-init?/std",
+  "concision-init/std",
   "concision-params/std",
   "concision-traits/std",
   "concision-utils?/std",
@@ -131,7 +128,7 @@ std = [
 ]
 
 wasi = [
-  "concision-init?/wasi",
+  "concision-init/wasi",
   "concision-params/wasi",
   "concision-traits/wasi",
   "concision-utils?/wasi",
@@ -139,14 +136,14 @@ wasi = [
 
 wasm = [
   "getrandom?/wasm_js",
-  "concision-init?/wasm",
+  "concision-init/wasm",
   "concision-params/wasm",
   "concision-traits/wasm",
   "concision-utils?/wasm",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-  "concision-init?/alloc",
+  "concision-init/alloc",
   "concision-params/alloc",
   "concision-traits/alloc",
   "concision-utils?/alloc",
@@ -158,14 +155,14 @@ alloc = [
 
 approx = [
   "dep:approx",
-  "concision-init?/approx",
+  "concision-init/approx",
   "concision-params/approx",
   "concision-utils?/approx",
   "ndarray/approx",
 ]
 
 blas = [
-  "concision-init?/blas",
+  "concision-init/blas",
   "concision-params/blas",
   "concision-utils?/blas",
   "ndarray/blas",
@@ -173,7 +170,7 @@ blas = [
 
 complex = [
   "dep:num-complex",
-  "concision-init?/complex",
+  "concision-init/complex",
   "concision-params/complex",
   "concision-utils?/complex",
 ]
@@ -181,7 +178,7 @@ complex = [
 rand = [
   "dep:rand",
   "dep:rand_distr",
-  "concision-init?/rand",
+  "concision-init/rand",
   "concision-params/rand",
   "concision-traits/rand",
   "concision-utils?/rand",
@@ -199,7 +196,7 @@ rayon = [
 
 rng = [
   "dep:getrandom",
-  "concision-init?/rng",
+  "concision-init/rng",
   "concision-params/rng",
   "concision-traits/rng",
   "concision-utils?/rng",
@@ -212,7 +209,7 @@ rustfft = ["dep:rustfft"]
 serde = [
   "dep:serde",
   "dep:serde_derive",
-  "concision-init?/serde",
+  "concision-init/serde",
   "concision-params/serde",
   "concision-utils?/serde",
   "ndarray/serde",
@@ -225,7 +222,7 @@ serde = [
 serde_json = ["dep:serde_json"]
 
 tracing = [
-  "concision-init?/tracing",
+  "concision-init/tracing",
   "concision-utils?/tracing",
   "dep:tracing",
 ]
