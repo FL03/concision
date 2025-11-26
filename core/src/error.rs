@@ -21,7 +21,7 @@ pub enum Error {
     #[error("Invalid Shape")]
     InvalidShape,
     #[error(transparent)]
-    PadError(#[from] crate::ops::pad::error::PadError),
+    PadError(#[from] crate::utils::pad::PadError),
     #[error(transparent)]
     TraitError(#[from] concision_traits::Error),
     #[error(transparent)]

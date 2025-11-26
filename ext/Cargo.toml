@@ -41,7 +41,7 @@ required-features = ["approx", "attention", "rand", "std"]
 
 [[test]]
 name = "snn"
-required-features = ["std", "snn"]
+required-features = ["approx", "std", "snn"]
 
 [dependencies]
 concision = { features = ["neural"], workspace = true }

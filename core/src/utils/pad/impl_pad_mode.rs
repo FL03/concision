@@ -1,80 +1,10 @@
 /*
-    Appellation: mode <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    Appellation: impl_pad_mode <module>
+    Created At: 2025.11.26:16:11:34
+    Contrib: @FL03
 */
+use super::{PadAction, PadMode};
 use num_traits::Zero;
-
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    variants::VariantConstructors,
-    strum::AsRefStr,
-    strum::Display,
-    strum::EnumCount,
-    strum::EnumIs,
-    strum::EnumIter,
-    strum::EnumString,
-    strum::VariantArray,
-    strum::VariantNames,
-)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "snake_case", untagged)
-)]
-#[strum(serialize_all = "snake_case")]
-pub enum PadAction {
-    Clipping,
-    Lane,
-    Reflecting,
-    #[default]
-    StopAfterCopy,
-    Wrapping,
-}
-
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    strum::AsRefStr,
-    strum::Display,
-    strum::EnumCount,
-    strum::EnumIs,
-    strum::VariantNames,
-)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "snake_case")
-)]
-#[strum(serialize_all = "snake_case")]
-#[repr(C)]
-#[derive(Default)]
-pub enum PadMode<T = f64> {
-    Constant(T),
-    Edge,
-    Maximum,
-    Mean,
-    Median,
-    Minimum,
-    Mode,
-    Reflect,
-    Symmetric,
-    #[default]
-    Wrap,
-}
 
 impl<T> From<T> for PadMode<T> {
     fn from(value: T) -> Self {

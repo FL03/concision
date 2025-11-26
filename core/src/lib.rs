@@ -65,7 +65,6 @@ pub use self::{
     activate::prelude::*,
     error::*,
     init::{Init, InitInplace, InitRand},
-    ops::prelude::*,
     params::prelude::*,
     traits::prelude::*,
     utils::*,
@@ -83,7 +82,6 @@ pub mod error;
 #[cfg(feature = "signal")]
 pub mod signal;
 
-pub mod ops;
 pub mod utils;
 
 #[doc(hidden)]
@@ -96,6 +94,5 @@ pub mod prelude {
     pub use crate::signal::prelude::*;
 
     pub use crate::activate::prelude::*;
-    pub use crate::ops::prelude::*;
     pub use crate::utils::*;
 }

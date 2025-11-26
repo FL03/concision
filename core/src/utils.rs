@@ -7,21 +7,20 @@
 #[doc(inline)]
 pub use self::prelude::*;
 
-mod arith;
-mod gradient;
-mod norm;
-mod patterns;
-mod tensor;
+pub(crate) mod arith;
+pub(crate) mod gradient;
+pub(crate) mod mask;
+pub(crate) mod norm;
+pub(crate) mod patterns;
+pub(crate) mod pad;
+pub(crate) mod tensor;
 
-mod prelude {
-    #[doc(inline)]
+pub(crate) mod prelude {
     pub use super::arith::*;
-    #[doc(inline)]
     pub use super::gradient::*;
-    #[doc(inline)]
+    pub use super::mask::*;
     pub use super::norm::*;
-    #[doc(inline)]
+    pub use super::pad::*;
     pub use super::patterns::*;
-    #[doc(inline)]
     pub use super::tensor::*;
 }
