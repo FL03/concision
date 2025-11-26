@@ -3,7 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use concision_traits::*;
-use ndarray::{Array2, Ix2, array};
+use ndarray::{Array2, array};
 
 #[test]
 fn test_affine() {

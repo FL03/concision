@@ -24,20 +24,12 @@ test = true
 # ************* [Examples] *************
 [[example]]
 name = "simple"
-required-features = [
-  "approx",
-  "rand",
-  "tracing",
-]
+required-features = ["approx", "rand", "tracing"]
 
 # ************* [Unit Tests] *************
 [[test]]
 name = "simple"
-required-features = [
-  "anyhow",
-  "approx",
-  "rand",
-]
+required-features = ["approx", "rand"]
 
 [dependencies]
 concision-kan = { optional = true, workspace = true }
