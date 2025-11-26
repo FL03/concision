@@ -23,12 +23,14 @@ pub enum Error {
     #[error(transparent)]
     PadError(#[from] crate::ops::pad::error::PadError),
     #[error(transparent)]
-    ParamError(#[from] crate::params::error::ParamsError),
+    TraitError(#[from] concision_traits::Error),
     #[error(transparent)]
-    #[cfg(feature = "cnc_init")]
+    ParamError(#[from] concision_params::ParamsError),
+    #[error(transparent)]
+    #[cfg(feature = "concision_init")]
     InitError(#[from] concision_init::error::InitError),
     #[error(transparent)]
-    #[cfg(feature = "cnc_utils")]
+    #[cfg(feature = "concision_utils")]
     UtilityError(#[from] concision_utils::error::UtilityError),
     #[cfg(feature = "alloc")]
     #[error(transparent)]
@@ -71,6 +73,7 @@ impl Error {
         Self::Unknown(error.to_string())
     }
 }
+
 #[cfg(feature = "alloc")]
 impl From<String> for Error {
     fn from(value: String) -> Self {

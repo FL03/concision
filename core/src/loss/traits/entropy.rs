@@ -17,7 +17,7 @@ pub trait CrossEntropy {
 use ndarray::{ArrayBase, Data, Dimension, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 
-impl<A, S, D> CrossEntropy for ArrayBase<S, D>
+impl<A, S, D> CrossEntropy for ArrayBase<S, D, A>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: Dimension,

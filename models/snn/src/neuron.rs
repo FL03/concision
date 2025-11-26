@@ -196,7 +196,7 @@ impl SpikingNeuron {
 
 impl Default for SpikingNeuron {
     fn default() -> Self {
-                let tau_m = 20.0; // ms
+        let tau_m = 20.0; // ms
         let resistance = 1.0; // arbitrary
         let v_rest = -65.0; // mV
         let v_thresh = -50.0; // mV

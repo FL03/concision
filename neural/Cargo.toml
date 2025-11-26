@@ -23,6 +23,7 @@ test = true
 
 [dependencies]
 concision-core = { workspace = true }
+concision-params = { workspace = true }
 concision-data = { workspace = true }
 # custom
 variants = { workspace = true }
@@ -75,6 +76,7 @@ full = [
 nightly = [
   "concision-core/nightly",
   "concision-data/nightly",
+  "concision-params/nightly",
   "variants/nightly",
 ]
 
@@ -85,12 +87,14 @@ json = [
   "alloc",
   "concision-core/json", 
   "concision-data/json",
+  "concision-params/json",
   "serde_json",
 ]
 # ************* [FF:Environments] *************
 std = [
   "concision-core/std",
   "concision-data/std",
+  "concision-params/std",
   "ndarray/std",
   "num/std",
   "num-traits/std",
@@ -108,11 +112,13 @@ std = [
 wasi = [
   "concision-core/wasi",
   "concision-data/wasi",
+  "concision-params/wasi",
 ]
 
 wasm = [
   "concision-core/wasm",
   "concision-data/wasm",
+  "concision-params/wasm",
   "getrandom?/wasm_js",
   "rayon?/web_spin_lock",
 ]

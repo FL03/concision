@@ -39,7 +39,7 @@ where
 {
     type Output = <U as cnc::DropOut>::Output;
 
-    fn forward(&self, input: &U) -> cnc::Result<Self::Output> {
+    fn forward(&self, input: &U) -> cnc::traits::Result<Self::Output> {
         Ok(input.dropout(self.p))
     }
 }

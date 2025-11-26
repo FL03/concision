@@ -12,9 +12,9 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::module_inception)]
 
-extern crate concision as cnc;
 #[cfg(feature = "alloc")]
 extern crate alloc;
+extern crate concision as cnc;
 
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {

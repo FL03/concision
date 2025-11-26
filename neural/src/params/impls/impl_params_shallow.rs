@@ -6,13 +6,14 @@ use crate::params::{ModelParamsBase, ShallowParamsBase};
 
 use crate::ModelFeatures;
 use crate::traits::ShallowModelRepr;
-use cnc::{ParamsBase, ReLU, Sigmoid};
+use cnc::{ReLU, Sigmoid};
+use concision_params::ParamsBase;
 use ndarray::{
     Array1, ArrayBase, Data, DataOwned, Dimension, Ix2, RawData, RemoveAxis, ScalarOperand,
 };
 use num_traits::Float;
 
-impl<S, D, H, A> ModelParamsBase<S, D, H>
+impl<S, D, H, A> ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -28,7 +29,7 @@ where
     }
 }
 
-impl<S, D, A> ShallowParamsBase<S, D>
+impl<S, D, A> ShallowParamsBase<S, D, A>
 where
     S: RawData<Elem = A>,
     D: Dimension,
@@ -56,16 +57,16 @@ where
         size + self.output().count_weight()
     }
     /// returns an immutable reference to the hidden weights
-    pub const fn hidden_weights(&self) -> &ArrayBase<S, D> {
+    pub const fn hidden_weights(&self) -> &ArrayBase<S, D, A> {
         self.hidden().weights()
     }
     /// returns an mutable reference to the hidden weights
-    pub const fn hidden_weights_mut(&mut self) -> &mut ArrayBase<S, D> {
+    pub const fn hidden_weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         self.hidden_mut().weights_mut()
     }
 }
 
-impl<S, A> ShallowParamsBase<S, Ix2>
+impl<S, A> ShallowParamsBase<S, Ix2, A>
 where
     S: RawData<Elem = A>,
 {
@@ -81,7 +82,7 @@ where
         }
     }
     /// forward input through the controller network
-    pub fn forward(&self, input: &Array1<A>) -> cnc::Result<Array1<A>>
+    pub fn forward(&self, input: &Array1<A>) -> cnc::traits::Result<Array1<A>>
     where
         A: Float + ScalarOperand,
         S: Data,
@@ -97,7 +98,7 @@ where
     }
 }
 
-impl<A, S> Default for ShallowParamsBase<S, Ix2>
+impl<A, S> Default for ShallowParamsBase<S, Ix2, A>
 where
     S: DataOwned<Elem = A>,
     A: Clone + Default,

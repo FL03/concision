@@ -7,10 +7,7 @@ use core::slice;
 use crate::signal::fft::fft_permutation;
 
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde_derive::Deserialize, serde_derive::Serialize)
-)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct FftPlan {
     len: usize,
     plan: Vec<usize>,

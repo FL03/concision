@@ -21,10 +21,10 @@ use crate::{DeepModelRepr, RawHidden};
 ///
 /// This type also enables us to define a set of common initialization routines and introduce
 /// other standards for dealing with parameters in a neural network.
-pub struct ModelParamsBase<S, D, H>
+pub struct ModelParamsBase<S, D, H, A = <S as RawData>::Elem>
 where
     D: Dimension,
-    S: RawData,
+    S: RawData<Elem = A>,
     H: RawHidden<S, D>,
 {
     /// the input layer of the model
@@ -38,7 +38,7 @@ where
 /// storage type `S`, the dimension `D`, and the hidden layer type `H`. This implementation
 /// focuses on providing basic initialization routines and accessors for the various layers
 /// within the model.
-impl<S, D, H, A> ModelParamsBase<S, D, H>
+impl<S, D, H, A> ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -119,35 +119,35 @@ where
         self.hidden().as_slice()
     }
     /// returns an immutable reference to the input bias
-    pub const fn input_bias(&self) -> &ArrayBase<S, D::Smaller> {
+    pub const fn input_bias(&self) -> &ArrayBase<S, D::Smaller, A> {
         self.input().bias()
     }
     /// returns a mutable reference to the input bias
-    pub const fn input_bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller> {
+    pub const fn input_bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller, A> {
         self.input_mut().bias_mut()
     }
     /// returns an immutable reference to the input weights
-    pub const fn input_weights(&self) -> &ArrayBase<S, D> {
+    pub const fn input_weights(&self) -> &ArrayBase<S, D, A> {
         self.input().weights()
     }
     /// returns an mutable reference to the input weights
-    pub const fn input_weights_mut(&mut self) -> &mut ArrayBase<S, D> {
+    pub const fn input_weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         self.input_mut().weights_mut()
     }
     /// returns an immutable reference to the output bias
-    pub const fn output_bias(&self) -> &ArrayBase<S, D::Smaller> {
+    pub const fn output_bias(&self) -> &ArrayBase<S, D::Smaller, A> {
         self.output().bias()
     }
     /// returns a mutable reference to the output bias
-    pub const fn output_bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller> {
+    pub const fn output_bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller, A> {
         self.output_mut().bias_mut()
     }
     /// returns an immutable reference to the output weights
-    pub const fn output_weights(&self) -> &ArrayBase<S, D> {
+    pub const fn output_weights(&self) -> &ArrayBase<S, D, A> {
         self.output().weights()
     }
     /// returns an mutable reference to the output weights
-    pub const fn output_weights_mut(&mut self) -> &mut ArrayBase<S, D> {
+    pub const fn output_weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         self.output_mut().weights_mut()
     }
     /// returns the number of hidden layers in the model

@@ -23,7 +23,7 @@ test = true
 
 [dependencies]
 # custom
-variants = { workspace = true}
+variants = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # data & serialization
@@ -91,6 +91,7 @@ std = [
   "strum/std",
   "thiserror/std",
   "tracing?/std",
+  "variants/std",
 ]
 
 wasi = []
@@ -103,6 +104,7 @@ alloc = [
   "num/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
+  "variants/alloc",
 ]
 
 approx = ["dep:approx", "ndarray/approx"]

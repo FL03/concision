@@ -104,8 +104,9 @@ where
     }
     pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
     where
-        F: Activator<<ParamsBase<S, D> as Forward<X>>::Output, Output = Y>,
-        ParamsBase<S, D>: Forward<X, Output = Y>,
+        ParamsBase<S, D, A>: Forward<X, Output = Y>,
+        F: Activator<<ParamsBase<S, D, A> as Forward<X>>::Output, Output = Y>,
+        A: Clone,
         X: Clone,
         Y: Clone,
     {

@@ -1,40 +1,28 @@
 [workspace]
-default-members = [
-    "concision"
-]
+default-members = ["concision"]
 members = [
-    "concision",
-    "core",
-    "data",
-    "derive",
-    "init",
-    "macros",
-    "neural",
-    "utils",
-    "ext",
-    "models/*",
+  "concision", 
+  "core", 
+  "data", 
+  "derive", 
+  "ext", 
+  "init", 
+  "macros", 
+  "neural", 
+  "params", 
+  "traits",
+  "utils",
+  "models/*", 
 ]
 resolver = "3"
 
 [workspace.package]
-authors = [
-    "FL03 <jo3mccain@icloud.com> (https://github.com/FL03)",
-    "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"
-]
-categories = [
-    "algorithms",
-    "mathematics",
-    "science"
-]
+authors = ["FL03 <jo3mccain@icloud.com> (https://github.com/FL03)", "Scattered-Systems <support@scsys.io> (https://github.com/scattered-systems)"]
+categories = ["algorithms", "mathematics", "science"]
 description = "Concision is a toolkit for designing machine-learning models in Rust."
 edition = "2024"
 homepage = "https://github.com/FL03/concision/wiki"
-keywords = [
-    "data-science",
-    "machine-learning",
-    "scsys",
-    "toolkit"
-]
+keywords = ["data-science", "machine-learning", "scsys", "toolkit"]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/concision.git"
@@ -43,18 +31,21 @@ version = "0.2.8"
 
 [workspace.dependencies]
 concision = { default-features = false, path = "concision", version = "0.2.8" }
+
 concision-core = { default-features = false, path = "core", version = "0.2.8" }
 concision-data = { default-features = false, path = "data", version = "0.2.8" }
 concision-derive = { default-features = false, path = "derive", version = "0.2.8" }
 concision-init = { default-features = false, path = "init", version = "0.2.8" }
 concision-macros = { default-features = false, path = "macros", version = "0.2.8" }
 concision-neural = { default-features = false, path = "neural", version = "0.2.8" }
+concision-params = { default-features = false, path = "params", version = "0.2.8" }
+concision-traits = { default-features = false, path = "traits", version = "0.2.8" }
 concision-utils = { default-features = false, path = "utils", version = "0.2.8" }
 # extras
 concision-ext = { default-features = false, path = "ext", version = "0.2.8" }
 # models
-concision-models = { default-features = false, path = "models/models", version = "0.2.8" }
 concision-kan = { default-features = false, path = "models/kan", version = "0.2.8" }
+concision-models = { default-features = false, path = "models/models", version = "0.2.8" }
 concision-s4 = { default-features = false, path = "models/s4", version = "0.2.8" }
 concision-snn = { default-features = false, path = "models/snn", version = "0.2.8" }
 concision-transformer = { default-features = false, path = "models/transformer", version = "0.2.8" }

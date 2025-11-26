@@ -8,7 +8,7 @@ use crate::{DeepModelRepr, RawHidden};
 use cnc::params::ParamsBase;
 use ndarray::{Data, Dimension, RawDataClone};
 
-impl<A, S, D, H> Clone for ModelParamsBase<S, D, H>
+impl<A, S, D, H> Clone for ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     H: RawHidden<S, D> + Clone,
@@ -24,7 +24,7 @@ where
     }
 }
 
-impl<A, S, D, H> core::fmt::Debug for ModelParamsBase<S, D, H>
+impl<A, S, D, H> core::fmt::Debug for ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     H: RawHidden<S, D> + core::fmt::Debug,
@@ -40,7 +40,7 @@ where
     }
 }
 
-impl<A, S, D, H> core::fmt::Display for ModelParamsBase<S, D, H>
+impl<A, S, D, H> core::fmt::Display for ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     H: RawHidden<S, D> + core::fmt::Debug,
@@ -58,7 +58,7 @@ where
     }
 }
 
-impl<A, S, D, H> core::ops::Index<usize> for ModelParamsBase<S, D, H>
+impl<A, S, D, H> core::ops::Index<usize> for ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     S: Data<Elem = A>,
@@ -78,7 +78,7 @@ where
     }
 }
 
-impl<A, S, D, H> core::ops::IndexMut<usize> for ModelParamsBase<S, D, H>
+impl<A, S, D, H> core::ops::IndexMut<usize> for ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     S: Data<Elem = A>,

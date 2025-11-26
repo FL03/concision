@@ -33,7 +33,7 @@ impl_heavyside!(
     f32, f64, i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize,
 );
 
-impl<A, B, S, D> Heavyside for ArrayBase<S, D>
+impl<A, B, S, D> Heavyside for ArrayBase<S, D, A>
 where
     A: Clone + Heavyside<Output = B>,
     D: Dimension,
@@ -50,7 +50,7 @@ where
     }
 }
 
-impl<A, B, S, D> Heavyside for &ArrayBase<S, D>
+impl<A, B, S, D> Heavyside for &ArrayBase<S, D, A>
 where
     A: Clone + Heavyside<Output = B>,
     D: Dimension,

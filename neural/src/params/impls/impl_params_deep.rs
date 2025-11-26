@@ -6,11 +6,12 @@ use crate::{DeepParamsBase, ModelParamsBase};
 
 use crate::ModelFeatures;
 use crate::traits::DeepModelRepr;
-use cnc::params::ParamsBase;
+use concision_core::Forward;
+use concision_params::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
 use num_traits::{One, Zero};
 
-impl<S, D, H, A> ModelParamsBase<S, D, H>
+impl<S, D, H, A> ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -26,7 +27,7 @@ where
     }
 }
 
-impl<A, S, D> DeepParamsBase<S, D>
+impl<A, S, D> DeepParamsBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -101,7 +102,7 @@ where
     /// sequentially forwards the input through the model without any activations or other
     /// complexities in-between. not overly usefuly, but it is here for completeness
     #[inline]
-    pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> cnc::traits::Result<Y>
     where
         A: Clone,
         S: Data,
@@ -118,7 +119,7 @@ where
     }
 }
 
-impl<A, S> DeepParamsBase<S, Ix2>
+impl<A, S> DeepParamsBase<S, Ix2, A>
 where
     S: RawData<Elem = A>,
 {

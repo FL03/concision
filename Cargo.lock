@@ -202,9 +202,10 @@ dependencies = [
 name = "concision-core"
 version = "0.2.8"
 dependencies = [
- "anyhow",
  "approx",
  "concision-init",
+ "concision-params",
+ "concision-traits",
  "concision-utils",
  "getrandom",
  "lazy_static",
@@ -348,6 +349,7 @@ dependencies = [
  "approx",
  "concision-core",
  "concision-data",
+ "concision-params",
  "either",
  "getrandom",
  "lazy_static",
@@ -367,6 +369,28 @@ dependencies = [
  "strum",
  "thiserror",
  "tracing",
+ "variants",
+]
+
+[[package]]
+name = "concision-params"
+version = "0.2.8"
+dependencies = [
+ "approx",
+ "concision-init",
+ "concision-traits",
+ "getrandom",
+ "lazy_static",
+ "ndarray",
+ "num-complex",
+ "num-traits",
+ "rand 0.9.2",
+ "rand_distr",
+ "rayon",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "thiserror",
  "variants",
 ]
 
@@ -395,6 +419,23 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "tracing",
+]
+
+[[package]]
+name = "concision-traits"
+version = "0.2.8"
+dependencies = [
+ "approx",
+ "getrandom",
+ "lazy_static",
+ "ndarray",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "rand 0.9.2",
+ "rand_distr",
+ "thiserror",
+ "variants",
 ]
 
 [[package]]

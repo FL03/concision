@@ -21,6 +21,11 @@ doc = true
 doctest = true
 test = true
 
+# ********* [Unit Tests] *********
+[[test]]
+name = "neurons"
+required-features = ["default"]
+
 [dependencies]
 concision = { features = ["neural"], workspace = true }
 # mathematics
@@ -56,6 +61,8 @@ std = [
   "concision/std",
   "ndarray/std", 
   "num-traits/std", 
+  "serde?/std",
+  "serde_json?/std",
   "tracing/std"
   ]
 
@@ -66,6 +73,8 @@ wasm = ["concision/wasm"]
 # ************* [FF:Dependencies] *************
 alloc = [
   "concision/alloc", 
+  "serde?/alloc",
+  "serde_json?/alloc",
 ]
 
 approx = [

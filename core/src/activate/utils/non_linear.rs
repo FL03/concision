@@ -51,7 +51,7 @@ where
 /// ```math
 /// f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}
 /// ```
-pub fn softmax<A, S, D>(args: &ArrayBase<S, D>) -> Array<A, D>
+pub fn softmax<A, S, D>(args: &ArrayBase<S, D, A>) -> Array<A, D>
 where
     A: Float + ScalarOperand,
     D: Dimension,
@@ -65,7 +65,7 @@ where
 /// ```math
 /// f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}
 /// ```
-pub fn softmax_axis<A, S, D>(args: &ArrayBase<S, D>, axis: usize) -> Array<A, D>
+pub fn softmax_axis<A, S, D>(args: &ArrayBase<S, D, A>, axis: usize) -> Array<A, D>
 where
     A: Float + ScalarOperand,
     D: RemoveAxis,
