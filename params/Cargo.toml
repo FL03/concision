@@ -14,6 +14,16 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 bench = false
@@ -21,12 +31,8 @@ doc = true
 doctest = true
 test = true
 
-# ************* [Unit Tests] *************
 [[test]]
-name = "default"
-
-[[test]]
-name = "params"
+name = "create"
 required-features = ["std"]
 
 [dependencies]
@@ -157,15 +163,3 @@ serde = [
 ]
 
 serde_json = ["dep:serde_json"]
-
-
-# ********* [Metadata] *********
-[package.metadata.docs.rs]
-all-features = false
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
-
-[package.metadata.release]
-no-dev-version = true
-tag-name = "{{version}}"

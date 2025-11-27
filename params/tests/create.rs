@@ -34,7 +34,7 @@ fn test_params_zeros() {
 
 #[test]
 #[cfg(feature = "rand")]
-fn test_params_init() {
+fn test_params_init_rand() {
     use concision_init::InitRand;
 
     let lecun = Params::<f64>::lecun_normal((3, 4));
