@@ -40,17 +40,10 @@ jobs:
           - concision-params
           - concision-core
           - concision-data
-          - concision-neural
           - concision-derive
           - concision-macros
           - concision
           - concision-ext
-          # non-sdk packages
-          - concision-kan
-          - concision-s4
-          - concision-snn
-          - concision-transformer
-          - concision-models
     steps:
       - name: Checkout
         uses: actions/checkout@v6

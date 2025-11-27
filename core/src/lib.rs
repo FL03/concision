@@ -50,9 +50,6 @@ pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
-#[doc(inline)]
-pub use concision_traits as traits;
-
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]
@@ -61,38 +58,43 @@ pub use concision_init as init;
 pub use concision_params as params;
 
 #[doc(inline)]
-pub use self::{
-    activate::prelude::*,
-    error::*,
-    init::{Init, InitInplace, InitRand},
-    params::prelude::*,
-    traits::prelude::*,
-    utils::*,
-};
+pub use concision_init::prelude::*;
+#[doc(inline)]
+pub use concision_params::prelude::*;
+#[doc(inline)]
+pub use concision_traits::prelude::*;
 
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
 }
-/// this module is dedicated to activation function
-pub mod activate;
-/// this module provides the base [`Error`] type for the library
-pub mod error;
-#[cfg(feature = "signal")]
-pub mod signal;
 
+pub mod activate;
+pub mod config;
+pub mod error;
+pub mod layers;
+pub mod layout;
+pub mod models;
 pub mod utils;
 
+pub mod types {
+    #[doc(inline)]
+    pub use self::key_value::*;
+
+    mod key_value;
+}
+// re-exports
+#[doc(inline)]
+pub use self::{activate::prelude::*, config::prelude::*, error::*, layout::*, models::prelude::*, utils::prelude::*};
+// prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use concision_init::prelude::*;
     pub use concision_params::prelude::*;
     pub use concision_traits::prelude::*;
 
-    #[cfg(feature = "signal")]
-    pub use crate::signal::prelude::*;
-
     pub use crate::activate::prelude::*;
-    pub use crate::utils::*;
+    pub use crate::layers::prelude::*;
+    pub use crate::utils::prelude::*;
 }

@@ -2,7 +2,7 @@
     Appellation: fft <test>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision_core::signal::fft::*;
+use concision_core::utils::fft::*;
 
 use approx::assert_abs_diff_eq;
 use lazy_static::lazy_static;

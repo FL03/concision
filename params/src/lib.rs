@@ -40,11 +40,7 @@ compiler_error! {
  "Either the \"alloc\" or \"std\" feature must be enabled for this crate."
 }
 
-
-
-/// Error handling for parameters
 pub mod error;
-/// The [`iter`] module implements various iterators for parameters
 pub mod iter;
 
 mod params;

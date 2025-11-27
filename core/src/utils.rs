@@ -7,20 +7,29 @@
 #[doc(inline)]
 pub use self::prelude::*;
 
+#[cfg(feature = "signal")]
+pub use self::fft::prelude::*;
+
+#[cfg(feature = "signal")]
+pub mod fft;
+
 pub(crate) mod arith;
+pub(crate) mod dropout;
 pub(crate) mod gradient;
-pub(crate) mod mask;
 pub(crate) mod norm;
-pub(crate) mod patterns;
 pub(crate) mod pad;
+pub(crate) mod patterns;
 pub(crate) mod tensor;
 
 pub(crate) mod prelude {
     pub use super::arith::*;
+    pub use super::dropout::*;
     pub use super::gradient::*;
-    pub use super::mask::*;
     pub use super::norm::*;
     pub use super::pad::*;
     pub use super::patterns::*;
     pub use super::tensor::*;
+
+    #[cfg(feature = "signal")]
+    pub use super::fft::prelude::*;
 }

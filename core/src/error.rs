@@ -50,6 +50,32 @@ pub enum Error {
     #[cfg(feature = "alloc")]
     #[error("Unknown Error: {0}")]
     Unknown(String),
+    /// The model is not initialized
+    #[error("The model is not initialized")]
+    NotInitialized,
+    #[error("The model is not trained")]
+    /// The model is not trained
+    NotTrained,
+    #[error("Invalid model configuration")]
+    /// The model is not valid
+    InvalidModelConfig,
+    #[error("Unsupported model")]
+    /// The model is not supported
+    UnsupportedModel,
+    #[error("The model is not supported for the given input")]
+    /// The model is not compatible with the given input
+    IncompatibleInput,
+    #[error("An unsupported operation was attempted")]
+    UnsupportedOperation,
+    #[error("Invalid Batch Size")]
+    InvalidBatchSize,
+    #[error("Invalid Input Shape")]
+    InvalidInputShape,
+    #[error("Invalid Output Shape")]
+    InvalidOutputShape,
+    #[cfg(feature = "alloc")]
+    #[error("Parameter Error")]
+    ParameterError(String),
 }
 
 #[cfg(feature = "alloc")]

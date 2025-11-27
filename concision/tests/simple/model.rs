@@ -2,7 +2,8 @@
     appellation: model <test>
     authors: @FL03
 */
-use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
+use cnc::{DeepModelParams, Model, ModelFeatures, Error, StandardModelConfig};
+use cnc::data::Train;
 use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
 
 use ndarray::prelude::*;
@@ -89,22 +90,19 @@ where
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
+    type Error = Error;
     type Output = A;
 
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(skip(self, input, target), level = "trace", target = "model",)
-    )]
     fn train(
         &mut self,
         input: &ArrayBase<S, Ix1>,
         target: &ArrayBase<T, Ix1>,
-    ) -> Result<Self::Output, NeuralError> {
+    ) -> Result<Self::Output, Error> {
         if input.len() != self.layout().input() {
-            return Err(NeuralError::InvalidInputShape);
+            return Err(Error::InvalidInputShape);
         }
         if target.len() != self.layout().output() {
-            return Err(NeuralError::InvalidOutputShape);
+            return Err(Error::InvalidOutputShape);
         }
         // get the learning rate from the model's configuration
         let lr = self
@@ -201,31 +199,22 @@ where
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
+    type Error = Error;
     type Output = A;
 
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(
-            skip(self, input, target),
-            level = "trace",
-            name = "train",
-            target = "model",
-            fields(input_shape = ?input.shape(), target_shape = ?target.shape())
-        )
-    )]
     fn train(
         &mut self,
         input: &ArrayBase<S, Ix2>,
         target: &ArrayBase<T, Ix2>,
-    ) -> Result<Self::Output, NeuralError> {
+    ) -> Result<Self::Output, Error> {
         if input.nrows() == 0 || target.nrows() == 0 {
-            return Err(NeuralError::InvalidBatchSize);
+            return Err(Error::InvalidBatchSize);
         }
         if input.ncols() != self.layout().input() {
-            return Err(NeuralError::InvalidInputShape);
+            return Err(Error::InvalidInputShape);
         }
         if target.ncols() != self.layout().output() || target.nrows() != input.nrows() {
-            return Err(NeuralError::InvalidOutputShape);
+            return Err(Error::InvalidOutputShape);
         }
         let batch_size = input.nrows();
         let mut loss = A::zero();

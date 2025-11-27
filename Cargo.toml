@@ -8,7 +8,6 @@ members = [
   "ext", 
   "init", 
   "macros", 
-  "neural", 
   "params", 
   "traits",
 ]

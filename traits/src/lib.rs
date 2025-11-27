@@ -37,6 +37,7 @@ mod convert;
 mod entropy;
 mod loss;
 mod norm;
+mod predict;
 mod propagation;
 mod rounding;
 mod store;
@@ -82,6 +83,7 @@ pub mod prelude {
     pub use crate::entropy::*;
     pub use crate::loss::*;
     pub use crate::norm::*;
+    pub use crate::predict::*;
     pub use crate::propagation::*;
     pub use crate::rounding::*;
     pub use crate::store::*;

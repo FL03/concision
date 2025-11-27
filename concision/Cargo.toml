@@ -44,7 +44,6 @@ harness = false
 name = "params"
 path = "benches/params.rs"
 required-features = [
-  "neural",
   "approx",
   "rand",
   "std",
@@ -68,14 +67,13 @@ name = "default"
 [[test]]
 name = "simple"
 path = "tests/simple/main.rs"
-required-features = ["approx", "default", "neural", "rand"]
+required-features = ["approx", "default", "rand"]
 
 [dependencies]
 concision-core = { workspace = true }
 concision-data = { optional = true, workspace = true }
 concision-derive = { optional = true, workspace = true }
 concision-macros = { optional = true, workspace = true }
-concision-neural = { optional = true, workspace = true }
 
 [dev-dependencies]
 anyhow = { features = ["std"], workspace = true }
@@ -90,8 +88,7 @@ tracing-subscriber = { workspace = true }
 
 [features]
 default = [
-  "data",
-  "neural",
+  "rand",
   "std",
 ]
 
@@ -109,7 +106,6 @@ full = [
 nightly = [
   "concision-core/nightly",
   "concision-data?/nightly",
-  "concision-neural?/nightly",
 ]
 
 # ************* [FF:Features] *************
@@ -119,93 +115,79 @@ macros = ["dep:concision-macros"]
 
 data = ["dep:concision-data"]
 
-neural = ["dep:concision-neural", "alloc"]
+neural = ["alloc"]
 
 # ************* [FF:Environments] *************
 std = [
   "alloc",
   "concision-core/std",
   "concision-data?/std",
-  "concision-neural?/std",
 ]
 
 wasi = [
   "concision-core/wasi",
   "concision-data?/wasi",
-  "concision-neural?/wasi"
 ]
 
 wasm = [
   "concision-core/wasm",
   "concision-data?/wasm",
-  "concision-neural?/wasm"
 ]
 
 # ************* [FF:Dependencies] *************
 alloc = [
   "concision-core/alloc",
   "concision-data?/alloc",
-  "concision-neural?/alloc",
 ]
 
 approx = [
   "concision-core/approx",
   "concision-data?/approx",
-  "concision-neural?/approx"
 ]
 
 complex = [
   "concision-core/complex",
   "concision-data?/complex",
-  "concision-neural?/complex"
 ]
 
 json = [
   "concision-core/json",
   "concision-data?/json",
-  "concision-neural?/json"
 ]
 
 rand = [
   "concision-core/rand",
   "concision-data?/rand",
-  "concision-neural?/rand"
 ]
 
 rng = [
   "concision-core/rng",
   "concision-data?/rng",
-  "concision-neural?/rng"
 ]
 
 rayon = [
   "concision-core/rayon",
   "concision-data?/rayon",
-  "concision-neural?/rayon"
 ]
 
 rustfft = [
   "concision-core/rustfft",
-  "concision-neural?/rustfft"
 ]
 
 serde = [
   "concision-core/serde",
   "concision-data?/serde",
-  "concision-neural?/serde"
 ]
 
 tracing = [
   "concision-core/tracing",
   "concision-data?/tracing",
-  "concision-neural?/tracing"
 ]
 
 # ********* [FF] Blas *********
 blas = [
   "concision-core/blas",
   "concision-data?/blas",
-  "concision-neural?/blas"
 ]
 
 intel-mkl-system = ["blas"]

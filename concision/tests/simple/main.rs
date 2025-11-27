@@ -6,7 +6,7 @@ mod model;
 
 extern crate concision as cnc;
 
-use cnc::nn::{Model, ModelFeatures, StandardModelConfig};
+use cnc::{Model, ModelFeatures, StandardModelConfig};
 use ndarray::prelude::*;
 
 use model::SimpleModel;

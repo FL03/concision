@@ -81,10 +81,6 @@ pub use concision_macros::*;
 #[doc(inline)]
 #[cfg(feature = "data")]
 pub use concision_data as data;
-/// this module defines various neural network abstractions, layers, and training utilities
-#[doc(inline)]
-#[cfg(feature = "neural")]
-pub use concision_neural as nn;
 
 #[doc(hidden)]
 pub mod prelude {
@@ -99,7 +95,4 @@ pub mod prelude {
     #[doc(no_inline)]
     #[cfg(feature = "macros")]
     pub use concision_macros::*;
-    #[doc(no_inline)]
-    #[cfg(feature = "neural")]
-    pub use concision_neural::prelude::*;
 }
