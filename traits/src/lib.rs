@@ -41,6 +41,7 @@ mod predict;
 mod propagation;
 mod rounding;
 mod store;
+mod training; 
 
 pub mod math {
     //! Mathematically oriented operators and functions useful in machine learning contexts.
@@ -87,6 +88,7 @@ pub mod prelude {
     pub use crate::propagation::*;
     pub use crate::rounding::*;
     pub use crate::store::*;
+    pub use crate::training::*;
 
     #[cfg(feature = "complex")]
     pub use crate::complex::*;

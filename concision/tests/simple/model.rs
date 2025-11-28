@@ -3,8 +3,7 @@
     authors: @FL03
 */
 use cnc::{DeepModelParams, Model, ModelFeatures, Error, StandardModelConfig};
-use cnc::data::Train;
-use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
+use cnc::{Forward, Norm, Params, ReLU, Sigmoid, Train};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};

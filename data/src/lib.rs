@@ -35,11 +35,10 @@ pub(crate) mod macros {
 
 pub mod traits {
     #[doc(inline)]
-    pub use self::{convert::*, records::*, train::*, trainers::*};
+    pub use self::{convert::*, records::*, trainers::*};
 
     mod convert;
     mod records;
-    mod train;
     mod trainers;
 }
 // re-exports
