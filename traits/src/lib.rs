@@ -13,7 +13,7 @@
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
 #![crate_type = "lib"]
 
-#[cfg(not(all(feature = "std", feature = "alloc")))]
+#[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
     "At least one of the 'std' or 'alloc' features must be enabled."
 }
@@ -32,17 +32,40 @@ pub mod error;
 mod apply;
 mod clip;
 mod codex;
+mod complex;
+mod container;
 mod convert;
-mod fill;
-mod gradient;
-mod like;
+mod entropy;
+mod loss;
 mod norm;
+mod predict;
 mod propagation;
-mod reshape;
-mod shape;
+mod rounding;
 mod store;
-mod tensor_ops;
-mod wnb;
+mod training;
+
+pub mod math {
+    //! Mathematically oriented operators and functions useful in machine learning contexts.
+    #[doc(inline)]
+    pub use self::{difference::*, gradient::*, roots::*, stats::*, unary::*};
+
+    mod difference;
+    mod gradient;
+    mod roots;
+    mod stats;
+    mod unary;
+}
+
+pub mod tensor {
+    #[doc(inline)]
+    pub use self::{fill::*, like::*, linalg::*, ndtensor::*, shape::*};
+
+    mod fill;
+    mod like;
+    mod linalg;
+    mod ndtensor;
+    mod shape;
+}
 
 // re-exports
 #[doc(inline)]
@@ -52,18 +75,23 @@ pub use self::prelude::*;
 
 #[doc(hidden)]
 pub mod prelude {
+    pub use crate::math::*;
+    pub use crate::tensor::*;
+
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
+    pub use crate::container::*;
     pub use crate::convert::*;
-    pub use crate::fill::*;
-    pub use crate::gradient::*;
-    pub use crate::like::*;
+    pub use crate::entropy::*;
+    pub use crate::loss::*;
     pub use crate::norm::*;
+    pub use crate::predict::*;
     pub use crate::propagation::*;
-    pub use crate::reshape::*;
-    pub use crate::shape::*;
+    pub use crate::rounding::*;
     pub use crate::store::*;
-    pub use crate::tensor_ops::*;
-    pub use crate::wnb::*;
+    pub use crate::training::*;
+
+    #[cfg(feature = "complex")]
+    pub use crate::complex::*;
 }

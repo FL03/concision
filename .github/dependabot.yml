@@ -5,8 +5,16 @@ updates:
     schedule:
       interval: monthly
     directories:
-      - /*
-      - /models/*
+      - .
+      - /concision
+      - /core
+      - /data
+      - /derive
+      - /ext
+      - /init
+      - /macros
+      - /params
+      - /traits
   - package-ecosystem: devcontainers
     directory: /
     schedule:

@@ -3,12 +3,9 @@
     Contrib: @FL03
 */
 use crate::{Params, ParamsBase};
-use concision_traits::{
-    ApplyGradient, ApplyGradientExt, Backward, Biased, Forward, Norm, Weighted,
-};
+use concision_traits::{ApplyGradient, ApplyGradientExt, Backward, Forward, Norm};
 use ndarray::linalg::Dot;
-use ndarray::{ArrayBase, Data, DataMut, Dimension, ScalarOperand};
-use ndarray::{RawData, prelude::*};
+use ndarray::{ArrayBase, Axis, Data, DataMut, Dimension, Ix0, Ix1, Ix2, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 
 impl<A, S, D> ParamsBase<S, D, A>
@@ -101,34 +98,6 @@ where
         <Self as ApplyGradientExt<Grad, A>>::apply_gradient_with_decay_and_momentum(
             self, grad, lr, decay, momentum, velocity,
         )
-    }
-}
-
-impl<A, S, D> Weighted<S, D, A> for ParamsBase<S, D, A>
-where
-    S: RawData<Elem = A>,
-    D: Dimension,
-{
-    fn weights(&self) -> &ArrayBase<S, D, A> {
-        self.weights()
-    }
-
-    fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
-        self.weights_mut()
-    }
-}
-
-impl<A, S, D> Biased<S, D, A> for ParamsBase<S, D, A>
-where
-    S: RawData<Elem = A>,
-    D: Dimension,
-{
-    fn bias(&self) -> &ArrayBase<S, D::Smaller, A> {
-        self.bias()
-    }
-
-    fn bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller, A> {
-        self.bias_mut()
     }
 }
 

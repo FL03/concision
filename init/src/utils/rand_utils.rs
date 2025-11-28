@@ -2,7 +2,7 @@
    Appellation: utils <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::Initialize;
+use crate::InitRand;
 use ndarray::{Array, ArrayBase, DataOwned, Dimension, IntoDimension, RawData, ShapeBuilder};
 use num::Num;
 use num::complex::{Complex, ComplexDistribution};
@@ -54,7 +54,7 @@ pub fn uniform_from_seed<T, D>(
     start: T,
     stop: T,
     shape: impl IntoDimension<Dim = D>,
-) -> crate::Result<Array<T, D>>
+) -> crate::InitResult<Array<T, D>>
 where
     D: Dimension,
     T: SampleUniform,

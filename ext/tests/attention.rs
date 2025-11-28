@@ -4,8 +4,6 @@
 */
 use concision_ext::attention::{Qkv, ScaledDotProductAttention};
 
-use ndarray::prelude::*;
-
 #[test]
 fn test_scaled_dot_product_attention() {
     let (m, n) = (7, 10);

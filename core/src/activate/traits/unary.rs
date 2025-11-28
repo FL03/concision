@@ -48,14 +48,14 @@ macro_rules! unary {
 }
 
 unary! {
-    Heavyside::heavyside(self),
+    HeavysideActivation::heavyside(self),
     LinearActivation::linear(self),
-    Sigmoid::sigmoid(self),
-    Softmax::softmax(&self),
-    ReLU::relu(&self),
-    Tanh::tanh(&self),
+    SigmoidActivation::sigmoid(self),
+    SoftmaxActivation::softmax(&self),
+    ReLUActivation::relu(&self),
+    TanhActivation::tanh(&self),
 }
 
-pub trait SoftmaxAxis: Softmax {
+pub trait SoftmaxAxis: SoftmaxActivation {
     fn softmax_axis(self, axis: usize) -> Self::Output;
 }

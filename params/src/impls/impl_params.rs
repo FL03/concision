@@ -3,7 +3,7 @@
     authors: @FL03
 */
 use crate::params::ParamsBase;
-
+use crate::traits::{Biased, Weighted};
 use core::iter::Once;
 use ndarray::{ArrayBase, Data, DataOwned, Dimension, Ix1, Ix2, RawData};
 
@@ -40,6 +40,34 @@ where
     /// returns the number of rows in the weights matrix
     pub fn nrows(&self) -> usize {
         self.weights().nrows()
+    }
+}
+
+impl<A, S, D> Weighted<S, D, A> for ParamsBase<S, D, A>
+where
+    S: RawData<Elem = A>,
+    D: Dimension,
+{
+    fn weights(&self) -> &ArrayBase<S, D, A> {
+        self.weights()
+    }
+
+    fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
+        self.weights_mut()
+    }
+}
+
+impl<A, S, D> Biased<S, D, A> for ParamsBase<S, D, A>
+where
+    S: RawData<Elem = A>,
+    D: Dimension,
+{
+    fn bias(&self) -> &ArrayBase<S, D::Smaller, A> {
+        self.bias()
+    }
+
+    fn bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller, A> {
+        self.bias_mut()
     }
 }
 

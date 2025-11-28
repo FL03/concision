@@ -4,7 +4,7 @@
 */
 use super::unary::*;
 
-use crate::Apply;
+use concision_traits::Apply;
 #[cfg(feature = "complex")]
 use num_complex::ComplexFloat;
 use num_traits::One;
@@ -31,56 +31,56 @@ pub trait Rho<U>: Apply<U> {
 
     fn heavyside(&self) -> Self::Cont<U::Output>
     where
-        U: Heavyside,
+        U: HeavysideActivation,
     {
         self.apply(|x| x.heavyside())
     }
 
     fn heavyside_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: Heavyside,
+        U: HeavysideActivation,
     {
         self.apply(|x| x.heavyside_derivative())
     }
 
     fn relu(&self) -> Self::Cont<U::Output>
     where
-        U: ReLU,
+        U: ReLUActivation,
     {
         self.apply(|x| x.relu())
     }
 
     fn relu_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: ReLU,
+        U: ReLUActivation,
     {
         self.apply(|x| x.relu_derivative())
     }
 
     fn sigmoid(&self) -> Self::Cont<U::Output>
     where
-        U: Sigmoid,
+        U: SigmoidActivation,
     {
         self.apply(|x| x.sigmoid())
     }
 
     fn sigmoid_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: Sigmoid,
+        U: SigmoidActivation,
     {
         self.apply(|x| x.sigmoid_derivative())
     }
 
     fn tanh(&self) -> Self::Cont<U::Output>
     where
-        U: Tanh,
+        U: TanhActivation,
     {
         self.apply(|x| x.tanh())
     }
 
     fn tanh_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: Tanh,
+        U: TanhActivation,
     {
         self.apply(|x| x.tanh_derivative())
     }

@@ -2,12 +2,15 @@
     Appellation: concision-init <library>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! # concision-init
+//! One of the most important aspects of training neural networks and machine learning
+//! lies within the _initialization_ of model parameters. Here, we work to provide additional
+//! tools and utilities to facilitate effective initialization strategies including various
+//! random distributions tailored directly to machine learning workloads such as:
+//! Glorot (Xavier) initialization, LeCun initialization, etc.
 //!
-//! This library provides various random distribution and initialization routines for the
-//! `concision` framework. It includes implementations for different initialization strategies
-//! optimized for neural networks, such as Glorot (Xavier) initialization, LeCun
-//! initialization, etc.
+//! Implementors of the [`Initialize`] trait can leverage the various initialization
+//! distributions provided within this crate to initialize their model parameters in a
+//! manner conducive to effective training and convergence.
 //!
 #![allow(
     clippy::missing_safety_doc,
@@ -91,9 +94,11 @@ pub mod distr {
 
 #[doc(hidden)]
 pub mod prelude {
+    pub use crate::error::InitError;
+    pub use crate::traits::*;
+
     #[cfg(feature = "rand")]
-    pub use super::distr::prelude::*;
-    pub use super::traits::*;
+    pub use crate::distr::prelude::*;
     #[cfg(feature = "rand")]
-    pub use super::utils::*;
+    pub use crate::utils::*;
 }

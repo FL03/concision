@@ -4,24 +4,46 @@
 */
 //! This module implements the core [`Error`] type for the framework and provides a [`Result`]
 //! type alias for convenience.
-#[cfg(feature = "alloc")]
-use alloc::{
-    boxed::Box,
-    string::{String, ToString},
-};
 
-#[allow(dead_code)]
-/// a type alias for a [Result](core::result::Result) configured with an [`Error`] as its error
-/// type.
+/// a type alias for a [`Result`](core::result::Result) defined to use the custom [`Error`] as its error type.
 pub type Result<T> = core::result::Result<T, Error>;
 
 /// The [`Error`] type enumerates various errors that can occur within the framework.
 #[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
 pub enum Error {
-    #[error("Invalid Shape")]
-    InvalidShape,
+    #[cfg(feature = "alloc")]
     #[error(transparent)]
-    PadError(#[from] crate::ops::pad::error::PadError),
+    AllocError(#[from] alloc_err::AllocError),
+    #[error(transparent)]
+    ExtError(#[from] CommonError),
+    #[error("The model is not trained")]
+    NotTrained,
+    #[error("Invalid model configuration")]
+    InvalidModelConfig,
+    #[error("The model is not supported for the given input")]
+    IncompatibleInput,
+    #[error("An unsupported operation was attempted")]
+    UnsupportedOperation,
+    #[error("Invalid Batch Size")]
+    InvalidBatchSize,
+    #[error("Invalid Input Shape")]
+    InvalidInputShape,
+    #[error("Invalid Output Shape")]
+    InvalidOutputShape,
+    #[error("Uninitialized")]
+    Uninitialized,
+    #[error("Unsupported model {0}")]
+    UnsupportedModel(&'static str),
+    #[error("Parameter Error")]
+    ParameterError(&'static str),
+}
+
+/// The [`CommonError`] type enumerates external errors handled by the framework
+#[derive(Debug, thiserror::Error)]
+pub enum CommonError {
+    #[error(transparent)]
+    PadError(#[from] crate::utils::pad::PadError),
     #[error(transparent)]
     TraitError(#[from] concision_traits::Error),
     #[error(transparent)]
@@ -29,11 +51,7 @@ pub enum Error {
     #[error(transparent)]
     InitError(#[from] concision_init::InitError),
     #[error(transparent)]
-    #[cfg(feature = "concision_utils")]
-    UtilityError(#[from] concision_utils::error::UtilityError),
-    #[cfg(feature = "alloc")]
-    #[error(transparent)]
-    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
+    ShapeError(#[from] ndarray::ShapeError),
     #[cfg(feature = "serde")]
     #[error(transparent)]
     DeserializeError(#[from] serde::de::value::Error),
@@ -46,43 +64,31 @@ pub enum Error {
     #[error(transparent)]
     IoError(#[from] std::io::Error),
     #[error(transparent)]
-    ShapeError(#[from] ndarray::ShapeError),
-    #[error(transparent)]
     #[cfg(feature = "rand")]
     UniformError(#[from] rand_distr::uniform::Error),
-    #[cfg(feature = "alloc")]
-    #[error("Unknown Error: {0}")]
-    Unknown(String),
 }
 
 #[cfg(feature = "alloc")]
-impl Error {
-    /// create a new [`BoxError`](Error::BoxError) variant using the given error
-    pub fn box_error<E>(error: E) -> Self
-    where
-        E: 'static + Send + Sync + core::error::Error,
-    {
-        Self::BoxError(Box::new(error))
-    }
-    /// create a new [`Unknown`](Error::Unknown) variant using the given string
-    pub fn unknown<S>(error: S) -> Self
-    where
-        S: ToString,
-    {
-        Self::Unknown(error.to_string())
-    }
-}
+mod alloc_err {
+    use alloc::{boxed::Box, string::String};
 
-#[cfg(feature = "alloc")]
-impl From<String> for Error {
-    fn from(value: String) -> Self {
-        Self::Unknown(value)
+    #[derive(Debug, thiserror::Error)]
+    pub enum AllocError {
+        #[error(transparent)]
+        BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
+        #[error("Unknown Error: {0}")]
+        Unknown(String),
     }
-}
 
-#[cfg(feature = "alloc")]
-impl From<&str> for Error {
-    fn from(value: &str) -> Self {
-        Self::Unknown(String::from(value))
+    impl From<String> for AllocError {
+        fn from(value: String) -> Self {
+            Self::Unknown(value)
+        }
+    }
+
+    impl From<&str> for AllocError {
+        fn from(value: &str) -> Self {
+            Self::Unknown(String::from(value))
+        }
     }
 }

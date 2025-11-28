@@ -38,23 +38,15 @@ jobs:
           - concision-traits
           - concision-init
           - concision-params
-          - concision-utils
           - concision-core
           - concision-data
-          - concision-neural
           - concision-derive
           - concision-macros
           - concision
           - concision-ext
-          # non-sdk packages
-          - concision-kan
-          - concision-s4
-          - concision-snn
-          - concision-transformer
-          - concision-models
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}

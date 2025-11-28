@@ -68,7 +68,7 @@ mod impl_normal {
         }
         /// tries creating a new [`Normal`] distribution with a mean of 0 and the computed
         /// standard deviation ($\sigma$) based on the number of inputs and outputs.
-        pub fn distr(&self) -> crate::Result<Normal<T>> {
+        pub fn distr(&self) -> crate::InitResult<Normal<T>> {
             Normal::new(T::zero(), self.std_dev()).map_err(Into::into)
         }
         /// returns a reference to the standard deviation of the distribution
@@ -111,7 +111,7 @@ mod impl_uniform {
     where
         T: SampleUniform,
     {
-        pub fn new(inputs: usize, outputs: usize) -> crate::Result<Self>
+        pub fn new(inputs: usize, outputs: usize) -> crate::InitResult<Self>
         where
             T: Float + FromPrimitive,
         {

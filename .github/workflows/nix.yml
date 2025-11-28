@@ -7,7 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [edited, opened, ready_for_review, reopened]
+    types: [opened, ready_for_review, reopened]
   push:
     branches: [main, master]
     tags: [v*.*.*, "*-nightly"]
@@ -25,13 +25,13 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: cachix/install-nix-action@v31
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Nix
+        uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
-        id: build
         run: nix build
       - name: Check the flake
-        id: check
         run: nix flake check

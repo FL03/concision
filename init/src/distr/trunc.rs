@@ -29,7 +29,7 @@ where
 {
     /// create a new [`TruncatedNormal`] distribution with the given mean and standard
     /// deviation; both of which are type `T`.
-    pub const fn new(mean: T, std: T) -> crate::Result<Self> {
+    pub const fn new(mean: T, std: T) -> crate::InitResult<Self> {
         Ok(Self { mean, std })
     }
     /// returns a copy of the mean for the distribution

@@ -28,9 +28,6 @@ pub trait Norm {
 /*
  ************* Implementations *************
 */
-use ndarray::{ArrayBase, Data, Dimension, ScalarOperand};
-use num_traits::Float;
-
 impl<U, V> Norm for U
 where
     U: L1Norm<Output = V> + L2Norm<Output = V>,
@@ -48,11 +45,11 @@ where
 
 macro_rules! impl_norm {
     ($trait:ident::$method:ident($($param:ident: $type:ty),*) => $self:ident$(.$call:ident())*) => {
-        impl<A, S, D> $trait for ArrayBase<S, D, A>
+        impl<A, S, D> $trait for ndarray::ArrayBase<S, D, A>
         where
-            A: Float + ScalarOperand,
-            D: Dimension,
-            S: Data<Elem = A>,
+            A: 'static + Clone + num_traits::Float,
+            D: ndarray::Dimension,
+            S: ndarray::Data<Elem = A>,
         {
             type Output = A;
 
@@ -61,11 +58,11 @@ macro_rules! impl_norm {
             }
         }
 
-        impl<'a, A, S, D> $trait for &'a ArrayBase<S, D, A>
+        impl<'a, A, S, D> $trait for &'a ndarray::ArrayBase<S, D, A>
         where
-            A: Float + ScalarOperand,
-            D: Dimension,
-            S: Data<Elem = A>,
+            A: 'static + Clone + num_traits::Float,
+            D: ndarray::Dimension,
+            S: ndarray::Data<Elem = A>,
         {
             type Output = A;
 
@@ -74,11 +71,11 @@ macro_rules! impl_norm {
             }
         }
 
-        impl<'a, A, S, D> $trait for &'a mut ArrayBase<S, D, A>
+        impl<'a, A, S, D> $trait for &'a mut ndarray::ArrayBase<S, D, A>
         where
-            A: Float + ScalarOperand,
-            D: Dimension,
-            S: Data<Elem = A>,
+            A: 'static + Clone + num_traits::Float,
+            D: ndarray::Dimension,
+            S: ndarray::Data<Elem = A>,
         {
             type Output = A;
 

@@ -1,119 +1,143 @@
 [package]
-build = "build.rs"
+build       = "build.rs"
 description = "this crate implements additional models using the concision framework"
-name = "concision-ext"
+name        = "concision-ext"
 
-authors.workspace = true
-categories.workspace = true
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license.workspace = true
-readme.workspace = true
-repository.workspace = true
+authors.workspace   = true
+categories.workspace   = true
+edition.workspace      = true
+homepage.workspace     = true
+keywords.workspace     = true
+license.workspace      = true
+readme.workspace       = true
+repository.workspace   = true
 rust-version.workspace = true
-version.workspace = true
+version.workspace      = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
+features     = ["full"]
+rustc-args   = ["--cfg", "docsrs"]
+version      = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name = "{{version}}"
+tag-name       = "{{version}}"
 
 [lib]
-bench = false
+bench      = false
 crate-type = ["cdylib", "rlib"]
-doc = true
-doctest = true
-test = true
+doc        = true
+doctest    = true
+test       = true
+
+[[example]]
+name = "attention"
+required-features = ["attention", "rand", "std"]
+
+[[test]]
+name = "attention"
+required-features = ["approx", "attention", "rand", "std"]
+
+[[test]]
+name              = "snn"
+required-features = ["approx", "snn", "std"]
 
 [dependencies]
-# local
 concision = { features = ["neural"], workspace = true }
 # custom
 variants = { workspace = true }
+# error handling
+anyhow = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # data-structures
 ndarray = { workspace = true }
 # mathematics
-approx = { optional = true, workspace = true }
-num = { workspace = true }
+approx      = { optional = true, workspace = true }
+num         = { workspace = true }
 num-complex = { optional = true, workspace = true }
-num-traits = { workspace = true }
-rustfft = { optional = true, workspace = true }
+num-traits  = { workspace = true }
+rustfft     = { optional = true, workspace = true }
 # serialization
-serde = { optional = true, workspace = true }
+serde        = { optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
-serde_json = { optional = true, workspace = true }
+serde_json   = { optional = true, workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
-anyhow = { features = ["std"], workspace = true }
-lazy_static = { workspace = true }
+lazy_static        = { workspace = true }
 tracing-subscriber = { features = ["std"], workspace = true }
 
 [features]
 default = ["attention", "std"]
 
 full = [
-  "complex", 
-  "default", 
-  "json", 
-  "rand", 
-  "serde", 
-  "tracing"
+  "complex",
+  "default",
+  "json",
+  "rand",
+  "serde",
+  "tracing",
+  "models",
 ]
 
 nightly = ["concision/nightly"]
 
-# ************* [FF:Features] *************
+# ************* [FF:Toggles] *************
+json = ["alloc", "serde", "serde_json"]
+
+signal = ["complex", "rustfft"]
+
+# ********* [FF:Models] *********
+models = [
+  "transformer",
+]
+
 attention = []
 
-signal = [
-  "complex", "rustfft"
-]
+cnn = []
 
-json = [
-  "alloc", "serde", "serde_json"
-]
+kan = []
 
-init = [
-  "concision/init", "rand"
-]
+rnn = []
+
+s4 = []
+
+snn = []
+
+transformer = ["attention"]
+
 # ************* [FF:Environments] *************
 std = [
-  "alloc", 
-  "approx?/std", 
-  "concision/std", 
-  "ndarray/std", 
-  "num-complex?/std", 
-  "num-traits/std", 
-  "num/std", 
-  "serde?/std", 
-  "serde_json?/std", 
-  "tracing?/std", 
-  "variants/std"
+  "alloc",
+  "anyhow/std",
+  "approx?/std",
+  "concision/std",
+  "ndarray/std",
+  "num-complex?/std",
+  "num-traits/std",
+  "num/std",
+  "serde?/std",
+  "serde_json?/std",
+  "tracing?/std",
+  "variants/std",
 ]
 
 wasi = ["concision/wasi"]
 
 wasm = [
-  "concision/wasm", 
-  "rayon?/web_spin_lock"
+  "concision/wasm",
+  "rayon?/web_spin_lock",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
-  "concision/alloc", 
-  "num/alloc", 
-  "serde?/alloc", 
-  "serde_json?/alloc", 
-  "variants/alloc"
+  "concision/alloc",
+  "num/alloc",
+  "serde?/alloc",
+  "serde_json?/alloc",
+  "variants/alloc",
 ]
 
 approx = ["concision/approx", "dep:approx", "ndarray/approx"]
@@ -131,19 +155,14 @@ rng = ["concision/rng"]
 rustfft = ["dep:rustfft"]
 
 serde = [
-  "concision/serde", 
+  "concision/serde",
   "dep:serde",
-   "dep:serde_derive", 
-   "ndarray/serde", 
-   "num-complex?/serde", 
-   "num/serde"
+  "dep:serde_derive",
+  "ndarray/serde",
+  "num-complex?/serde",
+  "num/serde",
 ]
 
 serde_json = ["dep:serde_json"]
 
 tracing = ["concision/tracing", "dep:tracing"]
-
-# ************* [Unit Tests] *************
-[[test]]
-name = "attention"
-required-features = ["approx", "attention", "default", "rand"]

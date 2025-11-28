@@ -2,19 +2,31 @@
     Appellation: concision-data <library>
     Contrib: @FL03
 */
-//! Datasets and data loaders for the Concision framework.
-#![crate_name = "concision_data"]
+//! This crate works to augment the training process by providing datasets and loaders for
+//! common data formats.
+#![allow(
+    clippy::missing_safety_doc,
+    clippy::module_inception,
+    clippy::needless_doctest_main,
+    clippy::upper_case_acronyms
+)]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(feature = "nightly", feature(allocator_api))]
+#![crate_type = "lib"]
+
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compiler_error! {
+    "Either the \"std\" feature or the \"alloc\" feature must be enabled."
+}
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-#[doc(inline)]
-pub use self::{dataset::DatasetBase, traits::prelude::*};
-
 pub mod dataset;
+pub mod error;
 #[cfg(feature = "loader")]
 pub mod loader;
+pub mod trainer;
 
 #[macro_use]
 pub(crate) mod macros {
@@ -23,20 +35,20 @@ pub(crate) mod macros {
 }
 
 pub mod traits {
+    //! Additional traits and interfaces for working with datasets and data loaders.
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{convert::*, records::*};
 
-    pub mod convert;
-    pub mod records;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::convert::*;
-        #[doc(inline)]
-        pub use super::records::*;
-    }
+    mod convert;
+    mod records;
 }
-
+// re-exports
+#[doc(inline)]
+#[cfg(feature = "loader")]
+pub use self::loader::*;
+#[doc(inline)]
+pub use self::{dataset::DatasetBase, error::*, trainer::*, traits::*};
+// prelude
 pub mod prelude {
     #[doc(no_inline)]
     pub use crate::dataset::*;
@@ -44,5 +56,5 @@ pub mod prelude {
     #[doc(no_inline)]
     pub use crate::loader::prelude::*;
     #[doc(no_inline)]
-    pub use crate::traits::prelude::*;
+    pub use crate::traits::*;
 }

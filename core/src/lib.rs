@@ -1,7 +1,3 @@
-/*
-    Appellation: concision-core <library>
-    Contrib: @FL03
-*/
 //! This crate provides the core implementations for the `cnc` framework, defining various
 //! traits, types, and utilities essential for building neural networks.
 //!
@@ -37,11 +33,10 @@
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
-#![crate_type = "lib"]
 
-#[cfg(not(all(feature = "std", feature = "alloc")))]
+#[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
-    "At least one of the 'std' or 'alloc' features must be enabled."
+    "Either the \"std\" feature or the \"alloc\" feature must be enabled."
 }
 
 #[cfg(feature = "alloc")]
@@ -54,76 +49,57 @@ pub use rand;
 #[doc(no_inline)]
 pub use rand_distr;
 
-#[doc(inline)]
-pub use concision_traits as traits;
-
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]
 pub use concision_init as init;
-/// The [`params`] module works to provide a generic structure for handling weights and biases
 #[doc(inline)]
 pub use concision_params as params;
-/// this module implements various utilities useful for developing machine learning models
-#[doc(inline)]
-#[cfg(feature = "concision_utils")]
-pub use concision_utils as utils;
-
-#[cfg(feature = "concision_utils")]
-pub use self::utils::prelude::*;
 
 #[doc(inline)]
-pub use self::{
-    activate::prelude::*,
-    error::*,
-    init::{Init, InitInplace, Initialize},
-    loss::prelude::*,
-    ops::prelude::*,
-    params::prelude::*,
-    traits::prelude::*,
-};
+pub use concision_init::prelude::*;
+#[doc(inline)]
+pub use concision_params::prelude::*;
+#[doc(inline)]
+pub use concision_traits::prelude::*;
 
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
+    #[macro_use]
+    pub mod config;
 }
-/// this module is dedicated to activation function
+
 pub mod activate;
-/// this module provides the base [`Error`] type for the library
+pub mod config;
 pub mod error;
-/// this module focuses on the loss functions used in training neural networks.
-pub mod loss;
+pub mod layers;
+pub mod layout;
+pub mod models;
+pub mod nn;
+pub mod utils;
 
-pub mod ops {
-    //! This module provides the core operations for tensors, including filling, padding,
-    //! reshaping, and tensor manipulation.
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    pub mod mask;
-    pub mod pad;
-
-    pub(crate) mod prelude {
-        #[doc(inline)]
-        pub use super::mask::*;
-        #[doc(inline)]
-        pub use super::pad::*;
-    }
+pub mod types {
+    //! Core types supporting the `cnc` framework.
 }
-
+// re-exports
+#[doc(inline)]
+pub use self::{
+    activate::prelude::*, config::prelude::*, error::*, layout::*, models::prelude::*,
+    utils::prelude::*,
+};
+// prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use concision_init::prelude::*;
     pub use concision_params::prelude::*;
     pub use concision_traits::prelude::*;
-    #[cfg(feature = "concision_utils")]
-    pub use concision_utils::prelude::*;
 
-    #[doc(no_inline)]
     pub use crate::activate::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::loss::prelude::*;
-    #[doc(no_inline)]
-    pub use crate::ops::prelude::*;
+    pub use crate::layers::prelude::*;
+    pub use crate::layout::*;
+    pub use crate::models::prelude::*;
+    pub use crate::nn::prelude::*;
+    pub use crate::utils::prelude::*;
 }

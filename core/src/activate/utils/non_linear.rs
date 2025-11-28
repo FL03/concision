@@ -82,14 +82,14 @@ where
 /// ```
 pub fn tanh<T>(args: T) -> T
 where
-    T: num::traits::Float,
+    T: Float,
 {
     args.tanh()
 }
 /// the derivative of the tanh function
 pub fn tanh_derivative<T>(args: T) -> T
 where
-    T: num::traits::Float,
+    T: Float,
 {
     let t = tanh(args);
     T::one() - t * t

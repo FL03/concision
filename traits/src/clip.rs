@@ -39,13 +39,13 @@ pub trait ClipMut<T = f32> {
  ************* Implementations *************
 */
 use crate::norm::{L1Norm, L2Norm};
-use ndarray::{ArrayBase, Dimension, ScalarOperand};
+use ndarray::{ArrayBase, Data, DataMut, Dimension};
 use num_traits::Float;
 
 impl<A, S, D> Clip<A> for ArrayBase<S, D, A>
 where
     A: 'static + Clone + PartialOrd,
-    S: ndarray::Data<Elem = A>,
+    S: Data<Elem = A>,
     D: Dimension,
 {
     type Output = ndarray::Array<A, D>;
@@ -57,8 +57,8 @@ where
 
 impl<A, S, D> ClipMut<A> for ArrayBase<S, D, A>
 where
-    A: Float + ScalarOperand,
-    S: ndarray::DataMut<Elem = A>,
+    A: 'static + Clone + Float,
+    S: DataMut<Elem = A>,
     D: Dimension,
 {
     fn clip_between(&mut self, min: A, max: A) {
