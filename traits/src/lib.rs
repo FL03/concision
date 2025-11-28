@@ -13,7 +13,7 @@
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
 #![crate_type = "lib"]
 
-#[cfg(not(all(feature = "std", feature = "alloc")))]
+#[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
     "At least one of the 'std' or 'alloc' features must be enabled."
 }
@@ -41,7 +41,7 @@ mod predict;
 mod propagation;
 mod rounding;
 mod store;
-mod training; 
+mod training;
 
 pub mod math {
     //! Mathematically oriented operators and functions useful in machine learning contexts.

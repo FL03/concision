@@ -33,11 +33,10 @@
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
-#![crate_type = "lib"]
 
-#[cfg(not(all(feature = "std", feature = "alloc")))]
+#[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
-    "At least one of the 'std' or 'alloc' features must be enabled."
+    "Either the \"std\" feature or the \"alloc\" feature must be enabled."
 }
 
 #[cfg(feature = "alloc")]

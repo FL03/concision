@@ -2,7 +2,7 @@
     Appellation: concision-data <library>
     Contrib: @FL03
 */
-//! This crate works to augment the training process by providing datasets and loaders for 
+//! This crate works to augment the training process by providing datasets and loaders for
 //! common data formats.
 #![allow(
     clippy::missing_safety_doc,
@@ -14,7 +14,7 @@
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
 #![crate_type = "lib"]
 
-#[cfg(not(all(feature = "std", feature = "alloc")))]
+#[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
     "Either the \"std\" feature or the \"alloc\" feature must be enabled."
 }
@@ -35,12 +35,12 @@ pub(crate) mod macros {
 }
 
 pub mod traits {
+    //! Additional traits and interfaces for working with datasets and data loaders.
     #[doc(inline)]
-    pub use self::{convert::*, records::*, trainers::*};
+    pub use self::{convert::*, records::*};
 
     mod convert;
     mod records;
-    mod trainers;
 }
 // re-exports
 #[doc(inline)]
