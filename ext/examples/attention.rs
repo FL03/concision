@@ -3,8 +3,6 @@
     Created At: 2025.11.28:13:41:41
     Contrib: @FL03
 */
-extern crate concision as cnc;
-
 use concision_ext::attention::{Qkv, ScaledDotProductAttention};
 
 fn main() -> anyhow::Result<()> {

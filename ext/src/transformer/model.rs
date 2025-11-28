@@ -2,12 +2,14 @@
     Appellation: transformer <module>
     Contrib: @FL03
 */
-
-use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
 #[cfg(feature = "rand")]
 use cnc::rand_distr;
-use cnc::{Forward, Norm, Params, ReLUActivation, SigmoidActivation};
+use cnc::{
+    DeepModelParams, Forward, Model, ModelFeatures, Norm, Params, ReLUActivation,
+    SigmoidActivation, StandardModelConfig, Train,
+};
 
+use anyhow::Context;
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign};
@@ -111,8 +113,8 @@ impl<T> Model<T> for TransformerModel<T> {
         &mut self.config
     }
 
-    fn layout(&self) -> ModelFeatures {
-        self.features
+    fn layout(&self) -> &ModelFeatures {
+        &self.features
     }
 
     fn params(&self) -> &DeepModelParams<T> {
@@ -155,6 +157,7 @@ where
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
+    type Error = anyhow::Error;
     type Output = A;
 
     #[cfg_attr(
@@ -170,12 +173,20 @@ where
         &mut self,
         input: &ArrayBase<S, Ix1>,
         target: &ArrayBase<T, Ix1>,
-    ) -> Result<Self::Output, NeuralError> {
+    ) -> Result<Self::Output, Self::Error> {
         if input.len() != self.features().input() {
-            return Err(NeuralError::InvalidInputShape);
+            anyhow::bail!(
+                "Invalid input shape: expected {}, got {}",
+                self.features().input(),
+                input.len()
+            );
         }
         if target.len() != self.features().output() {
-            return Err(NeuralError::InvalidOutputShape);
+            anyhow::bail!(
+                "Invalid target shape: expected {}, got {}",
+                self.features().output(),
+                target.len()
+            );
         }
         // get the learning rate from the model's configuration
         let lr = self
@@ -196,14 +207,14 @@ where
             .params()
             .input()
             .forward(&input)
-            .expect("Output layer failed to forward propagate during training...")
+            .context("Output layer failed to forward propagate during training...")?
             .relu();
         activations.push(output.to_owned());
         // collect the activations of the hidden
         for layer in self.params().hidden() {
             output = layer
                 .forward(&output)
-                .expect("Hidden layer failed to forward propagate during training...")
+                .context("Hidden layer failed to forward propagate during training...")?
                 .relu();
             activations.push(output.to_owned());
         }
@@ -212,7 +223,7 @@ where
             .params()
             .output()
             .forward(&output)
-            .expect("Input layer failed to forward propagate during training...")
+            .context("Input layer failed to forward propagate during training...")?
             .sigmoid();
         activations.push(output.to_owned());
 
@@ -228,7 +239,7 @@ where
         self.params_mut()
             .output_mut()
             .backward(activations.last().unwrap(), &delta, lr)
-            .expect("Backward propagation failed...");
+            .context("Backward propagation failed...")?;
 
         let num_hidden = self.features().layers();
         // Iterate through hidden layers in reverse order
@@ -246,7 +257,7 @@ where
             delta /= delta.l2_norm();
             self.params_mut().hidden_mut()[i]
                 .backward(&activations[i + 1], &delta, lr)
-                .expect("Backward propagation failed...");
+                .context("Backward propagation failed...")?;
         }
         /*
             Backpropagate to the input layer
@@ -260,7 +271,7 @@ where
         self.params_mut()
             .input_mut()
             .backward(&activations[1], &delta, lr)
-            .expect("Input layer backward pass failed");
+            .context("Input layer backward pass failed")?;
 
         Ok(loss)
     }
@@ -272,6 +283,7 @@ where
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
+    type Error = anyhow::Error;
     type Output = A;
 
     #[cfg_attr(
@@ -288,15 +300,25 @@ where
         &mut self,
         input: &ArrayBase<S, Ix2>,
         target: &ArrayBase<T, Ix2>,
-    ) -> Result<Self::Output, NeuralError> {
+    ) -> Result<Self::Output, Self::Error> {
         if input.nrows() == 0 || target.nrows() == 0 {
-            return Err(NeuralError::InvalidBatchSize);
+            anyhow::bail!("Input and target batches must have at least one sample each");
         }
         if input.ncols() != self.features().input() {
-            return Err(NeuralError::InvalidInputShape);
+            anyhow::bail!(
+                "Invalid input shape: expected {}, got {}",
+                self.features().input(),
+                input.ncols()
+            );
         }
         if target.ncols() != self.features().output() || target.nrows() != input.nrows() {
-            return Err(NeuralError::InvalidOutputShape);
+            anyhow::bail!(
+                "Invalid target shape: expected ({}, {}), got ({}, {})",
+                input.nrows(),
+                self.features().output(),
+                target.nrows(),
+                target.ncols()
+            );
         }
         let mut loss = A::zero();
 

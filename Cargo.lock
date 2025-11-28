@@ -201,6 +201,7 @@ dependencies = [
 name = "concision-core"
 version = "0.2.9"
 dependencies = [
+ "anyhow",
  "approx",
  "concision-init",
  "concision-params",

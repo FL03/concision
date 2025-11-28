@@ -2,9 +2,6 @@
     appellation: simple <test>
     authors: @FL03
 */
-
-extern crate concision as cnc;
-
 use cnc::models::ex::sample::TestModel;
 use cnc::{Model, ModelFeatures, StandardModelConfig};
 use ndarray::prelude::*;

@@ -47,6 +47,8 @@ required-features = ["approx", "snn", "std"]
 concision = { features = ["neural"], workspace = true }
 # custom
 variants = { workspace = true }
+# error handling
+anyhow = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # data-structures
@@ -65,7 +67,6 @@ serde_json   = { optional = true, workspace = true }
 tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
-anyhow             = { features = ["std"], workspace = true }
 lazy_static        = { workspace = true }
 tracing-subscriber = { features = ["std"], workspace = true }
 
@@ -79,6 +80,7 @@ full = [
   "rand",
   "serde",
   "tracing",
+  "models",
 ]
 
 nightly = ["concision/nightly"]
@@ -90,12 +92,6 @@ signal = ["complex", "rustfft"]
 
 # ********* [FF:Models] *********
 models = [
-  "attention",
-  "cnn",
-  "kan",
-  "rnn",
-  "s4",
-  "snn",
   "transformer",
 ]
 
@@ -111,11 +107,12 @@ s4 = []
 
 snn = []
 
-transformer = []
+transformer = ["attention"]
 
 # ************* [FF:Environments] *************
 std = [
   "alloc",
+  "anyhow/std",
   "approx?/std",
   "concision/std",
   "ndarray/std",
@@ -128,9 +125,7 @@ std = [
   "variants/std",
 ]
 
-wasi = [
-  "concision/wasi",
-]
+wasi = ["concision/wasi"]
 
 wasm = [
   "concision/wasm",

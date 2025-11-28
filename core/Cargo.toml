@@ -47,6 +47,7 @@ serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
 # error-handling
+anyhow = { workspace = true }
 thiserror = { workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
@@ -69,7 +70,7 @@ rand_distr = { optional = true, workspace = true }
 lazy_static = { workspace = true }
 
 [features]
-default = ["std"]
+default = ["macros", "std"]
 
 full = [
   "default",
@@ -91,6 +92,8 @@ nightly = [
 # ************* [FF:Features] *************
 init = ["rand"]
 
+macros = []
+
 json = ["alloc", "serde", "serde_json"]
 
 signal = ["complex", "rustfft"]
@@ -98,6 +101,7 @@ signal = ["complex", "rustfft"]
 # ************* [FF:Dependencies] *************
 std = [
   "alloc",
+  "anyhow/std",
   "concision-init/std",
   "concision-params/std",
   "concision-traits/std",

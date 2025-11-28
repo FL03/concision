@@ -67,6 +67,8 @@ pub use concision_traits::prelude::*;
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
+    #[macro_use]
+    pub mod config;
 }
 
 pub mod activate;

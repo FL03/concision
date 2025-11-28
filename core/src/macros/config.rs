@@ -2,6 +2,7 @@
     appellation: config <module>
     authors: @FL03
 */
+#![cfg(feature = "macros")]
 
 #[doc(hidden)]
 #[macro_export]

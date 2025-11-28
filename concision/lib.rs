@@ -51,7 +51,6 @@
 //! - **Visualization**: Utilities for visualizing model architectures and training progress
 //! - **WASM**: Native support for WebAssembly enabling models to be run in web browsers.
 //!
-#![crate_name = "concision"]
 #![crate_type = "lib"]
 #![allow(
     clippy::missing_safety_doc,
@@ -60,13 +59,6 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-
-#[macro_use]
-#[cfg(feature = "macros")]
-pub(crate) mod macros {
-    #[macro_use]
-    pub mod config;
-}
 
 #[doc(inline)]
 pub use concision_core::*;
