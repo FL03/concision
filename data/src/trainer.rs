@@ -2,10 +2,34 @@
     Appellation: trainer <module>
     Contrib: @FL03
 */
+
+mod impl_trainer;
+
 use crate::dataset::DatasetBase;
-use crate::{IntoDataset, Records};
+use crate::Records;
 use concision_core::Model;
 
+pub trait ModelTrainer<T> {
+    type Model: Model<T>;
+    /// returns a model trainer prepared to train the model; this is a convenience method
+    /// that creates a new trainer instance and returns it. Trainers are lazily evaluated
+    /// meaning that the training process won't begin until the user calls the `begin` method.
+    fn trainer<'a, U, V>(
+        &mut self,
+        dataset: DatasetBase<U, V>,
+        model: &'a mut Self::Model,
+    ) -> Trainer<'a, Self::Model, T, DatasetBase<U, V>>
+    where
+        Self: Sized,
+        T: Default,
+        for<'b> &'b mut Self::Model: Model<T>,
+    {
+        Trainer::new(model, dataset)
+    }
+}
+
+/// The [`Trainer`] is a generalized model trainer that works to provide a common interface for
+/// training models over datasets. 
 pub struct Trainer<'a, M, T, R>
 where
     M: Model<T>,
@@ -16,44 +40,6 @@ where
     pub(crate) model: &'a mut M,
     /// the accumulated loss
     pub(crate) loss: T,
-}
-
-impl<'a, M, T, R> Trainer<'a, M, T, R>
-where
-    M: Model<T>,
-    R: Records,
-{
-    pub fn new(model: &'a mut M, dataset: R) -> Self
-    where
-        R: IntoDataset<R::Inputs, R::Targets>,
-        T: Default,
-    {
-        Self {
-            dataset: dataset.into_dataset(),
-            model,
-            loss: T::default(),
-        }
-    }
-    /// returns an immutable reference to the total loss
-    pub const fn loss(&self) -> &T {
-        &self.loss
-    }
-    /// returns a mutable reference to the total loss
-    pub fn loss_mut(&mut self) -> &mut T {
-        &mut self.loss
-    }
-    /// returns an immutable reference to the training session's dataset
-    pub const fn dataset(&self) -> &DatasetBase<R::Inputs, R::Targets> {
-        &self.dataset
-    }
-    /// returns a mutable reference to the training session's dataset
-    pub fn dataset_mut(&mut self) -> &mut DatasetBase<R::Inputs, R::Targets> {
-        &mut self.dataset
-    }
-
-    pub fn begin(&self) -> &Self {
-        todo!("Define a generic training loop...")
-    }
 }
 
 impl<'a, M, T, R> core::ops::Deref for Trainer<'a, M, T, R>

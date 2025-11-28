@@ -1,8 +1,9 @@
 /*
-    Appellation: concision-train <library>
+    Appellation: concision-data <library>
     Contrib: @FL03
 */
-//! Datasets and data loaders for the Concision framework.
+//! This crate works to augment the training process by providing datasets and loaders for 
+//! common data formats.
 #![allow(
     clippy::missing_safety_doc,
     clippy::module_inception,
@@ -15,7 +16,7 @@
 
 #[cfg(not(all(feature = "std", feature = "alloc")))]
 compiler_error! {
-    "At least one of the 'std' or 'alloc' features must be enabled."
+    "Either the \"std\" feature or the \"alloc\" feature must be enabled."
 }
 
 #[cfg(feature = "alloc")]

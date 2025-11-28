@@ -18,7 +18,7 @@ pub type DeepParamsBase<S, D, A = f32> = ModelParamsBase<S, D, Vec<ParamsBase<S,
 
 /// a type alias for an owned representation of the [`DeepParamsBase`] generic of type `A` and
 /// the dimension `D`.
-pub type ShallowModelParams<A, D = Ix2> = ShallowParamsBase<OwnedRepr<A>, D>;
+pub type ShallowModelParams<A, D = Ix2> = ShallowParamsBase<OwnedRepr<A>, D, A>;
 /// a type alias for a _shallow_ representation of the [`ModelParamsBase`] using a single
 /// [`ParamsBase`] instance as the hidden layer.
 pub type ShallowParamsBase<S, D, A = f32> = ModelParamsBase<S, D, ParamsBase<S, D, A>, A>;
