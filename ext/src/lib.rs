@@ -20,11 +20,7 @@ extern crate alloc;
 extern crate concision as cnc;
 
 #[cfg(feature = "attention")]
-pub use self::attention::prelude::*;
-
-#[cfg(feature = "attention")]
 pub mod attention;
-
 #[cfg(feature = "kan")]
 pub mod kan;
 #[cfg(feature = "s4")]
@@ -34,6 +30,10 @@ pub mod snn;
 #[cfg(feature = "transformer")]
 pub mod transformer;
 
+/// re-exports
+#[cfg(feature = "attention")]
+pub use self::attention::prelude::*;
+#[doc(hidden)]
 pub mod prelude {
     #[cfg(feature = "attention")]
     pub use crate::attention::prelude::*;

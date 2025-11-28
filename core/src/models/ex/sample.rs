@@ -2,27 +2,76 @@
     appellation: model <test>
     authors: @FL03
 */
-use cnc::{DeepModelParams, Error, Model, ModelFeatures, StandardModelConfig};
-use cnc::{Forward, Norm, Params, ReLUActivation, SigmoidActivation, Train};
+use crate::activate::{ReLUActivation, SigmoidActivation};
+use crate::{
+    DeepModelParams, Error, Forward, Model, ModelFeatures, Norm, Params, StandardModelConfig, Train,
+};
+#[cfg(feature = "rand")]
+use concision_init::{
+    InitRand,
+    rand_distr::{Distribution, StandardNormal},
+};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
-use num::traits::{Float, FromPrimitive, NumAssign};
+use num_traits::{Float, FromPrimitive, NumAssign, Zero};
 
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct SimpleModel<T = f64> {
+pub struct TestModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: DeepModelParams<T>,
 }
 
-impl<T> SimpleModel<T>
-where
-    T: Float,
-{
-    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self {
+impl<T> TestModel<T> {
+    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self where T: Clone + Zero {
         let params = DeepModelParams::zeros(features);
-        SimpleModel {
+        TestModel {
+            config,
+            features,
+            params,
+        }
+    }
+    /// returns an immutable reference to the model configuration
+    pub const fn config(&self) -> &StandardModelConfig<T> {
+        &self.config
+    }
+    /// returns a reference to the model layout
+    pub const fn features(&self) -> ModelFeatures {
+        self.features
+    }
+    /// returns a reference to the model params
+    pub const fn params(&self) -> &DeepModelParams<T> {
+        &self.params
+    }
+    /// returns a mutable reference to the model params
+    pub const fn params_mut(&mut self) -> &mut DeepModelParams<T> {
+        &mut self.params
+    }
+    #[cfg(feature = "rand")]
+    /// consumes the current instance to initalize another with random parameters
+    pub fn init(self) -> Self
+    where
+        StandardNormal: Distribution<T>,
+        T: Float
+    {
+        let TestModel {
+            mut params,
+            config,
+            features,
+        } = self;
+        params.set_input(Params::<T>::lecun_normal((
+            features.input(),
+            features.hidden(),
+        )));
+        for layer in params.hidden_mut() {
+            *layer = Params::<T>::lecun_normal((features.hidden(), features.hidden()));
+        }
+        params.set_output(Params::<T>::lecun_normal((
+            features.hidden(),
+            features.output(),
+        )));
+        TestModel {
             config,
             features,
             params,
@@ -30,7 +79,7 @@ where
     }
 }
 
-impl<T> Model<T> for SimpleModel<T> {
+impl<T> Model<T> for TestModel<T> {
     type Config = StandardModelConfig<T>;
 
     type Layout = ModelFeatures;
@@ -56,7 +105,7 @@ impl<T> Model<T> for SimpleModel<T> {
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for SimpleModel<A>
+impl<A, S, D> Forward<ArrayBase<S, D>> for TestModel<A>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: Dimension,
@@ -83,7 +132,7 @@ where
     }
 }
 
-impl<A, S, T> Train<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for SimpleModel<A>
+impl<A, S, T> Train<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for TestModel<A>
 where
     A: Float + FromPrimitive + NumAssign + ScalarOperand + core::fmt::Debug,
     S: Data<Elem = A>,
@@ -175,11 +224,8 @@ where
                 .expect("Hidden failed training...");
         }
         /*
-            Backpropagate to the input layer
             The delta for the input layer is computed using the weights of the first hidden layer
             and the derivative of the activation function of the first hidden layer.
-
-            (h, h).dot(h) * derivative(h) = dim(h) where h is the number of features within a hidden layer
         */
         delta = self.params().hidden()[0].weights().dot(&delta) * activations[1].relu_derivative();
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
@@ -192,7 +238,7 @@ where
     }
 }
 
-impl<A, S, T> Train<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for SimpleModel<A>
+impl<A, S, T> Train<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for TestModel<A>
 where
     A: Float + FromPrimitive + NumAssign + ScalarOperand + core::fmt::Debug,
     S: Data<Elem = A>,

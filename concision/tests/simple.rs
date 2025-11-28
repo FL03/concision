@@ -2,14 +2,12 @@
     appellation: simple <test>
     authors: @FL03
 */
-mod model;
 
 extern crate concision as cnc;
 
 use cnc::{Model, ModelFeatures, StandardModelConfig};
+use cnc::models::ex::simple::TestModel;
 use ndarray::prelude::*;
-
-use model::SimpleModel;
 
 #[test]
 fn test_simple_model() -> anyhow::Result<()> {
@@ -22,7 +20,7 @@ fn test_simple_model() -> anyhow::Result<()> {
     // define the model features
     let features = ModelFeatures::deep(3, 9, 1, 8);
     // initialize the model with the given features and configuration
-    let model = SimpleModel::<f64>::new(config, features);
+    let model = TestModel::<f64>::new(config, features);
     // initialize some input data
     let input = Array1::linspace(1.0, 9.0, model.layout().input());
     let expected = Array1::from_elem(model.layout().output(), 0.5);

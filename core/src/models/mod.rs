@@ -10,6 +10,12 @@ pub use self::{model_params::*, traits::*, types::*};
 
 pub mod model_params;
 
+#[doc(hidden)]
+pub mod ex {
+    #[cfg(all(feature = "rand", feature = "std"))]
+    pub mod sample;
+}
+
 mod impls {
     mod impl_model_params;
     mod impl_params_deep;
