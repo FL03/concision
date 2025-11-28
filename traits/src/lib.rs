@@ -33,6 +33,7 @@ mod apply;
 mod clip;
 mod codex;
 mod complex;
+mod container;
 mod convert;
 mod entropy;
 mod loss;
@@ -80,6 +81,7 @@ pub mod prelude {
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
+    pub use crate::container::*;
     pub use crate::convert::*;
     pub use crate::entropy::*;
     pub use crate::loss::*;

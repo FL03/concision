@@ -2,7 +2,7 @@
     Appellation: layout <module>
     Contrib: @FL03
 */
-use super::{ModelFeatures, ModelFormat, NetworkLayoutMut, RawNetworkLayout};
+use super::{ModelFeatures, ModelFormat, ModelLayoutMut, RawModelLayout};
 
 /// verify if the input and hidden dimensions are compatible by checking:
 ///
@@ -172,7 +172,7 @@ impl ModelFeatures {
     }
 }
 
-impl RawNetworkLayout for ModelFeatures {
+impl RawModelLayout for ModelFeatures {
     fn input(&self) -> usize {
         self.input()
     }
@@ -190,7 +190,7 @@ impl RawNetworkLayout for ModelFeatures {
     }
 }
 
-impl NetworkLayoutMut for ModelFeatures {
+impl ModelLayoutMut for ModelFeatures {
     fn input_mut(&mut self) -> &mut usize {
         self.input_mut()
     }

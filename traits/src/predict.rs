@@ -4,6 +4,8 @@
 */
 use crate::Forward;
 
+
+
 /// The [`Predict`] trait is designed as a _**model-specific**_ interface for making
 /// predictions. In the future, we may consider opening the trait up allowing for an
 /// alternative implementation of the trait, but for now, it is simply implemented for all

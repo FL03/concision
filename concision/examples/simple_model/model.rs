@@ -2,10 +2,12 @@
     appellation: model <test>
     authors: @FL03
 */
+use cnc::activate::{ReLUActivation, SigmoidActivation};
 use cnc::init::InitRand;
 use cnc::rand_distr::{Distribution, StandardNormal};
-use cnc::{DeepModelParams, Error, Model, ModelFeatures, StandardModelConfig};
-use cnc::{Forward, Norm, Params, ReLUActivation, SigmoidActivation, Train};
+use cnc::{
+    DeepModelParams, Error, Forward, Model, ModelFeatures, Norm, Params, StandardModelConfig, Train,
+};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
@@ -88,8 +90,8 @@ impl<T> Model<T> for SimpleModel<T> {
         &mut self.config
     }
 
-    fn layout(&self) -> ModelFeatures {
-        self.features
+    fn layout(&self) -> &ModelFeatures {
+        &self.features
     }
 
     fn params(&self) -> &DeepModelParams<T> {
@@ -220,11 +222,8 @@ where
                 .expect("Hidden failed training...");
         }
         /*
-            Backpropagate to the input layer
             The delta for the input layer is computed using the weights of the first hidden layer
             and the derivative of the activation function of the first hidden layer.
-
-            (h, h).dot(h) * derivative(h) = dim(h) where h is the number of features within a hidden layer
         */
         delta = self.params().hidden()[0].weights().dot(&delta) * activations[1].relu_derivative();
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients

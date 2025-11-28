@@ -75,6 +75,7 @@ pub mod error;
 pub mod layers;
 pub mod layout;
 pub mod models;
+pub mod nn;
 pub mod utils;
 
 pub mod types {
@@ -95,5 +96,8 @@ pub mod prelude {
 
     pub use crate::activate::prelude::*;
     pub use crate::layers::prelude::*;
+    pub use crate::layout::*;
+    pub use crate::models::prelude::*;
+    pub use crate::nn::prelude::*;
     pub use crate::utils::prelude::*;
 }

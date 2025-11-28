@@ -5,20 +5,26 @@
 mod impl_model_features;
 mod impl_model_format;
 
-/// The [`RawNetworkLayout`] trait defines a minimal interface for objects capable of representing
-/// the _layout_; i.e. the number of input, hidden, and output features of
-pub trait RawNetworkLayout {
+/// The [`RawModelLayout`] trait defines a minimal interface for objects capable of representing
+/// the _layout_; i.e. the number of input, hidden, and output features of a neural network model
+/// containing some number of hidden layers.
+///
+/// **Note**: This trait is implemented for the 3- and 4-tuple consiting of usize elements as
+/// well as for the `[usize; 3]` and `[usize; 4]` array types. In both these instances, the
+/// elements are ordered as (input, hidden, output) for the 3-element versions, and
+/// (input, hidden, output, layers) for the 4-element versions.
+pub trait RawModelLayout {
     /// returns the total number of input features defined for the model
     fn input(&self) -> usize;
     /// returns the number of hidden features for the model
     fn hidden(&self) -> usize;
-    /// returns the number of hidden layers within the network
-    fn layers(&self) -> usize;
     /// the number of output features for the model
     fn output(&self) -> usize;
+    /// returns the number of hidden layers within the network
+    fn layers(&self) -> usize;
 }
 
-pub trait NetworkLayoutMut: RawNetworkLayout {
+pub trait ModelLayoutMut: RawModelLayout {
     /// returns a mutable reference to number of the input features for the model
     fn input_mut(&mut self) -> &mut usize;
     /// returns a mutable reference to the number of hidden features for the model
@@ -32,7 +38,7 @@ pub trait NetworkLayoutMut: RawNetworkLayout {
 /// The [`ModelLayout`] trait defines an interface for object capable of representing the
 /// _layout_; i.e. the number of input, hidden, and output features of a neural network model
 /// containing some number of hidden layers.
-pub trait NetworkLayout: RawNetworkLayout + NetworkLayoutMut + Clone + core::fmt::Debug {
+pub trait ModelLayout: RawModelLayout + ModelLayoutMut + Clone + core::fmt::Debug {
     /// the dimension of the input layer; (input, hidden)
     fn dim_input(&self) -> (usize, usize) {
         (self.input(), self.hidden())
@@ -128,45 +134,45 @@ pub struct ModelFeatures {
  ************* Implementations *************
 */
 
-impl<T> RawNetworkLayout for &T
+impl<T> RawModelLayout for &T
 where
-    T: RawNetworkLayout,
+    T: RawModelLayout,
 {
     fn input(&self) -> usize {
-        <T as RawNetworkLayout>::input(self)
+        <T as RawModelLayout>::input(self)
     }
     fn hidden(&self) -> usize {
-        <T as RawNetworkLayout>::hidden(self)
+        <T as RawModelLayout>::hidden(self)
     }
     fn layers(&self) -> usize {
-        <T as RawNetworkLayout>::layers(self)
+        <T as RawModelLayout>::layers(self)
     }
     fn output(&self) -> usize {
-        <T as RawNetworkLayout>::output(self)
+        <T as RawModelLayout>::output(self)
     }
 }
 
-impl<T> RawNetworkLayout for &mut T
+impl<T> RawModelLayout for &mut T
 where
-    T: RawNetworkLayout,
+    T: RawModelLayout,
 {
     fn input(&self) -> usize {
-        <T as RawNetworkLayout>::input(self)
+        <T as RawModelLayout>::input(self)
     }
     fn hidden(&self) -> usize {
-        <T as RawNetworkLayout>::hidden(self)
+        <T as RawModelLayout>::hidden(self)
     }
     fn layers(&self) -> usize {
-        <T as RawNetworkLayout>::layers(self)
+        <T as RawModelLayout>::layers(self)
     }
     fn output(&self) -> usize {
-        <T as RawNetworkLayout>::output(self)
+        <T as RawModelLayout>::output(self)
     }
 }
 
-impl<T> NetworkLayout for T where T: NetworkLayoutMut + Copy + core::fmt::Debug {}
+impl<T> ModelLayout for T where T: ModelLayoutMut + Copy + core::fmt::Debug {}
 
-impl RawNetworkLayout for (usize, usize, usize, usize) {
+impl RawModelLayout for (usize, usize, usize) {
     fn input(&self) -> usize {
         self.0
     }
@@ -174,44 +180,84 @@ impl RawNetworkLayout for (usize, usize, usize, usize) {
         self.1
     }
     fn layers(&self) -> usize {
-        self.2
+        1
     }
     fn output(&self) -> usize {
+        self.2
+    }
+}
+
+impl RawModelLayout for (usize, usize, usize, usize) {
+    fn input(&self) -> usize {
+        self.0
+    }
+    fn hidden(&self) -> usize {
+        self.1
+    }
+    fn output(&self) -> usize {
+        self.2
+    }
+
+    fn layers(&self) -> usize {
         self.3
     }
 }
 
-impl NetworkLayoutMut for (usize, usize, usize, usize) {
+impl ModelLayoutMut for (usize, usize, usize, usize) {
     fn input_mut(&mut self) -> &mut usize {
         &mut self.0
     }
+
     fn hidden_mut(&mut self) -> &mut usize {
         &mut self.1
     }
+
     fn layers_mut(&mut self) -> &mut usize {
         &mut self.2
     }
+
     fn output_mut(&mut self) -> &mut usize {
         &mut self.3
     }
 }
 
-impl RawNetworkLayout for [usize; 4] {
+impl RawModelLayout for [usize; 3] {
     fn input(&self) -> usize {
         self[0]
     }
+
     fn hidden(&self) -> usize {
         self[1]
     }
-    fn layers(&self) -> usize {
+
+    fn output(&self) -> usize {
         self[2]
     }
+
+    fn layers(&self) -> usize {
+        1
+    }
+}
+
+impl RawModelLayout for [usize; 4] {
+    fn input(&self) -> usize {
+        self[0]
+    }
+
+    fn hidden(&self) -> usize {
+        self[1]
+    }
+
     fn output(&self) -> usize {
+        self[2]
+    }
+
+    fn layers(&self) -> usize {
         self[3]
     }
 }
 
-impl NetworkLayoutMut for [usize; 4] {
+impl ModelLayoutMut for [usize; 4] {
     fn input_mut(&mut self) -> &mut usize {
         &mut self[0]
     }

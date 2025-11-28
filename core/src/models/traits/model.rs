@@ -3,9 +3,9 @@
     authors: @FL03
 */
 use crate::config::NetworkConfig;
-use crate::prelude::Predict;
-use crate::{DeepModelParams, NetworkLayout, RawNetworkLayout};
+use crate::{DeepModelParams, ModelLayout, RawModelLayout};
 use concision_params::Params;
+use concision_traits::Predict;
 
 /// The [`Model`] trait defines the core interface for all models; implementors will need to
 /// provide the type of configuration used by the model, the type of layout used by the model,
@@ -15,7 +15,7 @@ pub trait Model<T = f32> {
     /// The type of configuration used for the model
     type Config: NetworkConfig<T>;
     /// The type of [`ModelLayout`] used by the model for this implementation.
-    type Layout: NetworkLayout;
+    type Layout: ModelLayout;
     /// returns an immutable reference to the models configuration; this is typically used to
     /// access the models hyperparameters (i.e. learning rate, momentum, etc.) and other
     /// related control parameters.
@@ -27,7 +27,7 @@ pub trait Model<T = f32> {
     ///
     /// the layout is used in everything from creation and initialization routines to
     /// validating the dimensionality of the model's inputs, outputs, training data, etc.
-    fn layout(&self) -> Self::Layout;
+    fn layout(&self) -> &Self::Layout;
     /// returns an immutable reference to the model parameters
     fn params(&self) -> &DeepModelParams<T>;
     /// returns a mutable reference to the model's parameters
@@ -132,6 +132,6 @@ pub trait ModelExt<T>: Model<T> {
 impl<M, T> ModelExt<T> for M
 where
     M: Model<T>,
-    M::Layout: NetworkLayout,
+    M::Layout: ModelLayout,
 {
 }

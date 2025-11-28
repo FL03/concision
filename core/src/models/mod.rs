@@ -30,11 +30,10 @@ mod types {
 
 mod traits {
     #[doc(inline)]
-    pub use self::{hidden::*, model::*, network::*};
+    pub use self::{hidden::*, model::*};
 
     mod hidden;
     mod model;
-    mod network;
 }
 
 pub(crate) mod prelude {
