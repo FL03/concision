@@ -2,7 +2,7 @@
     appellation: models <module>
     authors: @FL03
 */
-use crate::config::NetworkConfig;
+use crate::config::ModelConfiguration;
 use crate::{DeepModelParams, ModelLayout, RawModelLayout};
 use concision_params::Params;
 use concision_traits::Predict;
@@ -13,7 +13,7 @@ use concision_traits::Predict;
 /// definitions of both the configuration and layout types, however, for
 pub trait Model<T = f32> {
     /// The type of configuration used for the model
-    type Config: NetworkConfig<T>;
+    type Config: ModelConfiguration<T>;
     /// The type of [`ModelLayout`] used by the model for this implementation.
     type Layout: ModelLayout;
     /// returns an immutable reference to the models configuration; this is typically used to

@@ -24,7 +24,10 @@ pub struct TestModel<T = f64> {
 }
 
 impl<T> TestModel<T> {
-    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self where T: Clone + Zero {
+    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self
+    where
+        T: Clone + Zero,
+    {
         let params = DeepModelParams::zeros(features);
         TestModel {
             config,
@@ -53,7 +56,7 @@ impl<T> TestModel<T> {
     pub fn init(self) -> Self
     where
         StandardNormal: Distribution<T>,
-        T: Float
+        T: Float,
     {
         let TestModel {
             mut params,

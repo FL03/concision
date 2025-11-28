@@ -5,6 +5,10 @@
 mod impl_model_features;
 mod impl_model_format;
 
+pub trait IntoModelFeatures {
+    fn into_model_features(self) -> ModelFeatures;
+}
+
 /// The [`RawModelLayout`] trait defines a minimal interface for objects capable of representing
 /// the _layout_; i.e. the number of input, hidden, and output features of a neural network model
 /// containing some number of hidden layers.

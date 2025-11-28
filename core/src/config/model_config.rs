@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use super::Hyperparameters::*;
-use super::{NetworkConfig, RawConfig, TrainingConfiguration};
+use super::{ExtendedModelConfig, ModelConfiguration, RawConfig};
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 pub(crate) type ModelConfigMap<T> = alloc::collections::BTreeMap<String, T>;
@@ -138,7 +138,7 @@ impl<T> RawConfig for StandardModelConfig<T> {
     type Ctx = T;
 }
 
-impl<T> NetworkConfig<T> for StandardModelConfig<T> {
+impl<T> ModelConfiguration<T> for StandardModelConfig<T> {
     fn get<K>(&self, key: K) -> Option<&T>
     where
         K: AsRef<str>,
@@ -180,7 +180,7 @@ impl<T> NetworkConfig<T> for StandardModelConfig<T> {
     }
 }
 
-impl<T> TrainingConfiguration<T> for StandardModelConfig<T> {
+impl<T> ExtendedModelConfig<T> for StandardModelConfig<T> {
     fn epochs(&self) -> usize {
         self.epochs
     }

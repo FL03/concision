@@ -4,6 +4,10 @@
 */
 use super::KeyValue;
 
+#[cfg(feature = "alloc")]
+use alloc::string::String;
+
+/// An enumeration of common hyperparameters used in neural network configurations.
 #[derive(
     Clone,
     Debug,
@@ -48,19 +52,25 @@ pub enum HyperParams<T = f64> {
     Momentum(T),
     Temperature(T),
     WeightDecay(T),
-    Unknown(KeyValue<String, T>),
+    Custom { key: String, value: T },
 }
 
-impl<T> From<KeyValue<String, T>> for HyperParams<T> {
-    fn from(kv: KeyValue<String, T>) -> Self {
-        match kv.key.as_str() {
-            "decay" => HyperParams::Decay(kv.value),
-            "dropout" => HyperParams::Dropout(kv.value),
-            "learning_rate" => HyperParams::LearningRate(kv.value),
-            "momentum" => HyperParams::Momentum(kv.value),
-            "temperature" => HyperParams::Temperature(kv.value),
-            "weight_decay" => HyperParams::WeightDecay(kv.value),
-            _ => HyperParams::Unknown(kv),
+impl<K, V> From<KeyValue<K, V>> for HyperParams<V>
+where
+    K: AsRef<str>,
+{
+    fn from(KeyValue { key, value }: KeyValue<K, V>) -> Self {
+        match key.as_ref() {
+            "decay" => HyperParams::Decay(value),
+            "dropout" => HyperParams::Dropout(value),
+            "learning_rate" => HyperParams::LearningRate(value),
+            "momentum" => HyperParams::Momentum(value),
+            "temperature" => HyperParams::Temperature(value),
+            "weight_decay" => HyperParams::WeightDecay(value),
+            k => HyperParams::Custom {
+                key: String::from(k),
+                value,
+            },
         }
     }
 }

@@ -9,9 +9,9 @@ pub trait RawConfig {
     type Ctx;
 }
 
-/// The [`NetworkConfig`] trait extends the [`RawConfig`] trait to provide a more robust
+/// The [`ModelConfiguration`] trait extends the [`RawConfig`] trait to provide a more robust
 /// interface for neural network configurations.
-pub trait NetworkConfig<T>: RawConfig {
+pub trait ModelConfiguration<T>: RawConfig {
     fn get<K>(&self, key: K) -> Option<&T>
     where
         K: AsRef<str>;
@@ -33,47 +33,37 @@ pub trait NetworkConfig<T>: RawConfig {
 }
 
 macro_rules! hyperparam_method {
-    (@dyn $name:ident: $type:ty) => {
+    ($($(dyn)? $name:ident::<$type:ty>),* $(,)?) => {
+        $(
+            hyperparam_method!(@impl $name::<$type>);
+        )*
+    };
+    (@impl dyn $name:ident::<$type:ty>) => {
         fn $name(&self) -> Option<&$type> where T: 'static {
             self.get(stringify!($name)).map(|v| v.downcast_ref::<$type>()).flatten()
         }
     };
-    (@impl $name:ident: $type:ty) => {
+    (@impl $name:ident::<$type:ty>) => {
         fn $name(&self) -> Option<&$type> {
             self.get(stringify!($name))
         }
     };
-    (#[dyn] $($name:ident $type:ty),* $(,)?) => {
-        $(
-            hyperparam_method!(@dyn $name: $type);
-        )*
-    };
-    ($($name:ident $type:ty),* $(,)?) => {
-        $(
-            hyperparam_method!(@impl $name: $type);
-        )*
-    };
 }
 
-pub trait TrainingConfiguration<T>: NetworkConfig<T> {
+pub trait ExtendedModelConfig<T>: ModelConfiguration<T> {
     fn epochs(&self) -> usize;
 
     fn batch_size(&self) -> usize;
 
     hyperparam_method! {
-        learning_rate T,
-        momentum T,
-        weight_decay T,
-        dropout T,
-        decay T,
-        beta1 T,
-        beta2 T,
-        epsilon T,
-        gradient_clip T,
-
+        learning_rate::<T>,
+        epsilon::<T>,
+        momentum::<T>,
+        weight_decay::<T>,
+        dropout::<T>,
+        decay::<T>,
+        beta::<T>,
+        beta1::<T>,
+        beta2::<T>,
     }
 }
-
-/*
- ************* Implementations *************
-*/

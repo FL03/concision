@@ -5,8 +5,8 @@
 */
 extern crate concision as cnc;
 
-use cnc::{ModelFeatures, Predict, StandardModelConfig, Train};
 use cnc::models::ex::sample::TestModel;
+use cnc::{ModelFeatures, Predict, StandardModelConfig, Train};
 use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {

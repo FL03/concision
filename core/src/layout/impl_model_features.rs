@@ -30,9 +30,11 @@ impl ModelFeatures {
     /// the number of layers is `<=1` then the [`ModelFormat`] is automatically
     /// configured as a _shallow_ neural network.
     pub const fn new(input: usize, hidden: usize, output: usize, layers: usize) -> Self {
-        match layers {
-            0 | 1 => Self::shallow(input, hidden, output),
-            _ => Self::deep(input, hidden, output, layers),
+        let inner = ModelFormat::new(hidden, layers);
+        Self {
+            input,
+            output,
+            inner,
         }
     }
     /// creates a new instance of [`ModelFeatures`] for a deep neural network, using the given
@@ -41,7 +43,7 @@ impl ModelFeatures {
         Self {
             input,
             output,
-            inner: ModelFormat::deep(hidden, layers),
+            inner: ModelFormat::Deep { hidden, layers },
         }
     }
     /// returns a new instance of [`ModelFeatures`] for a shallow neural network, using the
@@ -50,7 +52,17 @@ impl ModelFeatures {
         Self {
             input,
             output,
-            inner: ModelFormat::shallow(hidden),
+            inner: ModelFormat::Shallow { hidden },
+        }
+    }
+    pub fn from_layout<L>(layout: L) -> Self
+    where
+        L: RawModelLayout,
+    {
+        Self {
+            input: layout.input(),
+            inner: ModelFormat::new(layout.hidden(), layout.layers()),
+            output: layout.output(),
         }
     }
     /// returns a copy of the input features for the model

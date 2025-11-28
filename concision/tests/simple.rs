@@ -5,8 +5,8 @@
 
 extern crate concision as cnc;
 
+use cnc::models::ex::sample::TestModel;
 use cnc::{Model, ModelFeatures, StandardModelConfig};
-use cnc::models::ex::simple::TestModel;
 use ndarray::prelude::*;
 
 #[test]

@@ -5,6 +5,12 @@
 use super::ModelFormat;
 
 impl ModelFormat {
+    pub const fn new(hidden: usize, layers: usize) -> Self {
+        match layers {
+            0 | 1 => ModelFormat::Shallow { hidden },
+            _ => ModelFormat::Deep { hidden, layers },
+        }
+    }
     /// initialize a new [`Deep`](ModelFormat::Deep) variant for a deep neural network with the
     /// given number of hidden features and layers
     pub const fn deep(hidden: usize, layers: usize) -> Self {
