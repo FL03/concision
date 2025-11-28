@@ -2,6 +2,8 @@
     appellation: config <module>
     authors: @FL03
 */
+//! This module is dedicated to establishing common interfaces for valid configuration objects
+//! while providing a standard implementation to quickly spin up a new model.
 #[doc(inline)]
 pub use self::{model_config::StandardModelConfig, traits::*, types::*};
 
@@ -9,36 +11,22 @@ pub mod model_config;
 
 mod traits {
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::config::*;
 
     mod config;
-
-    mod prelude {
-        #[doc(inline)]
-        pub use super::config::*;
-    }
 }
 
 mod types {
-    //! this module defines various types in-support of the configuration model for the neural
-    //! library of the concision framework.
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{hyper_params::*, key_value::*};
 
     mod hyper_params;
-
-    mod prelude {
-        #[doc(inline)]
-        pub use super::hyper_params::*;
-    }
+    mod key_value;
 }
 
 pub(crate) mod prelude {
-    #[doc(inline)]
     pub use super::model_config::*;
-    #[doc(inline)]
     pub use super::traits::*;
-    #[doc(inline)]
     pub use super::types::*;
 }
 

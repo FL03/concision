@@ -2,7 +2,7 @@
     Appellation: layout <module>
     Contrib: @FL03
 */
-use super::{ModelFeatures, ModelFormat, ModelLayout};
+use super::{ModelFeatures, ModelFormat, NetworkLayoutMut, RawNetworkLayout};
 
 /// verify if the input and hidden dimensions are compatible by checking:
 ///
@@ -172,33 +172,35 @@ impl ModelFeatures {
     }
 }
 
-impl ModelLayout for ModelFeatures {
+impl RawNetworkLayout for ModelFeatures {
     fn input(&self) -> usize {
         self.input()
-    }
-
-    fn input_mut(&mut self) -> &mut usize {
-        self.input_mut()
     }
 
     fn hidden(&self) -> usize {
         self.hidden()
     }
 
-    fn hidden_mut(&mut self) -> &mut usize {
-        self.hidden_mut()
-    }
-
     fn layers(&self) -> usize {
         self.layers()
     }
 
-    fn layers_mut(&mut self) -> &mut usize {
-        self.layers_mut()
-    }
-
     fn output(&self) -> usize {
         self.output()
+    }
+}
+
+impl NetworkLayoutMut for ModelFeatures {
+    fn input_mut(&mut self) -> &mut usize {
+        self.input_mut()
+    }
+
+    fn hidden_mut(&mut self) -> &mut usize {
+        self.hidden_mut()
+    }
+
+    fn layers_mut(&mut self) -> &mut usize {
+        self.layers_mut()
     }
 
     fn output_mut(&mut self) -> &mut usize {
@@ -218,15 +220,15 @@ impl Default for ModelFeatures {
         }
     }
 }
+
 impl core::fmt::Display for ModelFeatures {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(
-            f,
-            "{{ input: {i}, hidden: {h}, output: {o}, layers: {l} }}",
-            i = self.input(),
-            h = self.hidden(),
-            l = self.layers(),
-            o = self.output()
-        )
+        f.write_str(&format!(
+            "{{ input: {}, hidden: {}, layers: {}, output: {} }}",
+            self.input(),
+            self.hidden(),
+            self.layers(),
+            self.output()
+        ))
     }
 }

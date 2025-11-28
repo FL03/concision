@@ -78,10 +78,7 @@ pub mod models;
 pub mod utils;
 
 pub mod types {
-    #[doc(inline)]
-    pub use self::key_value::*;
-
-    mod key_value;
+    //! Core types supporting the `cnc` framework.
 }
 // re-exports
 #[doc(inline)]

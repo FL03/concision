@@ -2,7 +2,7 @@
     Appellation: hyperparameters <module>
     Contrib: @FL03
 */
-use crate::types::KeyValue;
+use super::KeyValue;
 
 #[derive(
     Clone,
