@@ -6,7 +6,7 @@
 use crate::models::{DeepParamsBase, ShallowParamsBase};
 
 use crate::ModelFeatures;
-use concision_init::{distr as init, InitRand};
+use concision_init::{InitRand, distr as init};
 use concision_params::ParamsBase;
 use ndarray::{DataOwned, Ix2};
 use num_traits::{Float, FromPrimitive};

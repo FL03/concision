@@ -35,11 +35,11 @@ where
     /// returns the total number parameters within the model, including the input and output layers
     #[inline]
     pub fn size(&self) -> usize {
-        let mut size = self.input().count_weight();
+        let mut size = self.input().count_weights();
         for layer in self.hidden() {
-            size += layer.count_weight();
+            size += layer.count_weights();
         }
-        size + self.output().count_weight()
+        size + self.output().count_weights()
     }
 
     /// set the layer at the specified index in the hidden layers of the model

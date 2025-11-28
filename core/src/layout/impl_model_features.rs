@@ -25,8 +25,6 @@ where
     valid
 }
 
-
-
 impl ModelFeatures {
     /// creates a new instance of [`ModelFeatures`] for a neural network with `n` layers. If
     /// the number of layers is `<=1` then the [`ModelFormat`] is automatically

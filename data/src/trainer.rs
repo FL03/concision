@@ -5,8 +5,8 @@
 
 mod impl_trainer;
 
-use crate::dataset::DatasetBase;
 use crate::Records;
+use crate::dataset::DatasetBase;
 use concision_core::Model;
 
 pub trait ModelTrainer<T> {
@@ -29,7 +29,7 @@ pub trait ModelTrainer<T> {
 }
 
 /// The [`Trainer`] is a generalized model trainer that works to provide a common interface for
-/// training models over datasets. 
+/// training models over datasets.
 pub struct Trainer<'a, M, T, R>
 where
     M: Model<T>,

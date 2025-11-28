@@ -25,8 +25,6 @@ pub use self::attention::prelude::*;
 #[cfg(feature = "attention")]
 pub mod attention;
 
-#[cfg(feature = "linear")]
-pub mod elementary;
 #[cfg(feature = "kan")]
 pub mod kan;
 #[cfg(feature = "s4")]
@@ -39,8 +37,6 @@ pub mod transformer;
 pub mod prelude {
     #[cfg(feature = "attention")]
     pub use crate::attention::prelude::*;
-    #[cfg(feature = "linear")]
-    pub use crate::elementary::ElementaryModel;
     #[cfg(feature = "kan")]
     pub use crate::kan::prelude::*;
     #[cfg(feature = "s4")]

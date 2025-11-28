@@ -6,7 +6,7 @@
 use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
 #[cfg(feature = "rand")]
 use cnc::rand_distr;
-use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
+use cnc::{Forward, Norm, Params, ReLUActivation, SigmoidActivation};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
@@ -127,7 +127,7 @@ impl<T> Model<T> for TransformerModel<T> {
 impl<A, U, V> Forward<U> for TransformerModel<A>
 where
     A: Float + FromPrimitive + ScalarOperand,
-    V: ReLU<Output = V> + Sigmoid<Output = V>,
+    V: ReLUActivation<Output = V> + SigmoidActivation<Output = V>,
     Params<A>: Forward<U, Output = V> + Forward<V, Output = V>,
     for<'a> &'a U: ndarray::linalg::Dot<Array2<A>, Output = V> + core::ops::Add<&'a Array1<A>>,
     V: for<'a> core::ops::Add<&'a Array1<A>, Output = V>,

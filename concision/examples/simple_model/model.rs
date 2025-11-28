@@ -1,104 +1,83 @@
 /*
-    Appellation: simple <module>
-    Contrib: @FL03
+    appellation: model <test>
+    authors: @FL03
 */
-use cnc::nn::{DeepModelParams, Model, ModelFeatures, NeuralError, StandardModelConfig, Train};
-use cnc::{Forward, Norm, Params, ReLU, Sigmoid};
+use cnc::init::InitRand;
+use cnc::rand_distr::{Distribution, StandardNormal};
+use cnc::{DeepModelParams, Error, Model, ModelFeatures, StandardModelConfig};
+use cnc::{Forward, Norm, Params, ReLUActivation, SigmoidActivation, Train};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
-use num_traits::{Float, FromPrimitive, NumAssign};
+use num::traits::{Float, FromPrimitive, NumAssign};
 
-#[derive(Clone, Debug)]
-pub struct ElementaryModel<T = f64> {
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct SimpleModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
     pub params: DeepModelParams<T>,
 }
 
-impl<T> ElementaryModel<T> {
-    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self
-    where
-        T: Clone + Default,
-    {
-        let params = DeepModelParams::default(features);
-        ElementaryModel {
+impl<T> SimpleModel<T>
+where
+    T: Float,
+{
+    pub fn new(config: StandardModelConfig<T>, features: ModelFeatures) -> Self {
+        let params = DeepModelParams::zeros(features);
+        SimpleModel {
             config,
             features,
             params,
         }
     }
-    /// returns a reference to the model configuration
+    /// returns an immutable reference to the model configuration
     pub const fn config(&self) -> &StandardModelConfig<T> {
         &self.config
     }
-    /// returns a mutable reference to the model configuration
-    pub const fn config_mut(&mut self) -> &mut StandardModelConfig<T> {
-        &mut self.config
-    }
-    /// returns the model features
+    /// returns a reference to the model layout
     pub const fn features(&self) -> ModelFeatures {
         self.features
     }
-    /// returns a mutable reference to the model features
-    pub const fn features_mut(&mut self) -> &mut ModelFeatures {
-        &mut self.features
-    }
-    /// returns a reference to the model parameters
+    /// returns a reference to the model params
     pub const fn params(&self) -> &DeepModelParams<T> {
         &self.params
     }
-    /// returns a mutable reference to the model parameters
+    /// returns a mutable reference to the model params
     pub const fn params_mut(&mut self) -> &mut DeepModelParams<T> {
         &mut self.params
     }
-    /// set the current configuration and return a mutable reference to the model
-    pub fn set_config(&mut self, config: StandardModelConfig<T>) -> &mut Self {
-        self.config = config;
-        self
-    }
-    /// set the current features and return a mutable reference to the model
-    pub fn set_features(&mut self, features: ModelFeatures) -> &mut Self {
-        self.features = features;
-        self
-    }
-    /// set the current parameters and return a mutable reference to the model
-    pub fn set_params(&mut self, params: DeepModelParams<T>) -> &mut Self {
-        self.params = params;
-        self
-    }
-    /// consumes the current instance to create another with the given configuration
-    pub fn with_config(self, config: StandardModelConfig<T>) -> Self {
-        Self { config, ..self }
-    }
-    /// consumes the current instance to create another with the given features
-    pub fn with_features(self, features: ModelFeatures) -> Self {
-        Self { features, ..self }
-    }
-    /// consumes the current instance to create another with the given parameters
-    pub fn with_params(self, params: DeepModelParams<T>) -> Self {
-        Self { params, ..self }
-    }
-}
-
-impl<T> ElementaryModel<T>
-where
-    T: 'static + Float + FromPrimitive,
-{
-    /// initializes the model with Glorot normal distribution
-    #[cfg(feature = "rand")]
+    /// consumes the current instance to initalize another with random parameters
     pub fn init(self) -> Self
     where
-        T: Float + FromPrimitive,
-        cnc::rand_distr::StandardNormal: cnc::rand_distr::Distribution<T>,
+        StandardNormal: Distribution<T>,
     {
-        let params = DeepModelParams::glorot_normal(self.features());
-        ElementaryModel { params, ..self }
+        let SimpleModel {
+            mut params,
+            config,
+            features,
+        } = self;
+        params.set_input(Params::<T>::lecun_normal((
+            features.input(),
+            features.hidden(),
+        )));
+        for layer in params.hidden_mut() {
+            *layer = Params::<T>::lecun_normal((features.hidden(), features.hidden()));
+        }
+        params.set_output(Params::<T>::lecun_normal((
+            features.hidden(),
+            features.output(),
+        )));
+        SimpleModel {
+            config,
+            features,
+            params,
+        }
     }
 }
 
-impl<T> Model<T> for ElementaryModel<T> {
+impl<T> Model<T> for SimpleModel<T> {
     type Config = StandardModelConfig<T>;
+
     type Layout = ModelFeatures;
 
     fn config(&self) -> &StandardModelConfig<T> {
@@ -122,7 +101,7 @@ impl<T> Model<T> for ElementaryModel<T> {
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for ElementaryModel<A>
+impl<A, S, D> Forward<ArrayBase<S, D>> for SimpleModel<A>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: Dimension,
@@ -149,28 +128,25 @@ where
     }
 }
 
-impl<A, S, T> Train<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for ElementaryModel<A>
+impl<A, S, T> Train<ArrayBase<S, Ix1>, ArrayBase<T, Ix1>> for SimpleModel<A>
 where
     A: Float + FromPrimitive + NumAssign + ScalarOperand + core::fmt::Debug,
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
+    type Error = Error;
     type Output = A;
 
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(skip(self, input, target), level = "trace", target = "model",)
-    )]
     fn train(
         &mut self,
         input: &ArrayBase<S, Ix1>,
         target: &ArrayBase<T, Ix1>,
-    ) -> Result<Self::Output, NeuralError> {
+    ) -> Result<Self::Output, Error> {
         if input.len() != self.layout().input() {
-            return Err(NeuralError::InvalidInputShape);
+            return Err(Error::InvalidInputShape);
         }
         if target.len() != self.layout().output() {
-            return Err(NeuralError::InvalidOutputShape);
+            return Err(Error::InvalidOutputShape);
         }
         // get the learning rate from the model's configuration
         let lr = self
@@ -261,38 +237,30 @@ where
     }
 }
 
-impl<A, S, T> Train<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for ElementaryModel<A>
+impl<A, S, T> Train<ArrayBase<S, Ix2>, ArrayBase<T, Ix2>> for SimpleModel<A>
 where
     A: Float + FromPrimitive + NumAssign + ScalarOperand + core::fmt::Debug,
     S: Data<Elem = A>,
     T: Data<Elem = A>,
 {
+    type Error = Error;
     type Output = A;
 
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(
-            skip(self, input, target),
-            level = "trace",
-            name = "train",
-            target = "model",
-            fields(input_shape = ?input.shape(), target_shape = ?target.shape())
-        )
-    )]
     fn train(
         &mut self,
         input: &ArrayBase<S, Ix2>,
         target: &ArrayBase<T, Ix2>,
-    ) -> Result<Self::Output, NeuralError> {
+    ) -> Result<Self::Output, Error> {
         if input.nrows() == 0 || target.nrows() == 0 {
-            return Err(NeuralError::InvalidBatchSize);
+            return Err(Error::InvalidBatchSize);
         }
-        if input.ncols() != self.features().input() {
-            return Err(NeuralError::InvalidInputShape);
+        if input.ncols() != self.layout().input() {
+            return Err(Error::InvalidInputShape);
         }
-        if target.ncols() != self.features().output() || target.nrows() != input.nrows() {
-            return Err(NeuralError::InvalidOutputShape);
+        if target.ncols() != self.layout().output() || target.nrows() != input.nrows() {
+            return Err(Error::InvalidOutputShape);
         }
+        let batch_size = input.nrows();
         let mut loss = A::zero();
 
         for (i, (x, e)) in input.rows().into_iter().zip(target.rows()).enumerate() {
@@ -303,14 +271,7 @@ where
                     tracing::error!(
                         "Training failed for batch {}/{}: {:?}",
                         i + 1,
-                        input.nrows(),
-                        err
-                    );
-                    #[cfg(not(feature = "tracing"))]
-                    eprintln!(
-                        "Training failed for batch {}/{}: {:?}",
-                        i + 1,
-                        input.nrows(),
+                        batch_size,
                         err
                     );
                     return Err(err);

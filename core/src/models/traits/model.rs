@@ -3,8 +3,8 @@
     authors: @FL03
 */
 use crate::config::NetworkConfig;
-use crate::{DeepModelParams, ModelLayout};
 use crate::prelude::Predict;
+use crate::{DeepModelParams, ModelLayout};
 use concision_params::Params;
 
 /// The [`Model`] trait defines the core interface for all models; implementors will need to

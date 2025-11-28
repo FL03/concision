@@ -10,7 +10,7 @@ use ndarray::{
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
 /// model where the bias tensor is always `n-1` dimensions smaller than the `weights` tensor.
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
-/// that can be reduced by one axis (i.e. $`\mbox{rank}(D)>0`$), which is typically the "zero-th" axis.
+/// that can be reduced by one axis (i.e. $\mbox{rank}(D)>0$), which is typically the "zero-th" axis.
 pub struct ParamsBase<S, D = ndarray::Ix2, A = <S as RawData>::Elem>
 where
     D: Dimension,
@@ -203,7 +203,7 @@ where
         self.bias().is_empty()
     }
     /// the total number of elements within the weight tensor
-    pub fn count_weight(&self) -> usize {
+    pub fn count_weights(&self) -> usize {
         self.weights().len()
     }
     /// the total number of elements within the bias tensor

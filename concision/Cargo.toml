@@ -32,13 +32,6 @@ doc = true
 doctest = true
 test = true
 
-# ************* [Benchmarks] *************
-[[bench]]
-harness = false
-name = "default"
-path = "benches/default.rs"
-required-features = ["std"]
-
 [[bench]]
 harness = false
 name = "params"
@@ -50,17 +43,15 @@ required-features = [
   "tracing",
 ]
 
-# ************* [Examples] *************
 [[example]]
-name = "basic"
-required-features = [
-  "approx",
-  "rand",
-  "std",
-  "tracing",
-]
+name = "params"
+required-features = ["rand", "std", "tracing"]
 
-# ************* [Unit Tests] *************
+[[example]]
+name = "simple_model"
+path = "examples/simple_model/main.rs"
+required-features = ["rand", "std", "tracing"]
+
 [[test]]
 name = "default"
 

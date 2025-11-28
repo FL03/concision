@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 //! The error module for external datasets and training;
-//! 
+//!
 
 /// a type alias for a [`Result`](core::result::Result) with an error type of
 /// [`TrainingError`].

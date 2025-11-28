@@ -38,7 +38,6 @@ pub struct ModelFeatures {
     pub(crate) output: usize,
 }
 
-
 /// The [`ModelLayout`] trait defines an interface for object capable of representing the
 /// _layout_; i.e. the number of input, hidden, and output features of a neural network model
 /// containing some number of hidden layers.

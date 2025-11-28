@@ -2,8 +2,8 @@
     appellation: model <test>
     authors: @FL03
 */
-use cnc::{DeepModelParams, Model, ModelFeatures, Error, StandardModelConfig};
-use cnc::{Forward, Norm, Params, ReLU, Sigmoid, Train};
+use cnc::{DeepModelParams, Error, Model, ModelFeatures, StandardModelConfig};
+use cnc::{Forward, Norm, Params, ReLUActivation, SigmoidActivation, Train};
 
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};

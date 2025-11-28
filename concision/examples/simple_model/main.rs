@@ -5,8 +5,11 @@
 */
 extern crate concision as cnc;
 
-use cnc::nn::{ModelFeatures, Predict, StandardModelConfig, Train};
-use concision_ext::elementary::ElementaryModel;
+pub use self::model::SimpleModel;
+
+mod model;
+
+use cnc::{ModelFeatures, Predict, StandardModelConfig, Train};
 use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {
@@ -28,7 +31,7 @@ fn main() -> anyhow::Result<()> {
     config.set_decay(0.0001);
     tracing::debug!("Model Config: {config:?}");
     // initialize the model
-    let mut model = ElementaryModel::<f64>::new(config, features).init();
+    let mut model = SimpleModel::<f64>::new(config, features).init();
     // initialize some input data
     let input = Array1::linspace(1.0, 9.0, model.features().input());
     // propagate the input through the model

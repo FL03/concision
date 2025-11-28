@@ -4,34 +4,34 @@
     Contrib: @FL03
 */
 //! Single spiking neuron (LIF + adaptation + exponential synapse) example in pure Rust.
-//! 
+//!
 //! ## Background
 //!
 //! Model (forward-Euler integration; units are arbitrary but consistent):
-//! 
+//!
 //! ```math
 //! \tau_m * \frac{dv}{dt} = -(v - v_{rest}) + R*(I_{ext} + I_{syn}) - \omega
 //! ```
-//! 
-//! ```math 
+//!
+//! ```math
 //! \tau_w * \frac{d\omega}{dt} = -\omega
 //! ```
-//! 
-//! ```math 
+//!
+//! ```math
 //! \tau_s * \frac{ds}{dt} = -s
 //! ```
-//! 
-//! where: 
+//!
+//! where:
 //!     - $`v`$: membrane potential
 //!     - $\omega$: adaptation variable
 //!     - $`s`$: synaptic variable representing total synaptic current
 //!
-//! If we allow the spike to be represented as $\delta$, then: 
-//! 
+//! If we allow the spike to be represented as $\delta$, then:
+//!
 //! ```math
 //! v\geq{v_{thresh}}\rightarrow{\delta},v\leftarrow{v_{reset}},\omega\mathrel{+}=b
 //! ```
-//! 
+//!
 //! and where `b` is the adaptation increment added on spike.
 //! The synaptic current is given by: $I_{syn} = s$
 //!

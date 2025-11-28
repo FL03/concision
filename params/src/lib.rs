@@ -59,14 +59,12 @@ mod impls {
     mod impl_params_serde;
 }
 
-
 pub mod traits {
     //! Traits for working with model parameters
     pub use self::wnb::*;
 
     mod wnb;
 }
-
 
 mod types {
     //! Supporting types and aliases for working with model parameters

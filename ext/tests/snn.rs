@@ -3,8 +3,8 @@
     Created At: 2025.11.26:15:42:45
     Contrib: @FL03
 */
-use concision_ext::snn::SpikingNeuron;
 use approx::assert_abs_diff_eq;
+use concision_ext::snn::SpikingNeuron;
 
 #[test]
 fn test_snn_neuron_resting_no_input() {

@@ -5,8 +5,8 @@
 use crate::models::{ModelParamsBase, ShallowParamsBase};
 
 use crate::ModelFeatures;
+use crate::activate::{ReLUActivation, SigmoidActivation};
 use crate::models::traits::ShallowModelRepr;
-use crate::activate::{ReLU, Sigmoid};
 use concision_params::ParamsBase;
 use ndarray::{
     Array1, ArrayBase, Data, DataOwned, Dimension, Ix2, RawData, RemoveAxis, ScalarOperand,
@@ -52,9 +52,9 @@ where
     /// returns the total number parameters within the model, including the input and output layers
     #[inline]
     pub fn size(&self) -> usize {
-        let mut size = self.input().count_weight();
-        size += self.hidden().count_weight();
-        size + self.output().count_weight()
+        let mut size = self.input().count_weights();
+        size += self.hidden().count_weights();
+        size + self.output().count_weights()
     }
     /// returns an immutable reference to the hidden weights
     pub const fn hidden_weights(&self) -> &ArrayBase<S, D, A> {

@@ -32,8 +32,8 @@ doctest = true
 test = true
 
 [[example]]
-name = "linear"
-required-features = ["linear", "std"]
+name = "attention"
+required-features = ["attention", "rand", "std"]
 
 [[test]]
 name = "attention"

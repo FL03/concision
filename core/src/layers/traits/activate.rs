@@ -114,7 +114,7 @@ macro_rules! activator {
 
 activator! {
     pub struct Linear::<crate::activate::LinearActivation>(linear);
-    pub struct ReLU::<crate::activate::ReLU>(relu);
-    pub struct Sigmoid::<crate::activate::Sigmoid>(sigmoid);
+    pub struct ReLU::<crate::activate::ReLUActivation>(relu);
+    pub struct Sigmoid::<crate::activate::SigmoidActivation>(sigmoid);
     pub struct Tanh::<crate::activate::TanhActivation>(tanh);
 }

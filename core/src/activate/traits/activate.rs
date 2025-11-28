@@ -31,42 +31,42 @@ pub trait Rho<U>: Apply<U> {
 
     fn heavyside(&self) -> Self::Cont<U::Output>
     where
-        U: Heavyside,
+        U: HeavysideActivation,
     {
         self.apply(|x| x.heavyside())
     }
 
     fn heavyside_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: Heavyside,
+        U: HeavysideActivation,
     {
         self.apply(|x| x.heavyside_derivative())
     }
 
     fn relu(&self) -> Self::Cont<U::Output>
     where
-        U: ReLU,
+        U: ReLUActivation,
     {
         self.apply(|x| x.relu())
     }
 
     fn relu_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: ReLU,
+        U: ReLUActivation,
     {
         self.apply(|x| x.relu_derivative())
     }
 
     fn sigmoid(&self) -> Self::Cont<U::Output>
     where
-        U: Sigmoid,
+        U: SigmoidActivation,
     {
         self.apply(|x| x.sigmoid())
     }
 
     fn sigmoid_derivative(&self) -> Self::Cont<U::Output>
     where
-        U: Sigmoid,
+        U: SigmoidActivation,
     {
         self.apply(|x| x.sigmoid_derivative())
     }

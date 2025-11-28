@@ -85,7 +85,10 @@ pub mod types {
 }
 // re-exports
 #[doc(inline)]
-pub use self::{activate::prelude::*, config::prelude::*, error::*, layout::*, models::prelude::*, utils::prelude::*};
+pub use self::{
+    activate::prelude::*, config::prelude::*, error::*, layout::*, models::prelude::*,
+    utils::prelude::*,
+};
 // prelude
 #[doc(hidden)]
 pub mod prelude {

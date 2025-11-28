@@ -11,7 +11,12 @@ pub trait Train<X, Y> {
 
     fn train(&mut self, input: &X, target: &Y) -> Result<Self::Output, Self::Error>;
 
-    fn train_for(&mut self, input: &X, target: &Y, epochs: usize) -> Result<Self::Output, Self::Error> {
+    fn train_for(
+        &mut self,
+        input: &X,
+        target: &Y,
+        epochs: usize,
+    ) -> Result<Self::Output, Self::Error> {
         let mut output = None;
         let mut step: usize = 0;
 
