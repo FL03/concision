@@ -31,12 +31,7 @@ pub trait BackwardStep<T> {
     type Grad<_X>;
     type Output;
 
-    fn backward(
-        &mut self,
-        input: &Self::Data<T>,
-        delta: &Self::Grad<T>,
-        gamma: T,
-    ) -> Option<Self::Output>;
+    fn backward(&mut self, input: &Self::Data<T>, delta: &Self::Grad<T>, gamma: T) -> Self::Output;
 }
 
 /// The [`Forward`] trait describes a common interface for objects designated to perform a
@@ -44,15 +39,15 @@ pub trait BackwardStep<T> {
 pub trait Forward<Rhs> {
     type Output;
     /// a single forward step
-    fn forward(&self, input: &Rhs) -> Option<Self::Output>;
+    fn forward(&self, input: &Rhs) -> Self::Output;
     /// this method enables the forward pass to be generically _activated_ using some closure.
     /// This is useful for isolating the logic of the forward pass from that of the activation
     /// function and is often used by layers and models.
-    fn forward_then<F>(&self, input: &Rhs, then: F) -> Option<Self::Output>
+    fn forward_then<F>(&self, input: &Rhs, then: F) -> Self::Output
     where
         F: FnOnce(Self::Output) -> Self::Output,
     {
-        self.forward(input).map(then)
+        then(self.forward(input))
     }
 }
 
@@ -97,7 +92,7 @@ where
 {
     type Output = Y;
 
-    fn forward(&self, input: &X) -> Option<Self::Output> {
-        Some(input.dot(self))
+    fn forward(&self, input: &X) -> Self::Output {
+        input.dot(self)
     }
 }

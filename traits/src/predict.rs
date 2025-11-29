@@ -17,7 +17,7 @@ pub trait Predict<Rhs> {
 
     private!();
 
-    fn predict(&self, input: &Rhs) -> Option<Self::Output>;
+    fn predict(&self, input: &Rhs) -> Self::Output;
 }
 
 /// The [`PredictWithConfidence`] trait is an extension of the [`Predict`] trait, providing
@@ -43,7 +43,7 @@ where
 
     seal!();
 
-    fn predict(&self, input: &U) -> Option<Self::Output> {
+    fn predict(&self, input: &U) -> Self::Output {
         self.forward(input)
     }
 }
@@ -58,7 +58,7 @@ where
 
     fn predict_with_confidence(&self, input: &U) -> Option<(Self::Output, Self::Confidence)> {
         // Get the base prediction
-        let prediction = Predict::predict(self, input)?;
+        let prediction = Predict::predict(self, input);
         let shape = prediction.shape();
         // Calculate confidence as the inverse of the variance of the output
         // For each sample, compute the variance across the output dimensions
@@ -73,7 +73,7 @@ where
         }
 
         // Average variance across the batch
-        let avg_variance = variance_sum / A::from_usize(batch_size).unwrap();
+        let avg_variance = variance_sum / A::from_usize(batch_size)?;
         // Confidence: inverse of variance (clipped to avoid division by zero)
         let confidence = (A::one() + avg_variance).recip();
 

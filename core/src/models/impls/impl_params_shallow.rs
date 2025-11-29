@@ -82,19 +82,15 @@ where
         }
     }
     /// forward input through the controller network
-    pub fn forward(&self, input: &Array1<A>) -> Option<Array1<A>>
+    pub fn forward(&self, input: &Array1<A>) -> Array1<A>
     where
         A: Float + ScalarOperand,
         S: Data,
     {
-        // forward the input through the input layer; activate using relu
-        let mut output = self.input().forward(input)?.relu();
-        // forward the input through the hidden layer(s); activate using relu
-        output = self.hidden().forward(&output)?.relu();
-        // forward the input through the output layer; activate using sigmoid
-        output = self.output().forward(&output)?.sigmoid();
-
-        Some(output)
+        use concision_traits::Forward;
+        let mut output = self.input().forward_then(input, |x| x.relu());
+        output = self.hidden().forward_then(&output, |x| x.relu());
+        self.output().forward_then(&output, |x| x.sigmoid())
     }
 }
 

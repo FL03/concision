@@ -12,7 +12,7 @@ fn test_params_forward() {
     let params = Params::<f64>::ones((3, 4));
     let input = array![1.0, 2.0, 3.0];
     // should be of shape 4: (d_in, d_out).t() * (d_in,) + (d_out,)
-    let output = params.forward(&input).expect("forward-pass failed");
+    let output = params.forward(&input);
     assert_eq!(output.dim(), 4);
     // output should be: $W.t() * x + b = [7.0, 7.0, 7.0, 7.0]$
     // where W = ones(3, 4) and b = ones(4)

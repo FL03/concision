@@ -132,11 +132,10 @@ where
 {
     type Output = Y;
 
-    fn forward(&self, input: &X) -> Option<Y> {
+    fn forward(&self, input: &X) -> Y {
         let query = input.dot(&self.query);
         let key = input.dot(&self.key);
         let value = input.dot(&self.value);
-        let output = query + key + value;
-        Some(output)
+        query + key + value
     }
 }

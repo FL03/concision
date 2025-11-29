@@ -9,7 +9,6 @@ use cnc::{
     SigmoidActivation, StandardModelConfig, Train,
 };
 
-use anyhow::Context;
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign};
@@ -136,18 +135,15 @@ where
 {
     type Output = V;
 
-    fn forward(&self, input: &U) -> Option<Self::Output> {
-        let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
+    fn forward(&self, input: &U) -> Self::Output {
+        let mut output = self.params().input().forward(&input).relu();
 
         for layer in self.params().hidden() {
-            output = layer.forward_then(&output, |y| y.relu())?;
+            output = layer.forward(&output).relu();
         }
 
-        let y = self
-            .params()
-            .output()
-            .forward_then(&output, |y| y.sigmoid())?;
-        Some(y)
+        output = self.params().output().forward(&output).sigmoid();
+        output
     }
 }
 
@@ -203,28 +199,15 @@ where
         let mut activations = Vec::new();
         activations.push(input.to_owned());
 
-        let mut output = self
-            .params()
-            .input()
-            .forward(&input)
-            .context("Output layer failed to forward propagate during training...")?
-            .relu();
+        let mut output = self.params().input().forward(&input).relu();
         activations.push(output.to_owned());
         // collect the activations of the hidden
         for layer in self.params().hidden() {
-            output = layer
-                .forward(&output)
-                .context("Hidden layer failed to forward propagate during training...")?
-                .relu();
+            output = layer.forward(&output).relu();
             activations.push(output.to_owned());
         }
 
-        output = self
-            .params()
-            .output()
-            .forward(&output)
-            .context("Input layer failed to forward propagate during training...")?
-            .sigmoid();
+        output = self.params().output().forward(&output).sigmoid();
         activations.push(output.to_owned());
 
         // Calculate output layer error

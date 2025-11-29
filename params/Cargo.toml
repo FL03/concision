@@ -37,6 +37,10 @@ test = true
 name = "create"
 required-features = ["std"]
 
+[[test]]
+name = "propagation"
+required-features = ["std", "approx"]
+
 [dependencies]
 concision-init = { workspace = true }
 concision-traits = { workspace = true }

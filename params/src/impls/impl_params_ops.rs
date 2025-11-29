@@ -24,7 +24,7 @@ where
         <Self as Backward<X, Y>>::backward(self, input, grad, lr)
     }
     /// forward propagation
-    pub fn forward<X, Y>(&self, input: &X) -> Option<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> Y
     where
         Self: Forward<X, Output = Y>,
     {
@@ -62,8 +62,8 @@ where
 {
     type Output = Z;
 
-    fn forward(&self, input: &X) -> Option<Self::Output> {
-        Some(input.dot(self.weights()) + self.bias())
+    fn forward(&self, input: &X) -> Self::Output {
+        input.dot(self.weights()) + self.bias()
     }
 }
 

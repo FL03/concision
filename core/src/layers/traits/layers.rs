@@ -50,7 +50,7 @@ where
         self.params_mut().backward(&input, &delta, gamma)
     }
     /// complete a forward pass through the layer
-    fn forward<X, Y>(&self, input: &X) -> Option<Y>
+    fn forward<X, Y>(&self, input: &X) -> Y
     where
         ParamsBase<S, D>: Forward<X, Output = Y>,
         Self: Activator<Y, Output = Y>,

@@ -33,15 +33,8 @@ doctest = true
 test = true
 
 [[test]]
-name = "params"
-required-features = ["approx", "std"]
-
-[[test]]
 name = "fft"
 required-features = ["alloc", "signal"]
-
-[[test]]
-name = "utils"
 
 [dependencies]
 concision-init = { workspace = true }

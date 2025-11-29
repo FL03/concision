@@ -117,21 +117,17 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, input: &ArrayBase<S, D>) -> Option<Self::Output> {
+    fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
         let mut output = self
             .params()
             .input()
-            .forward_then(&input.to_owned(), |y| y.relu())?;
+            .forward_then(&input.to_owned(), |y| y.relu());
 
         for layer in self.params().hidden() {
-            output = layer.forward_then(&output, |y| y.relu())?;
+            output = layer.forward(&output).relu();
         }
 
-        let y = self
-            .params()
-            .output()
-            .forward_then(&output, |y| y.sigmoid())?;
-        Some(y)
+        self.params().output().forward(&output).sigmoid()
     }
 }
 
@@ -176,28 +172,15 @@ where
         let mut activations = Vec::new();
         activations.push(input.to_owned());
 
-        let mut output = self
-            .params()
-            .input()
-            .forward(&input)
-            .expect("Failed to complete the forward pass for the input layer")
-            .relu();
+        let mut output = self.params().input().forward_then(&input, |y| y.relu());
         activations.push(output.to_owned());
         // collect the activations of the hidden
         for layer in self.params().hidden() {
-            output = layer
-                .forward(&output)
-                .expect("failed to complete the forward pass for the hidden layer")
-                .relu();
+            output = layer.forward(&output).relu();
             activations.push(output.to_owned());
         }
 
-        output = self
-            .params()
-            .output()
-            .forward(&output)
-            .expect("Output layer failed to forward propagate")
-            .sigmoid();
+        output = self.params().output().forward(&output).sigmoid();
         activations.push(output.to_owned());
 
         // Calculate output layer error
