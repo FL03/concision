@@ -31,8 +31,6 @@
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
-extern crate concision_init as cnc_init;
-extern crate concision_traits as cnc_traits;
 extern crate ndarray as nd;
 
 #[cfg(all(not(feature = "alloc"), not(feature = "std")))]
@@ -47,12 +45,11 @@ mod params;
 
 mod impls {
     mod impl_params;
-    #[allow(deprecated)]
-    mod impl_params_deprecated;
-    #[cfg(feature = "rand")]
-    mod impl_params_init;
     mod impl_params_iter;
     mod impl_params_ops;
+    
+    #[allow(deprecated)]
+    mod impl_params_deprecated;
     #[cfg(feature = "rand")]
     mod impl_params_rand;
     #[cfg(feature = "serde")]
