@@ -27,9 +27,8 @@ rust-version = "1.85.0"
 version = "0.3.0"
 
 [workspace.dependencies]
-# sdk
 concision = { default-features = false, path = "concision", version = "0.3.0" }
-# crates
+# sdk
 concision-core = { default-features = false, path = "core", version = "0.3.0" }
 concision-data = { default-features = false, path = "data", version = "0.3.0" }
 concision-derive = { default-features = false, path = "derive", version = "0.3.0" }
@@ -38,10 +37,12 @@ concision-macros = { default-features = false, path = "macros", version = "0.3.0
 concision-neural = { default-features = false, path = "neural", version = "0.3.0" }
 concision-params = { default-features = false, path = "params", version = "0.3.0" }
 concision-traits = { default-features = false, path = "traits", version = "0.3.0" }
-# extras
+# custom models & extras
 concision-ext = { default-features = false, path = "ext", version = "0.3.0" }
 # custom
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
+# data structures
+hashbrown = { default-features = false, version = "0.16" }
 # tensors & arrays
 ndarray = { default-features = false, version = "0.17" }
 ndarray-linalg = { default-features = false, version = "0.18" }
@@ -51,6 +52,7 @@ criterion = { version = "0.7" }
 # concurrency & parallelism
 crossbeam = { default-features = false, version = "0.8" }
 rayon = { default-features = false, version = "1" }
+rayon-core = { default-features = false, version = "1" }
 # data & serialization
 serde = { default-features = false, features = ["derive"], version = "1" }
 serde_derive = { default-features = false, version = "1" }

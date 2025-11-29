@@ -206,6 +206,7 @@ dependencies = [
  "concision-init",
  "concision-params",
  "concision-traits",
+ "hashbrown 0.16.1",
  "lazy_static",
  "ndarray",
  "num-complex",
@@ -320,7 +321,7 @@ dependencies = [
  "num-traits",
  "rand 0.9.2",
  "rand_distr",
- "rayon",
+ "rayon-core",
  "serde",
  "serde_derive",
  "serde_json",
@@ -332,6 +333,7 @@ dependencies = [
 name = "concision-traits"
 version = "0.3.0"
 dependencies = [
+ "anyhow",
  "approx",
  "getrandom 0.3.4",
  "ndarray",

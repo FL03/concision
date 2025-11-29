@@ -7,7 +7,7 @@
 use alloc::string::String;
 
 /// a type alias for a [`Result`](core::result::Result) type that is used throughout
-/// the library using an [`InitError`](InitError) as the error type.
+/// the library using an [`InitError`] as the error type.
 pub type InitResult<T> = core::result::Result<T, InitError>;
 
 /// The [`InitError`] type enumerates various initialization errors while integrating with the

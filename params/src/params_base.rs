@@ -10,7 +10,11 @@ use ndarray::{
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
 /// model where the bias tensor is always `n-1` dimensions smaller than the `weights` tensor.
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
-/// that can be reduced by one axis (i.e. $\mbox{rank}(D)>0$), which is typically the "zero-th" axis.
+/// that can be reduced by one axis, typically the "zero-th" axis:
+///
+/// ```math
+/// \mbox{rank}(D)>0
+/// ```
 pub struct ParamsBase<S, D = ndarray::Ix2, A = <S as RawData>::Elem>
 where
     D: Dimension,
@@ -268,14 +272,14 @@ where
     {
         ParamsBase::new(self.bias().to_shared(), self.weights().to_shared())
     }
-    /// returns a "view" of the parameters; see [view](ArrayBase::view) for more information
+    /// returns a "view" of the parameters; see [`view`](ndarray::ArrayBase::view) for more information
     pub fn view(&self) -> ParamsBase<ndarray::ViewRepr<&'_ A>, D>
     where
         S: Data,
     {
         ParamsBase::new(self.bias().view(), self.weights().view())
     }
-    /// returns mutable view of the parameters; see [view_mut](ArrayBase::view_mut) for more information
+    /// returns mutable view of the parameters; see [`view_mut`](ndarray::ArrayBase::view_mut) for more information
     pub fn view_mut(&mut self) -> ParamsBase<ndarray::ViewRepr<&'_ mut A>, D>
     where
         S: ndarray::DataMut,

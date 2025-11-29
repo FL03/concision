@@ -2,7 +2,7 @@
     appellation: impl_params_iter <module>
     authors: @FL03
 */
-use crate::params::ParamsBase;
+use crate::params_base::ParamsBase;
 
 use crate::iter::{Iter, IterMut};
 use ndarray::iter as nditer;

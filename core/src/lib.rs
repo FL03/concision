@@ -29,7 +29,9 @@
     clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
-    clippy::upper_case_acronyms
+    clippy::should_implement_trait,
+    clippy::upper_case_acronyms,
+    rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(allocator_api))]

@@ -23,10 +23,12 @@
 //!
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(
-    clippy::missing_saftey_doc,
+    clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
-    clippy::upper_case_acronyms
+    clippy::should_implement_trait,
+    clippy::upper_case_acronyms,
+    rustdoc::redundant_explicit_links
 )]
 
 #[cfg(feature = "alloc")]
@@ -41,7 +43,7 @@ compiler_error! {
 pub mod error;
 pub mod iter;
 
-mod params;
+mod params_base;
 
 mod impls {
     mod impl_params;
@@ -73,12 +75,12 @@ mod types {
 
 // re-exports
 #[doc(inline)]
-pub use self::{error::*, params::ParamsBase, traits::*, types::*};
+pub use self::{error::*, params_base::ParamsBase, traits::*, types::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use crate::error::ParamsError;
-    pub use crate::params::*;
+    pub use crate::params_base::*;
     pub use crate::traits::*;
     pub use crate::types::*;
 }

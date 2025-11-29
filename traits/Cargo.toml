@@ -41,6 +41,7 @@ variants = { workspace = true }
 # data structures
 ndarray = { workspace = true }
 # error-handling
+anyhow = { workspace = true}
 thiserror = { workspace = true }
 # macros & utilities
 paste = { workspace = true }
@@ -50,7 +51,7 @@ num-complex = { optional = true, workspace = true }
 num-integer = { workspace = true }
 num-traits = { workspace = true }
 # random
-getrandom = { default-features = false, optional = true, workspace = true }
+getrandom = { optional = true, workspace = true }
 rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 
@@ -69,6 +70,7 @@ nightly = []
 # ************* [FF:Dependencies] *************
 std = [
   "alloc", 
+  "anyhow/std",
   "ndarray/std", 
   "num-complex?/std", 
   "num-integer/std",
@@ -89,6 +91,8 @@ approx = ["dep:approx", "ndarray/approx"]
 blas = ["ndarray/blas"]
 
 complex = ["dep:num-complex"]
+
+rayon = ["ndarray/rayon"]
 
 rand = [
   "dep:rand", 

@@ -41,6 +41,7 @@ variants = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # data structures
+hashbrown = { workspace = true }
 ndarray = { workspace = true }
 # serialization
 serde = { features = ["derive"], optional = true, workspace = true }
@@ -83,6 +84,7 @@ nightly = [
   "concision-init/nightly",
   "concision-params/nightly",
   "concision-traits/nightly",
+  "hashbrown/nightly",
 ]
 
 # ************* [FF:Features] *************
@@ -101,6 +103,7 @@ std = [
   "concision-init/std",
   "concision-params/std",
   "concision-traits/std",
+  "hashbrown/std",
   "ndarray/std",
   "num-integer/std",
   "num-complex?/std",
@@ -155,18 +158,22 @@ complex = [
 
 rand = [
   "concision-init/rand",
-  "concision-params/rand"
+  "concision-params/rand",
+  "concision-traits/rand",
 ]
 
 rayon = [
   "dep:rayon",
   "concision-params/rayon",
+  "concision-traits/rayon",
+  "hashbrown/rayon",
   "ndarray/rayon",
 ]
 
 rng = [
   "concision-init/rng",
-  "concision-params/rng"
+  "concision-params/rng",
+  "concision-traits/rand",
 ]
 
 rustfft = ["dep:rustfft"]
@@ -176,6 +183,7 @@ serde = [
   "dep:serde_derive",
   "concision-init/serde",
   "concision-params/serde",
+  "hashbrown/serde",
   "ndarray/serde",
   "num-complex?/serde",
 ]

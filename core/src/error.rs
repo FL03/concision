@@ -18,8 +18,6 @@ pub enum Error {
     BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[error("Unknown Error: {0}")]
     Unknown(String),
-    #[error(transparent)]
-    ExtError(#[from] ExtError),
     #[error("The model is not trained")]
     NotTrained,
     #[error("Invalid model configuration")]
@@ -42,21 +40,16 @@ pub enum Error {
     UnsupportedModel(String),
     #[error("Parameter Error")]
     ParameterError(String),
-}
-
-/// The [`CommonError`] type enumerates external errors handled by the framework
-#[derive(Debug, thiserror::Error)]
-pub enum ExtError {
     #[error(transparent)]
     AnyError(#[from] anyhow::Error),
     #[error(transparent)]
     PadError(#[from] crate::utils::pad::PadError),
     #[error(transparent)]
-    TraitError(#[from] concision_traits::Error),
-    #[error(transparent)]
     ParamError(#[from] concision_params::ParamsError),
     #[error(transparent)]
     InitError(#[from] concision_init::InitError),
+    #[error(transparent)]
+    TraitError(#[from] concision_traits::Error),
     #[error(transparent)]
     ShapeError(#[from] ndarray::ShapeError),
     #[cfg(feature = "serde")]

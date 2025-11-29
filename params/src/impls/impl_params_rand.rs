@@ -3,7 +3,7 @@
     Created At: 2025.11.26:15:28:12
     Contrib: @FL03
 */
-use crate::params::ParamsBase;
+use crate::params_base::ParamsBase;
 
 use concision_init::InitRand;
 use ndarray::{

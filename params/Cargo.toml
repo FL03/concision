@@ -41,7 +41,7 @@ concision-traits = { workspace = true }
 # custom
 variants = { workspace = true }
 # concurrency & parallelism
-rayon = { optional = true, workspace = true }
+rayon-core = { optional = true, workspace = true }
 # data & serialization
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
@@ -102,6 +102,7 @@ wasm = [
   "getrandom?/wasm_js",
   "concision-init/wasm",
   "concision-traits/wasm",
+  "rayon-core?/web_spin_lock",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
@@ -140,7 +141,7 @@ rand = [
 ]
 
 rayon = [
-  "dep:rayon",
+  "dep:rayon-core",
   "ndarray/rayon",
 ]
 
