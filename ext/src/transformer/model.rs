@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 #[cfg(feature = "rand")]
-use cnc::rand_distr;
+use cnc::init::rand_distr::{Distribution, StandardNormal};
 use cnc::{
     DeepModelParams, Forward, Model, ModelFeatures, Norm, Params, ReLUActivation,
     SigmoidActivation, StandardModelConfig, Train,
@@ -94,7 +94,7 @@ where
     pub fn init(self) -> Self
     where
         T: 'static + Float + FromPrimitive,
-        rand_distr::StandardNormal: rand_distr::Distribution<T>,
+        StandardNormal: Distribution<T>,
     {
         let params = DeepModelParams::glorot_normal(self.features());
         TransformerModel { params, ..self }

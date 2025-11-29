@@ -25,7 +25,11 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn new(query: ArrayBase<S, D, A>, key: ArrayBase<S, D, A>, value: ArrayBase<S, D, A>) -> Self {
+    pub fn new(
+        query: ArrayBase<S, D, A>,
+        key: ArrayBase<S, D, A>,
+        value: ArrayBase<S, D, A>,
+    ) -> Self {
         Self { query, key, value }
     }
     pub fn from_elem<Sh: ShapeBuilder<Dim = D>>(shape: Sh, elem: A) -> Self

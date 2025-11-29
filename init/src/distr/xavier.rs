@@ -69,7 +69,7 @@ mod impl_normal {
         /// tries creating a new [`Normal`] distribution with a mean of 0 and the computed
         /// standard deviation ($\sigma$) based on the number of inputs and outputs.
         pub fn distr(&self) -> crate::InitResult<Normal<T>> {
-            Normal::new(T::zero(), self.std_dev()).map_err(Into::into)
+            Ok(Normal::new(T::zero(), self.std_dev())?)
         }
         /// returns a reference to the standard deviation of the distribution
         pub const fn std_dev(&self) -> T {

@@ -150,10 +150,16 @@ where
         target: &ArrayBase<T, Ix1>,
     ) -> Result<Self::Output, Error> {
         if input.len() != self.layout().input() {
-            return Err(Error::InvalidInputShape);
+            return Err(Error::InvalidInputFeatures(
+                input.len(),
+                self.layout().input(),
+            ));
         }
         if target.len() != self.layout().output() {
-            return Err(Error::InvalidOutputShape);
+            return Err(Error::InvalidTargetFeatures(
+                target.len(),
+                self.layout().output(),
+            ));
         }
         // get the learning rate from the model's configuration
         let lr = self
@@ -254,15 +260,21 @@ where
         &mut self,
         input: &ArrayBase<S, Ix2>,
         target: &ArrayBase<T, Ix2>,
-    ) -> Result<Self::Output, Error> {
+    ) -> Result<Self::Output, Self::Error> {
         if input.nrows() == 0 || target.nrows() == 0 {
-            return Err(Error::InvalidBatchSize);
+            return Err(Error::InvalidBatchSize(0));
         }
         if input.ncols() != self.layout().input() {
-            return Err(Error::InvalidInputShape);
+            return Err(Error::InvalidInputFeatures(
+                input.ncols(),
+                self.layout().input(),
+            ));
         }
         if target.ncols() != self.layout().output() || target.nrows() != input.nrows() {
-            return Err(Error::InvalidOutputShape);
+            return Err(Error::InvalidTargetFeatures(
+                target.ncols(),
+                self.layout().output(),
+            ));
         }
         let batch_size = input.nrows();
         let mut loss = A::zero();
@@ -271,6 +283,13 @@ where
             loss += match Train::<ArrayView1<A>, ArrayView1<A>>::train(self, &x, &e) {
                 Ok(l) => l,
                 Err(err) => {
+                    #[cfg(not(feature = "tracing"))]
+                    eprintln!(
+                        "Training failed for batch {}/{}: {:?}",
+                        i + 1,
+                        batch_size,
+                        err
+                    );
                     #[cfg(feature = "tracing")]
                     tracing::error!(
                         "Training failed for batch {}/{}: {:?}",

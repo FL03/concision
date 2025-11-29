@@ -43,7 +43,7 @@ num-complex = { optional = true, workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # networking
-reqwest = { optional = true, workspace = true }
+reqwest = { optional = true, version = "0.12" }
 # data & serialization
 serde = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }

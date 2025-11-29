@@ -3,6 +3,8 @@
     Contrib: @FL03
 */
 
+use crate::HyperParams;
+
 /// The [`RawConfig`] trait defines a basic interface for all _configurations_ used within the
 /// framework for neural networks, their layers, and more.
 pub trait RawConfig {
@@ -29,7 +31,7 @@ pub trait ModelConfiguration<T>: RawConfig {
     where
         K: AsRef<str>;
 
-    fn keys(&self) -> Vec<String>;
+    fn keys(&self) -> Vec<HyperParams>;
 }
 
 macro_rules! hyperparam_method {

@@ -42,13 +42,6 @@ compiler_error! {
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-#[cfg(feature = "rand")]
-#[doc(no_inline)]
-pub use rand;
-#[cfg(feature = "rand")]
-#[doc(no_inline)]
-pub use rand_distr;
-
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]

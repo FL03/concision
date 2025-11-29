@@ -61,10 +61,6 @@ num-complex = { optional = true, workspace = true }
 num-integer = { workspace = true }
 num-traits = { workspace = true }
 rustfft = { optional = true, workspace = true }
-# random
-getrandom = { default-features = false, optional = true, workspace = true }
-rand = { optional = true, workspace = true }
-rand_distr = { optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static = { workspace = true }
@@ -109,8 +105,6 @@ std = [
   "num-integer/std",
   "num-complex?/std",
   "num-traits/std",
-  "rand?/std",
-  "rand?/std_rng",
   "serde/std",
   "strum/std",
   "thiserror/std",
@@ -125,7 +119,6 @@ wasi = [
 ]
 
 wasm = [
-  "getrandom?/wasm_js",
   "concision-init/wasm",
   "concision-params/wasm",
   "concision-traits/wasm",
@@ -160,15 +153,7 @@ complex = [
   "concision-params/complex",
 ]
 
-rand = [
-  "dep:rand",
-  "dep:rand_distr",
-  "concision-init/rand",
-  "concision-params/rand",
-  "concision-traits/rand",
-  "num-complex?/rand",
-  "rng",
-]
+rand = ["concision-init/rand"]
 
 rayon = [
   "dep:rayon",
@@ -176,14 +161,7 @@ rayon = [
   "ndarray/rayon",
 ]
 
-rng = [
-  "dep:getrandom",
-  "concision-init/rng",
-  "concision-params/rng",
-  "concision-traits/rng",
-  "rand?/small_rng",
-  "rand?/thread_rng",
-]
+rng = ["concision-init/rng"]
 
 rustfft = ["dep:rustfft"]
 
@@ -194,16 +172,11 @@ serde = [
   "concision-params/serde",
   "ndarray/serde",
   "num-complex?/serde",
-  "rand?/serde",
-  "rand_distr?/serde",
 ]
 
 serde_json = ["dep:serde_json"]
 
-tracing = [
-  "concision-init/tracing",
-  "dep:tracing",
-]
+tracing = ["dep:tracing", "concision-init/tracing"]
 
 # ************* [Unit Tests] *************
 [[test]]
