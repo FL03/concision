@@ -18,15 +18,16 @@ version.workspace = true
 all-features = false
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
+
 version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name = "{{version}}"
+tag-name = "v{{version}}"
 
 [lib]
-crate-type = ["cdylib", "rlib"]
 bench = false
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
@@ -80,9 +81,9 @@ lazy_static = { workspace = true }
 default = ["macros", "std"]
 
 full = [
-  "default",
   "approx",
   "complex",
+  "default",
   "json",
   "rand",
   "serde",
@@ -115,8 +116,8 @@ std = [
   "concision-traits/std",
   "hashbrown/default",
   "ndarray/std",
-  "num-integer/std",
   "num-complex?/std",
+  "num-integer/std",
   "num-traits/std",
   "serde/std",
   "strum/std",
@@ -148,9 +149,9 @@ alloc = [
 ]
 
 approx = [
-  "dep:approx",
   "concision-init/approx",
   "concision-params/approx",
+  "dep:approx",
   "ndarray/approx",
 ]
 
@@ -161,9 +162,9 @@ blas = [
 ]
 
 complex = [
-  "dep:num-complex",
   "concision-init/complex",
   "concision-params/complex",
+  "dep:num-complex",
 ]
 
 rand = [
@@ -173,9 +174,9 @@ rand = [
 ]
 
 rayon = [
-  "dep:rayon",
   "concision-params/rayon",
   "concision-traits/rayon",
+  "dep:rayon",
   "hashbrown/rayon",
   "ndarray/rayon",
 ]
@@ -189,10 +190,10 @@ rng = [
 rustfft = ["dep:rustfft"]
 
 serde = [
-  "dep:serde",
-  "dep:serde_derive",
   "concision-init/serde",
   "concision-params/serde",
+  "dep:serde",
+  "dep:serde_derive",
   "hashbrown/serde",
   "ndarray/serde",
   "num-complex?/serde",
@@ -200,4 +201,4 @@ serde = [
 
 serde_json = ["dep:serde_json"]
 
-tracing = ["dep:tracing", "concision-init/tracing"]
+tracing = ["concision-init/tracing", "dep:tracing"]

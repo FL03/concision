@@ -1,35 +1,37 @@
 [package]
-build       = "build.rs"
+build = "build.rs"
 description = "this crate implements additional models using the concision framework"
-name        = "concision-ext"
+name = "concision-ext"
 
-authors.workspace   = true
-categories.workspace   = true
-edition.workspace      = true
-homepage.workspace     = true
-keywords.workspace     = true
-license.workspace      = true
-readme.workspace       = true
-repository.workspace   = true
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
 rust-version.workspace = true
-version.workspace      = true
+version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features     = ["full"]
-rustc-args   = ["--cfg", "docsrs"]
-version      = "v{{version}}"
+doc-scrape-examples = true
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+
+version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name       = "{{version}}"
+tag-name = "v{{version}}"
 
 [lib]
-bench      = false
+bench = false
 crate-type = ["cdylib", "rlib"]
-doc        = true
-doctest    = true
-test       = true
+doc = true
+doctest = true
+test = true
 
 [[example]]
 name = "attention"
@@ -40,7 +42,7 @@ name = "attention"
 required-features = ["approx", "attention", "rand", "std"]
 
 [[test]]
-name              = "snn"
+name = "snn"
 required-features = ["approx", "snn", "std"]
 
 [dependencies]
@@ -54,20 +56,20 @@ rayon = { optional = true, workspace = true }
 # data-structures
 ndarray = { workspace = true }
 # mathematics
-approx      = { optional = true, workspace = true }
-num         = { workspace = true }
+approx = { optional = true, workspace = true }
+num = { workspace = true }
 num-complex = { optional = true, workspace = true }
-num-traits  = { workspace = true }
-rustfft     = { optional = true, workspace = true }
+num-traits = { workspace = true }
+rustfft = { optional = true, workspace = true }
 # serialization
-serde        = { optional = true, workspace = true }
+serde = { optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
-serde_json   = { optional = true, workspace = true }
+serde_json = { optional = true, workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
 
 [dev-dependencies]
-lazy_static        = { workspace = true }
+lazy_static = { workspace = true }
 tracing-subscriber = { features = ["std"], workspace = true }
 
 [features]
@@ -77,10 +79,10 @@ full = [
   "complex",
   "default",
   "json",
+  "models",
   "rand",
   "serde",
   "tracing",
-  "models",
 ]
 
 nightly = ["concision/nightly"]

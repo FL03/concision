@@ -1,26 +1,37 @@
 [package]
-build = "build.rs"
-description = "this crate provides additional tools for working with datasets"
-name = "concision-data"
 authors.workspace = true
+build = "build.rs"
 categories.workspace = true
+description = "this crate provides additional tools for working with datasets"
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
+name = "concision-data"
 readme.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
+[package.metadata.docs.rs]
+all-features = false
+doc-scrape-examples = true
+features = ["full"]
+rustc-args = ["--cfg", "docsrs"]
+
+version = "v{{version}}"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "v{{version}}"
+
 [lib]
-crate-type = ["cdylib","rlib"]
 bench = false
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
 
-# ************* [Unit Tests] *************
 [[test]]
 name = "default"
 
@@ -38,8 +49,8 @@ thiserror = { workspace = true }
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
 num = { workspace = true }
-num-traits = { workspace = true }
 num-complex = { optional = true, workspace = true }
+num-traits = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # networking
@@ -52,121 +63,109 @@ tracing = { optional = true, workspace = true }
 
 [features]
 default = [
-    "std",
+  "std",
 ]
 
 full = [
-    "default",
-    "approx",
-    "complex",
-    "json",
-    "rand",
-    "serde",
-    "tracing",
+  "approx",
+  "complex",
+  "default",
+  "json",
+  "rand",
+  "serde",
+  "tracing",
 ]
 
 nightly = [
-    "concision-core/nightly",
+  "concision-core/nightly",
 ]
 
 # ************* [FF:Features] *************
 loader = [
-    "json", 
-    "reqwest",
+  "json",
+  "reqwest",
 ]
 
 # ************* [FF:Environments] *************
 std = [
-    "alloc",
-    "concision-core/std",
-    "ndarray/std",
-    "num/std",
-    "num-complex?/std",
-    "serde?/std",
-    "serde_json?/std",
-    "tracing?/std",
-    "variants/std",
+  "alloc",
+  "concision-core/std",
+  "ndarray/std",
+  "num-complex?/std",
+  "num/std",
+  "serde?/std",
+  "serde_json?/std",
+  "tracing?/std",
+  "variants/std",
 ]
 
 wasi = [
-    "concision-core/wasi",
+  "concision-core/wasi",
 ]
 
 wasm = [
-    "concision-core/wasm",
+  "concision-core/wasm",
 ]
 
 # ************* [FF:Dependencies] *************
 alloc = [
-    "concision-core/alloc",
-    "num/alloc",
-    "serde?/alloc",
-    "variants/alloc",
+  "concision-core/alloc",
+  "num/alloc",
+  "serde?/alloc",
+  "variants/alloc",
 ]
 
 approx = [
-    "concision-core/approx",
-    "dep:approx",
-    "ndarray/approx",
+  "concision-core/approx",
+  "dep:approx",
+  "ndarray/approx",
 ]
 
 blas = [
-    "concision-core/blas",
-    "ndarray/blas",
+  "concision-core/blas",
+  "ndarray/blas",
 ]
 
 complex = [
-    "dep:num-complex",
-    "concision-core/complex",
+  "concision-core/complex",
+  "dep:num-complex",
 ]
 
 json = [
-    "alloc",
-    "serde",
-    "serde_json",
-    "concision-core/json",
-    "reqwest?/json",
+  "alloc",
+  "concision-core/json",
+  "reqwest?/json",
+  "serde",
+  "serde_json",
 ]
 
 rayon = [
-    "concision-core/rayon",
-    "dep:rayon",
+  "concision-core/rayon",
+  "dep:rayon",
 ]
 
 rand = [
-    "concision-core/rand", 
-    "rng",
+  "concision-core/rand",
+  "rng",
 ]
 
 rng = [
-    "concision-core/rng",
+  "concision-core/rng",
 ]
 
 reqwest = ["dep:reqwest"]
 
 serde = [
-    "dep:serde",
-    "concision-core/serde",
-    "ndarray/serde",
-    "num/serde",
-    "num-complex?/serde",
+  "concision-core/serde",
+  "dep:serde",
+  "ndarray/serde",
+  "num-complex?/serde",
+  "num/serde",
 ]
 
 serde_json = ["dep:serde_json"]
 
 tracing = [
-    "concision-core/tracing",
-    "dep:tracing",
+  "concision-core/tracing",
+  "dep:tracing",
 ]
-
-# ********* [Metadata] *********
-[package.metadata.docs.rs]
-all-features = false
-doc-scrape-examples = true
-features = ["full"]
-rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
-
-[package.metadata.release]
-no-dev-version = true
-tag-name = "{{version}}"

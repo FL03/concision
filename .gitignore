@@ -1,65 +1,68 @@
-# Artifacts
+# General
+**/.artifacts/tmp/
+**/.docker/data
+
+**/.cache/
+**/.DS_Store
+
+*.bk
+*.bk.*
+
+*.bak
+*.bak.*
+
+*.csv
+*.csv.*
+
+*.db
+*.db.*
+
+*.db-*.*
+
+*.error
+*.error.*
+
+*.gz
+*.gz.*
+
+*.log
+*.log.*
+
+*.sqlite
+*.sqlite.*
+
+*.zip
+*.zip.*
+
+## Development Environments
+
+### IntelliJ Idea
+**/.idea/
+
+**/*.iml
+**/*.iml.*
+
+**/*.iws
+**/*.iws.*
+
+### Visual Studio Code
+**/.vscode
+
+!**/.vscode/*settings.json
+!**/.vscode/*launch.json
+
+## Operating Systems
+
+### Nix
+!flake.lock
+
+### Windows (WSL2)
+**/*:Zone.Identifier
 
 **/.artifacts/data/
 **/.docker/data/
 
-
-## Caches
-
-**/.cache/
-
-# Configuration Files
-
-**/config.*
-**/*.config.*
-
-**/*.env
-**/*.env.*
-
-### Exceptions
-!**/default.config.*
-!**/*.config.cjs
-!**/*.config.js
-!**/*.config.mjs
-!**/config.py
-!**/config.rs
-
-!**/example.env.*
-!**/*.env.example
-!**/*.env.default
-
-# Dev
-
-### Idea
-
-**/.idea/
-
-### vscode
-
-**/.vscode/
-
-# File Extensions
-
-**/*.lock
-**/*.lock.*
-
-**/*-lock.*
-
-**/*.log
-**/*.log.*
-
-### Data Files
-
-**/*.csv
-**/*.csv.*
-
-**/*.db
-**/*.db.*
-
-**/*.db-*.*
-
-**/*.zip
-**/*.zip.*
+# Language Specific
 
 ## Rust
 **/debug/
@@ -69,17 +72,6 @@
 **/*.bk.*
 
 !Cargo.lock
-
-## Node
-**/build/
-**/debug/
-**/dist/
-**/node_modules/
-
-### SvelteKit
-**/__sapper__/
-**/.DS_STORE/
-**/.svelte-kit/
 
 ## Python
 **/__pycache__/
@@ -106,7 +98,53 @@
 **/*.whl
 **/*.whl.*
 
-## Operating Systems
+## Node.js
+**/.DS_STORE
+**/.pnp
+**/.pnp.*
+**/.vercel
+**/build
+**/debug
+**/dist
+**/node_modules
 
-### Windows (WSL2)
-**/*:Zone.Identifier
+### TypeScript
+**/*.tsbuildinfo
+
+### npm
+!**/package-lock.json
+**/npm-debug.log
+
+### yarn
+**/.yarn/install-state.gz
+**/yarn-error.log
+**/yarn-debug.log
+
+### SvelteKit
+**/__sapper__/
+**/.svelte-kit/
+
+### Deno
+**/deno.json
+**/deno.jsonc
+
+### Next.js
+**/.next
+**/out
+
+**/next-env.d.ts
+
+### Jest
+**/.swc
+**/coverage
+
+### OpenNext (Cloudflare)
+**/.open-next
+**/.wrangler
+**/.vercel
+
+### Supabase
+**/supabase/temp
+
+### Vercel
+**/.vercel

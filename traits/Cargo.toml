@@ -16,13 +16,15 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
+doc-scrape-examples = true
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
+
 version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name = "{{version}}"
+tag-name = "v{{version}}"
 
 [lib]
 bench = false
@@ -41,7 +43,7 @@ variants = { workspace = true }
 # data structures
 ndarray = { workspace = true }
 # error-handling
-anyhow = { workspace = true}
+anyhow = { workspace = true }
 thiserror = { workspace = true }
 # macros & utilities
 paste = { workspace = true }
@@ -59,9 +61,9 @@ rand_distr = { optional = true, workspace = true }
 default = ["std"]
 
 full = [
-  "default",
-  "approx", 
+  "approx",
   "complex",
+  "default",
   "rand",
 ]
 
@@ -69,15 +71,15 @@ nightly = []
 
 # ************* [FF:Dependencies] *************
 std = [
-  "alloc", 
+  "alloc",
   "anyhow/std",
-  "ndarray/std", 
-  "num-complex?/std", 
+  "ndarray/std",
+  "num-complex?/std",
   "num-integer/std",
-  "num-traits/std", 
-  "rand?/std", 
+  "num-traits/std",
+  "rand?/std",
   "rand?/std_rng",
-  "thiserror/std"
+  "thiserror/std",
 ]
 
 wasi = []
@@ -95,14 +97,14 @@ complex = ["dep:num-complex"]
 rayon = ["ndarray/rayon"]
 
 rand = [
-  "dep:rand", 
-  "dep:rand_distr", 
-  "num-complex?/rand", 
-  "rng"
+  "dep:rand",
+  "dep:rand_distr",
+  "num-complex?/rand",
+  "rng",
 ]
 
 rng = [
-  "dep:getrandom", 
-  "rand?/small_rng", 
-  "rand?/thread_rng"
+  "dep:getrandom",
+  "rand?/small_rng",
+  "rand?/thread_rng",
 ]

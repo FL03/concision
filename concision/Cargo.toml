@@ -1,38 +1,39 @@
 [package]
 build = "build.rs"
-name  = "concision"
+name = "concision"
 
-authors.workspace      = true
-categories.workspace   = true
-description.workspace  = true
-edition.workspace      = true
-homepage.workspace     = true
-keywords.workspace     = true
-license.workspace      = true
-readme.workspace       = true
-repository.workspace   = true
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
 rust-version.workspace = true
-version.workspace      = true
+version.workspace = true
 
 [package.metadata.docs.rs]
-all-features        = false
+all-features = false
 doc-scrape-examples = true
-features            = ["default"]
-rustc-args          = ["--cfg", "docsrs"]
-version             = "v{{version}}"
+features = ["default"]
+rustc-args = ["--cfg", "docsrs"]
+
+version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name       = "{{version}}"
+tag-name = "v{{version}}"
 
 [lib]
-bench      = true
+bench = true
 crate-type = ["cdylib", "rlib"]
-doc        = true
-doctest    = true
-name       = "cnc"
-path       = "lib.rs"
-test       = true
+doc = true
+doctest = true
+name = "cnc"
+path = "lib.rs"
+test = true
 
 [[bench]]
 harness = false
@@ -46,35 +47,35 @@ required-features = [
 ]
 
 [[example]]
-name              = "params"
+name = "params"
 required-features = ["rand", "std", "tracing"]
 
 [[example]]
-name              = "simple"
+name = "simple"
 required-features = ["rand", "std", "tracing"]
 
 [[test]]
 name = "default"
 
 [[test]]
-name              = "simple"
+name = "simple"
 required-features = ["rand", "std"]
 
 [dependencies]
-concision-core   = { workspace = true }
-concision-data   = { optional = true, workspace = true }
+concision-core = { workspace = true }
+concision-data = { optional = true, workspace = true }
 concision-derive = { optional = true, workspace = true }
 concision-macros = { optional = true, workspace = true }
 
 [dev-dependencies]
-anyhow             = { features = ["std"], workspace = true }
-approx             = { workspace = true }
-criterion          = { features = ["plotters"], workspace = true }
-lazy_static        = { workspace = true }
-ndarray            = { workspace = true }
-num                = { features = ["rand", "serde"], workspace = true }
-serde              = { features = ["std"], workspace = true }
-tracing            = { features = ["attributes", "log", "std"], workspace = true }
+anyhow = { features = ["std"], workspace = true }
+approx = { workspace = true }
+criterion = { features = ["plotters"], workspace = true }
+lazy_static = { workspace = true }
+ndarray = { workspace = true }
+num = { features = ["rand", "serde"], workspace = true }
+serde = { features = ["std"], workspace = true }
+tracing = { features = ["attributes", "log", "std"], workspace = true }
 tracing-subscriber = { workspace = true }
 
 [features]
