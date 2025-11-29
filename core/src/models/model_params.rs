@@ -11,16 +11,11 @@ use crate::{DeepModelRepr, RawHidden};
 /// The [`ModelParamsBase`] object is a generic container for storing the parameters of a
 /// neural network, regardless of the layout (e.g. shallow or deep). This is made possible
 /// through the introduction of a generic hidden layer type, `H`, that allows us to define
-/// aliases and additional traits for contraining the hidden layer type. That being said, we
-/// don't reccoment using this type directly, but rather use the provided type aliases such as
-/// [`DeepModelParams`] or [`ShallowModelParams`] or their owned variants. These provide a much
-/// more straighforward interface for typing the parameters of a neural network. We aren't too
-/// worried about the transmutation between the two since users desiring this ability should
-/// simply stick with a _deep_ representation, initializing only a single layer within the
-/// respective container.
+/// aliases and additional traits for contraining the hidden layer type. Additionally, the
+/// structure enables the introduction of common accessors and initialization routines.
 ///
-/// This type also enables us to define a set of common initialization routines and introduce
-/// other standards for dealing with parameters in a neural network.
+/// With that in mind, we don't reccomend using the implementation directly, rather, leverage
+/// a type alias that best suites your use case (e.g. owned parameters, arc parameters, etc.).
 pub struct ModelParamsBase<S, D, H, A = <S as RawData>::Elem>
 where
     D: Dimension,

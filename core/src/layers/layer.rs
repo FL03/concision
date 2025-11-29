@@ -103,7 +103,7 @@ where
             params: self.params,
         }
     }
-    pub fn forward<X, Y>(&self, input: &X) -> Option<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> Y
     where
         ParamsBase<S, D, A>: Forward<X, Output = Y>,
         F: Activator<<ParamsBase<S, D, A> as Forward<X>>::Output, Output = Y>,
@@ -111,6 +111,6 @@ where
         X: Clone,
         Y: Clone,
     {
-        Forward::forward(&self.params, input).map(|x| self.rho.activate(x))
+        Forward::forward_then(&self.params, input, |x| self.rho.activate(x))
     }
 }

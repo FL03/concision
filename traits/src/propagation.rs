@@ -22,25 +22,32 @@ pub enum PropagationError {
 /// step in a neural network or machine learning model.
 pub trait Backward<X, Delta = X> {
     type Elem;
-    type Output;
 
-    fn backward(&mut self, input: &X, delta: &Delta, gamma: Self::Elem) -> Option<Self::Output>;
+    fn backward(&mut self, input: &X, delta: &Delta, gamma: Self::Elem);
 }
 
-/// The [`Forward`] trait defines an interface that is used to perform a single forward step
-/// within a neural network or machine learning model.
+pub trait BackwardStep<T> {
+    type Data<_X>;
+    type Grad<_X>;
+    type Output;
+
+    fn backward(&mut self, input: &Self::Data<T>, delta: &Self::Grad<T>, gamma: T) -> Self::Output;
+}
+
+/// The [`Forward`] trait describes a common interface for objects designated to perform a
+/// single forward step in a neural network or machine learning model.
 pub trait Forward<Rhs> {
     type Output;
     /// a single forward step
-    fn forward(&self, input: &Rhs) -> Option<Self::Output>;
+    fn forward(&self, input: &Rhs) -> Self::Output;
     /// this method enables the forward pass to be generically _activated_ using some closure.
     /// This is useful for isolating the logic of the forward pass from that of the activation
     /// function and is often used by layers and models.
-    fn forward_then<F>(&self, input: &Rhs, then: F) -> Option<Self::Output>
+    fn forward_then<F>(&self, input: &Rhs, then: F) -> Self::Output
     where
         F: FnOnce(Self::Output) -> Self::Output,
     {
-        self.forward(input).map(then)
+        then(self.forward(input))
     }
 }
 
@@ -49,26 +56,30 @@ pub trait Forward<Rhs> {
 */
 
 use ndarray::linalg::Dot;
-use ndarray::{ArrayBase, Data, Dimension, LinalgScalar};
-use num_traits::FromPrimitive;
+use ndarray::{Array, ArrayBase, ArrayView, Data, DataMut, Dimension};
+use num_traits::Num;
 
-impl<X, Y, Dx, A, S, D> Backward<X, Y> for ArrayBase<S, D, A>
+impl<A, S, D, S1, D1, S2, D2> Backward<ArrayBase<S1, D1, A>, ArrayBase<S2, D2, A>>
+    for ArrayBase<S, D, A>
 where
-    A: LinalgScalar + FromPrimitive,
+    A: 'static + Copy + Num,
     D: Dimension,
-    S: ndarray::DataMut<Elem = A>,
-    Dx: core::ops::Mul<A, Output = Dx>,
-    for<'a> X: Dot<Y, Output = Dx>,
-    for<'a> &'a Self: core::ops::Add<&'a Dx, Output = Self>,
+    S: DataMut<Elem = A>,
+    D1: Dimension,
+    D2: Dimension,
+    S1: Data<Elem = A>,
+    S2: Data<Elem = A>,
+    for<'b> &'b ArrayBase<S1, D1, A>: Dot<ArrayView<'b, A, D2>, Output = Array<A, D2>>,
 {
     type Elem = A;
-    type Output = ();
 
-    fn backward(&mut self, input: &X, delta: &Y, gamma: Self::Elem) -> Option<Self::Output> {
-        let dx = input.dot(delta);
-        let next = &*self + &(dx * gamma);
-        self.assign(&next);
-        Some(())
+    fn backward(
+        &mut self,
+        input: &ArrayBase<S1, D1, A>,
+        delta: &ArrayBase<S2, D2, A>,
+        gamma: Self::Elem,
+    ) {
+        self.scaled_add(gamma, &input.dot(&delta.t()))
     }
 }
 
@@ -81,7 +92,7 @@ where
 {
     type Output = Y;
 
-    fn forward(&self, input: &X) -> Option<Self::Output> {
-        Some(input.dot(self))
+    fn forward(&self, input: &X) -> Self::Output {
+        input.dot(self)
     }
 }

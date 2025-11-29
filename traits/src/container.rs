@@ -9,6 +9,29 @@ pub trait Container {
     type Item;
 }
 
+pub trait KeyValue {
+    type Cont<_K, _V>;
+    type Key;
+    type Value;
+
+    fn key(&self) -> &Self::Key;
+    fn value(&self) -> &Self::Value;
+}
+
+impl<K, V> KeyValue for (K, V) {
+    type Cont<_K, _V> = (_K, _V);
+    type Key = K;
+    type Value = V;
+
+    fn key(&self) -> &Self::Key {
+        &self.0
+    }
+
+    fn value(&self) -> &Self::Value {
+        &self.1
+    }
+}
+
 macro_rules! container {
     ($(
         $($container:ident)::*<$A:ident $(, $B:ident)?>

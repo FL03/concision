@@ -2,7 +2,7 @@
     appellation: impl_params <module>
     authors: @FL03
 */
-use crate::params::ParamsBase;
+use crate::params_base::ParamsBase;
 use crate::traits::{Biased, Weighted};
 use core::iter::Once;
 use ndarray::{ArrayBase, Data, DataOwned, Dimension, Ix1, Ix2, RawData};

@@ -39,20 +39,18 @@ where
         *self.params_mut() = params;
     }
     /// backward propagate error through the layer
-    fn backward<X, Y, Z, Dt>(&mut self, input: X, error: Y, gamma: Self::Elem) -> Option<Z>
+    fn backward<X, Y, Z, Dt>(&mut self, input: X, error: Y, gamma: Self::Elem)
     where
         S: Data,
         Self: ActivatorGradient<X, Input = Y, Output = Z, Delta = Dt>,
         Self::Elem: Clone,
-        ParamsBase<S, D>: Backward<X, Dt, Elem = Self::Elem, Output = Z>,
+        ParamsBase<S, D>: Backward<X, Dt, Elem = Self::Elem>,
     {
-        // compute the delta using the activation function
         let delta = self.activate_gradient(error);
-        // apply the backward function of the inherited layer
         self.params_mut().backward(&input, &delta, gamma)
     }
     /// complete a forward pass through the layer
-    fn forward<X, Y>(&self, input: &X) -> Option<Y>
+    fn forward<X, Y>(&self, input: &X) -> Y
     where
         ParamsBase<S, D>: Forward<X, Output = Y>,
         Self: Activator<Y, Output = Y>,

@@ -25,7 +25,11 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub fn new(query: ArrayBase<S, D, A>, key: ArrayBase<S, D, A>, value: ArrayBase<S, D, A>) -> Self {
+    pub fn new(
+        query: ArrayBase<S, D, A>,
+        key: ArrayBase<S, D, A>,
+        value: ArrayBase<S, D, A>,
+    ) -> Self {
         Self { query, key, value }
     }
     pub fn from_elem<Sh: ShapeBuilder<Dim = D>>(shape: Sh, elem: A) -> Self
@@ -128,11 +132,10 @@ where
 {
     type Output = Y;
 
-    fn forward(&self, input: &X) -> Option<Y> {
+    fn forward(&self, input: &X) -> Y {
         let query = input.dot(&self.query);
         let key = input.dot(&self.key);
         let value = input.dot(&self.value);
-        let output = query + key + value;
-        Some(output)
+        query + key + value
     }
 }

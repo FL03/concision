@@ -6,11 +6,10 @@
 /// the [`Gradient`] trait defines the gradient of a function, which is a function that
 /// takes an input and returns a delta, which is the change in the output with respect to
 /// the input.
-pub trait Gradient<S, D> {
-    type Elem;
-    type Delta<_S, _D>;
+pub trait Gradient<T> {
+    type Delta<_U>;
 
-    fn grad(&self, rhs: &Self::Delta<S, D>) -> Self::Delta<S, D>;
+    fn grad(&self, rhs: &Self::Delta<T>) -> Self::Delta<T>;
 }
 
 /// A trait declaring basic gradient-related routines for a neural network

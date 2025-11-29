@@ -102,19 +102,16 @@ where
     /// sequentially forwards the input through the model without any activations or other
     /// complexities in-between. not overly usefuly, but it is here for completeness
     #[inline]
-    pub fn forward<X, Y>(&self, input: &X) -> Option<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> Y
     where
         A: Clone,
         S: Data,
         ParamsBase<S, D>: Forward<X, Output = Y> + Forward<Y, Output = Y>,
     {
-        // forward the input through the input layer
-        let mut output = self.input().forward(input)?;
-        // forward the input through each of the hidden layers
-        for layer in self.hidden() {
-            output = layer.forward(&output)?;
-        }
-        // finally, forward the output through the output layer
+        let mut output = self.input().forward(input);
+        self.hidden().into_iter().for_each(|layer| {
+            output = layer.forward(&output);
+        });
         self.output().forward(&output)
     }
 }

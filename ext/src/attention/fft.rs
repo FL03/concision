@@ -87,7 +87,7 @@ impl<A> FftAttention<A> {
             level = "trace",
         )
     )]
-    pub fn forward<X, Y>(&self, input: &X) -> cnc::Result<Y>
+    pub fn forward<X, Y>(&self, input: &X) -> Y
     where
         Self: Forward<X, Output = Y>,
     {
@@ -111,7 +111,7 @@ where
 {
     type Output = Array1<A>;
 
-    fn forward(&self, input: &ArrayBase<S, Ix1>) -> cnc::Result<Self::Output> {
+    fn forward(&self, input: &ArrayBase<S, Ix1>) -> Self::Output {
         let seq_len = input.dim();
         let n = A::from_usize(seq_len).unwrap();
 

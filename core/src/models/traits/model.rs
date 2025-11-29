@@ -39,7 +39,7 @@ pub trait Model<T = f32> {
     /// By default, the trait simply passes each output from one layer to the next, however,
     /// custom models will likely override this method to inject activation methods and other
     /// related logic
-    fn predict<U, V>(&self, inputs: &U) -> Option<V>
+    fn predict<U, V>(&self, inputs: &U) -> V
     where
         Self: Predict<U, Output = V>,
     {

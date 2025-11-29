@@ -41,13 +41,9 @@ where
 {
     type Output = Y;
 
-    fn forward(&self, inputs: &X) -> Option<Self::Output> {
-        let y = self
-            .params()
-            .forward(inputs)
-            .expect("Forward pass failed in LayerBase");
-
-        Some(self.rho().activate(y))
+    fn forward(&self, inputs: &X) -> Self::Output {
+        self.params()
+            .forward_then(inputs, |y| self.rho().activate(y))
     }
 }
 

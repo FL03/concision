@@ -12,15 +12,17 @@
 //! manifesting in a number of traits, utilities, and other primitives used to define various
 //! approaches to activation functions.
 //!
-//! - [Heavyside]
-//! - [LinearActivation]
-//! - [Sigmoid]
-//! - [Softmax]
-//! - [ReLU]
-//! - [Tanh]
+//! - [`HeavysideActivation`]
+//! - [`LinearActivation`]
+//! - [`SigmoidActivation`]
+//! - [`SoftmaxActivation`]
+//! - [`ReLUActivation`]
+//! - [`TanhActivation`]
 //!
 #[doc(inline)]
-pub use self::prelude::*;
+pub use self::{traits::*, utils::*};
+
+pub(crate) mod utils;
 
 pub(crate) mod traits {
     #[doc(inline)]
@@ -37,21 +39,6 @@ pub(crate) mod traits {
     }
 }
 
-pub(crate) mod utils {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    mod non_linear;
-    mod simple;
-
-    mod prelude {
-        #[doc(inline)]
-        pub use super::non_linear::*;
-        #[doc(inline)]
-        pub use super::simple::*;
-    }
-}
-
 mod impls {
     mod impl_binary;
     mod impl_linear;
@@ -59,8 +46,6 @@ mod impls {
 }
 
 pub(crate) mod prelude {
-    #[doc(inline)]
     pub use super::traits::*;
-    #[doc(inline)]
     pub use super::utils::*;
 }

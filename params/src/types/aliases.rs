@@ -2,7 +2,7 @@
     appellation: aliases <module>
     authors: @FL03
 */
-use crate::params::ParamsBase;
+use crate::params_base::ParamsBase;
 
 use ndarray::{CowRepr, Ix2, OwnedArcRepr, OwnedRepr, RawViewRepr, ViewRepr};
 

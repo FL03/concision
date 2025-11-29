@@ -10,14 +10,14 @@ use ndarray::{
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
 /// model where the bias tensor is always `n-1` dimensions smaller than the `weights` tensor.
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
-/// that can be reduced by one axis (i.e. $\mbox{rank}(D)>0$), which is typically the "zero-th" axis.
+/// that can be reduced by one axis, typically the "zero-th" axis: $`\mbox{rank}(D)>0`$.
 pub struct ParamsBase<S, D = ndarray::Ix2, A = <S as RawData>::Elem>
 where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub(crate) bias: ArrayBase<S, D::Smaller, A>,
-    pub(crate) weights: ArrayBase<S, D, A>,
+    pub bias: ArrayBase<S, D::Smaller, A>,
+    pub weights: ArrayBase<S, D, A>,
 }
 
 impl<A, S, D> ParamsBase<S, D, A>
@@ -234,7 +234,7 @@ where
         self.weights().len() + self.bias().len()
     }
     /// returns an owned instance of the parameters
-    pub fn to_owned(&self) -> ParamsBase<ndarray::OwnedRepr<A>, D>
+    pub fn to_owned(&self) -> ParamsBase<nd::OwnedRepr<A>, D>
     where
         A: Clone,
         S: DataOwned,
@@ -243,10 +243,7 @@ where
     }
     /// change the shape of the parameters; the shape of the bias parameters is determined by
     /// removing the "zero-th" axis of the given shape
-    pub fn to_shape<Sh>(
-        &self,
-        shape: Sh,
-    ) -> crate::Result<ParamsBase<ndarray::CowRepr<'_, A>, Sh::Dim>>
+    pub fn to_shape<Sh>(&self, shape: Sh) -> crate::Result<ParamsBase<nd::CowRepr<'_, A>, Sh::Dim>>
     where
         A: Clone,
         S: DataOwned,
@@ -261,24 +258,24 @@ where
     }
     /// returns a new [`ParamsBase`] instance with the same paramaters, but using a shared
     /// representation of the data;
-    pub fn to_shared(&self) -> ParamsBase<ndarray::OwnedArcRepr<A>, D>
+    pub fn to_shared(&self) -> ParamsBase<nd::OwnedArcRepr<A>, D>
     where
         A: Clone,
         S: Data,
     {
         ParamsBase::new(self.bias().to_shared(), self.weights().to_shared())
     }
-    /// returns a "view" of the parameters; see [view](ArrayBase::view) for more information
-    pub fn view(&self) -> ParamsBase<ndarray::ViewRepr<&'_ A>, D>
+    /// returns a "view" of the parameters; see [`view`](ndarray::ViewRepr) for more information
+    pub fn view(&self) -> ParamsBase<nd::ViewRepr<&'_ A>, D>
     where
         S: Data,
     {
         ParamsBase::new(self.bias().view(), self.weights().view())
     }
-    /// returns mutable view of the parameters; see [view_mut](ArrayBase::view_mut) for more information
-    pub fn view_mut(&mut self) -> ParamsBase<ndarray::ViewRepr<&'_ mut A>, D>
+    /// returns mutable view of the parameters
+    pub fn view_mut(&mut self) -> ParamsBase<nd::ViewRepr<&'_ mut A>, D>
     where
-        S: ndarray::DataMut,
+        S: DataMut,
     {
         ParamsBase::new(self.bias.view_mut(), self.weights.view_mut())
     }

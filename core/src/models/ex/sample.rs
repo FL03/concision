@@ -117,21 +117,17 @@ where
 {
     type Output = Array<A, D>;
 
-    fn forward(&self, input: &ArrayBase<S, D>) -> Option<Self::Output> {
+    fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
         let mut output = self
             .params()
             .input()
-            .forward_then(&input.to_owned(), |y| y.relu())?;
+            .forward_then(&input.to_owned(), |y| y.relu());
 
         for layer in self.params().hidden() {
-            output = layer.forward_then(&output, |y| y.relu())?;
+            output = layer.forward(&output).relu();
         }
 
-        let y = self
-            .params()
-            .output()
-            .forward_then(&output, |y| y.sigmoid())?;
-        Some(y)
+        self.params().output().forward(&output).sigmoid()
     }
 }
 
@@ -150,10 +146,16 @@ where
         target: &ArrayBase<T, Ix1>,
     ) -> Result<Self::Output, Error> {
         if input.len() != self.layout().input() {
-            return Err(Error::InvalidInputShape);
+            return Err(Error::InvalidInputFeatures(
+                input.len(),
+                self.layout().input(),
+            ));
         }
         if target.len() != self.layout().output() {
-            return Err(Error::InvalidOutputShape);
+            return Err(Error::InvalidTargetFeatures(
+                target.len(),
+                self.layout().output(),
+            ));
         }
         // get the learning rate from the model's configuration
         let lr = self
@@ -170,28 +172,15 @@ where
         let mut activations = Vec::new();
         activations.push(input.to_owned());
 
-        let mut output = self
-            .params()
-            .input()
-            .forward(&input)
-            .expect("Failed to complete the forward pass for the input layer")
-            .relu();
+        let mut output = self.params().input().forward_then(&input, |y| y.relu());
         activations.push(output.to_owned());
         // collect the activations of the hidden
         for layer in self.params().hidden() {
-            output = layer
-                .forward(&output)
-                .expect("failed to complete the forward pass for the hidden layer")
-                .relu();
+            output = layer.forward(&output).relu();
             activations.push(output.to_owned());
         }
 
-        output = self
-            .params()
-            .output()
-            .forward(&output)
-            .expect("Output layer failed to forward propagate")
-            .sigmoid();
+        output = self.params().output().forward(&output).sigmoid();
         activations.push(output.to_owned());
 
         // Calculate output layer error
@@ -205,8 +194,7 @@ where
         // Update output weights
         self.params_mut()
             .output_mut()
-            .backward(activations.last().unwrap(), &delta, lr)
-            .expect("Output failed training...");
+            .backward(activations.last().unwrap(), &delta, lr);
 
         let num_hidden = self.layout().layers();
         // Iterate through hidden layers in reverse order
@@ -222,9 +210,7 @@ where
             };
             // Normalize delta to prevent exploding gradients
             delta /= delta.l2_norm();
-            self.params_mut().hidden_mut()[i]
-                .backward(&activations[i + 1], &delta, lr)
-                .expect("Hidden failed training...");
+            self.params_mut().hidden_mut()[i].backward(&activations[i + 1], &delta, lr);
         }
         /*
             The delta for the input layer is computed using the weights of the first hidden layer
@@ -234,8 +220,7 @@ where
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
         self.params_mut()
             .input_mut()
-            .backward(&activations[1], &delta, lr)
-            .expect("failed to backpropagate input layer during training...");
+            .backward(&activations[1], &delta, lr);
 
         Ok(loss)
     }
@@ -254,15 +239,21 @@ where
         &mut self,
         input: &ArrayBase<S, Ix2>,
         target: &ArrayBase<T, Ix2>,
-    ) -> Result<Self::Output, Error> {
+    ) -> Result<Self::Output, Self::Error> {
         if input.nrows() == 0 || target.nrows() == 0 {
-            return Err(Error::InvalidBatchSize);
+            return Err(Error::InvalidBatchSize(0));
         }
         if input.ncols() != self.layout().input() {
-            return Err(Error::InvalidInputShape);
+            return Err(Error::InvalidInputFeatures(
+                input.ncols(),
+                self.layout().input(),
+            ));
         }
         if target.ncols() != self.layout().output() || target.nrows() != input.nrows() {
-            return Err(Error::InvalidOutputShape);
+            return Err(Error::InvalidTargetFeatures(
+                target.ncols(),
+                self.layout().output(),
+            ));
         }
         let batch_size = input.nrows();
         let mut loss = A::zero();
@@ -271,6 +262,13 @@ where
             loss += match Train::<ArrayView1<A>, ArrayView1<A>>::train(self, &x, &e) {
                 Ok(l) => l,
                 Err(err) => {
+                    #[cfg(not(feature = "tracing"))]
+                    eprintln!(
+                        "Training failed for batch {}/{}: {:?}",
+                        i + 1,
+                        batch_size,
+                        err
+                    );
                     #[cfg(feature = "tracing")]
                     tracing::error!(
                         "Training failed for batch {}/{}: {:?}",

@@ -18,12 +18,12 @@ version.workspace = true
 all-features = false
 features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
+
 version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name = "{{version}}"
-
+tag-name = "v{{version}}"
 [lib]
 bench = false
 doc = true
@@ -40,5 +40,5 @@ syn = { features = ["full"], version = "2" }
 default = []
 
 nightly = [
-    "proc-macro2/nightly"
+  "proc-macro2/nightly",
 ]

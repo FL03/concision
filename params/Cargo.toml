@@ -16,24 +16,22 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
+doc-scrape-examples = true
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
+
 version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name = "{{version}}"
+tag-name = "v{{version}}"
 
 [lib]
-crate-type = ["cdylib", "rlib"]
 bench = false
+crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
 test = true
-
-[[test]]
-name = "create"
-required-features = ["std"]
 
 [dependencies]
 concision-init = { workspace = true }
@@ -41,7 +39,7 @@ concision-traits = { workspace = true }
 # custom
 variants = { workspace = true }
 # concurrency & parallelism
-rayon = { optional = true, workspace = true }
+rayon-core = { optional = true, workspace = true }
 # data & serialization
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
@@ -65,9 +63,9 @@ lazy_static = { workspace = true }
 default = ["std"]
 
 full = [
-  "default",
   "approx",
   "complex",
+  "default",
   "json",
   "rand",
   "serde",
@@ -99,9 +97,10 @@ wasi = [
 ]
 
 wasm = [
-  "getrandom?/wasm_js",
   "concision-init/wasm",
   "concision-traits/wasm",
+  "getrandom?/wasm_js",
+  "rayon-core?/web_spin_lock",
 ]
 # ************* [FF:Dependencies] *************
 alloc = [
@@ -113,8 +112,8 @@ alloc = [
 ]
 
 approx = [
-  "dep:approx",
   "concision-init/approx",
+  "dep:approx",
   "ndarray/approx",
 ]
 
@@ -124,30 +123,30 @@ blas = [
 ]
 
 complex = [
-  "dep:num-complex",
   "concision-init/complex",
+  "dep:num-complex",
 ]
 
 json = ["alloc", "serde", "serde_json"]
 
 rand = [
-  "dep:rand",
-  "dep:rand_distr",
   "concision-init/rand",
   "concision-traits/rand",
+  "dep:rand",
+  "dep:rand_distr",
   "num-complex?/rand",
   "rng",
 ]
 
 rayon = [
-  "dep:rayon",
+  "dep:rayon-core",
   "ndarray/rayon",
 ]
 
 rng = [
-  "dep:getrandom",
   "concision-init/rng",
   "concision-traits/rng",
+  "dep:getrandom",
   "rand?/small_rng",
   "rand?/thread_rng",
 ]
