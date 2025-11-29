@@ -33,7 +33,7 @@
 extern crate alloc;
 extern crate concision_init as cnc_init;
 extern crate concision_traits as cnc_traits;
-extern crate ndarray as nda;
+extern crate ndarray as nd;
 
 #[cfg(all(not(feature = "alloc"), not(feature = "std")))]
 compiler_error! {

@@ -2,29 +2,21 @@
     Appellation: config <module>
     Contrib: @FL03
 */
-
-mod impl_hash_config;
-
-use super::HyperParams;
+use super::HyperParam;
 use super::{ExtendedModelConfig, ModelConfiguration, RawConfig};
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
-pub(crate) type ModelConfigMap<T> = alloc::collections::BTreeMap<HyperParams, T>;
-#[cfg(feature = "std")]
-pub(crate) type ModelConfigMap<T> = std::collections::HashMap<HyperParams, T>;
+pub(crate) type ModelConfigMap<T> = std::collections::HashMap<HyperParam, T>;
 
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(serde_derive::Deserialize, serde::Serialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename = "snake_case")
+)]
 pub struct StandardModelConfig<T> {
     pub(crate) batch_size: usize,
     pub(crate) epochs: usize,
     pub(crate) hyperparameters: ModelConfigMap<T>,
-}
-
-impl<T> Default for StandardModelConfig<T> {
-    fn default() -> Self {
-        Self::new()
-    }
 }
 
 impl<T> StandardModelConfig<T> {
@@ -60,19 +52,19 @@ impl<T> StandardModelConfig<T> {
         &mut self.hyperparameters
     }
     /// inserts a hyperparameter into the map, returning the previous value if it exists
-    pub fn add_parameter<P: Into<HyperParams>>(&mut self, key: P, value: T) -> Option<T> {
+    pub fn add_parameter<P: Into<HyperParam>>(&mut self, key: P, value: T) -> Option<T> {
         self.hyperparameters_mut().insert(key.into(), value)
     }
     /// gets a reference to a hyperparameter by key, returning None if it does not exist
     pub fn get_parameter<Q>(&self, key: &Q) -> Option<&T>
     where
         Q: ?Sized + Eq + core::hash::Hash,
-        HyperParams: core::borrow::Borrow<Q>,
+        HyperParam: core::borrow::Borrow<Q>,
     {
         self.hyperparameters().get(key)
     }
     /// returns an entry for the hyperparameter, allowing for insertion or modification
-    pub fn parameter<Q>(&mut self, key: Q) -> std::collections::hash_map::Entry<'_, HyperParams, T>
+    pub fn parameter<Q>(&mut self, key: Q) -> std::collections::hash_map::Entry<'_, HyperParam, T>
     where
         Q: AsRef<str>,
     {
@@ -82,7 +74,7 @@ impl<T> StandardModelConfig<T> {
     pub fn remove_hyperparameter<Q>(&mut self, key: &Q) -> Option<T>
     where
         Q: ?Sized + core::hash::Hash + Eq,
-        HyperParams: core::borrow::Borrow<Q>,
+        HyperParam: core::borrow::Borrow<Q>,
     {
         self.hyperparameters_mut().remove(key)
     }
@@ -106,7 +98,7 @@ impl<T> StandardModelConfig<T> {
     }
 }
 
-use HyperParams::*;
+use HyperParam::*;
 
 impl<T> StandardModelConfig<T> {
     /// sets the decay hyperparameter, returning the previous value if it exists
@@ -139,6 +131,12 @@ impl<T> StandardModelConfig<T> {
     /// returns a reference to the weight decay hyperparameter, if it exists
     pub fn weight_decay(&self) -> Option<&T> {
         self.get_parameter(&WeightDecay)
+    }
+}
+
+impl<T> Default for StandardModelConfig<T> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -187,7 +185,7 @@ impl<T> ModelConfiguration<T> for StandardModelConfig<T> {
         self.hyperparameters().contains_key(key.as_ref())
     }
 
-    fn keys(&self) -> Vec<HyperParams> {
+    fn keys(&self) -> Vec<HyperParam> {
         self.hyperparameters().keys().cloned().collect()
     }
 }

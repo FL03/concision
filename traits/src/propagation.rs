@@ -27,8 +27,21 @@ pub trait Backward<X, Delta = X> {
     fn backward(&mut self, input: &X, delta: &Delta, gamma: Self::Elem) -> Option<Self::Output>;
 }
 
-/// The [`Forward`] trait defines an interface that is used to perform a single forward step
-/// within a neural network or machine learning model.
+pub trait BackwardStep<T> {
+    type Data<_X>;
+    type Grad<_X>;
+    type Output;
+
+    fn backward(
+        &mut self,
+        input: &Self::Data<T>,
+        delta: &Self::Grad<T>,
+        gamma: T,
+    ) -> Option<Self::Output>;
+}
+
+/// The [`Forward`] trait describes a common interface for objects designated to perform a
+/// single forward step in a neural network or machine learning model.
 pub trait Forward<Rhs> {
     type Output;
     /// a single forward step

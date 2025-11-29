@@ -4,7 +4,6 @@
     Contrib: @FL03
 */
 use super::{Deep, NetworkDepth, Shallow};
-use crate::config::ModelConfiguration;
 use ndarray::{Dimension, RawData};
 
 /// The [`NeuralNetwork`] trait defines a generic interface for neural network models.
@@ -13,7 +12,7 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    type Config: ModelConfiguration<A>;
+    type Config;
     type Depth: NetworkDepth;
 
     /// returns a reference to the network configuration;

@@ -17,6 +17,10 @@ where
     if args > T::zero() { args } else { T::zero() }
 }
 
+///
+///  ```math
+/// \frac{df}{dx}=\max(0,1)
+/// ```
 pub fn relu_derivative<T>(args: T) -> T
 where
     T: PartialOrd + One + Zero,
