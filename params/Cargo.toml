@@ -38,7 +38,11 @@ name = "create"
 required-features = ["std"]
 
 [[test]]
-name = "propagation"
+name = "ops"
+required-features = ["std", "approx"]
+
+[[test]]
+name = "propagate"
 required-features = ["std", "approx"]
 
 [dependencies]

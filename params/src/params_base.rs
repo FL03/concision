@@ -10,20 +10,14 @@ use ndarray::{
 /// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
 /// model where the bias tensor is always `n-1` dimensions smaller than the `weights` tensor.
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
-/// that can be reduced by one axis, typically the "zero-th" axis:
-///
-///
-/// $$
-/// \mbox{rank}(D)>0
-/// $$
-///
+/// that can be reduced by one axis, typically the "zero-th" axis: $`\mbox{rank}(D)>0`$.
 pub struct ParamsBase<S, D = ndarray::Ix2, A = <S as RawData>::Elem>
 where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    pub(crate) bias: ArrayBase<S, D::Smaller, A>,
-    pub(crate) weights: ArrayBase<S, D, A>,
+    pub bias: ArrayBase<S, D::Smaller, A>,
+    pub weights: ArrayBase<S, D, A>,
 }
 
 impl<A, S, D> ParamsBase<S, D, A>

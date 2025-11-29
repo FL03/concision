@@ -23,7 +23,8 @@ where
     {
         <Self as Backward<X, Y>>::backward(self, input, grad, lr)
     }
-    /// forward propagation
+    /// invoke a single forward step; this method is simply a convienience method implemented
+    /// to reduce the number of `Forward` imports.
     pub fn forward<X, Y>(&self, input: &X) -> Y
     where
         Self: Forward<X, Output = Y>,
