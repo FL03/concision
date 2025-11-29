@@ -4,8 +4,8 @@
 */
 use super::HyperParam;
 use super::{ExtendedModelConfig, ModelConfiguration, RawConfig};
-
-pub(crate) type ModelConfigMap<T> = std::collections::HashMap<HyperParam, T>;
+use hashbrown::DefaultHashBuilder;
+use hashbrown::hash_map::{self, HashMap};
 
 #[derive(Clone, Debug)]
 #[cfg_attr(
@@ -14,9 +14,9 @@ pub(crate) type ModelConfigMap<T> = std::collections::HashMap<HyperParam, T>;
     serde(rename = "snake_case")
 )]
 pub struct StandardModelConfig<T> {
-    pub(crate) batch_size: usize,
-    pub(crate) epochs: usize,
-    pub(crate) hyperparameters: ModelConfigMap<T>,
+    pub batch_size: usize,
+    pub epochs: usize,
+    pub hyperspace: HashMap<HyperParam, T>,
 }
 
 impl<T> StandardModelConfig<T> {
@@ -24,7 +24,7 @@ impl<T> StandardModelConfig<T> {
         Self {
             batch_size: 0,
             epochs: 0,
-            hyperparameters: ModelConfigMap::new(),
+            hyperspace: HashMap::new(),
         }
     }
     /// returns a copy of the batch size
@@ -44,12 +44,12 @@ impl<T> StandardModelConfig<T> {
         &mut self.epochs
     }
     /// returns a reference to the hyperparameters map
-    pub const fn hyperparameters(&self) -> &ModelConfigMap<T> {
-        &self.hyperparameters
+    pub const fn hyperparameters(&self) -> &HashMap<HyperParam, T> {
+        &self.hyperspace
     }
     /// returns a mutable reference to the hyperparameters map
-    pub const fn hyperparameters_mut(&mut self) -> &mut ModelConfigMap<T> {
-        &mut self.hyperparameters
+    pub const fn hyperparameters_mut(&mut self) -> &mut HashMap<HyperParam, T> {
+        &mut self.hyperspace
     }
     /// inserts a hyperparameter into the map, returning the previous value if it exists
     pub fn add_parameter<P: Into<HyperParam>>(&mut self, key: P, value: T) -> Option<T> {
@@ -64,7 +64,7 @@ impl<T> StandardModelConfig<T> {
         self.hyperparameters().get(key)
     }
     /// returns an entry for the hyperparameter, allowing for insertion or modification
-    pub fn parameter<Q>(&mut self, key: Q) -> std::collections::hash_map::Entry<'_, HyperParam, T>
+    pub fn parameter<Q>(&mut self, key: Q) -> hash_map::Entry<'_, HyperParam, T, DefaultHashBuilder>
     where
         Q: AsRef<str>,
     {
