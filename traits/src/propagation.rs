@@ -22,9 +22,8 @@ pub enum PropagationError {
 /// step in a neural network or machine learning model.
 pub trait Backward<X, Delta = X> {
     type Elem;
-    type Output;
 
-    fn backward(&mut self, input: &X, delta: &Delta, gamma: Self::Elem) -> Option<Self::Output>;
+    fn backward(&mut self, input: &X, delta: &Delta, gamma: Self::Elem);
 }
 
 pub trait BackwardStep<T> {
@@ -62,26 +61,30 @@ pub trait Forward<Rhs> {
 */
 
 use ndarray::linalg::Dot;
-use ndarray::{ArrayBase, Data, Dimension, LinalgScalar};
-use num_traits::FromPrimitive;
+use ndarray::{Array, ArrayBase, ArrayView, Data, DataMut, Dimension};
+use num_traits::Num;
 
-impl<X, Y, Dx, A, S, D> Backward<X, Y> for ArrayBase<S, D, A>
+impl<A, S, D, S1, D1, S2, D2> Backward<ArrayBase<S1, D1, A>, ArrayBase<S2, D2, A>>
+    for ArrayBase<S, D, A>
 where
-    A: LinalgScalar + FromPrimitive,
+    A: 'static + Copy + Num,
     D: Dimension,
-    S: ndarray::DataMut<Elem = A>,
-    Dx: core::ops::Mul<A, Output = Dx>,
-    for<'a> X: Dot<Y, Output = Dx>,
-    for<'a> &'a Self: core::ops::Add<&'a Dx, Output = Self>,
+    S: DataMut<Elem = A>,
+    D1: Dimension,
+    D2: Dimension,
+    S1: Data<Elem = A>,
+    S2: Data<Elem = A>,
+    for<'b> &'b ArrayBase<S1, D1, A>: Dot<ArrayView<'b, A, D2>, Output = Array<A, D2>>,
 {
     type Elem = A;
-    type Output = ();
 
-    fn backward(&mut self, input: &X, delta: &Y, gamma: Self::Elem) -> Option<Self::Output> {
-        let dx = input.dot(delta);
-        let next = &*self + &(dx * gamma);
-        self.assign(&next);
-        Some(())
+    fn backward(
+        &mut self,
+        input: &ArrayBase<S1, D1, A>,
+        delta: &ArrayBase<S2, D2, A>,
+        gamma: Self::Elem,
+    ) {
+        self.scaled_add(gamma, &input.dot(&delta.t()))
     }
 }
 

@@ -211,8 +211,7 @@ where
         // Update output weights
         self.params_mut()
             .output_mut()
-            .backward(activations.last().unwrap(), &delta, lr)
-            .expect("Output failed training...");
+            .backward(activations.last().unwrap(), &delta, lr);
 
         let num_hidden = self.layout().layers();
         // Iterate through hidden layers in reverse order
@@ -228,9 +227,7 @@ where
             };
             // Normalize delta to prevent exploding gradients
             delta /= delta.l2_norm();
-            self.params_mut().hidden_mut()[i]
-                .backward(&activations[i + 1], &delta, lr)
-                .expect("Hidden failed training...");
+            self.params_mut().hidden_mut()[i].backward(&activations[i + 1], &delta, lr);
         }
         /*
             The delta for the input layer is computed using the weights of the first hidden layer
@@ -240,8 +237,7 @@ where
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
         self.params_mut()
             .input_mut()
-            .backward(&activations[1], &delta, lr)
-            .expect("failed to backpropagate input layer during training...");
+            .backward(&activations[1], &delta, lr);
 
         Ok(loss)
     }

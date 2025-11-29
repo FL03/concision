@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use crate::{Params, ParamsBase};
-use concision_traits::{ApplyGradient, Backward, Forward, Norm};
+use concision_traits::{Backward, Forward, Norm};
 use ndarray::linalg::Dot;
 use ndarray::{
     Array, ArrayBase, ArrayView, Data, Dimension, Ix0, Ix1, Ix2, RemoveAxis, ScalarOperand,
@@ -17,9 +17,9 @@ where
     S: Data<Elem = A>,
 {
     /// execute a single backward propagation
-    pub fn backward<X, Y, Z>(&mut self, input: &X, grad: &Y, lr: A) -> Option<Z>
+    pub fn backward<X, Y>(&mut self, input: &X, grad: &Y, lr: A)
     where
-        Self: Backward<X, Y, Elem = A, Output = Z>,
+        Self: Backward<X, Y, Elem = A>,
     {
         <Self as Backward<X, Y>>::backward(self, input, grad, lr)
     }
@@ -52,6 +52,21 @@ where
     }
 }
 
+impl<A, X, Y, Z, S, D> Forward<X> for ParamsBase<S, D, A>
+where
+    A: Clone,
+    D: Dimension,
+    S: Data<Elem = A>,
+    for<'a> X: Dot<ArrayBase<S, D>, Output = Y>,
+    Y: for<'a> core::ops::Add<&'a ArrayBase<S, D::Smaller>, Output = Z>,
+{
+    type Output = Z;
+
+    fn forward(&self, input: &X) -> Option<Self::Output> {
+        Some(input.dot(self.weights()) + self.bias())
+    }
+}
+
 impl<A, S, T> Backward<ArrayBase<S, Ix0, A>, ArrayBase<T, Ix0, A>> for Params<A, Ix1>
 where
     A: Float + FromPrimitive + ScalarOperand,
@@ -59,17 +74,15 @@ where
     T: Data<Elem = A>,
 {
     type Elem = A;
-    type Output = A;
 
     fn backward(
         &mut self,
         input: &ArrayBase<S, Ix0, A>,
         delta: &ArrayBase<T, Ix0, A>,
         gamma: Self::Elem,
-    ) -> Option<Self::Output> {
+    ) {
         self.weights_mut().scaled_add(gamma, &(input * delta));
         self.bias_mut().scaled_add(gamma, delta);
-        Some(delta.pow2().sum())
     }
 }
 
@@ -80,17 +93,15 @@ where
     T: Data<Elem = A>,
 {
     type Elem = A;
-    type Output = A;
 
     fn backward(
         &mut self,
         input: &ArrayBase<S, Ix1, A>,
         delta: &ArrayBase<T, Ix1, A>,
         gamma: Self::Elem,
-    ) -> Option<Self::Output> {
+    ) {
         self.weights_mut().scaled_add(gamma, &(delta * input));
-        self.bias_mut().apply_gradient(delta, gamma)?;
-        Some(delta.pow2().sum())
+        self.bias_mut().scaled_add(gamma, delta);
     }
 }
 
@@ -104,32 +115,14 @@ where
     for<'b> &'b ArrayBase<S1, D1, A>: Dot<ArrayView<'b, A, D2>, Output = Array<A, D2>>,
 {
     type Elem = A;
-    type Output = A;
 
     fn backward(
         &mut self,
         input: &ArrayBase<S1, D1, A>,
         delta: &ArrayBase<S2, D2, A>,
         gamma: Self::Elem,
-    ) -> Option<Self::Output> {
-        let dw = input.dot(&delta.t());
-        self.weights_mut().scaled_add(gamma, &dw);
+    ) {
+        self.weights_mut().backward(input, delta, gamma);
         self.bias_mut().scaled_add(gamma, delta);
-        Some(dw.sum())
-    }
-}
-
-impl<A, X, Y, Z, S, D> Forward<X> for ParamsBase<S, D, A>
-where
-    A: Clone,
-    D: Dimension,
-    S: Data<Elem = A>,
-    for<'a> X: Dot<ArrayBase<S, D>, Output = Y>,
-    Y: for<'a> core::ops::Add<&'a ArrayBase<S, D::Smaller>, Output = Z>,
-{
-    type Output = Z;
-
-    fn forward(&self, input: &X) -> Option<Self::Output> {
-        Some(input.dot(self.weights()) + self.bias())
     }
 }

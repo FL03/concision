@@ -153,7 +153,10 @@ complex = [
   "concision-params/complex",
 ]
 
-rand = ["concision-init/rand"]
+rand = [
+  "concision-init/rand",
+  "concision-params/rand"
+]
 
 rayon = [
   "dep:rayon",
@@ -161,7 +164,10 @@ rayon = [
   "ndarray/rayon",
 ]
 
-rng = ["concision-init/rng"]
+rng = [
+  "concision-init/rng",
+  "concision-params/rng"
+]
 
 rustfft = ["dep:rustfft"]
 
