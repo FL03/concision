@@ -4,11 +4,8 @@
 */
 use syn::Ident;
 
-pub struct ScsysAttr {
-    pub params: Option<ParamsAttr>,
-}
-
 #[derive(Clone, Debug, Default)]
-pub struct ParamsAttr {
+pub struct ConfigAttr {
     pub name: Option<Ident>,
+    pub format: Option<Ident>,
 }

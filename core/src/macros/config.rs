@@ -12,9 +12,7 @@
 macro_rules! config {
     (
         $(#[$attr:meta])*
-        $vis:vis struct $name:ident {
-            $($field:ident: $type:ty),* $(,)?
-        }
+        $vis:vis struct $name:ident {$($field:ident: $type:ty),* $(,)?}
     ) => {
         $(#[$attr])*
         #[cfg_attr(
@@ -28,6 +26,9 @@ macro_rules! config {
             $($field: $type),*
         }
 
+        config!(@impl $vis struct $name {$($field: $type),*});
+    };
+    (@impl $vis:vis struct $name:ident {$($field:ident: $type:ty),* $(,)?}) => {
         impl $name {
             pub fn new() -> Self {
                 Self {
@@ -45,7 +46,7 @@ macro_rules! config {
                         &mut self.$field
                     }
                     /// update the current value of the field and return a mutable reference to self
-                    pub fn [<set_ $field>](&mut self, value: $type) -> &mut Self {
+                    pub const fn [<set_ $field>](&mut self, value: $type) -> &mut Self {
                         self.$field = value;
                         self
                     }

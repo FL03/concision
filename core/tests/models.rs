@@ -5,13 +5,12 @@
 */
 extern crate concision_core as cnc;
 
-use approx::assert_abs_diff_eq;
 use cnc::ex::sample::TestModel;
 use cnc::{Model, ModelFeatures, StandardModelConfig};
 use ndarray::prelude::*;
 
 #[test]
-fn test_simple_model() -> anyhow::Result<()> {
+fn test_simple_model() {
     let mut config = StandardModelConfig::new()
         .with_epochs(1000)
         .with_batch_size(32);
@@ -37,6 +36,4 @@ fn test_simple_model() -> anyhow::Result<()> {
     {
         assert_eq!(output, Array1::from_elem(model.layout().output(), 0.5));
     }
-
-    Ok(())
 }

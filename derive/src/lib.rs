@@ -15,8 +15,9 @@ extern crate quote;
 extern crate syn;
 
 pub(crate) mod ast;
+#[allow(dead_code)]
 pub(crate) mod attrs;
-pub(crate) mod params;
+pub(crate) mod impls;
 pub(crate) mod utils;
 
 use proc_macro::TokenStream;
@@ -28,7 +29,19 @@ pub fn keyed(input: TokenStream) -> TokenStream {
     // Parse the input tokens into a syntax tree
     let input = parse_macro_input!(input as DeriveInput);
 
-    let res = params::impl_params(&input);
+    let res = impls::impl_keys(&input);
+
+    // Return the generated code as a TokenStream
+    res.into()
+}
+
+/// This macro generates a parameter struct and an enum of parameter keys.
+#[proc_macro_derive(Configuration, attributes(config))]
+pub fn configuration(input: TokenStream) -> TokenStream {
+    // Parse the input tokens into a syntax tree
+    let input = parse_macro_input!(input as DeriveInput);
+
+    let res = impls::impl_config(&input);
 
     // Return the generated code as a TokenStream
     res.into()
