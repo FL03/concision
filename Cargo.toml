@@ -48,7 +48,7 @@ ndarray = { default-features = false, version = "0.17" }
 ndarray-linalg = { default-features = false, version = "0.18" }
 ndarray-stats = "0.6"
 # benchmarking
-criterion = { version = "0.7" }
+criterion = { version = "0.8" }
 # concurrency & parallelism
 crossbeam = { default-features = false, version = "0.8" }
 rayon = { default-features = false, version = "1" }
@@ -80,6 +80,7 @@ chrono = { default-features = false, version = "0.4" }
 humantime = { version = "2" }
 time = { default-features = false, version = "0.3" }
 # macros and utilities
+convert_case = { version = "0.10" }
 either = { version = "1" }
 lazy_static = { version = "1" }
 paste = { version = "1" }

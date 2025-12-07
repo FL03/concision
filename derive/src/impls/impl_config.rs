@@ -4,22 +4,34 @@
     Contrib: @FL03
 */
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
-use syn::{Fields, FieldsNamed, Ident};
+use quote::quote;
+use syn::{DataStruct, Fields, FieldsNamed, FieldsUnnamed, Ident};
 
-pub fn generate_config(fields: &Fields, name: &Ident) -> TokenStream {
+pub fn derive_config_from_struct(
+    DataStruct { fields, .. }: &DataStruct,
+    name: &Ident,
+) -> TokenStream {
     match fields {
         Fields::Named(inner) => handle_named(inner, name),
-        _ => panic!("Only named fields are supported"),
+        Fields::Unnamed(inner) => handle_unnamed(inner, name),
+        _ => panic!("Unit fields aren't currently supported."),
     }
 }
 
-pub fn handle_named(fields: &FieldsNamed, name: &Ident) -> TokenStream {
-    let FieldsNamed { named, .. } = fields;
+fn handle_named(_fields: &FieldsNamed, name: &Ident) -> TokenStream {
+    // let FieldsNamed { named, .. } = fields;
 
     quote! {
-
         impl #name {
+
+        }
+    }
+}
+
+fn handle_unnamed(_fields: &FieldsUnnamed, name: &Ident) -> TokenStream {
+    quote! {
+        impl #name {
+
         }
     }
 }
