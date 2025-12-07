@@ -45,6 +45,7 @@ serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
 # error-handling
+anyhow = { workspace = true }
 thiserror = { workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
@@ -55,9 +56,6 @@ num-traits = { workspace = true }
 getrandom = { default-features = false, optional = true, workspace = true }
 rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
-
-[dev-dependencies]
-lazy_static = { workspace = true }
 
 [features]
 default = ["std"]
@@ -79,6 +77,7 @@ nightly = [
 # ************* [FF:Dependencies] *************
 std = [
   "alloc",
+  "anyhow/std",
   "concision-init/std",
   "concision-traits/std",
   "ndarray/std",
@@ -102,7 +101,9 @@ wasm = [
   "getrandom?/wasm_js",
   "rayon-core?/web_spin_lock",
 ]
+
 # ************* [FF:Dependencies] *************
+
 alloc = [
   "concision-init/alloc",
   "concision-traits/alloc",

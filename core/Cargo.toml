@@ -36,6 +36,10 @@ test = true
 name = "fft"
 required-features = ["alloc", "signal"]
 
+[[test]]
+name = "models"
+required-features = ["alloc", "approx"]
+
 [dependencies]
 concision-init = { workspace = true }
 concision-params = { workspace = true }
@@ -155,9 +159,10 @@ blas = [
 ]
 
 complex = [
+  "dep:num-complex",
   "concision-init/complex",
   "concision-params/complex",
-  "dep:num-complex",
+  "concision-traits/complex",
 ]
 
 rand = [

@@ -58,13 +58,13 @@ where
     A: Clone,
     D: Dimension,
     S: Data<Elem = A>,
-    for<'a> X: Dot<ArrayBase<S, D>, Output = Y>,
-    Y: for<'a> core::ops::Add<&'a ArrayBase<S, D::Smaller>, Output = Z>,
+    for<'a> ArrayView<'a, A, D>: Dot<X, Output = Y>,
+    Y: for<'a> core::ops::Add<&'a ArrayBase<S, D::Smaller, A>, Output = Z>,
 {
     type Output = Z;
 
     fn forward(&self, input: &X) -> Self::Output {
-        input.dot(self.weights()) + self.bias()
+        self.weights().t().dot(input) + self.bias()
     }
 }
 

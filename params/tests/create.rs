@@ -2,7 +2,6 @@
     Appellation: params <test>
     Contrib: @FL03
 */
-extern crate concision_params as cnc;
 use concision_params::Params;
 
 #[test]
@@ -34,7 +33,7 @@ fn test_params_zeros() {
 
 #[test]
 #[cfg(feature = "rand")]
-fn test_params_init_rand() {
+fn test_params_init_rand() -> anyhow::Result<()> {
     use concision_init::InitRand;
 
     let lecun = Params::<f64>::lecun_normal((3, 4));
@@ -49,4 +48,6 @@ fn test_params_init_rand() {
     assert_ne!(glorot_norm, glorot_uniform);
     let truncnorm = Params::<f64>::truncnorm((3, 4), 0.0, 1.0).expect("truncnorm failed");
     assert_eq!(truncnorm.dim(), (3, 4));
+
+    Ok(())
 }

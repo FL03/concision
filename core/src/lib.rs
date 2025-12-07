@@ -75,9 +75,12 @@ pub mod models;
 pub mod nn;
 pub mod utils;
 
-pub mod types {
-    //! Core types supporting the `cnc` framework.
+#[doc(hidden)]
+pub mod ex {
+    #[cfg(all(feature = "rand", feature = "std"))]
+    pub mod sample;
 }
+
 // re-exports
 #[doc(inline)]
 pub use self::{

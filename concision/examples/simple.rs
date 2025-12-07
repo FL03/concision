@@ -3,7 +3,9 @@
     Created At: 2025.11.26:14:10:58
     Contrib: @FL03
 */
-use cnc::models::ex::sample::TestModel;
+extern crate concision as cnc;
+
+use cnc::ex::sample::TestModel;
 use cnc::{ModelFeatures, Predict, StandardModelConfig, Train};
 use ndarray::prelude::*;
 

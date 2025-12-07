@@ -14,18 +14,14 @@ use alloc::{boxed::Box, string::String};
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum Error {
+    #[cfg(feature = "alloc")]
     #[error(transparent)]
     BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
-    #[error("Unknown Error: {0}")]
-    Unknown(String),
-    #[error("The model is not trained")]
-    NotTrained,
+
     #[error("Invalid model configuration")]
     InvalidModelConfig,
     #[error("The model is not supported for the given input")]
     IncompatibleInput,
-    #[error("An unsupported operation was attempted: {0}")]
-    UnsupportedOperation(String),
     #[error("Mismatched Dimension: expected {expected}, found {found}")]
     MismatchedDimension { expected: usize, found: usize },
     #[error("An invalid batch size was provided: {0}")]
@@ -34,10 +30,19 @@ pub enum Error {
     InvalidInputFeatures(usize, usize),
     #[error("The provided dataset has invalid target features: found {0} and expected {1}")]
     InvalidTargetFeatures(usize, usize),
-    #[error("Uninitialized")]
+    #[error("An uninitialized object was used")]
     Uninitialized,
+    #[error("The model is not trained")]
+    Untrained,
+    #[cfg(feature = "alloc")]
     #[error("Unsupported model {0}")]
     UnsupportedModel(String),
+    #[cfg(feature = "alloc")]
+    #[cfg(feature = "alloc")]
+    #[error("An unsupported operation was attempted: {0}")]
+    UnsupportedOperation(String),
+    #[error("Unknown Error: {0}")]
+    Unknown(String),
     #[error("Parameter Error")]
     ParameterError(String),
     #[error(transparent)]

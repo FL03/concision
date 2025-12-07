@@ -19,7 +19,6 @@ all-features = false
 doc-scrape-examples = true
 features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
-
 version = "v{{version}}"
 
 [package.metadata.release]
@@ -31,7 +30,7 @@ bench = true
 crate-type = ["cdylib", "rlib"]
 doc = true
 doctest = true
-name = "cnc"
+name = "concision"
 path = "lib.rs"
 test = true
 
@@ -53,13 +52,6 @@ required-features = ["rand", "std", "tracing"]
 [[example]]
 name = "simple"
 required-features = ["rand", "std", "tracing"]
-
-[[test]]
-name = "default"
-
-[[test]]
-name = "simple"
-required-features = ["rand", "std"]
 
 [dependencies]
 concision-core = { workspace = true }

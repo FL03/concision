@@ -2,6 +2,8 @@
     appellation: params <benchmark>
     authors: @FL03
 */
+extern crate concision as cnc;
+
 use cnc::init::InitRand;
 
 use core::hint::black_box;

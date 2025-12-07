@@ -2,6 +2,8 @@
     Appellation: params <example>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+extern crate concision as cnc;
+
 use cnc::init::InitRand;
 use cnc::params::Params;
 

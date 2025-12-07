@@ -9,8 +9,8 @@ use cnc::{
     SigmoidActivation, StandardModelConfig, Train,
 };
 
-use ndarray::prelude::*;
-use ndarray::{Data, ScalarOperand};
+use ndarray::linalg::Dot;
+use ndarray::{Array1, Array2, ArrayBase, ArrayView1, Data, Ix1, Ix2, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign};
 
 #[derive(Clone, Debug)]
@@ -130,13 +130,13 @@ where
     A: Float + FromPrimitive + ScalarOperand,
     V: ReLUActivation<Output = V> + SigmoidActivation<Output = V>,
     Params<A>: Forward<U, Output = V> + Forward<V, Output = V>,
-    for<'a> &'a U: ndarray::linalg::Dot<Array2<A>, Output = V> + core::ops::Add<&'a Array1<A>>,
+    for<'a> &'a U: Dot<Array2<A>, Output = V> + core::ops::Add<&'a Array1<A>>,
     V: for<'a> core::ops::Add<&'a Array1<A>, Output = V>,
 {
     type Output = V;
 
     fn forward(&self, input: &U) -> Self::Output {
-        let mut output = self.params().input().forward(&input).relu();
+        let mut output = self.params().input().forward(input).relu();
 
         for layer in self.params().hidden() {
             output = layer.forward(&output).relu();

@@ -1,8 +1,11 @@
 /*
-    appellation: simple <test>
-    authors: @FL03
+    Appellation: models <module>
+    Created At: 2025.12.07:11:02:49
+    Contrib: @FL03
 */
-use cnc::models::ex::sample::TestModel;
+extern crate concision_core as cnc;
+
+use cnc::ex::sample::TestModel;
 use cnc::{Model, ModelFeatures, StandardModelConfig};
 use ndarray::prelude::*;
 
@@ -17,7 +20,11 @@ fn test_simple_model() -> anyhow::Result<()> {
     // define the model features
     let features = ModelFeatures::deep(3, 9, 1, 8);
     // initialize the model with the given features and configuration
-    let model = TestModel::<f64>::new(config, features);
+    let mut model = TestModel::<f64>::new(config, features);
+    #[cfg(feature = "rand")]
+    {
+        model = model.init();
+    }
     // initialize some input data
     let input = Array1::linspace(1.0, 9.0, model.layout().input());
     let expected = Array1::from_elem(model.layout().output(), 0.5);
