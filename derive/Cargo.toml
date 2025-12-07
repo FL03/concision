@@ -18,7 +18,6 @@ version.workspace = true
 all-features = false
 features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
-
 version = "v{{version}}"
 
 [package.metadata.release]

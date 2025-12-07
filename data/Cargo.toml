@@ -18,7 +18,6 @@ all-features = false
 doc-scrape-examples = true
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
-
 version = "v{{version}}"
 
 [package.metadata.release]

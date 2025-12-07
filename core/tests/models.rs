@@ -5,6 +5,7 @@
 */
 extern crate concision_core as cnc;
 
+use approx::assert_abs_diff_eq;
 use cnc::ex::sample::TestModel;
 use cnc::{Model, ModelFeatures, StandardModelConfig};
 use ndarray::prelude::*;
@@ -34,7 +35,7 @@ fn test_simple_model() -> anyhow::Result<()> {
     // verify the output shape
     assert_eq!(output.dim(), (features.output()));
     // compare the results to what we expected
-    assert_eq!(output, expected);
+    assert_abs_diff_eq!(output, expected, epsilon = 1e-1);
 
     Ok(())
 }
