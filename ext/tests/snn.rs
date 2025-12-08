@@ -16,7 +16,7 @@ fn test_snn_neuron_resting_no_input() {
         assert!(!res.is_spiked());
     }
     let v = n.membrane_potential();
-    assert_abs_diff_eq!(v, n.v_rest);
+    assert_abs_diff_eq!(v, &n.v_rest);
 }
 
 #[test]
@@ -40,7 +40,7 @@ fn test_snn_neuron_spikes() {
 #[test]
 fn test_snn_neuron_synaptic_state_change() {
     let mut n = SpikingNeuron::default();
-    let before = n.synaptic_state();
+    let before = *n.synaptic_state();
     n.apply_spike(2.5);
-    assert!(n.synaptic_state() > before);
+    assert!(*n.synaptic_state() > before);
 }

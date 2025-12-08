@@ -49,7 +49,7 @@ name = "snn"
 required-features = ["approx", "snn", "std"]
 
 [dependencies]
-concision = { features = ["neural"], workspace = true }
+concision = { workspace = true }
 # custom
 variants = { workspace = true }
 # error handling
@@ -148,7 +148,11 @@ alloc = [
   "variants/alloc",
 ]
 
-approx = ["concision/approx", "dep:approx", "ndarray/approx"]
+approx = [
+  "dep:approx",
+  "concision/approx",
+  "ndarray/approx",
+]
 
 blas = ["concision/blas", "ndarray/blas"]
 
@@ -163,9 +167,9 @@ rng = ["concision/rng"]
 rustfft = ["dep:rustfft"]
 
 serde = [
-  "concision/serde",
   "dep:serde",
   "dep:serde_derive",
+  "concision/serde",
   "ndarray/serde",
   "num-complex?/serde",
   "num/serde",
@@ -173,4 +177,7 @@ serde = [
 
 serde_json = ["dep:serde_json"]
 
-tracing = ["concision/tracing", "dep:tracing"]
+tracing = [
+  "dep:tracing",
+  "concision/tracing",
+]

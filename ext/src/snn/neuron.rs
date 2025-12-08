@@ -3,93 +3,67 @@
     Created At: 2025.11.25:09:33:30
     Contrib: @FL03
 */
-//! Single spiking neuron (LIF + adaptation + exponential synapse) example in pure Rust.
-//!
-//! ## Background
-//!
-//! Model (forward-Euler integration; units are arbitrary but consistent):
-//!
-//! ```math
-//! \tau_m * \frac{dv}{dt} = -(v - v_{rest}) + R*(I_{ext} + I_{syn}) - \omega
-//! ```
-//!
-//! ```math
-//! \tau_w * \frac{d\omega}{dt} = -\omega
-//! ```
-//!
-//! ```math
-//! \tau_s * \frac{ds}{dt} = -s
-//! ```
-//!
-//! where:
-//!     - $`v`$: membrane potential
-//!     - $\omega$: adaptation variable
-//!     - $`s`$: synaptic variable representing total synaptic current
-//!
-//! If we allow the spike to be represented as $\delta$, then:
-//!
-//! ```math
-//! v\geq{v_{thresh}}\rightarrow{\delta},v\leftarrow{v_{reset}},\omega\mathrel{+}=b
-//! ```
-//!
-//! and where `b` is the adaptation increment added on spike.
-//! The synaptic current is given by: $I_{syn} = s$
-//!
-//! The implementation is conservative with allocations and idiomatic Rust.
+
 use super::StepResult;
+use num_traits::{Float, FromPrimitive, NumAssign, Zero};
 
 /// Leaky Integrate-and-Fire neuron with an adaptation term and exponential synaptic current.
-///
-/// All fields are public for convenience in research workflows; in production you may want to
-/// expose read-only getters and safe setters only.
-#[derive(Clone)]
-pub struct SpikingNeuron {
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "snake_case")
+)]
+pub struct SpikingNeuron<T = f32> {
     // ---- Parameters ----
     /// Membrane time constant `tau_m` (ms)
-    pub tau_m: f64,
+    pub tau_m: T,
     /// Membrane resistance `R` (MΩ or arbitrary)
-    pub resistance: f64,
+    pub resistance: T,
     /// Resting potential `v_rest` (mV)
-    pub v_rest: f64,
+    pub v_rest: T,
     /// Threshold potential `v_thresh` (mV)
-    pub v_thresh: f64,
+    pub v_thresh: T,
     /// Reset potential after spike `v_reset` (mV)
-    pub v_reset: f64,
+    pub v_reset: T,
 
     /// Adaptation time constant `tau_w` (ms)
-    pub tau_w: f64,
+    pub tau_w: T,
     /// Adaptation increment added on spike `b` (same units as w/current)
-    pub b: f64,
+    pub b: T,
 
     /// Synaptic time constant `tau_s` (ms)
-    pub tau_s: f64,
+    pub tau_s: T,
 
     // ---- State variables ----
     /// Membrane potential `v`
-    pub v: f64,
+    pub v: T,
     /// Adaptation variable `w`
-    pub w: f64,
+    pub w: T,
     /// Synaptic variable `s` representing total synaptic current
-    pub s: f64,
+    pub s: T,
 
     // ---- Optional numerical safeguards ----
     /// Minimum allowed dt for integration (ms)
-    pub min_dt: f64,
+    pub min_dt: T,
 }
 
-impl SpikingNeuron {
+impl<T> SpikingNeuron<T> {
     /// Create a neuron with explicit parameters and initial state.
-    pub const fn new(
-        tau_m: f64,
-        resistance: f64,
-        v_rest: f64,
-        v_thresh: f64,
-        v_reset: f64,
-        tau_w: f64,
-        b: f64,
-        tau_s: f64,
-        initial_v: Option<f64>,
-    ) -> Self {
+    pub fn new(
+        tau_m: T,
+        resistance: T,
+        v_rest: T,
+        v_thresh: T,
+        v_reset: T,
+        tau_w: T,
+        b: T,
+        tau_s: T,
+        initial_v: Option<T>,
+    ) -> Self
+    where
+        T: Float + FromPrimitive,
+    {
         let v0 = if let Some(v_init) = initial_v {
             v_init
         } else {
@@ -105,28 +79,60 @@ impl SpikingNeuron {
             b,
             tau_s,
             v: v0,
-            w: 0.0,
-            s: 0.0,
-            min_dt: 1e-6,
+            w: T::zero(),
+            s: T::zero(),
+            min_dt: T::from_f32(1e-6).unwrap(),
         }
+    }    
+    /// returns a reference to the neuron's adaptation variable (`w`)
+    pub const fn adaptation(&self) -> &T {
+        &self.w
     }
-    /// reset state variables (keeps parameters).
-    pub const fn reset_state(&mut self) {
-        self.v = self.v_rest;
-        self.w = 0.0;
-        self.s = 0.0;
+    /// returns a reference to the membrane potential, `v`, of the neuron
+    pub const fn membrane_potential(&self) -> &T {
+        &self.v
     }
+    /// returns a reference to the current value, or synaptic state, of the neuron (`s`)
+    pub const fn synaptic_state(&self) -> &T {
+        &self.s
+    }
+    /// returns a reference to the membrane time constant, `tau_m`, of the neuron
+    pub const fn tau_m(&self) -> &T {
+        &self.tau_m
+    }
+    /// returns a reference to the membrane resistance, `R`, of the neuron
+    pub const fn resistance(&self) -> &T {
+        &self.resistance
+    }
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     /// Apply a presynaptic spike event to the neuron; this increments the synaptic variable `s`
     /// by `weight` instantaneously (models delta spike arrival).
-    pub fn apply_spike(&mut self, weight: f64) {
+    pub fn apply_spike(&mut self, weight: T)
+    where
+        T: NumAssign + Zero,
+    {
         self.s += weight;
     }
+    /// reset state variables (keeps parameters).
+    pub fn reset_state(&mut self)
+    where
+        T: Clone + Default,
+    {
+        self.v = self.v_rest.clone();
+        self.w = T::default();
+        self.s = T::default();
+    }
     /// Integrate the neuron state forward by `dt` milliseconds using forward Euler.
-    ///
-    /// `i_ext` is an externally injected current (same units as `s`).
-    /// `dt` must be > 0.
-    pub fn step(&mut self, dt: f64, i_ext: f64) -> StepResult {
-        let dt = if dt <= 0.0 {
+    /// 
+    /// ## Inputs
+    /// 
+    ///     - `dt` must be > 0.
+    ///     - `i_ext` is an externally injected current (same units as `s`).
+    pub fn step(&mut self, dt: T, i_ext: T) -> StepResult<T>
+    where
+        T: Float + FromPrimitive + NumAssign,
+    {
+        let dt = if dt.is_sign_negative() {
             panic!("dt must be > 0")
         } else {
             dt.max(self.min_dt)
@@ -176,46 +182,23 @@ impl SpikingNeuron {
             }
         }
     }
-
-    /// Get current membrane potential
-    pub fn membrane_potential(&self) -> f64 {
-        self.v
-    }
-
-    /// Get current synaptic variable
-    pub fn synaptic_state(&self) -> f64 {
-        self.s
-    }
-
-    /// Get adaptation variable
-    pub fn adaptation(&self) -> f64 {
-        self.w
-    }
 }
 
-impl Default for SpikingNeuron {
+impl<T> Default for SpikingNeuron<T>
+where
+    T: Float + FromPrimitive,
+{
     fn default() -> Self {
-        let tau_m = 20.0; // ms
-        let resistance = 1.0; // arbitrary
-        let v_rest = -65.0; // mV
-        let v_thresh = -50.0; // mV
-        let v_reset = -65.0; // mV
-        let tau_w = 200.0; // ms (slow adaptation)
-        let b = 0.5; // adaptation increment
-        let tau_s = 5.0; // ms (fast synapse)
-        Self {
-            tau_m,
-            resistance,
-            v_rest,
-            v_thresh,
-            v_reset,
-            tau_w,
-            b,
-            tau_s,
-            v: v_rest,
-            w: 0.0,
-            s: 0.0,
-            min_dt: 1e-6,
-        }
+        let tau_m = T::from_usize(20).unwrap(); // ms
+        let resistance = T::one(); // arbitrary
+        let v_rest = T::from_usize(65).unwrap().neg(); // mV
+        let v_thresh = T::from_usize(50).unwrap().neg(); // mV
+        let v_reset = T::from_usize(65).unwrap().neg(); // mV
+        let tau_w = T::from_usize(200).unwrap(); // ms (slow adaptation)
+        let b = T::from_f32(0.5).unwrap(); // adaptation increment
+        let tau_s = T::from_usize(5).unwrap(); // ms (fast synapse)
+        Self::new(
+            tau_m, resistance, v_rest, v_thresh, v_reset, tau_w, b, tau_s, None,
+        )
     }
 }

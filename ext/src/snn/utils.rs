@@ -11,7 +11,7 @@ use num_traits::{Float, FromPrimitive, NumAssign};
 
 /// A basic method for _discovering_ the minimum external drive required to make a spiking
 /// neuron spike
-pub fn find_min_drive<T>(step_size: T) -> T
+pub fn sweep_for_min_drive<T>(step_size: T) -> T
 where
     T: Float + FromPrimitive + NumAssign,
 {
@@ -22,7 +22,7 @@ where
 
     let mut i_ext = T::zero();
     loop {
-        let mut neuron = SpikingNeuron::default();
+        let mut neuron = SpikingNeuron::<T>::default();
         let mut events: Vec<Vec<SynapticEvent<T>>> = vec![Vec::new(); steps + 1];
         for (t_spike, weight) in &presyn_spikes {
             let idx = (*t_spike / dt).round().to_isize().unwrap();
@@ -33,9 +33,9 @@ where
         let mut spiked = false;
         for step in 0..steps {
             for ev in &events[step] {
-                neuron.apply_spike(ev.weight.to_f64().unwrap());
+                neuron.apply_spike(ev.weight);
             }
-            let res = neuron.step(dt.to_f64().unwrap(), i_ext.to_f64().unwrap());
+            let res = neuron.step(dt, i_ext);
             if res.is_spiked() {
                 spiked = true;
                 break;

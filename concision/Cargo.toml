@@ -99,8 +99,6 @@ macros = ["concision-core/macros", "dep:concision-macros"]
 
 data = ["dep:concision-data"]
 
-neural = ["alloc"]
-
 # ************* [FF:Environments] *************
 std = [
   "alloc",
