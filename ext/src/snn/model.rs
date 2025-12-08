@@ -79,15 +79,11 @@ impl<T> SpikingNeuralNetwork<T> {
     pub fn with_params(self, params: DeepModelParams<T>) -> Self {
         Self { params, ..self }
     }
-}
 
-impl<T> SpikingNeuralNetwork<T>
-where
-    T: 'static + Float + FromPrimitive,
-{
     #[cfg(feature = "rand")]
     pub fn init(self) -> Self
     where
+        T: 'static + Float + FromPrimitive,
         StandardNormal: Distribution<T>,
     {
         let params = DeepModelParams::glorot_normal(self.features());

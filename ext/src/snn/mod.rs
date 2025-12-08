@@ -9,10 +9,11 @@
 //! - [Deep Learning in Spiking Neural Networks](https://arxiv.org/abs/1804.08150)
 //!
 #[doc(inline)]
-pub use self::{model::*, neuron::*, types::*};
+pub use self::{model::*, neuron::*, types::*, utils::*};
 
 mod model;
 mod neuron;
+mod utils;
 
 pub mod types {
     //! Types for spiking neural networks

@@ -17,7 +17,9 @@ fn main() -> anyhow::Result<()> {
     let mut neuron = SpikingNeuron::default();
 
     // Example external current (constant)
-    let i_ext = 2.8; // tune to see spiking (units consistent with resistance & s)
+    // Increase drive so steady-state v can reach threshold (v_rest + R*i_ext > v_thresh).
+    // With default params: v_rest = -65, v_thresh = -50 → need i_ext >= 15.
+    let i_ext = 16.0; // stronger constant drive to induce spiking
 
     // Example presynaptic spike times (ms) and weights
     let presyn_spikes: Vec<(f64, f64)> =
@@ -47,8 +49,12 @@ fn main() -> anyhow::Result<()> {
 
         if res.is_spiked() {
             spike_times.push(t);
-            // For debugging: print spike time
-            println!("Spike at {:.3} ms (v reset = {:.3})", t, neuron.v);
+            // print the pre-spike membrane potential from the step result
+            println!(
+                "Spike at {:.3} ms (pre-spike v = {:.3})",
+                t,
+                res.membrane_potential()
+            );
         }
 
         // optionally, record v, w, s for analysis (omitted here for brevity)
@@ -58,7 +64,14 @@ fn main() -> anyhow::Result<()> {
 
         // small example of printing membrane potential every 50 ms
         if step % ((50.0 / dt) as usize) == 0 {
-            println!("t={:.1} ms, v={:.3} mV, w={:.3}, s={:.3}", t, _v, _w, _s);
+            // show the step result potential (pre-reset when a spike occurred)
+            println!(
+                "t={:.1} ms, v={:.3} mV, w={:.3}, s={:.3}",
+                t,
+                res.membrane_potential(),
+                _w,
+                _s
+            );
         }
     }
 

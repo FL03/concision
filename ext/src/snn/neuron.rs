@@ -132,6 +132,9 @@ impl SpikingNeuron {
             dt.max(self.min_dt)
         };
 
+        // remember previous membrane potential for crossing detection
+        let v_prev = self.v;
+
         // synaptic current is represented by `s`
         // ds/dt = -s / tau_s
         let ds = -self.s / self.tau_s;
@@ -155,14 +158,16 @@ impl SpikingNeuron {
         self.w = w_next;
         self.s = s_next;
 
-        // Check for spike (simple threshold crossing)
-        if self.v >= self.v_thresh {
-            // spike: apply reset and adaptation increment
+        // Check for threshold crossing (explicit crossing test to avoid misses)
+        if v_prev < self.v_thresh && self.v >= self.v_thresh {
+            // spike: capture pre-reset potential if that is expected by StepResult consumers
+            let pre_spike_v = self.v;
+            // apply reset and adaptation increment
             self.v = self.v_reset;
             self.w += self.b;
             StepResult {
                 spiked: true,
-                v: self.v,
+                v: pre_spike_v,
             }
         } else {
             StepResult {
