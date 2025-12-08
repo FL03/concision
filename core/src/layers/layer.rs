@@ -7,30 +7,28 @@
 //!
 
 mod impl_layer;
-mod impl_layer_repr;
-
-#[allow(deprecated)]
 mod impl_layer_deprecated;
+mod impl_layer_repr;
 
 use super::Activator;
 use concision_params::ParamsBase;
 use concision_traits::Forward;
 use ndarray::{DataOwned, Dimension, Ix2, RawData, RemoveAxis, ShapeBuilder};
 
-/// The [`LayerBase`] struct is a base representation of a neural network layer, essentially
-/// binding an activation function, `F`, to a set of parameters, `ParamsBase<S, D>`.
-pub struct LayerBase<F, S, D = Ix2>
+/// The [`LayerBase`] aims to provide a generic implementation of a single layer within a
+/// neural network
+pub struct LayerBase<F, S, D = Ix2, A = <S as RawData>::Elem>
 where
     D: Dimension,
-    S: RawData,
+    S: RawData<Elem = A>,
 {
     /// the activation function of the layer
     pub(crate) rho: F,
     /// the parameters of the layer is an object consisting of both a weight and a bias tensor.
-    pub(crate) params: ParamsBase<S, D>,
+    pub(crate) params: ParamsBase<S, D, A>,
 }
 
-impl<F, S, A, D> LayerBase<F, S, D>
+impl<F, S, A, D> LayerBase<F, S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -111,6 +109,7 @@ where
         X: Clone,
         Y: Clone,
     {
-        Forward::forward_then(&self.params, input, |x| self.rho.activate(x))
+        self.params()
+            .forward_then(input, |y| self.rho().activate(y))
     }
 }

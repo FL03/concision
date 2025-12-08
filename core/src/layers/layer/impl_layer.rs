@@ -9,10 +9,10 @@ use concision_params::ParamsBase;
 use concision_traits::Forward;
 use ndarray::{Data, Dimension, RawData};
 
-impl<F, S, D> core::ops::Deref for LayerBase<F, S, D>
+impl<F, S, D, A> core::ops::Deref for LayerBase<F, S, D, A>
 where
     D: Dimension,
-    S: RawData,
+    S: RawData<Elem = A>,
 {
     type Target = ParamsBase<S, D>;
 
@@ -21,17 +21,17 @@ where
     }
 }
 
-impl<F, S, D> core::ops::DerefMut for LayerBase<F, S, D>
+impl<F, S, D, A> core::ops::DerefMut for LayerBase<F, S, D, A>
 where
     D: Dimension,
-    S: RawData,
+    S: RawData<Elem = A>,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.params
     }
 }
 
-impl<A, X, Y, F, S, D> Forward<X> for LayerBase<F, S, D>
+impl<A, X, Y, F, S, D> Forward<X> for LayerBase<F, S, D, A>
 where
     A: Clone,
     F: Activator<Y, Output = Y>,
@@ -47,11 +47,11 @@ where
     }
 }
 
-impl<U, V, F, S, D> Activator<U> for LayerBase<F, S, D>
+impl<U, V, F, S, D, A> Activator<U> for LayerBase<F, S, D, A>
 where
     F: Activator<U, Output = V>,
     D: Dimension,
-    S: RawData,
+    S: RawData<Elem = A>,
 {
     type Output = V;
 
@@ -60,11 +60,11 @@ where
     }
 }
 
-impl<U, F, S, D> ActivatorGradient<U> for LayerBase<F, S, D>
+impl<U, F, S, D, A> ActivatorGradient<U> for LayerBase<F, S, D, A>
 where
     F: ActivatorGradient<U>,
     D: Dimension,
-    S: RawData,
+    S: RawData<Elem = A>,
 {
     type Input = F::Input;
     type Delta = F::Delta;
@@ -74,7 +74,7 @@ where
     }
 }
 
-impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D>
+impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D, A>
 where
     F: Activator<A, Output = A>,
     D: Dimension,

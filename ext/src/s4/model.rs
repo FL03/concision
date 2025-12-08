@@ -2,11 +2,11 @@
     appellation: model <module>
     authors: @FL03
 */
+use cnc::config::StandardModelConfig;
+use cnc::prelude::{DeepModelParams, Model, ModelFeatures};
 
-use cnc::nn::{DeepModelParams, Model, ModelFeatures, StandardModelConfig};
 #[cfg(feature = "rand")]
-use cnc::rand_distr;
-
+use cnc::init::rand_distr::{Distribution, StandardNormal};
 use num_traits::{Float, FromPrimitive};
 
 #[derive(Clone, Debug)]
@@ -90,7 +90,7 @@ where
     pub fn init(self) -> Self
     where
         T: 'static + Float + FromPrimitive,
-        rand_distr::StandardNormal: rand_distr::Distribution<T>,
+        StandardNormal: Distribution<T>,
     {
         let params = DeepModelParams::glorot_normal(self.features());
         S4Model { params, ..self }
@@ -109,8 +109,8 @@ impl<T> Model<T> for S4Model<T> {
         &mut self.config
     }
 
-    fn layout(&self) -> ModelFeatures {
-        self.features
+    fn layout(&self) -> &ModelFeatures {
+        &self.features
     }
 
     fn params(&self) -> &DeepModelParams<T> {

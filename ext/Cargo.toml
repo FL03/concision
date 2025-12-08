@@ -36,6 +36,10 @@ test = true
 name = "attention"
 required-features = ["attention", "rand", "std"]
 
+[[example]]
+name = "snn"
+required-features = ["approx", "snn", "std"]
+
 [[test]]
 name = "attention"
 required-features = ["approx", "attention", "rand", "std"]
@@ -75,8 +79,9 @@ tracing-subscriber = { features = ["std"], workspace = true }
 default = ["attention", "std"]
 
 full = [
-  "complex",
   "default",
+  "approx",
+  "complex",
   "json",
   "models",
   "rand",
@@ -93,6 +98,8 @@ signal = ["complex", "rustfft"]
 
 # ********* [FF:Models] *********
 models = [
+  "s4",
+  "snn",
   "transformer",
 ]
 

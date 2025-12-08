@@ -6,6 +6,13 @@
 use super::{Deep, NetworkDepth, Shallow};
 use ndarray::{Dimension, RawData};
 
+pub trait NeuralNetworkParams<S, D, A = <S as RawData>::Elem>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
+}
+
 /// The [`NeuralNetwork`] trait defines a generic interface for neural network models.
 pub trait NeuralNetwork<S, D, A = <S as RawData>::Elem>
 where

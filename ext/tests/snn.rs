@@ -41,6 +41,6 @@ fn test_snn_neuron_spikes() {
 fn test_snn_neuron_synaptic_state_change() {
     let mut n = SpikingNeuron::default();
     let before = n.synaptic_state();
-    n.receive_spike(2.5);
+    n.apply_spike(2.5);
     assert!(n.synaptic_state() > before);
 }

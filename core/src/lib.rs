@@ -95,6 +95,7 @@ pub mod prelude {
     pub use concision_traits::prelude::*;
 
     pub use crate::activate::prelude::*;
+    pub use crate::config::prelude::*;
     pub use crate::layers::prelude::*;
     pub use crate::layout::*;
     pub use crate::models::prelude::*;

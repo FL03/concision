@@ -22,8 +22,8 @@ pub(crate) mod utils;
 use proc_macro::TokenStream;
 use syn::{DeriveInput, parse_macro_input};
 
-/// The [`Configuration`] derive macro generates configuration-related code for a given struct, 
-/// streamlining the process of creating compatible configuration spaces within the concision 
+/// The [`Configuration`] derive macro generates configuration-related code for a given struct,
+/// streamlining the process of creating compatible configuration spaces within the concision
 /// framework.
 #[proc_macro_derive(Configuration, attributes(config))]
 pub fn configuration(input: TokenStream) -> TokenStream {
