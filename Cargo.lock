@@ -204,10 +204,7 @@ dependencies = [
  "concision-derive",
  "concision-macros",
  "criterion",
- "lazy_static",
  "ndarray",
- "num",
- "serde",
  "tracing",
  "tracing-subscriber",
 ]

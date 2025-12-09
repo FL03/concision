@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 
-use super::{SpikingNeuron, SynapticEvent};
+use super::{LIFNeuron, SynapticEvent};
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 use num_traits::{Float, FromPrimitive, NumAssign};
@@ -22,7 +22,7 @@ where
 
     let mut i_ext = T::zero();
     loop {
-        let mut neuron = SpikingNeuron::<T>::default();
+        let mut neuron = LIFNeuron::<T>::default();
         let mut events: Vec<Vec<SynapticEvent<T>>> = vec![Vec::new(); steps + 1];
         for (t_spike, weight) in &presyn_spikes {
             let idx = (*t_spike / dt).round().to_isize().unwrap();

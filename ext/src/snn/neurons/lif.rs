@@ -4,35 +4,42 @@
     Contrib: @FL03
 */
 
-use super::StepResult;
+use crate::snn::StepResult;
 use num_traits::{Float, FromPrimitive, NumAssign, Zero};
 
-/// Leaky Integrate-and-Fire neuron with an adaptation term and exponential synaptic current.
+/// Leaky Integrate-and-Fire (LIF) neuron with an adaptation term and exponential synaptic
+/// current.
+///
+/// The neuron dynamics are governed by the following equations:
+///
+/// ```math
+/// \frac{dv}{dt} = \frac{-(v - v_{rest}) + R \cdot (i_{ext} + s) - w}{\tau_{m}}
+/// ```
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "snake_case")
 )]
-pub struct SpikingNeuron<T = f32> {
+pub struct LIFNeuron<T = f32> {
     // ---- Parameters ----
-    /// Membrane time constant `tau_m` (ms)
+    /// Membrane time constant $`\tau_{m}`$ (ms)
     pub tau_m: T,
     /// Membrane resistance `R` (MΩ or arbitrary)
     pub resistance: T,
-    /// Resting potential `v_rest` (mV)
+    /// Resting potential $``v_{rest}`$ (mV)
     pub v_rest: T,
-    /// Threshold potential `v_thresh` (mV)
+    /// Threshold potential $`v_{thresh}`$ (mV)
     pub v_thresh: T,
-    /// Reset potential after spike `v_reset` (mV)
+    /// Reset potential after spike $`v_{reset}`$ (mV)
     pub v_reset: T,
 
-    /// Adaptation time constant `tau_w` (ms)
+    /// Adaptation time constant $`\tau_{w}`$ (ms)
     pub tau_w: T,
     /// Adaptation increment added on spike `b` (same units as w/current)
     pub b: T,
 
-    /// Synaptic time constant `tau_s` (ms)
+    /// Synaptic time constant $`\tau_{s}`$ (ms)
     pub tau_s: T,
 
     // ---- State variables ----
@@ -43,12 +50,11 @@ pub struct SpikingNeuron<T = f32> {
     /// Synaptic variable `s` representing total synaptic current
     pub s: T,
 
-    // ---- Optional numerical safeguards ----
     /// Minimum allowed dt for integration (ms)
     pub min_dt: T,
 }
 
-impl<T> SpikingNeuron<T> {
+impl<T> LIFNeuron<T> {
     /// Create a neuron with explicit parameters and initial state.
     pub fn new(
         tau_m: T,
@@ -83,7 +89,7 @@ impl<T> SpikingNeuron<T> {
             s: T::zero(),
             min_dt: T::from_f32(1e-6).unwrap(),
         }
-    }    
+    }
     /// returns a reference to the neuron's adaptation variable (`w`)
     pub const fn adaptation(&self) -> &T {
         &self.w
@@ -122,12 +128,15 @@ impl<T> SpikingNeuron<T> {
         self.w = T::default();
         self.s = T::default();
     }
-    /// Integrate the neuron state forward by `dt` milliseconds using forward Euler.
-    /// 
-    /// ## Inputs
-    /// 
-    ///     - `dt` must be > 0.
-    ///     - `i_ext` is an externally injected current (same units as `s`).
+    /// Integrate the neuron state forward by `dt` [ms] using forward Euler; the externally
+    /// applied current, `i_ext`, is added to the synaptic current `s` for the integration
+    /// step. Therefore it is important to maintain unitary consistency between `i_ext` and `s`
+    /// and to ensure that the provided `dt` is sufficiently small to avoid missing spikes, yet
+    /// still greater than 0
+    ///
+    /// **Note**: This method checks for threshold crossing explicitly to avoid missing spikes
+    /// due to large `dt`. Additionally, if `dt` is less than `min_dt`, it is clamped to
+    /// `min_dt`.
     pub fn step(&mut self, dt: T, i_ext: T) -> StepResult<T>
     where
         T: Float + FromPrimitive + NumAssign,
@@ -184,7 +193,7 @@ impl<T> SpikingNeuron<T> {
     }
 }
 
-impl<T> Default for SpikingNeuron<T>
+impl<T> Default for LIFNeuron<T>
 where
     T: Float + FromPrimitive,
 {

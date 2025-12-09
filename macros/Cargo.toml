@@ -18,11 +18,11 @@ version.workspace = true
 all-features = false
 features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
 tag-name = "v{{version}}"
+
 [lib]
 bench = false
 doc = true

@@ -4,11 +4,11 @@
     Contrib: @FL03
 */
 use approx::assert_abs_diff_eq;
-use concision_ext::snn::SpikingNeuron;
+use concision_ext::snn::LIFNeuron;
 
 #[test]
 fn test_snn_neuron_resting_no_input() {
-    let mut n = SpikingNeuron::default();
+    let mut n = LIFNeuron::default();
     let dt = 1.0;
     // simulate 100 ms with no input -> should not spike and v near v_rest
     for _ in 0..100 {
@@ -20,26 +20,28 @@ fn test_snn_neuron_resting_no_input() {
 }
 
 #[test]
-// #[ignore = "Need to fix"]
 fn test_snn_neuron_spikes() {
     // params
     let dt = 1f64;
     let i_ext = 50f64; // large i_ext to force spiking
     // neuron
-    let mut n = SpikingNeuron::default();
+    let mut n = LIFNeuron::default();
     let mut spiked = false;
     let mut steps = 0usize;
-    // apply strong constant external current for a while
+    // run until spiked or max steps reached
     while !spiked && steps < 1000 {
         spiked = n.step(dt, i_ext).is_spiked();
         steps += 1;
     }
-    assert!(spiked, "Neuron did not spike under strong current");
+    assert!(
+        spiked,
+        "Neuron did not spike under a strong current (i_ext = {i_ext})"
+    );
 }
 
 #[test]
 fn test_snn_neuron_synaptic_state_change() {
-    let mut n = SpikingNeuron::default();
+    let mut n = LIFNeuron::default();
     let before = *n.synaptic_state();
     n.apply_spike(2.5);
     assert!(*n.synaptic_state() > before);
