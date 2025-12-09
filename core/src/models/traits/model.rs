@@ -3,7 +3,7 @@
     authors: @FL03
 */
 use crate::config::ModelConfiguration;
-use crate::{DeepModelParams, ModelLayout, RawModelLayout};
+use crate::{DeepModelParams, LayoutExt, RawModelLayout};
 use concision_params::Params;
 use concision_traits::Predict;
 
@@ -15,7 +15,7 @@ pub trait Model<T = f32> {
     /// The type of configuration used for the model
     type Config: ModelConfiguration<T>;
     /// The type of [`ModelLayout`] used by the model for this implementation.
-    type Layout: ModelLayout;
+    type Layout: LayoutExt;
     /// returns an immutable reference to the models configuration; this is typically used to
     /// access the models hyperparameters (i.e. learning rate, momentum, etc.) and other
     /// related control parameters.
@@ -132,6 +132,6 @@ pub trait ModelExt<T>: Model<T> {
 impl<M, T> ModelExt<T> for M
 where
     M: Model<T>,
-    M::Layout: ModelLayout,
+    M::Layout: LayoutExt,
 {
 }

@@ -3,45 +3,62 @@
     Created At: 2025.12.09:07:26:04
     Contrib: @FL03
 */
-/// The [`Decrement`] trait defines a method enabling an axis to decrement itself,
+/// [`Decrement`] is a chainable trait that defines a decrement method,
+/// effectively removing a single unit from the original object to create another
 pub trait Decrement {
     type Output;
 
     fn dec(self) -> Self::Output;
 }
-/// The [`Increment`] trait defines a method enabling an axis to increment itself,
-/// effectively adding a new axis to the array.
+
+/// The [`DecrementMut`] trait defines a decrement method that operates in place,
+/// modifying the original object.
+pub trait DecrementMut {
+    fn dec_mut(&mut self);
+}
+/// The [`Increment`]
 pub trait Increment {
     type Output;
 
     fn inc(self) -> Self::Output;
 }
 
-/*
-    ************* Implementations *************
-*/
-use ndarray::{Axis, Dimension, RemoveAxis,};
+pub trait IncrementMut {
+    fn inc_mut(&mut self);
+}
 
-impl<D, E> Decrement for D
+/*
+ ************* Implementations *************
+*/
+use num_traits::One;
+
+impl<T> Decrement for T
 where
-    D: RemoveAxis<Smaller = E>,
-    E: Dimension,
+    T: One + core::ops::Sub<Output = T>,
 {
-    type Output = E;
+    type Output = T;
 
     fn dec(self) -> Self::Output {
-        self.remove_axis(Axis(self.ndim() - 1))
+        self - T::one()
     }
 }
 
-impl<D, E> Increment for D
+impl<T> DecrementMut for T
 where
-    D: Dimension<Larger = E>,
-    E: Dimension,
+    T: One + core::ops::SubAssign,
 {
-    type Output = E;
+    fn dec_mut(&mut self) {
+        *self -= T::one()
+    }
+}
+
+impl<T> Increment for T
+where
+    T: One + core::ops::Add<Output = T>,
+{
+    type Output = T;
 
     fn inc(self) -> Self::Output {
-        self.insert_axis(Axis(self.ndim()))
+        self + T::one()
     }
 }

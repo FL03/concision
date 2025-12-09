@@ -8,7 +8,6 @@
 /// A type alias for a [`Result`](core::result::Result) which uses the [`ParamsError`] type
 pub type Result<T = ()> = core::result::Result<T, ParamsError>;
 
-
 /// the [`ParamsError`] enumerates various errors that can occur within the parameters of a
 /// neural network.
 #[derive(Debug, thiserror::Error)]
@@ -17,7 +16,9 @@ pub enum ParamsError {
     InvalidBiases,
     #[error("Invalid weights")]
     InvalidWeights,
-    #[error("Unable to complete the operation due to a mismatch between shapes: expected {expected:?}, found {found:?}")]
+    #[error(
+        "Unable to complete the operation due to a mismatch between shapes: expected {expected:?}, found {found:?}"
+    )]
     MismatchedShapes {
         expected: &'static [usize],
         found: &'static [usize],

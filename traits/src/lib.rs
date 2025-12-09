@@ -17,11 +17,12 @@
 
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
-    "At least one of the 'std' or 'alloc' features must be enabled."
+    "At least one of the \"std\" or \"alloc\" features must be enabled for the crate to compile."
 }
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+extern crate ndarray as nd;
 
 #[macro_use]
 pub(crate) mod macros {
@@ -71,13 +72,14 @@ pub mod ops {
 
 pub mod tensor {
     #[doc(inline)]
-    pub use self::{fill::*, like::*, linalg::*, ndtensor::*, shape::*};
+    pub use self::{dimensionality::*, fill::*, like::*, linalg::*, ndtensor::*, reshape::*};
 
+    mod dimensionality;
     mod fill;
     mod like;
     mod linalg;
     mod ndtensor;
-    mod shape;
+    mod reshape;
 }
 
 // re-exports

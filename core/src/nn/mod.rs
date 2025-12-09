@@ -8,25 +8,10 @@
 //!
 
 pub(crate) mod prelude {
-    pub use super::{
-        Deep, NetworkConsts, NetworkDepth, NeuralNetwork, NeuralNetworkParams, Shallow,
-    };
+    pub use super::{NetworkConsts, NeuralNetwork, NeuralNetworkParams};
 }
 
 use ndarray::{Dimension, RawData};
-
-/// The [`NetworkDepth`] trait is used to define the depth/kind of a neural network model.
-pub trait NetworkDepth {
-    private!();
-}
-
-type_tags! {
-    #[NetworkDepth]
-    pub enum {
-        Deep,
-        Shallow,
-    }
-}
 
 pub trait NeuralNetworkParams<S, D, A = <S as RawData>::Elem>
 where

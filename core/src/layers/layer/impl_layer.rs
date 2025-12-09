@@ -5,7 +5,7 @@
 use crate::layers::LayerBase;
 
 use crate::layers::{Activator, RawLayer};
-use concision_params::{ParamsBase, RawParameter};
+use concision_params::{ParamsBase, RawParam};
 use concision_traits::Forward;
 use ndarray::{DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
@@ -33,7 +33,7 @@ where
 impl<F, P, X, Y> Forward<X> for LayerBase<F, P>
 where
     F: Activator<Y, Output = Y>,
-    P: RawParameter + Forward<X, Output = Y>,
+    P: RawParam + Forward<X, Output = Y>,
 {
     type Output = Y;
 
@@ -45,7 +45,7 @@ where
 impl<F, P, A> RawLayer<F, P> for LayerBase<F, P>
 where
     F: Activator<P>,
-    P: RawParameter<Elem = A>,
+    P: RawParam<Elem = A>,
 {
     fn rho(&self) -> &F {
         &self.rho

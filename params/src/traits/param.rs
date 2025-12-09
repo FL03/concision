@@ -3,7 +3,7 @@
     Created At: 2025.12.08:16:03:55
     Contrib: @FL03
 */
-/// The [`RawParameter`] trait is used to denote objects capable of being used as a paramater
+/// The [`RawParam`] trait is used to denote objects capable of being used as a paramater
 /// within a neural network or machine learning context. More over, it provides us with an
 /// ability to associate some generic element type with the parameter and thus allows us to
 /// consider so-called _parameter spaces_. If we allow a parameter space to simply be a
@@ -13,24 +13,25 @@
 /// and training in a more formal manner.
 ///
 /// **Note**: This trait is sealed and cannot be implemented outside of this crate.
-pub trait RawParameter {
+pub trait RawParam {
     type Elem: ?Sized;
 
     private!();
 }
 
-/// The [`ScalarParameter`] trait naturally extends the [`RawParameter`] trait to define a
+/// The [`ScalarParam`] trait naturally extends the [`RawParameter`] trait to define a
 /// scaler as a parameter whose element type is itself. This is useful for defining
 /// parameters which are simple scalars such as `f32` or `i64`.
-pub trait ScalarParam: RawParameter<Elem = Self> + Sized {
+pub trait ScalarParam: RawParam<Elem = Self> + Sized {
     private!();
 }
 
-pub trait TensorParams: RawParameter {
+pub trait TensorParams: RawParam {
+    type Shape: ?Sized;
     /// returns the number of dimensions of the parameter
     fn rank(&self) -> usize;
     /// returns the shape of the parameter as a slice
-    fn shape(&self) -> &[usize];
+    fn shape(&self) -> &Self::Shape;
     /// returns the size of the parameter
     fn size(&self) -> usize;
 }
@@ -41,18 +42,18 @@ pub trait TensorParams: RawParameter {
 use crate::ParamsBase;
 use ndarray::{ArrayBase, Dimension, RawData};
 
-impl<T> RawParameter for &T
+impl<T> RawParam for &T
 where
-    T: RawParameter,
+    T: RawParam,
 {
     type Elem = T::Elem;
 
     seal! {}
 }
 
-impl<T> RawParameter for &mut T
+impl<T> RawParam for &mut T
 where
-    T: RawParameter,
+    T: RawParam,
 {
     type Elem = T::Elem;
 
@@ -61,7 +62,7 @@ where
 
 impl<T> ScalarParam for T
 where
-    T: RawParameter<Elem = T>,
+    T: RawParam<Elem = T>,
 {
     seal!();
 }
@@ -71,18 +72,20 @@ macro_rules! impl_param {
         $(impl_param!(@impl $T);)*
     };
     (@impl $T:ty) => {
-        impl RawParameter for $T {
+        impl RawParam for $T {
             type Elem = $T;
 
             seal! {}
         }
 
         impl TensorParams for $T {
+            type Shape = [usize; 0];
+
             fn rank(&self) -> usize {
                 0
             }
 
-            fn shape(&self) -> &[usize] {
+            fn shape(&self) -> &Self::Shape {
                 &[]
             }
 
@@ -101,13 +104,13 @@ impl_param! {
 }
 
 #[cfg(feature = "alloc")]
-impl RawParameter for alloc::string::String {
+impl RawParam for alloc::string::String {
     type Elem = u8;
 
     seal! {}
 }
 
-impl<S, D, A> RawParameter for ArrayBase<S, D, A>
+impl<S, D, A> RawParam for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -122,11 +125,13 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
+    type Shape = [usize];
+
     fn rank(&self) -> usize {
         self.ndim()
     }
 
-    fn shape(&self) -> &[usize] {
+    fn shape(&self) -> &Self::Shape {
         self.shape()
     }
 
@@ -135,7 +140,7 @@ where
     }
 }
 
-impl<S, D, A> RawParameter for ParamsBase<S, D, A>
+impl<S, D, A> RawParam for ParamsBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -150,6 +155,8 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
+    type Shape = [usize];
+
     fn rank(&self) -> usize {
         self.weights().ndim()
     }
@@ -163,9 +170,9 @@ where
     }
 }
 
-impl<const N: usize, T> RawParameter for [T; N]
+impl<const N: usize, T> RawParam for [T; N]
 where
-    T: RawParameter,
+    T: RawParam,
 {
     type Elem = T::Elem;
 
@@ -174,13 +181,15 @@ where
 
 impl<const N: usize, T> TensorParams for [T; N]
 where
-    T: RawParameter,
+    T: RawParam,
 {
+    type Shape = [usize; 1];
+
     fn rank(&self) -> usize {
         1
     }
 
-    fn shape(&self) -> &[usize] {
+    fn shape(&self) -> &Self::Shape {
         &[N]
     }
 
@@ -191,32 +200,15 @@ where
 
 #[cfg(feature = "alloc")]
 mod impl_alloc {
-    use alloc::vec::Vec;
     use super::*;
+    use alloc::vec::Vec;
 
-    impl<T> RawParameter for Vec<T>
+    impl<T> RawParam for Vec<T>
     where
-        T: RawParameter,
+        T: RawParam,
     {
         type Elem = T::Elem;
 
         seal! {}
     }
-
-    // impl<T> TensorParams for Vec<T>
-    // where
-    //     T: RawParameter,
-    // {
-    //     fn rank(&self) -> usize {
-    //         1
-    //     }
-
-    //     fn shape(&self) -> &[usize] {
-    //         &[self.len()]
-    //     }
-
-    //     fn size(&self) -> usize {
-    //         self.len()
-    //     }
-    // }
 }

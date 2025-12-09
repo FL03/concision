@@ -37,7 +37,7 @@ pub enum Error {
     #[error("Parameter Error")]
     ParameterError(String),
     #[error(transparent)]
-    AnyError(#[from] anyhow::Error),    
+    AnyError(#[from] anyhow::Error),
     #[cfg(feature = "alloc")]
     #[error(transparent)]
     BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),

@@ -7,11 +7,11 @@ use ndarray::{
     ShapeBuilder,
 };
 
-/// The [`ParamsBase`] implementation aims to provide a generic, n-dimensional weight and bias 
-/// pair for a model (or layer). The object requires the bias tensor to be a single dimension 
-/// smaller than the weights tensor. 
-/// 
-/// Therefore, we allow the weight tensor to be the _shape_ of the parameters, using the shape 
+/// The [`ParamsBase`] implementation aims to provide a generic, n-dimensional weight and bias
+/// pair for a model (or layer). The object requires the bias tensor to be a single dimension
+/// smaller than the weights tensor.
+///
+/// Therefore, we allow the weight tensor to be the _shape_ of the parameters, using the shape
 /// as the basis for the bias tensor by removing one axi (typically the first axis).
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
 /// that can be reduced by one axis, typically the "zero-th" axis: $`\mbox{rank}(D)>0`$.
