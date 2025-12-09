@@ -23,17 +23,17 @@
 //!
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(
-    clippy::missing_saftey_doc,
+    clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
-    clippy::upper_case_acronyms
+    clippy::should_implement_trait,
+    clippy::upper_case_acronyms,
+    rustdoc::redundant_explicit_links
 )]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
-extern crate concision_init as cnc_init;
-extern crate concision_traits as cnc_traits;
-extern crate ndarray as nda;
+extern crate ndarray as nd;
 
 #[cfg(all(not(feature = "alloc"), not(feature = "std")))]
 compiler_error! {
@@ -43,16 +43,21 @@ compiler_error! {
 pub mod error;
 pub mod iter;
 
-mod params;
+mod params_base;
+
+#[macro_use]
+pub(crate) mod macros {
+    #[macro_use]
+    pub mod seal;
+}
 
 mod impls {
     mod impl_params;
-    #[allow(deprecated)]
-    mod impl_params_deprecated;
-    #[cfg(feature = "rand")]
-    mod impl_params_init;
     mod impl_params_iter;
     mod impl_params_ops;
+
+    #[allow(deprecated)]
+    mod impl_params_deprecated;
     #[cfg(feature = "rand")]
     mod impl_params_rand;
     #[cfg(feature = "serde")]
@@ -61,8 +66,9 @@ mod impls {
 
 pub mod traits {
     //! Traits for working with model parameters
-    pub use self::wnb::*;
+    pub use self::{param::*, wnb::*};
 
+    mod param;
     mod wnb;
 }
 
@@ -76,12 +82,12 @@ mod types {
 
 // re-exports
 #[doc(inline)]
-pub use self::{error::*, params::ParamsBase, traits::*, types::*};
+pub use self::{error::*, params_base::ParamsBase, traits::*, types::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use crate::error::ParamsError;
-    pub use crate::params::*;
+    pub use crate::params_base::*;
     pub use crate::traits::*;
     pub use crate::types::*;
 }

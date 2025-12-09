@@ -24,9 +24,9 @@ where
 
 #[deprecated(
     since = "0.2.9",
-    note = "Please use the `InitRand` trait instead which provides more comprehensive functionality."
+    note = "Please use the `NdInit` trait instead which provides more comprehensive functionality."
 )]
-pub trait Initialize<S, D, A>: InitRand<S, D, A>
+pub trait InitRand<S, D, A>: NdInit<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -36,7 +36,7 @@ where
 /// The trait is similar to the `RandomExt` trait provided by the `ndarray_rand` crate,
 /// however, it is designed to be more generic, extensible, and optimized for neural network
 /// initialization routines.
-pub trait InitRand<S, D, A = <S as RawData>::Elem>: Sized
+pub trait NdInit<S, D, A = <S as RawData>::Elem>: Sized
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -212,7 +212,7 @@ where
  ************ Implementations ************
 */
 
-impl<A, S, D> InitRand<S, D, A> for ArrayBase<S, D, A>
+impl<A, S, D> NdInit<S, D, A> for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,

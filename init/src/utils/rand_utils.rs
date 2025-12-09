@@ -2,7 +2,7 @@
    Appellation: utils <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::InitRand;
+use crate::NdInit;
 use ndarray::{Array, ArrayBase, DataOwned, Dimension, IntoDimension, RawData, ShapeBuilder};
 use num::Num;
 use num::complex::{Complex, ComplexDistribution};

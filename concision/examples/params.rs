@@ -2,7 +2,9 @@
     Appellation: params <example>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use cnc::init::InitRand;
+extern crate concision as cnc;
+
+use cnc::init::NdInit;
 use cnc::params::Params;
 
 use ndarray::prelude::*;
@@ -31,7 +33,7 @@ fn main() -> anyhow::Result<()> {
     assert_eq!(params.bias().shape(), &[n]);
     tracing::info!("Randomized parameters: {params:?}");
 
-    let y = params.forward(&inputs).expect("forward pass failed");
+    let y = params.forward(&inputs);
     assert_eq!(y.shape(), &[n]);
     tracing::info!("Forward pass: {y:?}");
 

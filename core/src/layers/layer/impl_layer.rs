@@ -2,100 +2,60 @@
     appellation: impl_layer <module>
     authors: @FL03
 */
-use crate::layers::LayerBase;
+use crate::layers::Layer;
 
-use crate::layers::{Activator, ActivatorGradient, Layer};
-use concision_params::ParamsBase;
+use crate::layers::{Activator, RawLayer};
+use concision_params::{ParamsBase, RawParam};
 use concision_traits::Forward;
-use ndarray::{Data, Dimension, RawData};
+use ndarray::{DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
-impl<F, S, D> core::ops::Deref for LayerBase<F, S, D>
-where
-    D: Dimension,
-    S: RawData,
-{
-    type Target = ParamsBase<S, D>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.params
-    }
-}
-
-impl<F, S, D> core::ops::DerefMut for LayerBase<F, S, D>
-where
-    D: Dimension,
-    S: RawData,
-{
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.params
-    }
-}
-
-impl<A, X, Y, F, S, D> Forward<X> for LayerBase<F, S, D>
-where
-    A: Clone,
-    F: Activator<Y, Output = Y>,
-    D: Dimension,
-    S: Data<Elem = A>,
-    ParamsBase<S, D>: Forward<X, Output = Y>,
-{
-    type Output = Y;
-
-    fn forward(&self, inputs: &X) -> Option<Self::Output> {
-        let y = self
-            .params()
-            .forward(inputs)
-            .expect("Forward pass failed in LayerBase");
-
-        Some(self.rho().activate(y))
-    }
-}
-
-impl<U, V, F, S, D> Activator<U> for LayerBase<F, S, D>
-where
-    F: Activator<U, Output = V>,
-    D: Dimension,
-    S: RawData,
-{
-    type Output = V;
-
-    fn activate(&self, x: U) -> Self::Output {
-        self.rho().activate(x)
-    }
-}
-
-impl<U, F, S, D> ActivatorGradient<U> for LayerBase<F, S, D>
-where
-    F: ActivatorGradient<U>,
-    D: Dimension,
-    S: RawData,
-{
-    type Input = F::Input;
-    type Delta = F::Delta;
-
-    fn activate_gradient(&self, inputs: F::Input) -> F::Delta {
-        self.rho().activate_gradient(inputs)
-    }
-}
-
-impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D>
+impl<F, S, D, A> Layer<F, ParamsBase<S, D, A>>
 where
     F: Activator<A, Output = A>,
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    type Elem = A;
-    type Rho = F;
+    /// create a new [`LayerBase`] from the given activation function and shape.
+    pub fn from_rho_with_shape<Sh>(rho: F, shape: Sh) -> Self
+    where
+        A: Clone + Default,
+        S: DataOwned,
+        D: RemoveAxis,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        Self {
+            rho,
+            params: ParamsBase::default(shape),
+        }
+    }
+}
 
-    fn rho(&self) -> &Self::Rho {
+impl<F, P, X, Y> Forward<X> for Layer<F, P>
+where
+    F: Activator<Y, Output = Y>,
+    P: RawParam + Forward<X, Output = Y>,
+{
+    type Output = Y;
+
+    fn forward(&self, input: &X) -> Self::Output {
+        self.rho().activate(self.params().forward(input))
+    }
+}
+
+impl<F, P, A> RawLayer<F, P> for Layer<F, P>
+where
+    F: Activator<P>,
+    P: RawParam<Elem = A>,
+{
+    fn rho(&self) -> &F {
         &self.rho
     }
 
-    fn params(&self) -> &ParamsBase<S, D> {
+    fn params(&self) -> &P {
         &self.params
     }
 
-    fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
+    fn params_mut(&mut self) -> &mut P {
         &mut self.params
     }
 }

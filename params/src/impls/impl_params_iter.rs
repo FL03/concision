@@ -2,7 +2,7 @@
     appellation: impl_params_iter <module>
     authors: @FL03
 */
-use crate::params::ParamsBase;
+use crate::params_base::ParamsBase;
 
 use crate::iter::{Iter, IterMut};
 use ndarray::iter as nditer;
@@ -65,7 +65,7 @@ where
     {
         self.weights().iter()
     }
-    /// returns a mutable iterator over the weights; see [`iter_mut`](ArrayBase::iter_mut) for more
+    /// returns a mutable iterator over the weights; see [`iter_mut`](ndarray::iter::IterMut) for more
     pub fn iter_weights_mut(&mut self) -> nditer::IterMut<'_, A, D>
     where
         S: DataMut,

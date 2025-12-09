@@ -7,7 +7,9 @@
     clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
-    clippy::upper_case_acronyms
+    clippy::should_implement_trait,
+    clippy::upper_case_acronyms,
+    rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
@@ -15,11 +17,12 @@
 
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
-    "At least one of the 'std' or 'alloc' features must be enabled."
+    "At least one of the \"std\" or \"alloc\" features must be enabled for the crate to compile."
 }
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+extern crate ndarray as nd;
 
 #[macro_use]
 pub(crate) mod macros {
@@ -56,15 +59,27 @@ pub mod math {
     mod unary;
 }
 
+pub mod ops {
+    //! composable operators for tensor manipulations and transformations, neural networks, and
+    //! more
+    #[allow(unused_imports)]
+    #[doc(inline)]
+    pub use self::{binary::*, unary::*};
+
+    mod binary;
+    mod unary;
+}
+
 pub mod tensor {
     #[doc(inline)]
-    pub use self::{fill::*, like::*, linalg::*, ndtensor::*, shape::*};
+    pub use self::{dimensionality::*, fill::*, like::*, linalg::*, ndtensor::*, reshape::*};
 
+    mod dimensionality;
     mod fill;
     mod like;
     mod linalg;
     mod ndtensor;
-    mod shape;
+    mod reshape;
 }
 
 // re-exports

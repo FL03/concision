@@ -18,21 +18,18 @@ version.workspace = true
 all-features = false
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name = "{{version}}"
+tag-name = "v{{version}}"
 
 [lib]
-crate-type = ["cdylib", "rlib"]
 bench = false
-doc = true
+crate-type = ["cdylib", "rlib"]
 doctest = true
 test = true
 
 [dependencies]
-#  local
 concision-init = { workspace = true }
 concision-params = { workspace = true }
 concision-traits = { workspace = true }
@@ -41,6 +38,7 @@ variants = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # data structures
+hashbrown = { workspace = true }
 ndarray = { workspace = true }
 # serialization
 serde = { features = ["derive"], optional = true, workspace = true }
@@ -61,10 +59,6 @@ num-complex = { optional = true, workspace = true }
 num-integer = { workspace = true }
 num-traits = { workspace = true }
 rustfft = { optional = true, workspace = true }
-# random
-getrandom = { default-features = false, optional = true, workspace = true }
-rand = { optional = true, workspace = true }
-rand_distr = { optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static = { workspace = true }
@@ -73,9 +67,9 @@ lazy_static = { workspace = true }
 default = ["macros", "std"]
 
 full = [
-  "default",
   "approx",
   "complex",
+  "default",
   "json",
   "rand",
   "serde",
@@ -87,6 +81,7 @@ nightly = [
   "concision-init/nightly",
   "concision-params/nightly",
   "concision-traits/nightly",
+  "hashbrown/nightly",
 ]
 
 # ************* [FF:Features] *************
@@ -105,12 +100,11 @@ std = [
   "concision-init/std",
   "concision-params/std",
   "concision-traits/std",
+  "hashbrown/default",
   "ndarray/std",
-  "num-integer/std",
   "num-complex?/std",
+  "num-integer/std",
   "num-traits/std",
-  "rand?/std",
-  "rand?/std_rng",
   "serde/std",
   "strum/std",
   "thiserror/std",
@@ -125,7 +119,6 @@ wasi = [
 ]
 
 wasm = [
-  "getrandom?/wasm_js",
   "concision-init/wasm",
   "concision-params/wasm",
   "concision-traits/wasm",
@@ -136,6 +129,7 @@ alloc = [
   "concision-init/alloc",
   "concision-params/alloc",
   "concision-traits/alloc",
+  "hashbrown/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
@@ -158,31 +152,27 @@ complex = [
   "dep:num-complex",
   "concision-init/complex",
   "concision-params/complex",
+  "concision-traits/complex",
 ]
 
 rand = [
-  "dep:rand",
-  "dep:rand_distr",
   "concision-init/rand",
   "concision-params/rand",
   "concision-traits/rand",
-  "num-complex?/rand",
-  "rng",
 ]
 
 rayon = [
   "dep:rayon",
   "concision-params/rayon",
+  "concision-traits/rayon",
+  "hashbrown/rayon",
   "ndarray/rayon",
 ]
 
 rng = [
-  "dep:getrandom",
   "concision-init/rng",
   "concision-params/rng",
-  "concision-traits/rng",
-  "rand?/small_rng",
-  "rand?/thread_rng",
+  "concision-traits/rand",
 ]
 
 rustfft = ["dep:rustfft"]
@@ -192,27 +182,11 @@ serde = [
   "dep:serde_derive",
   "concision-init/serde",
   "concision-params/serde",
+  "hashbrown/serde",
   "ndarray/serde",
   "num-complex?/serde",
-  "rand?/serde",
-  "rand_distr?/serde",
 ]
 
 serde_json = ["dep:serde_json"]
 
-tracing = [
-  "concision-init/tracing",
-  "dep:tracing",
-]
-
-# ************* [Unit Tests] *************
-[[test]]
-name = "params"
-required-features = ["approx", "std"]
-
-[[test]]
-name = "fft"
-required-features = ["alloc", "signal"]
-
-[[test]]
-name = "utils"
+tracing = ["concision-init/tracing", "dep:tracing"]

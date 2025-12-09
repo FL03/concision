@@ -3,15 +3,14 @@
     Contrib: @FL03
 */
 #[cfg(feature = "rand")]
-use cnc::rand_distr;
+use cnc::init::rand_distr::{Distribution, StandardNormal};
 use cnc::{
     DeepModelParams, Forward, Model, ModelFeatures, Norm, Params, ReLUActivation,
     SigmoidActivation, StandardModelConfig, Train,
 };
 
-use anyhow::Context;
-use ndarray::prelude::*;
-use ndarray::{Data, ScalarOperand};
+use ndarray::linalg::Dot;
+use ndarray::{Array1, Array2, ArrayBase, ArrayView1, Data, Ix1, Ix2, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign};
 
 #[derive(Clone, Debug)]
@@ -94,7 +93,7 @@ where
     pub fn init(self) -> Self
     where
         T: 'static + Float + FromPrimitive,
-        rand_distr::StandardNormal: rand_distr::Distribution<T>,
+        StandardNormal: Distribution<T>,
     {
         let params = DeepModelParams::glorot_normal(self.features());
         TransformerModel { params, ..self }
@@ -131,23 +130,20 @@ where
     A: Float + FromPrimitive + ScalarOperand,
     V: ReLUActivation<Output = V> + SigmoidActivation<Output = V>,
     Params<A>: Forward<U, Output = V> + Forward<V, Output = V>,
-    for<'a> &'a U: ndarray::linalg::Dot<Array2<A>, Output = V> + core::ops::Add<&'a Array1<A>>,
+    for<'a> &'a U: Dot<Array2<A>, Output = V> + core::ops::Add<&'a Array1<A>>,
     V: for<'a> core::ops::Add<&'a Array1<A>, Output = V>,
 {
     type Output = V;
 
-    fn forward(&self, input: &U) -> Option<Self::Output> {
-        let mut output = self.params().input().forward_then(&input, |y| y.relu())?;
+    fn forward(&self, input: &U) -> Self::Output {
+        let mut output = self.params().input().forward(input).relu();
 
         for layer in self.params().hidden() {
-            output = layer.forward_then(&output, |y| y.relu())?;
+            output = layer.forward(&output).relu();
         }
 
-        let y = self
-            .params()
-            .output()
-            .forward_then(&output, |y| y.sigmoid())?;
-        Some(y)
+        output = self.params().output().forward(&output).sigmoid();
+        output
     }
 }
 
@@ -203,28 +199,15 @@ where
         let mut activations = Vec::new();
         activations.push(input.to_owned());
 
-        let mut output = self
-            .params()
-            .input()
-            .forward(&input)
-            .context("Output layer failed to forward propagate during training...")?
-            .relu();
+        let mut output = self.params().input().forward(&input).relu();
         activations.push(output.to_owned());
         // collect the activations of the hidden
         for layer in self.params().hidden() {
-            output = layer
-                .forward(&output)
-                .context("Hidden layer failed to forward propagate during training...")?
-                .relu();
+            output = layer.forward(&output).relu();
             activations.push(output.to_owned());
         }
 
-        output = self
-            .params()
-            .output()
-            .forward(&output)
-            .context("Input layer failed to forward propagate during training...")?
-            .sigmoid();
+        output = self.params().output().forward(&output).sigmoid();
         activations.push(output.to_owned());
 
         // Calculate output layer error
@@ -238,8 +221,7 @@ where
         // Update output weights
         self.params_mut()
             .output_mut()
-            .backward(activations.last().unwrap(), &delta, lr)
-            .context("Backward propagation failed...")?;
+            .backward(activations.last().unwrap(), &delta, lr);
 
         let num_hidden = self.features().layers();
         // Iterate through hidden layers in reverse order
@@ -255,9 +237,7 @@ where
             };
             // Normalize delta to prevent exploding gradients
             delta /= delta.l2_norm();
-            self.params_mut().hidden_mut()[i]
-                .backward(&activations[i + 1], &delta, lr)
-                .context("Backward propagation failed...")?;
+            self.params_mut().hidden_mut()[i].backward(&activations[i + 1], &delta, lr);
         }
         /*
             Backpropagate to the input layer
@@ -270,8 +250,7 @@ where
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
         self.params_mut()
             .input_mut()
-            .backward(&activations[1], &delta, lr)
-            .context("Input layer backward pass failed")?;
+            .backward(&activations[1], &delta, lr);
 
         Ok(loss)
     }

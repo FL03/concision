@@ -4,14 +4,16 @@
 */
 mod impl_model_features;
 mod impl_model_format;
+mod impl_model_layout;
 
+/// A trait that consumes the caller to create a new instance of [`ModelFeatures`] object.
 pub trait IntoModelFeatures {
     fn into_model_features(self) -> ModelFeatures;
 }
 
 /// The [`RawModelLayout`] trait defines a minimal interface for objects capable of representing
-/// the _layout_; i.e. the number of input, hidden, and output features of a neural network model
-/// containing some number of hidden layers.
+/// the _layout_; i.e. the number of input, hidden, and output features of a neural network
+/// model containing some number of hidden layers.
 ///
 /// **Note**: This trait is implemented for the 3- and 4-tuple consiting of usize elements as
 /// well as for the `[usize; 3]` and `[usize; 4]` array types. In both these instances, the
@@ -26,23 +28,7 @@ pub trait RawModelLayout {
     fn output(&self) -> usize;
     /// returns the number of hidden layers within the network
     fn layers(&self) -> usize;
-}
 
-pub trait ModelLayoutMut: RawModelLayout {
-    /// returns a mutable reference to number of the input features for the model
-    fn input_mut(&mut self) -> &mut usize;
-    /// returns a mutable reference to the number of hidden features for the model
-    fn hidden_mut(&mut self) -> &mut usize;
-    /// returns a mutable reference to the number of hidden layers for the model
-    fn layers_mut(&mut self) -> &mut usize;
-    /// returns a mutable reference to the output features for the model
-    fn output_mut(&mut self) -> &mut usize;
-}
-
-/// The [`ModelLayout`] trait defines an interface for object capable of representing the
-/// _layout_; i.e. the number of input, hidden, and output features of a neural network model
-/// containing some number of hidden layers.
-pub trait ModelLayout: RawModelLayout + ModelLayoutMut + Clone + core::fmt::Debug {
     /// the dimension of the input layer; (input, hidden)
     fn dim_input(&self) -> (usize, usize) {
         (self.input(), self.hidden())
@@ -71,6 +57,19 @@ pub trait ModelLayout: RawModelLayout + ModelLayoutMut + Clone + core::fmt::Debu
     fn size_output(&self) -> usize {
         self.hidden() * self.output()
     }
+}
+/// The [`RawModelLayoutMut`] trait defines a mutable interface for objects capable of representing
+/// the _layout_; i.e. the number of input, hidden, and output features of
+pub trait RawModelLayoutMut: RawModelLayout {
+    /// returns a mutable reference to number of the input features for the model
+    fn input_mut(&mut self) -> &mut usize;
+    /// returns a mutable reference to the number of hidden features for the model
+    fn hidden_mut(&mut self) -> &mut usize;
+    /// returns a mutable reference to the number of hidden layers for the model
+    fn layers_mut(&mut self) -> &mut usize;
+    /// returns a mutable reference to the output features for the model
+    fn output_mut(&mut self) -> &mut usize;
+
     #[inline]
     /// update the number of input features for the model and return a mutable reference to the
     /// current layout.
@@ -98,6 +97,24 @@ pub trait ModelLayout: RawModelLayout + ModelLayoutMut + Clone + core::fmt::Debu
     fn set_output(&mut self, output: usize) -> &mut Self {
         *self.output_mut() = output;
         self
+    }
+}
+
+/// The [`LayoutExt`] trait defines an interface for object capable of representing the
+/// _layout_; i.e. the number of input, hidden, and output features of a neural network model
+/// containing some number of hidden layers.
+pub trait LayoutExt: RawModelLayout + RawModelLayoutMut + Clone + core::fmt::Debug {}
+
+/// The [`NetworkDepth`] trait is used to define the depth/kind of a neural network model.
+pub trait NetworkDepth {
+    private!();
+}
+
+type_tags! {
+    #[NetworkDepth]
+    pub enum {
+        Deep,
+        Shallow,
     }
 }
 
@@ -132,6 +149,16 @@ pub struct ModelFeatures {
     pub(crate) inner: ModelFormat,
     /// the number of output features
     pub(crate) output: usize,
+}
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct ModelLayout<F, D = Deep>
+where
+    D: NetworkDepth,
+    F: RawModelLayout,
+{
+    pub(crate) features: F,
+    pub(crate) _marker: core::marker::PhantomData<D>,
 }
 
 /*
@@ -174,7 +201,7 @@ where
     }
 }
 
-impl<T> ModelLayout for T where T: ModelLayoutMut + Copy + core::fmt::Debug {}
+impl<T> LayoutExt for T where T: RawModelLayoutMut + Copy + core::fmt::Debug {}
 
 impl RawModelLayout for (usize, usize, usize) {
     fn input(&self) -> usize {
@@ -207,7 +234,7 @@ impl RawModelLayout for (usize, usize, usize, usize) {
     }
 }
 
-impl ModelLayoutMut for (usize, usize, usize, usize) {
+impl RawModelLayoutMut for (usize, usize, usize, usize) {
     fn input_mut(&mut self) -> &mut usize {
         &mut self.0
     }
@@ -261,7 +288,7 @@ impl RawModelLayout for [usize; 4] {
     }
 }
 
-impl ModelLayoutMut for [usize; 4] {
+impl RawModelLayoutMut for [usize; 4] {
     fn input_mut(&mut self) -> &mut usize {
         &mut self[0]
     }
@@ -273,5 +300,51 @@ impl ModelLayoutMut for [usize; 4] {
     }
     fn output_mut(&mut self) -> &mut usize {
         &mut self[3]
+    }
+}
+
+impl IntoModelFeatures for (usize, usize, usize) {
+    fn into_model_features(self) -> ModelFeatures {
+        ModelFeatures {
+            input: self.0,
+            inner: ModelFormat::Shallow { hidden: self.1 },
+            output: self.2,
+        }
+    }
+}
+
+impl IntoModelFeatures for (usize, usize, usize, usize) {
+    fn into_model_features(self) -> ModelFeatures {
+        ModelFeatures {
+            input: self.0,
+            inner: ModelFormat::Deep {
+                hidden: self.1,
+                layers: self.3,
+            },
+            output: self.2,
+        }
+    }
+}
+
+impl IntoModelFeatures for [usize; 3] {
+    fn into_model_features(self) -> ModelFeatures {
+        ModelFeatures {
+            input: self[0],
+            inner: ModelFormat::Shallow { hidden: self[1] },
+            output: self[2],
+        }
+    }
+}
+
+impl IntoModelFeatures for [usize; 4] {
+    fn into_model_features(self) -> ModelFeatures {
+        ModelFeatures {
+            input: self[0],
+            inner: ModelFormat::Deep {
+                hidden: self[1],
+                layers: self[3],
+            },
+            output: self[2],
+        }
     }
 }

@@ -2,20 +2,14 @@
     appellation: impl_layer_repr <module>
     authors: @FL03
 */
-use crate::layers::layer::LayerBase;
+use super::Layer;
 
 use crate::layers::{Linear, ReLU, Sigmoid, Tanh};
-use concision_params::ParamsBase;
-use ndarray::{Dimension, RawData};
 
-impl<S, D> LayerBase<Linear, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
+impl<T> Layer<Linear, T> {
     /// initialize a new [`LayerBase`] using a [`Linear`] activation function and the given
     /// parameters.
-    pub const fn linear(params: ParamsBase<S, D>) -> Self {
+    pub const fn linear(params: T) -> Self {
         Self {
             rho: Linear,
             params,
@@ -23,14 +17,10 @@ where
     }
 }
 
-impl<S, D> LayerBase<Sigmoid, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
+impl<T> Layer<Sigmoid, T> {
     /// initialize a new [`LayerBase`] using a [`Sigmoid`] activation function and the given
     /// parameters.
-    pub const fn sigmoid(params: ParamsBase<S, D>) -> Self {
+    pub const fn sigmoid(params: T) -> Self {
         Self {
             rho: Sigmoid,
             params,
@@ -38,25 +28,17 @@ where
     }
 }
 
-impl<S, D> LayerBase<Tanh, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
+impl<T> Layer<Tanh, T> {
     /// initialize a new [`LayerBase`] using a [`Tanh`] activation function and the given
     /// parameters.
-    pub const fn tanh(params: ParamsBase<S, D>) -> Self {
+    pub const fn tanh(params: T) -> Self {
         Self { rho: Tanh, params }
     }
 }
 
-impl<S, D> LayerBase<ReLU, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = f32>,
-{
+impl<T> Layer<ReLU, T> {
     /// initialize a new [`LayerBase`] using a [`ReLU`] activation function and the given
-    pub const fn relu(params: ParamsBase<S, D>) -> Self {
+    pub const fn relu(params: T) -> Self {
         Self { rho: ReLU, params }
     }
 }

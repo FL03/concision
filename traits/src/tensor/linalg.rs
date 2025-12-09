@@ -24,10 +24,10 @@ pub trait MatMul<Rhs = Self> {
 
     fn matmul(&self, rhs: &Rhs) -> Self::Output;
 }
-/// The [`MatPow`] trait defines an interface for computing the exponentiation of a matrix.
+/// The [`MatPow`] trait defines an interface for computing the power of some matrix
 pub trait MatPow<Rhs = Self> {
     type Output;
-    /// raise the tensor to the power of the right-hand side, producing some [`Output`](Matpow::Output)
+
     fn matpow(&self, rhs: Rhs) -> Self::Output;
 }
 

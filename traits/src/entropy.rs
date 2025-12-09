@@ -26,6 +26,6 @@ where
     type Output = A;
 
     fn cross_entropy(&self) -> Self::Output {
-        self.mapv(|x| -x.ln()).mean().unwrap()
+        self.ln().mean().unwrap()
     }
 }

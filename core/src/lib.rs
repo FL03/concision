@@ -29,7 +29,9 @@
     clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
-    clippy::upper_case_acronyms
+    clippy::should_implement_trait,
+    clippy::upper_case_acronyms,
+    rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
@@ -41,13 +43,6 @@ compiler_error! {
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
-
-#[cfg(feature = "rand")]
-#[doc(no_inline)]
-pub use rand;
-#[cfg(feature = "rand")]
-#[doc(no_inline)]
-pub use rand_distr;
 
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
@@ -66,9 +61,11 @@ pub use concision_traits::prelude::*;
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
+    pub mod config;
+    #[macro_use]
     pub mod seal;
     #[macro_use]
-    pub mod config;
+    pub mod units;
 }
 
 pub mod activate;
@@ -80,14 +77,16 @@ pub mod models;
 pub mod nn;
 pub mod utils;
 
-pub mod types {
-    //! Core types supporting the `cnc` framework.
+#[doc(hidden)]
+pub mod ex {
+    pub mod sample;
 }
+
 // re-exports
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, config::prelude::*, error::*, layout::*, models::prelude::*,
-    utils::prelude::*,
+    activate::prelude::*, config::prelude::*, error::*, layers::Layer, layout::*,
+    models::prelude::*, utils::prelude::*,
 };
 // prelude
 #[doc(hidden)]
@@ -97,6 +96,7 @@ pub mod prelude {
     pub use concision_traits::prelude::*;
 
     pub use crate::activate::prelude::*;
+    pub use crate::config::prelude::*;
     pub use crate::layers::prelude::*;
     pub use crate::layout::*;
     pub use crate::models::prelude::*;

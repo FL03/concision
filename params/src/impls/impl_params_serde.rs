@@ -2,7 +2,7 @@
     appellation: impl_params_serde <module>
     authors: @FL03
 */
-use crate::params::ParamsBase;
+use crate::params_base::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, RawData};
 use serde::de::{Deserialize, Deserializer, Error, Visitor};
 use serde::ser::{Serialize, SerializeStruct, Serializer};

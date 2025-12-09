@@ -2,11 +2,13 @@
     Appellation: concision-init <library>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-//! One of the most important aspects of training neural networks and machine learning
-//! lies within the _initialization_ of model parameters. Here, we work to provide additional
-//! tools and utilities to facilitate effective initialization strategies including various
-//! random distributions tailored directly to machine learning workloads such as:
-//! Glorot (Xavier) initialization, LeCun initialization, etc.
+//! Initialization related tools and utilities for neural networks and machine learning models.
+//! This crate provides various initialization distributions and traits to facilitate
+//! the effective initialization of model parameters.
+//!
+//! ## Features
+//!
+//! - `rand`: Enables random number generation functionalities using the `rand` crate.
 //!
 //! Implementors of the [`Initialize`] trait can leverage the various initialization
 //! distributions provided within this crate to initialize their model parameters in a
@@ -17,7 +19,8 @@
     clippy::module_inception,
     clippy::needless_doctest_main,
     clippy::should_implement_trait,
-    clippy::upper_case_acronyms
+    clippy::upper_case_acronyms,
+    rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 
@@ -76,18 +79,15 @@ pub mod distr {
     //! this module implements various random distributions optimized for neural network
     //! initialization.
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{lecun::*, trunc::*, xavier::*};
 
     pub mod lecun;
     pub mod trunc;
     pub mod xavier;
 
     pub(crate) mod prelude {
-        #[doc(inline)]
         pub use super::lecun::*;
-        #[doc(inline)]
         pub use super::trunc::*;
-        #[doc(inline)]
         pub use super::xavier::*;
     }
 }

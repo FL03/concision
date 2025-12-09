@@ -2,11 +2,11 @@
     appellation: model <module>
     authors: @FL03
 */
+use cnc::config::StandardModelConfig;
+use cnc::prelude::{DeepModelParams, Model, ModelFeatures};
 
-use cnc::nn::{DeepModelParams, Model, ModelFeatures, StandardModelConfig};
 #[cfg(feature = "rand")]
-use cnc::rand_distr;
-
+use cnc::init::rand_distr::{Distribution, StandardNormal};
 use num_traits::{Float, FromPrimitive};
 
 #[derive(Clone, Debug)]
@@ -53,42 +53,38 @@ impl<T> SpikingNeuralNetwork<T> {
         &mut self.params
     }
     /// set the current configuration and return a mutable reference to the model
-    pub fn set_config(&mut self, config: StandardModelConfig<T>) -> &mut Self {
+    pub fn set_config(&mut self, config: StandardModelConfig<T>) {
         self.config = config;
-        self
     }
     /// set the current features and return a mutable reference to the model
-    pub fn set_features(&mut self, features: ModelFeatures) -> &mut Self {
+    pub const fn set_features(&mut self, features: ModelFeatures) {
         self.features = features;
-        self
     }
     /// set the current parameters and return a mutable reference to the model
-    pub fn set_params(&mut self, params: DeepModelParams<T>) -> &mut Self {
+    pub fn set_params(&mut self, params: DeepModelParams<T>) {
         self.params = params;
-        self
     }
+    #[inline]
     /// consumes the current instance to create another with the given configuration
     pub fn with_config(self, config: StandardModelConfig<T>) -> Self {
         Self { config, ..self }
     }
+    #[inline]
     /// consumes the current instance to create another with the given features
     pub fn with_features(self, features: ModelFeatures) -> Self {
         Self { features, ..self }
     }
+    #[inline]
     /// consumes the current instance to create another with the given parameters
     pub fn with_params(self, params: DeepModelParams<T>) -> Self {
         Self { params, ..self }
     }
-}
 
-impl<T> SpikingNeuralNetwork<T>
-where
-    T: 'static + Float + FromPrimitive,
-{
     #[cfg(feature = "rand")]
     pub fn init(self) -> Self
     where
-        rand_distr::StandardNormal: rand_distr::Distribution<T>,
+        T: 'static + Float + FromPrimitive,
+        StandardNormal: Distribution<T>,
     {
         let params = DeepModelParams::glorot_normal(self.features());
         SpikingNeuralNetwork { params, ..self }
@@ -108,8 +104,8 @@ impl<T> Model<T> for SpikingNeuralNetwork<T> {
         &mut self.config
     }
 
-    fn layout(&self) -> ModelFeatures {
-        self.features
+    fn layout(&self) -> &ModelFeatures {
+        &self.features
     }
 
     fn params(&self) -> &DeepModelParams<T> {

@@ -2,14 +2,9 @@
     appellation: impl_layer_deprecated <module>
     authors: @FL03
 */
-use crate::layers::LayerBase;
+#![allow(deprecated)]
 
-use ndarray::{Dimension, RawData};
+use crate::layers::Layer;
 
 #[doc(hidden)]
-impl<F, S, D> LayerBase<F, S, D>
-where
-    D: Dimension,
-    S: RawData,
-{
-}
+impl<F, T> Layer<F, T> {}

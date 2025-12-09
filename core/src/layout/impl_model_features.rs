@@ -2,7 +2,7 @@
     Appellation: layout <module>
     Contrib: @FL03
 */
-use super::{ModelFeatures, ModelFormat, ModelLayoutMut, RawModelLayout};
+use super::{ModelFeatures, ModelFormat, RawModelLayout, RawModelLayoutMut};
 
 /// verify if the input and hidden dimensions are compatible by checking:
 ///
@@ -13,16 +13,12 @@ fn _verify_input_and_hidden_shape<D>(input: D, hidden: D) -> bool
 where
     D: ndarray::Dimension,
 {
-    let mut valid = true;
-    // // check that the hidden dimension is square
-    // if hidden.ndim() > 1 && hidden.shape().iter().any(|&d| d != hidden.shape()[0]) {
-    //     valid = false;
-    // }
+    let lhs = input.as_array_view();
+    let rhs = hidden.as_array_view();
     // check that the input and hidden dimensions are compatible
-    if input.ndim() != hidden.ndim() {
-        valid = false;
-    }
-    valid
+    input.ndim() != hidden.ndim()
+        && lhs[input.ndim() - 1] != rhs[0]
+        && rhs.iter().all(|&v| v == rhs[0])
 }
 
 impl ModelFeatures {
@@ -202,7 +198,7 @@ impl RawModelLayout for ModelFeatures {
     }
 }
 
-impl ModelLayoutMut for ModelFeatures {
+impl RawModelLayoutMut for ModelFeatures {
     fn input_mut(&mut self) -> &mut usize {
         self.input_mut()
     }

@@ -2,11 +2,11 @@
     appellation: model <module>
     authors: @FL03
 */
+use cnc::config::StandardModelConfig;
+use cnc::prelude::{DeepModelParams, Model, ModelFeatures};
 
-use cnc::nn::{DeepModelParams, Model, ModelFeatures, StandardModelConfig};
 #[cfg(feature = "rand")]
-use cnc::rand_distr;
-
+use cnc::init::rand_distr::{Distribution, StandardNormal};
 use num_traits::{Float, FromPrimitive};
 
 #[derive(Clone, Debug)]
@@ -108,8 +108,8 @@ impl<T> Model<T> for KanModel<T> {
         &mut self.config
     }
 
-    fn layout(&self) -> ModelFeatures {
-        self.features
+    fn layout(&self) -> &ModelFeatures {
+        &self.features
     }
 
     fn params(&self) -> &DeepModelParams<T> {

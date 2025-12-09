@@ -15,74 +15,79 @@ use num_traits::One;
 /// The trait is generic over a type `U`, which represents the data type of the input to the
 /// activation functions. The trait also inherits a type alias `Cont<U>` to allow for variance
 /// w.r.t. the outputs of defined methods.
-pub trait Rho<U>: Apply<U> {
+pub trait Rho<T> {
+    type Cont<_V>;
+
+    fn rho<F, V>(&self, f: F) -> Self::Cont<V>
+    where
+        F: Fn(T) -> V;
     /// the linear activation function is essentially a passthrough function, simply cloning
     /// the content.
-    fn linear(&self) -> Self::Cont<U> {
-        self.apply(|x| x)
+    fn linear(&self) -> Self::Cont<T> {
+        self.rho(|x| x)
     }
 
-    fn linear_derivative(&self) -> Self::Cont<U::Output>
+    fn linear_derivative(&self) -> Self::Cont<T::Output>
     where
-        U: One,
+        T: One,
     {
-        self.apply(|_| <U>::one())
+        self.rho(|_| <T>::one())
     }
 
-    fn heavyside(&self) -> Self::Cont<U::Output>
+    fn heavyside(&self) -> Self::Cont<T::Output>
     where
-        U: HeavysideActivation,
+        T: HeavysideActivation,
     {
-        self.apply(|x| x.heavyside())
+        self.rho(|x| x.heavyside())
     }
 
-    fn heavyside_derivative(&self) -> Self::Cont<U::Output>
+    fn heavyside_derivative(&self) -> Self::Cont<T::Output>
     where
-        U: HeavysideActivation,
+        T: HeavysideActivation,
     {
-        self.apply(|x| x.heavyside_derivative())
+        self.rho(|x| x.heavyside_derivative())
     }
 
-    fn relu(&self) -> Self::Cont<U::Output>
+    fn relu(&self) -> Self::Cont<T::Output>
     where
-        U: ReLUActivation,
+        T: ReLUActivation,
     {
-        self.apply(|x| x.relu())
+        self.rho(|x| x.relu())
     }
 
-    fn relu_derivative(&self) -> Self::Cont<U::Output>
+    fn relu_derivative(&self) -> Self::Cont<T::Output>
     where
-        U: ReLUActivation,
+        T: ReLUActivation,
     {
-        self.apply(|x| x.relu_derivative())
+        self.rho(|x| x.relu_derivative())
     }
 
-    fn sigmoid(&self) -> Self::Cont<U::Output>
+    fn sigmoid(&self) -> Self::Cont<T::Output>
     where
-        U: SigmoidActivation,
+        T: SigmoidActivation,
     {
-        self.apply(|x| x.sigmoid())
+        self.rho(|x| x.sigmoid())
     }
 
-    fn sigmoid_derivative(&self) -> Self::Cont<U::Output>
+    fn sigmoid_derivative(&self) -> Self::Cont<T::Output>
     where
-        U: SigmoidActivation,
+        T: SigmoidActivation,
     {
-        self.apply(|x| x.sigmoid_derivative())
+        self.rho(|x| x.sigmoid_derivative())
     }
 
-    fn tanh(&self) -> Self::Cont<U::Output>
+    fn tanh(&self) -> Self::Cont<T::Output>
     where
-        U: TanhActivation,
+        T: TanhActivation,
     {
-        self.apply(|x| x.tanh())
+        self.rho(|x| x.tanh())
     }
 
-    fn tanh_derivative(&self) -> Self::Cont<U::Output>
+    fn tanh_derivative(&self) -> Self::Cont<T::Output>
     where
-        U: TanhActivation,
+        T: TanhActivation,
     {
-        self.apply(|x| x.tanh_derivative())
+        self.rho(|x| x.tanh_derivative())
     }
 }
 
@@ -99,27 +104,27 @@ pub trait Rho<U>: Apply<U> {
 /// to use a fully qualified syntax to disambiguate the two traits. If this becomes a problem,
 /// we may consider renaming the _complex_ methods accordingly to differentiate them from the
 /// _standard_ methods.
-pub trait RhoComplex<U>: Apply<U>
+pub trait RhoComplex<U>: Rho<U>
 where
     U: ComplexFloat,
 {
     fn sigmoid(&self) -> Self::Cont<U> {
-        self.apply(|x| U::one() / (U::one() + (-x).exp()))
+        self.rho(|x| U::one() / (U::one() + (-x).exp()))
     }
 
     fn sigmoid_derivative(&self) -> Self::Cont<U> {
-        self.apply(|x| {
+        self.rho(|x| {
             let s = U::one() / (U::one() + (-x).exp());
             s * (U::one() - s)
         })
     }
 
     fn tanh(&self) -> Self::Cont<U> {
-        self.apply(|x| x.tanh())
+        self.rho(|x| x.tanh())
     }
 
     fn tanh_derivative(&self) -> Self::Cont<U> {
-        self.apply(|x| {
+        self.rho(|x| {
             let s = x.tanh();
             U::one() - s * s
         })
@@ -129,7 +134,19 @@ where
 /*
  ************* Implementations *************
 */
-impl<U, S> Rho<U> for S where S: Apply<U> {}
+impl<T, S> Rho<T> for S
+where
+    S: Apply<T>,
+{
+    type Cont<_V> = S::Cont<_V>;
+
+    fn rho<F, V>(&self, f: F) -> Self::Cont<V>
+    where
+        F: Fn(T) -> V,
+    {
+        self.apply(|x| f(x))
+    }
+}
 
 #[cfg(feature = "complex")]
 impl<U, S> RhoComplex<U> for S

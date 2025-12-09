@@ -16,6 +16,7 @@
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+extern crate concision as cnc;
 
 #[cfg(feature = "attention")]
 pub mod attention;

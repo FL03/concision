@@ -50,7 +50,7 @@ impl Default for Dropout {
 #[cfg(feature = "rand")]
 mod impl_rand {
     use super::*;
-    use concision_init::InitRand;
+    use concision_init::NdInit;
     use concision_traits::Forward;
     use ndarray::{Array, ArrayBase, DataOwned, Dimension, ScalarOperand};
     use num_traits::Num;
@@ -80,8 +80,8 @@ mod impl_rand {
     {
         type Output = <U as DropOut>::Output;
 
-        fn forward(&self, input: &U) -> Option<Self::Output> {
-            Some(input.dropout(self.p))
+        fn forward(&self, input: &U) -> Self::Output {
+            input.dropout(self.p)
         }
     }
 }

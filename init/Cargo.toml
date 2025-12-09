@@ -18,11 +18,10 @@ version.workspace = true
 all-features = false
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
-version = "v{{version}}"
 
 [package.metadata.release]
 no-dev-version = true
-tag-name = "{{version}}"
+tag-name = "v{{version}}"
 
 [lib]
 bench = false
@@ -67,17 +66,17 @@ nightly = []
 
 # ************* [FF:Dependencies] *************
 std = [
-  "alloc", 
-  "ndarray/std", 
-  "num-complex?/std", 
-  "num-traits/std", 
-  "num/std", 
-  "rand/std", 
-  "rand/std_rng", 
-  "serde/std", 
-  "strum/std", 
-  "thiserror/std", 
-  "tracing?/std"
+  "alloc",
+  "ndarray/std",
+  "num-complex?/std",
+  "num-traits/std",
+  "num/std",
+  "rand/std",
+  "rand/std_rng",
+  "serde/std",
+  "strum/std",
+  "thiserror/std",
+  "tracing?/std",
 ]
 
 wasi = []
@@ -97,13 +96,13 @@ rand = ["dep:rand", "dep:rand_distr", "num-complex?/rand", "num/rand", "rng"]
 rng = ["dep:getrandom", "rand?/small_rng", "rand?/thread_rng"]
 
 serde = [
-  "dep:serde", 
-  "dep:serde_derive", 
-  "ndarray/serde", 
-  "num-complex?/serde", 
-  "num/serde", 
-  "rand?/serde", 
-  "rand_distr?/serde"
+  "dep:serde",
+  "dep:serde_derive",
+  "ndarray/serde",
+  "num-complex?/serde",
+  "num/serde",
+  "rand?/serde",
+  "rand_distr?/serde",
 ]
 
 tracing = ["dep:tracing"]

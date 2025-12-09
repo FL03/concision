@@ -19,6 +19,9 @@ quote_type = single
 [*.{json,yaml,yml,toml}]
 indent_size = 2
 
+[*.{md,mdx}]
+indent_size = 2
+
 [*{toml}]
 end_of_line = lf
 indent_size = 2

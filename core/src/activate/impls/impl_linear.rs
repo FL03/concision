@@ -3,7 +3,7 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-impl<T> crate::activate::LinearActivation for &T
+impl<T> crate::activate::LinearActivation for T
 where
     T: Clone + Default,
 {

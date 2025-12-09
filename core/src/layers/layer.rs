@@ -2,46 +2,31 @@
     Appellation: layer <module>
     Contrib: @FL03
 */
-//! this module defines the [`LayerBase`] struct, a generic representation of a neural network
-//! layer essentially wrapping a [`ParamsBase`] with some _activation function_, `F`.
-//!
-
 mod impl_layer;
+mod impl_layer_deprecated;
 mod impl_layer_repr;
 
-#[allow(deprecated)]
-mod impl_layer_deprecated;
-
 use super::Activator;
-use concision_params::ParamsBase;
 use concision_traits::Forward;
-use ndarray::{DataOwned, Dimension, Ix2, RawData, RemoveAxis, ShapeBuilder};
 
-/// The [`LayerBase`] struct is a base representation of a neural network layer, essentially
-/// binding an activation function, `F`, to a set of parameters, `ParamsBase<S, D>`.
-pub struct LayerBase<F, S, D = Ix2>
-where
-    D: Dimension,
-    S: RawData,
-{
+/// The [`Layer`] implementation works to provide a generic interface for layers within a
+/// neural network. It associates an activation function of type `F` with parameters of
+/// type `P`.
+pub struct Layer<F, P> {
     /// the activation function of the layer
     pub(crate) rho: F,
     /// the parameters of the layer is an object consisting of both a weight and a bias tensor.
-    pub(crate) params: ParamsBase<S, D>,
+    pub(crate) params: P,
 }
 
-impl<F, S, A, D> LayerBase<F, S, D>
-where
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    /// create a new [`LayerBase`] from the given activation function and parameters.
-    pub const fn new(rho: F, params: ParamsBase<S, D>) -> Self {
+impl<F, P> Layer<F, P> {
+    /// create a new [`Layer`] from the given activation function and parameters.
+    pub const fn new(rho: F, params: P) -> Self {
         Self { rho, params }
     }
-    /// create a new [`LayerBase`] from the given parameters assuming the logical default for
+    /// create a new [`Layer`] from the given parameters assuming the logical default for
     /// the activation of type `F`.
-    pub fn from_params(params: ParamsBase<S, D>) -> Self
+    pub fn from_params(params: P) -> Self
     where
         F: Default,
     {
@@ -50,25 +35,22 @@ where
             params,
         }
     }
-    /// create a new [`LayerBase`] from the given activation function and shape.
-    pub fn from_rho<Sh>(rho: F, shape: Sh) -> Self
+    /// create a new [`Layer`] from the given activation function and shape.
+    pub fn from_rho<Sh>(rho: F) -> Self
     where
-        A: Clone + Default,
-        S: DataOwned,
-        D: RemoveAxis,
-        Sh: ShapeBuilder<Dim = D>,
+        P: Default,
     {
         Self {
             rho,
-            params: ParamsBase::default(shape),
+            params: <P>::default(),
         }
     }
     /// returns an immutable reference to the layer's parameters
-    pub const fn params(&self) -> &ParamsBase<S, D> {
+    pub const fn params(&self) -> &P {
         &self.params
     }
     /// returns a mutable reference to the layer's parameters
-    pub const fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
+    pub const fn params_mut(&mut self) -> &mut P {
         &mut self.params
     }
     /// returns an immutable reference to the activation function of the layer
@@ -80,37 +62,35 @@ where
         &mut self.rho
     }
     /// consumes the current instance and returns another with the given parameters.
-    pub fn with_params<S2, D2>(self, params: ParamsBase<S2, D2>) -> LayerBase<F, S2, D2>
+    pub fn with_params<Y>(self, params: Y) -> Layer<F, Y>
     where
-        S2: RawData<Elem = S::Elem>,
-        D2: Dimension,
+        F: Activator<Y>,
     {
-        LayerBase {
+        Layer {
             rho: self.rho,
             params,
         }
     }
     /// consumes the current instance and returns another with the given activation function.
     /// This is useful during the creation of the model, when the activation function is not known yet.
-    pub fn with_rho<G>(self, rho: G) -> LayerBase<G, S, D>
+    pub fn with_rho<G>(self, rho: G) -> Layer<G, P>
     where
-        G: Activator<S::Elem>,
-        F: Activator<S::Elem>,
-        S: RawData<Elem = A>,
+        G: Activator<P>,
+        F: Activator<P>,
     {
-        LayerBase {
+        Layer {
             rho,
             params: self.params,
         }
     }
-    pub fn forward<X, Y>(&self, input: &X) -> Option<Y>
+    /// given some input, complete a single forward pass through the layer
+    pub fn forward<U, V>(&self, input: &U) -> V
     where
-        ParamsBase<S, D, A>: Forward<X, Output = Y>,
-        F: Activator<<ParamsBase<S, D, A> as Forward<X>>::Output, Output = Y>,
-        A: Clone,
-        X: Clone,
-        Y: Clone,
+        P: Forward<U, Output = V>,
+        F: Activator<V, Output = V>,
+        V: Clone,
     {
-        Forward::forward(&self.params, input).map(|x| self.rho.activate(x))
+        self.params()
+            .forward_then(input, |y| self.rho().activate(y))
     }
 }

@@ -1,9 +1,11 @@
 /*
-    Appellation: linear <example>
+    Appellation: simple <example>
     Created At: 2025.11.26:14:10:58
     Contrib: @FL03
 */
-use cnc::models::ex::sample::TestModel;
+extern crate concision as cnc;
+
+use cnc::ex::sample::TestModel;
 use cnc::{ModelFeatures, Predict, StandardModelConfig, Train};
 use ndarray::prelude::*;
 
@@ -30,9 +32,7 @@ fn main() -> anyhow::Result<()> {
     // initialize some input data
     let input = Array1::linspace(1.0, 9.0, model.features().input());
     // propagate the input through the model
-    let output = model
-        .predict(&input)
-        .expect("Failed to forward the input through the model");
+    let output = model.predict(&input);
     tracing::info!("output: {:?}", output);
     // verify the output shape
     assert_eq!(output.dim(), (model.features().output()));
@@ -44,9 +44,7 @@ fn main() -> anyhow::Result<()> {
         model.train(&training_input, &expected_output)?;
     }
     // forward the input through the model
-    let output = model
-        .predict(&input)
-        .expect("Failed to forward the input through the model");
+    let output = model.predict(&input);
     tracing::info!("output: {:?}", output);
 
     Ok(())

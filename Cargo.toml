@@ -24,33 +24,35 @@ license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/concision.git"
 rust-version = "1.85.0"
-version = "0.2.9"
+version = "0.3.0"
 
 [workspace.dependencies]
-concision = { default-features = false, path = "concision", version = "0.2.9" }
-
-concision-core = { default-features = false, path = "core", version = "0.2.9" }
-concision-data = { default-features = false, path = "data", version = "0.2.9" }
-concision-derive = { default-features = false, path = "derive", version = "0.2.9" }
-concision-init = { default-features = false, path = "init", version = "0.2.9" }
-concision-macros = { default-features = false, path = "macros", version = "0.2.9" }
-concision-neural = { default-features = false, path = "neural", version = "0.2.9" }
-concision-params = { default-features = false, path = "params", version = "0.2.9" }
-concision-traits = { default-features = false, path = "traits", version = "0.2.9" }
-# extras
-concision-ext = { default-features = false, path = "ext", version = "0.2.9" }
-
+concision = { default-features = false, path = "concision", version = "0.3.0" }
+# sdk
+concision-core = { default-features = false, path = "core", version = "0.3.0" }
+concision-data = { default-features = false, path = "data", version = "0.3.0" }
+concision-derive = { default-features = false, path = "derive", version = "0.3.0" }
+concision-init = { default-features = false, path = "init", version = "0.3.0" }
+concision-macros = { default-features = false, path = "macros", version = "0.3.0" }
+concision-neural = { default-features = false, path = "neural", version = "0.3.0" }
+concision-params = { default-features = false, path = "params", version = "0.3.0" }
+concision-traits = { default-features = false, path = "traits", version = "0.3.0" }
+# custom models & extras
+concision-ext = { default-features = false, path = "ext", version = "0.3.0" }
 # custom
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
+# data structures
+hashbrown = { default-features = false, version = "0.16" }
 # tensors & arrays
 ndarray = { default-features = false, version = "0.17" }
 ndarray-linalg = { default-features = false, version = "0.18" }
 ndarray-stats = "0.6"
 # benchmarking
-criterion = { version = "0.7" }
+criterion = { version = "0.8" }
 # concurrency & parallelism
 crossbeam = { default-features = false, version = "0.8" }
 rayon = { default-features = false, version = "1" }
+rayon-core = { default-features = false, version = "1" }
 # data & serialization
 serde = { default-features = false, features = ["derive"], version = "1" }
 serde_derive = { default-features = false, version = "1" }
@@ -65,23 +67,21 @@ rustfft = { version = "6" }
 # random
 getrandom = { default-features = false, version = "0.3" }
 rand = { default-features = false, version = "0.9" }
+rand_core = { default-features = false, version = "0.9" }
 rand_distr = { default-features = false, version = "0.5" }
-uuid = { default-features = false, version = "1" }
 # errors
 anyhow = { default-features = false, version = "1" }
 thiserror = { default-features = false, version = "2" }
-# networking
-reqwest = { default-features = false, version = "0.12" }
 # logging
 tracing = { default-features = false, features = ["attributes", "log"], version = "0.1" }
-tracing-subscriber = { default-features = false, features = ["ansi", "env-filter", "fmt"], version = "0.3" }
+tracing-subscriber = { features = ["ansi", "env-filter", "fmt"], version = "0.3" }
 # time
 chrono = { default-features = false, version = "0.4" }
 humantime = { version = "2" }
 time = { default-features = false, version = "0.3" }
 # macros and utilities
+convert_case = { version = "0.10" }
 either = { version = "1" }
-itertools = { version = "0.14" }
 lazy_static = { version = "1" }
 paste = { version = "1" }
 smart-default = "0.7"

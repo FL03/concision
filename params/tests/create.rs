@@ -2,13 +2,12 @@
     Appellation: params <test>
     Contrib: @FL03
 */
-extern crate concision_params as cnc;
 use concision_params::Params;
 
 #[test]
 fn test_params_ones() {
-    // weights retain the given shape (d_in, d_out)
-    // bias retains the shape (d_out,)
+    // weights retain the given shape (in, out)
+    // bias retains the shape (out,)
     let ones = Params::<f64>::ones((3, 4));
     assert_eq!(ones.dim(), (3, 4));
     assert_eq!(ones.bias().dim(), 4);
@@ -20,8 +19,8 @@ fn test_params_ones() {
 
 #[test]
 fn test_params_zeros() {
-    // weights retain the given shape (d_in, d_out)
-    // bias retains the shape (d_out,)
+    // weights retain the given shape (in, out)
+    // bias retains the shape (out,)
     let zeros = Params::<f64>::zeros((3, 4));
     assert_eq!(zeros.dim(), (3, 4));
     assert_eq!(zeros.bias().dim(), 4);
@@ -34,8 +33,8 @@ fn test_params_zeros() {
 
 #[test]
 #[cfg(feature = "rand")]
-fn test_params_init_rand() {
-    use concision_init::InitRand;
+fn test_params_init_rand() -> anyhow::Result<()> {
+    use concision_init::NdInit;
 
     let lecun = Params::<f64>::lecun_normal((3, 4));
     assert_eq!(lecun.dim(), (3, 4));
@@ -49,4 +48,6 @@ fn test_params_init_rand() {
     assert_ne!(glorot_norm, glorot_uniform);
     let truncnorm = Params::<f64>::truncnorm((3, 4), 0.0, 1.0).expect("truncnorm failed");
     assert_eq!(truncnorm.dim(), (3, 4));
+
+    Ok(())
 }

@@ -2,7 +2,9 @@
     appellation: params <benchmark>
     authors: @FL03
 */
-use cnc::init::InitRand;
+extern crate concision as cnc;
+
+use cnc::init::NdInit;
 
 use core::hint::black_box;
 use criterion::{BatchSize, BenchmarkId, Criterion};
@@ -25,15 +27,12 @@ fn bench_params_forward(c: &mut Criterion) {
             b.iter_batched(
                 || {
                     let params = cnc::Params::<f64>::glorot_normal((n, 64));
-                    // return the configured parameters
-                    params
-                },
-                |params| {
                     let input = Array1::<f64>::linspace(0.0, 1.0, x);
-                    let y = params
-                        .forward(black_box(&input))
-                        .expect("Forward pass failed");
-                    y
+                    // return the configured parameters
+                    (params, input)
+                },
+                |(params, input)| {
+                    params.forward(black_box(&input));
                 },
                 BatchSize::SmallInput,
             );

@@ -1,3 +1,8 @@
+/*
+    Appellation: wnb <module>
+    Created At: 2025.11.28:21:21:42
+    Contrib: @FL03
+*/
 use ndarray::{ArrayBase, Data, DataMut, Dimension, RawData};
 
 pub trait Weighted<S, D, A = <S as RawData>::Elem>: Sized
@@ -27,7 +32,7 @@ where
         *self.weights_mut() = weights;
         self
     }
-    /// returns an iterator over the weights
+    /// returns an iterator over the weights; see [`iter`](ndarray::iter::Iter) for more information
     fn iter_weights<'a>(&'a self) -> ndarray::iter::Iter<'a, S::Elem, D>
     where
         S: Data + 'a,
@@ -35,7 +40,7 @@ where
     {
         self.weights().iter()
     }
-    /// returns a mutable iterator over the weights; see [`iter_mut`](ArrayBase::iter_mut) for more
+    /// returns a mutable iterator over the weights; see [`iter_mut`](ndarray::iter::IterMut) for more information
     fn iter_weights_mut<'a>(&'a mut self) -> ndarray::iter::IterMut<'a, S::Elem, D>
     where
         S: DataMut + 'a,
