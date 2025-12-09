@@ -72,7 +72,9 @@ pub mod ops {
 
 pub mod tensor {
     #[doc(inline)]
-    pub use self::{dimensionality::*, fill::*, like::*, linalg::*, ndtensor::*, reshape::*, tensor_data::*};
+    pub use self::{
+        dimensionality::*, fill::*, like::*, linalg::*, ndtensor::*, reshape::*, tensor_data::*,
+    };
 
     mod dimensionality;
     mod fill;

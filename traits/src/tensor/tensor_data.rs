@@ -14,7 +14,6 @@ pub trait RawTensorData {
  ************* Implementations *************
 */
 
-
 impl<A, S> RawTensorData for S
 where
     S: ndarray::RawData<Elem = A>,

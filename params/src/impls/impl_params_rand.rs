@@ -63,7 +63,7 @@ where
     where
         _D: Dimension,
         _S: RawData<Elem = A>;
-        
+
     fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
     where
         Ds: Distribution<A>,

@@ -12,7 +12,7 @@ pub trait Dim {
 
     private! {}
 
-    /// returns the rank of the dimension; the rank essentially speaks to the total number of 
+    /// returns the rank of the dimension; the rank essentially speaks to the total number of
     /// axes defined by the dimension.
     fn rank(&self) -> usize;
     /// returns the total number of elements considered by the dimension
@@ -20,7 +20,7 @@ pub trait Dim {
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 
 impl<D> Dim for D

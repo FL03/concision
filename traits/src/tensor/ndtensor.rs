@@ -70,7 +70,7 @@ where
     {
         self.apply(|x| x.ln())
     }
-    
+
     fn cos(self) -> Self::Cont<S, D, A>
     where
         A: Float,
