@@ -44,9 +44,56 @@
 //! ```math
 //! I_{syn} = s
 //! ```
-use super::StepResult;
-use num_traits::{Float, FromPrimitive, NumAssign, Zero};
 
+mod impl_leaky_params;
+mod impl_leaky_state;
+
+use super::StepResult;
+use num_traits::{Float, FromPrimitive, NumAssign};
+
+/// The params of a leaky integrate-and-fire (LIF) neuron 
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "snake_case")
+)]
+#[repr(C)]
+pub struct LeakyParams<T = f32> {
+    /// Adaptation increment added on spike `b` (same units as w/current)
+    pub b: T,
+    /// Membrane time constant $`\tau_{m}`$ (ms)
+    pub tau_m: T,
+    /// Synaptic time constant $`\tau_{s}`$ (ms)
+    pub tau_s: T,
+    /// Adaptation time constant $`\tau_{w}`$ (ms)
+    pub tau_w: T,
+    /// Membrane resistance `R` (MΩ or arbitrary)
+    pub resistance: T,
+    /// Resting potential $``v_{rest}`$ (mV)
+    pub v_rest: T,
+    /// Reset potential after spike $`v_{reset}`$ (mV)
+    pub v_reset: T,
+    /// Threshold potential $`v_{thresh}`$ (mV)
+    pub v_thresh: T,
+
+}
+/// The state of a leaky integrate-and-fire (LIF) neuron 
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "snake_case")
+)]
+#[repr(C)]
+pub struct LeakyState<T = f32> {
+    /// The membrane potential `v`
+    pub v: T,
+    /// Adaptation `w`
+    pub w: T,
+    /// Total synaptic current `s`
+    pub s: T,
+}
 /// A leaky integrate-and-fire (LIF) neuron with an adaptation term and exponential synaptic
 /// current. The neuron's dynamics are governed by the following equations:
 ///
@@ -59,6 +106,7 @@ use num_traits::{Float, FromPrimitive, NumAssign, Zero};
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "snake_case")
 )]
+#[repr(C)]
 pub struct Leaky<T = f32> {
     // ---- Parameters ----
     /// Adaptation increment added on spike `b` (same units as w/current)
@@ -79,12 +127,8 @@ pub struct Leaky<T = f32> {
     pub v_thresh: T,
 
     // ---- State variables ----
-    /// Membrane potential `v`
-    pub v: T,
-    /// Adaptation variable `w`
-    pub w: T,
-    /// Synaptic variable `s` representing total synaptic current
-    pub s: T,
+    #[serde(flatten)]
+    pub state: LeakyState<T>,
 
     /// Minimum allowed dt for integration (ms)
     pub min_dt: T,
@@ -111,6 +155,9 @@ impl<T> Leaky<T> {
         } else {
             v_rest
         };
+        let state = LeakyState::zero().with_membrane_potential(v0);
+        let min_dt = T::from_f32(1e-6).unwrap();
+
         Self {
             tau_m,
             resistance,
@@ -120,23 +167,27 @@ impl<T> Leaky<T> {
             tau_w,
             b,
             tau_s,
-            v: v0,
-            w: T::zero(),
-            s: T::zero(),
-            min_dt: T::from_f32(1e-6).unwrap(),
+            state,
+            min_dt,
         }
+    }
+    pub const fn state(&self) -> &LeakyState<T> {
+        &self.state
+    }
+    pub const fn state_mut(&mut self) -> &mut LeakyState<T> {
+        &mut self.state
     }
     /// returns a reference to the neuron's adaptation variable (`w`)
     pub const fn adaptation(&self) -> &T {
-        &self.w
+        self.state().adaptation()
     }
     /// returns a reference to the membrane potential, `v`, of the neuron
     pub const fn membrane_potential(&self) -> &T {
-        &self.v
+        self.state().membrane_potential()
     }
     /// returns a reference to the current value, or synaptic state, of the neuron (`s`)
     pub const fn synaptic_state(&self) -> &T {
-        &self.s
+        self.state().synaptic_state()
     }
     /// returns a reference to the membrane time constant, `tau_m`, of the neuron
     pub const fn tau_m(&self) -> &T {
@@ -151,18 +202,16 @@ impl<T> Leaky<T> {
     #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     pub fn apply_spike(&mut self, weight: T)
     where
-        T: NumAssign + Zero,
+        T: core::ops::AddAssign,
     {
-        self.s += weight;
+        *self.state_mut().membrane_potential_mut() += weight;
     }
     /// reset state variables (keeps parameters).
     pub fn reset_state(&mut self)
     where
-        T: Clone + Default,
+        T: Default,
     {
-        self.v = self.v_rest.clone();
-        self.w = T::default();
-        self.s = T::default();
+        self.state_mut().reset();
     }
     /// Integrate the neuron state forward by `dt` [ms] using forward Euler; the externally
     /// applied current, `i_ext`, is added to the synaptic current `s` for the integration
@@ -184,42 +233,41 @@ impl<T> Leaky<T> {
             dt.max(self.min_dt)
         };
 
+        let LeakyState { v, w, s } = self.state;
+
         // remember previous membrane potential for crossing detection
-        let v_prev = self.v;
+        let v_prev = v;
 
         // synaptic current is represented by `s`
         // ds/dt = -s / tau_s
-        let ds = -self.s / self.tau_s;
-        let s_next = self.s + dt * ds;
+        let ds = -s / self.tau_s;
+        let s_next = s + dt * ds;
 
         // total synaptic current for this step (use current s, or average between s and s_next)
         // we use s for explicit Euler consistency.
-        let i_syn = self.s;
+        let i_syn = s;
 
         // membrane dv/dt = (-(v - v_rest) + R*(i_ext + i_syn) - w) / tau_m
-        let dv =
-            (-(self.v - self.v_rest) + self.resistance * (i_ext + i_syn) - self.w) / self.tau_m;
-        let v_next = self.v + dt * dv;
+        let dv = (-(v - self.v_rest) + self.resistance * (i_ext + i_syn) - w) / self.tau_m;
+        let v_next = v + dt * dv;
 
         // adaptation dw/dt = -w / tau_w
-        let dw = -self.w / self.tau_w;
-        let w_next = self.w + dt * dw;
+        let dw = -w / self.tau_w;
+        let w_next = w + dt * dw;
 
         // Commit state tentatively
-        self.v = v_next;
-        self.w = w_next;
-        self.s = s_next;
+        self.state.update(v_next, w_next, s_next);
 
         // Check for threshold crossing (explicit crossing test to avoid misses)
-        if v_prev < self.v_thresh && self.v >= self.v_thresh {
+        if v_prev < self.v_thresh && v >= self.v_thresh {
             // spike: capture pre-reset potential if that is expected by StepResult consumers
-            let pre_spike_v = self.v;
+            let pre_spike_v = v;
             // apply reset and adaptation increment
-            self.v = self.v_reset;
-            self.w += self.b;
+            self.state.v = self.v_reset;
+            self.state.w += self.b;
             StepResult::spiked(pre_spike_v)
         } else {
-            StepResult::not_spiked(self.v)
+            StepResult::not_spiked(v)
         }
     }
 }
