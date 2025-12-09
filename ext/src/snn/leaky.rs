@@ -51,7 +51,7 @@ mod impl_leaky_state;
 use super::StepResult;
 use num_traits::{Float, FromPrimitive, NumAssign};
 
-/// The params of a leaky integrate-and-fire (LIF) neuron 
+/// The params of a leaky integrate-and-fire (LIF) neuron
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
@@ -76,9 +76,8 @@ pub struct LeakyParams<T = f32> {
     pub v_reset: T,
     /// Threshold potential $`v_{thresh}`$ (mV)
     pub v_thresh: T,
-
 }
-/// The state of a leaky integrate-and-fire (LIF) neuron 
+/// The state of a leaky integrate-and-fire (LIF) neuron
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",

@@ -41,14 +41,14 @@ where
 {
     fn default() -> Self {
         Self {
-         tau_m: T::from_usize(20).unwrap(), // ms
-        resistance: T::one(), // arbitrary
-        v_rest: T::from_usize(65).unwrap().neg(), // mV
-        v_thresh: T::from_usize(50).unwrap().neg(), // mV
-        v_reset: T::from_usize(65).unwrap().neg(), // mV
-        tau_w: T::from_usize(200).unwrap(), // ms (slow adaptation)
-        b: T::from_f32(0.5).unwrap(), // adaptation increment
-        tau_s: T::from_usize(5).unwrap(), // ms (fast synapse)
+            tau_m: T::from_usize(20).unwrap(),          // ms
+            resistance: T::one(),                       // arbitrary
+            v_rest: T::from_usize(65).unwrap().neg(),   // mV
+            v_thresh: T::from_usize(50).unwrap().neg(), // mV
+            v_reset: T::from_usize(65).unwrap().neg(),  // mV
+            tau_w: T::from_usize(200).unwrap(),         // ms (slow adaptation)
+            b: T::from_f32(0.5).unwrap(),               // adaptation increment
+            tau_s: T::from_usize(5).unwrap(),           // ms (fast synapse)
         }
     }
 }
