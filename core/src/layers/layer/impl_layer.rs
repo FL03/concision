@@ -2,14 +2,14 @@
     appellation: impl_layer <module>
     authors: @FL03
 */
-use crate::layers::LayerBase;
+use crate::layers::Layer;
 
 use crate::layers::{Activator, RawLayer};
 use concision_params::{ParamsBase, RawParam};
 use concision_traits::Forward;
 use ndarray::{DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
-impl<F, S, D, A> LayerBase<F, ParamsBase<S, D, A>>
+impl<F, S, D, A> Layer<F, ParamsBase<S, D, A>>
 where
     F: Activator<A, Output = A>,
     D: Dimension,
@@ -30,7 +30,7 @@ where
     }
 }
 
-impl<F, P, X, Y> Forward<X> for LayerBase<F, P>
+impl<F, P, X, Y> Forward<X> for Layer<F, P>
 where
     F: Activator<Y, Output = Y>,
     P: RawParam + Forward<X, Output = Y>,
@@ -42,7 +42,7 @@ where
     }
 }
 
-impl<F, P, A> RawLayer<F, P> for LayerBase<F, P>
+impl<F, P, A> RawLayer<F, P> for Layer<F, P>
 where
     F: Activator<P>,
     P: RawParam<Elem = A>,

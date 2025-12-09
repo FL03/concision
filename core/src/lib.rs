@@ -85,7 +85,7 @@ pub mod ex {
 // re-exports
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, config::prelude::*, error::*, layers::LayerBase, layout::*,
+    activate::prelude::*, config::prelude::*, error::*, layers::Layer, layout::*,
     models::prelude::*, utils::prelude::*,
 };
 // prelude

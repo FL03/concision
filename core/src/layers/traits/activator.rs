@@ -65,7 +65,14 @@ impl<X, Y> Activator<X> for alloc::boxed::Box<dyn Activator<X, Output = Y>> {
  ************* Implementations *************
 */
 macro_rules! activator {
-    (@impl $vis:vis struct $name:ident::<$($trait:ident)::*>($method:ident) ) => {
+    ($(
+        $vis:vis struct $name:ident.$method:ident where $T:ident: $($trait:ident)::*
+    );* $(;)?) => {
+        $(
+            activator!(@impl $vis struct $name.$method where $T: $($trait)::* );
+        )*
+    };
+    (@impl $vis:vis struct $name:ident.$method:ident where $T:ident: $($trait:ident)::* ) => {
 
         #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
         #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -95,18 +102,13 @@ macro_rules! activator {
             }
         }
     };
-    ($(
-        $vis:vis struct $name:ident::<$($trait:ident)::*>($method:ident)
-    );* $(;)?) => {
-        $(
-            activator!(@impl $vis struct $name::<$($trait)::*>($method));
-        )*
-    };
 }
 
 activator! {
-    pub struct Linear::<crate::activate::LinearActivation>(linear);
-    pub struct ReLU::<crate::activate::ReLUActivation>(relu);
-    pub struct Sigmoid::<crate::activate::SigmoidActivation>(sigmoid);
-    pub struct Tanh::<crate::activate::TanhActivation>(tanh);
+    pub struct Linear.linear where T: crate::activate::LinearActivation;
+    pub struct ReLU.relu where T: crate::activate::ReLUActivation;
+    pub struct Sigmoid.sigmoid where T: crate::activate::SigmoidActivation;
+    pub struct Tanh.tanh where T: crate::activate::TanhActivation;
+    pub struct HeavySide.heavyside where T: crate::activate::HeavysideActivation;
+    pub struct Softmax.softmax where T: crate::activate::SoftmaxActivation;
 }

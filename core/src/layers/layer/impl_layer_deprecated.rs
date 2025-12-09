@@ -4,7 +4,7 @@
 */
 #![allow(deprecated)]
 
-use crate::layers::LayerBase;
+use crate::layers::Layer;
 
 #[doc(hidden)]
-impl<F, T> LayerBase<F, T> {}
+impl<F, T> Layer<F, T> {}

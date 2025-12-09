@@ -2,18 +2,23 @@
     Appellation: layers <module>
     Contrib: @FL03
 */
-//! This module implments various layers for a neural network
+//! This module provides the [`Layer`] implementation along with supporting traits and types.
+//!
+//! struct, a generic representation of a neural network
+//! layer by associating
+//!
 #[doc(inline)]
-pub use self::{layer::LayerBase, traits::*, types::*};
+pub use self::{layer::Layer, traits::*, types::*};
 
-pub(crate) mod layer;
-pub mod sequential;
+mod layer;
+
+pub mod seq;
 
 pub(crate) mod traits {
     #[doc(inline)]
-    pub use self::{activate::*, layers::*};
+    pub use self::{activator::*, layers::*};
 
-    mod activate;
+    mod activator;
     mod layers;
     mod store;
 }
@@ -39,7 +44,7 @@ mod tests {
     #[test]
     fn test_linear_layer() {
         let params = Params::from_elem((3, 2), 0.5_f32);
-        let layer = LayerBase::linear(params);
+        let layer = Layer::linear(params);
 
         assert_eq!(layer.params().shape(), &[3, 2]);
 
@@ -51,7 +56,7 @@ mod tests {
     #[test]
     fn test_relu_layer() {
         let params = Params::from_elem((3, 2), 0.5_f32);
-        let layer = LayerBase::relu(params);
+        let layer = Layer::relu(params);
 
         assert_eq!(layer.params().shape(), &[3, 2]);
 
@@ -62,14 +67,14 @@ mod tests {
     #[test]
     fn test_tanh_layer() {
         let params = Params::from_elem((3, 2), 0.5_f32);
-        let layer = LayerBase::tanh(params);
+        let layer = Layer::tanh(params);
 
         assert_eq!(layer.params().shape(), &[3, 2]);
 
         let inputs = Array1::linspace(1.0_f32, 2.0_f32, 3);
         approx::assert_abs_diff_eq!(
             layer.forward(&inputs),
-            array![0.99185973, 0.99185973],
+            Array1::from_elem(2, 0.99185973),
             epsilon = 1e-6
         );
     }
