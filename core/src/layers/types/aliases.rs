@@ -10,13 +10,13 @@ use alloc::boxed::Box;
 
 #[cfg(feature = "alloc")]
 /// A type alias for a [`LayerBase`] configured with a dynamic [`Activator`].
-pub type LayerDyn<A, S, D> = LayerBase<Box<dyn Activator<A, Output = A> + 'static>, S, D>;
+pub type LayerDyn<A, T> = LayerBase<Box<dyn Activator<A, Output = A> + 'static>, T>;
 
 /// A type alias for a [`LayerBase`] configured with a [`Linear`] activation function.
-pub type LinearLayer<S, D> = LayerBase<Linear, S, D>;
+pub type LinearLayer<T> = LayerBase<Linear, T>;
 /// A type alias for a [`LayerBase`] configured with a [`Sigmoid`] activation function.
-pub type SigmoidLayer<S, D> = LayerBase<Sigmoid, S, D>;
+pub type SigmoidLayer<T> = LayerBase<Sigmoid, T>;
 /// A type alias for a [`LayerBase`] configured with a [`Tanh`] activation function.
-pub type TanhLayer<S, D> = LayerBase<Tanh, S, D>;
+pub type TanhLayer<T> = LayerBase<Tanh, T>;
 /// A type alias for a [`LayerBase`] configured with a [`ReLU`] activation function.
-pub type ReluLayer<S, D> = LayerBase<ReLU, S, D>;
+pub type ReluLayer<T> = LayerBase<ReLU, T>;

@@ -6,12 +6,5 @@
 
 use crate::layers::LayerBase;
 
-use ndarray::{Dimension, RawData};
-
 #[doc(hidden)]
-impl<F, S, D, A> LayerBase<F, S, D, A>
-where
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-}
+impl<F, T> LayerBase<F, T> {}

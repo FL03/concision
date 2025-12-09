@@ -4,77 +4,32 @@
 */
 use crate::layers::LayerBase;
 
-use crate::layers::{Activator, ActivatorGradient, Layer};
+use crate::layers::{Activator, Layer};
 use concision_params::ParamsBase;
-use concision_traits::Forward;
-use ndarray::{Data, Dimension, RawData};
+use ndarray::{DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
-impl<F, S, D, A> core::ops::Deref for LayerBase<F, S, D, A>
+impl<A, F, S, D> LayerBase<F, ParamsBase<S, D, A>>
 where
+    F: Activator<A, Output = A>,
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    type Target = ParamsBase<S, D>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.params
+    /// create a new [`LayerBase`] from the given activation function and shape.
+    pub fn from_rho_with_shape<Sh>(rho: F, shape: Sh) -> Self
+    where
+        A: Clone + Default,
+        S: DataOwned,
+        D: RemoveAxis,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        Self {
+            rho,
+            params: ParamsBase::default(shape),
+        }
     }
 }
 
-impl<F, S, D, A> core::ops::DerefMut for LayerBase<F, S, D, A>
-where
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.params
-    }
-}
-
-impl<A, X, Y, F, S, D> Forward<X> for LayerBase<F, S, D, A>
-where
-    A: Clone,
-    F: Activator<Y, Output = Y>,
-    D: Dimension,
-    S: Data<Elem = A>,
-    ParamsBase<S, D>: Forward<X, Output = Y>,
-{
-    type Output = Y;
-
-    fn forward(&self, inputs: &X) -> Self::Output {
-        self.params()
-            .forward_then(inputs, |y| self.rho().activate(y))
-    }
-}
-
-impl<U, V, F, S, D, A> Activator<U> for LayerBase<F, S, D, A>
-where
-    F: Activator<U, Output = V>,
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    type Output = V;
-
-    fn activate(&self, x: U) -> Self::Output {
-        self.rho().activate(x)
-    }
-}
-
-impl<U, F, S, D, A> ActivatorGradient<U> for LayerBase<F, S, D, A>
-where
-    F: ActivatorGradient<U>,
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    type Input = F::Input;
-    type Delta = F::Delta;
-
-    fn activate_gradient(&self, inputs: F::Input) -> F::Delta {
-        self.rho().activate_gradient(inputs)
-    }
-}
-
-impl<A, F, S, D> Layer<S, D> for LayerBase<F, S, D, A>
+impl<A, F, S, D> Layer<S, D> for LayerBase<F, ParamsBase<S, D, A>>
 where
     F: Activator<A, Output = A>,
     D: Dimension,
@@ -87,11 +42,11 @@ where
         &self.rho
     }
 
-    fn params(&self) -> &ParamsBase<S, D> {
+    fn params(&self) -> &ParamsBase<S, D, A> {
         &self.params
     }
 
-    fn params_mut(&mut self) -> &mut ParamsBase<S, D> {
+    fn params_mut(&mut self) -> &mut ParamsBase<S, D, A> {
         &mut self.params
     }
 }
