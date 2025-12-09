@@ -11,11 +11,10 @@ use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::DEBUG)
-        .with_target(false)
-        .with_ansi(true)
+        .with_max_level(tracing::Level::TRACE)
+        .with_timer(tracing_subscriber::fmt::time::Uptime::default())
         .init();
-    tracing::info!("Initializing basic example...");
+    tracing::info!("Initialize some params...");
     let (m, n) = (8, 9);
 
     let inputs = Array1::linspace(0.0, 1.0, m);

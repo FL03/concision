@@ -12,8 +12,7 @@ use ndarray::prelude::*;
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::TRACE)
-        .with_target(false)
-        .without_time()
+        .with_timer(tracing_subscriber::fmt::time::Uptime::default())
         .init();
     tracing::info!("Setting up the model...");
     // define the models features
