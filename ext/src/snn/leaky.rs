@@ -3,9 +3,9 @@
     Created At: 2025.11.25:09:33:30
     Contrib: @FL03
 */
-//! A leaky integrate-and-fire (LIF) neuron implementation with adaptation and exponential 
+//! A leaky integrate-and-fire (LIF) neuron implementation with adaptation and exponential
 //! synaptic current.
-//! 
+//!
 //! ### Model (forward-Euler integration; units are arbitrary but consistent):
 //!
 //! ```math
@@ -28,7 +28,7 @@
 //! - $`I_{syn}`$: synaptic current
 //! - $`\tau_{w}`$: adaptation time constant
 //! - $`\tau_{s}`$: synaptic time constant
-//! 
+//!
 //! - $`v`$: membrane potential
 //! - $`\omega`$: adaptation variable
 //! - $`s`$: synaptic variable representing total synaptic current
@@ -61,24 +61,22 @@ use num_traits::{Float, FromPrimitive, NumAssign, Zero};
 )]
 pub struct Leaky<T = f32> {
     // ---- Parameters ----
+    /// Adaptation increment added on spike `b` (same units as w/current)
+    pub b: T,
     /// Membrane time constant $`\tau_{m}`$ (ms)
     pub tau_m: T,
+    /// Synaptic time constant $`\tau_{s}`$ (ms)
+    pub tau_s: T,
+    /// Adaptation time constant $`\tau_{w}`$ (ms)
+    pub tau_w: T,
     /// Membrane resistance `R` (MΩ or arbitrary)
     pub resistance: T,
     /// Resting potential $``v_{rest}`$ (mV)
     pub v_rest: T,
-    /// Threshold potential $`v_{thresh}`$ (mV)
-    pub v_thresh: T,
     /// Reset potential after spike $`v_{reset}`$ (mV)
     pub v_reset: T,
-
-    /// Adaptation time constant $`\tau_{w}`$ (ms)
-    pub tau_w: T,
-    /// Adaptation increment added on spike `b` (same units as w/current)
-    pub b: T,
-
-    /// Synaptic time constant $`\tau_{s}`$ (ms)
-    pub tau_s: T,
+    /// Threshold potential $`v_{thresh}`$ (mV)
+    pub v_thresh: T,
 
     // ---- State variables ----
     /// Membrane potential `v`
@@ -148,9 +146,9 @@ impl<T> Leaky<T> {
     pub const fn resistance(&self) -> &T {
         &self.resistance
     }
-    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     /// Apply a presynaptic spike event to the neuron; this increments the synaptic variable `s`
     /// by `weight` instantaneously (models delta spike arrival).
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     pub fn apply_spike(&mut self, weight: T)
     where
         T: NumAssign + Zero,
@@ -166,7 +164,6 @@ impl<T> Leaky<T> {
         self.w = T::default();
         self.s = T::default();
     }
-    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     /// Integrate the neuron state forward by `dt` [ms] using forward Euler; the externally
     /// applied current, `i_ext`, is added to the synaptic current `s` for the integration
     /// step. Therefore it is important to maintain unitary consistency between `i_ext` and `s`
@@ -176,6 +173,7 @@ impl<T> Leaky<T> {
     /// **Note**: This method checks for threshold crossing explicitly to avoid missing spikes
     /// due to large `dt`. Additionally, if `dt` is less than `min_dt`, it is clamped to
     /// `min_dt`.
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     pub fn step(&mut self, dt: T, i_ext: T) -> StepResult<T>
     where
         T: Float + FromPrimitive + NumAssign,

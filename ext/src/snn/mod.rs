@@ -18,9 +18,9 @@ pub use self::{leaky::*, types::*, utils::*};
 
 pub mod leaky;
 
-pub(crate) mod utils;
+mod utils;
 
-pub(crate) mod types {
+mod types {
     #[doc(inline)]
     pub use self::{event::*, result::*};
 
