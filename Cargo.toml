@@ -74,7 +74,7 @@ anyhow = { default-features = false, version = "1" }
 thiserror = { default-features = false, version = "2" }
 # logging
 tracing = { default-features = false, features = ["attributes", "log"], version = "0.1" }
-tracing-subscriber = { default-features = false, features = ["ansi", "env-filter", "fmt"], version = "0.3" }
+tracing-subscriber = { features = ["ansi", "env-filter", "fmt"], version = "0.3" }
 # time
 chrono = { default-features = false, version = "0.4" }
 humantime = { version = "2" }
@@ -86,7 +86,6 @@ lazy_static = { version = "1" }
 paste = { version = "1" }
 smart-default = "0.7"
 strum = { default-features = false, features = ["derive"], version = "0.27" }
-
 
 # ************* [Profiles] *************
 [profile.dev]
