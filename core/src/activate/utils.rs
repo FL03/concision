@@ -8,7 +8,7 @@ use num_traits::{Float, One, Zero};
 /// the relu activation function:
 ///
 /// ```math
-/// f(x) = \max(0, x)
+/// \mbox{f}(x) = \max(0, x)
 /// ```
 pub fn relu<T>(args: T) -> T
 where

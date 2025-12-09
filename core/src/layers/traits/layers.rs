@@ -4,12 +4,15 @@
 */
 use super::{Activator, ActivatorGradient};
 
-use concision_params::ParamsBase;
+use concision_params::{ParamsBase, RawParameter};
 use concision_traits::{Backward, Forward};
 use ndarray::{Data, Dimension, RawData};
 
-pub trait RawLayer<F, X> {
-    type Elem;
+pub trait RawLayer<F, X, A = <X as RawParameter>::Elem>
+where
+    F: Activator<X>,
+    X: RawParameter<Elem = A>,
+{
     /// the activation function of the layer
     fn rho(&self) -> &F;
     /// returns an immutable reference to the parameters of the layer

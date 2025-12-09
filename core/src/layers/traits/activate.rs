@@ -53,16 +53,11 @@ impl<X, Y> Activator<X> for dyn Fn(X) -> Y {
 }
 
 #[cfg(feature = "alloc")]
-mod impl_alloc {
-    use super::Activator;
-    use alloc::boxed::Box;
+impl<X, Y> Activator<X> for alloc::boxed::Box<dyn Activator<X, Output = Y>> {
+    type Output = Y;
 
-    impl<X, Y> Activator<X> for Box<dyn Activator<X, Output = Y>> {
-        type Output = Y;
-
-        fn activate(&self, rhs: X) -> Self::Output {
-            self.as_ref().activate(rhs)
-        }
+    fn activate(&self, rhs: X) -> Self::Output {
+        self.as_ref().activate(rhs)
     }
 }
 

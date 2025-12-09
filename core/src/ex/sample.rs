@@ -2,6 +2,7 @@
     appellation: model <test>
     authors: @FL03
 */
+#![cfg(feature = "std")]
 use crate::activate::{ReLUActivation, SigmoidActivation};
 use crate::{
     DeepModelParams, Error, Forward, Model, ModelFeatures, Norm, Params, StandardModelConfig, Train,
@@ -113,7 +114,8 @@ where
     A: Float + FromPrimitive + ScalarOperand,
     D: Dimension,
     S: Data<Elem = A>,
-    Params<A>: Forward<ArrayBase<S, D, A>, Output = Array<A, D>> + Forward<Array<A, D>, Output = Array<A, D>>,
+    Params<A>: Forward<ArrayBase<S, D, A>, Output = Array<A, D>>
+        + Forward<Array<A, D>, Output = Array<A, D>>,
 {
     type Output = Array<A, D>;
 

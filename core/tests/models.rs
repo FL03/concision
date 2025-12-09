@@ -3,10 +3,10 @@
     Created At: 2025.12.07:11:02:49
     Contrib: @FL03
 */
-extern crate concision_core as cnc;
+#![allow(unused_mut)]
 
-use cnc::ex::sample::TestModel;
-use cnc::{Model, ModelFeatures, StandardModelConfig};
+use concision_core::ex::sample::TestModel;
+use concision_core::{Model, ModelFeatures, StandardModelConfig};
 use ndarray::prelude::*;
 
 #[test]

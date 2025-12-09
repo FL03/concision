@@ -162,4 +162,3 @@ where
         self.weights().len()
     }
 }
-

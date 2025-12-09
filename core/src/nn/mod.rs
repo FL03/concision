@@ -54,7 +54,7 @@ where
 
     /// returns a reference to the network configuration;
     fn config(&self) -> &Self::Config;
-    
+
     fn params(&self) -> &Self::Params<S, D>;
 
     fn params_mut(&mut self) -> &mut Self::Params<S, D>;

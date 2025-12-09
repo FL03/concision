@@ -6,9 +6,7 @@ use super::LayerBase;
 
 use crate::layers::{Linear, ReLU, Sigmoid, Tanh};
 
-
-
-impl<T> LayerBase<Linear, T>{
+impl<T> LayerBase<Linear, T> {
     /// initialize a new [`LayerBase`] using a [`Linear`] activation function and the given
     /// parameters.
     pub const fn linear(params: T) -> Self {
@@ -19,7 +17,7 @@ impl<T> LayerBase<Linear, T>{
     }
 }
 
-impl<T> LayerBase<Sigmoid, T>{
+impl<T> LayerBase<Sigmoid, T> {
     /// initialize a new [`LayerBase`] using a [`Sigmoid`] activation function and the given
     /// parameters.
     pub const fn sigmoid(params: T) -> Self {
@@ -30,7 +28,7 @@ impl<T> LayerBase<Sigmoid, T>{
     }
 }
 
-impl<T> LayerBase<Tanh, T>{
+impl<T> LayerBase<Tanh, T> {
     /// initialize a new [`LayerBase`] using a [`Tanh`] activation function and the given
     /// parameters.
     pub const fn tanh(params: T) -> Self {

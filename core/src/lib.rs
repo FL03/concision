@@ -79,15 +79,14 @@ pub mod utils;
 
 #[doc(hidden)]
 pub mod ex {
-    #[cfg(all(feature = "rand", feature = "std"))]
     pub mod sample;
 }
 
 // re-exports
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, config::prelude::*, error::*, layout::*, models::prelude::*,
-    utils::prelude::*,
+    activate::prelude::*, config::prelude::*, error::*, layers::LayerBase, layout::*,
+    models::prelude::*, utils::prelude::*,
 };
 // prelude
 #[doc(hidden)]
