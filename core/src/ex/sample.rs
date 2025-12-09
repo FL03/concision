@@ -241,7 +241,7 @@ where
         target: &ArrayBase<T, Ix2>,
     ) -> Result<Self::Output, Self::Error> {
         if input.nrows() == 0 || target.nrows() == 0 {
-            return Err(Error::InvalidBatchSize(0));
+            return Err(anyhow::anyhow!("Input and target batches must be non-empty").into());
         }
         if input.ncols() != self.layout().input() {
             return Err(Error::InvalidInputFeatures(

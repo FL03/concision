@@ -275,3 +275,49 @@ impl ModelLayoutMut for [usize; 4] {
         &mut self[3]
     }
 }
+
+impl IntoModelFeatures for (usize, usize, usize) {
+    fn into_model_features(self) -> ModelFeatures {
+        ModelFeatures {
+            input: self.0,
+            inner: ModelFormat::Shallow { hidden: self.1 },
+            output: self.2,
+        }
+    }
+}
+
+impl IntoModelFeatures for (usize, usize, usize, usize) {
+    fn into_model_features(self) -> ModelFeatures {
+        ModelFeatures {
+            input: self.0,
+            inner: ModelFormat::Deep {
+                hidden: self.1,
+                layers: self.3,
+            },
+            output: self.2,
+        }
+    }
+}
+
+impl IntoModelFeatures for [usize; 3] {
+    fn into_model_features(self) -> ModelFeatures {
+        ModelFeatures {
+            input: self[0],
+            inner: ModelFormat::Shallow { hidden: self[1] },
+            output: self[2],
+        }
+    }
+}
+
+impl IntoModelFeatures for [usize; 4] {
+    fn into_model_features(self) -> ModelFeatures {
+        ModelFeatures {
+            input: self[0],
+            inner: ModelFormat::Deep {
+                hidden: self[1],
+                layers: self[3],
+            },
+            output: self[2],
+        }
+    }
+}

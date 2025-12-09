@@ -7,23 +7,16 @@
 /// the [`Dim`] trait is used to define a type that can be used as a raw dimension.
 /// This trait is primarily used to provide abstracted, generic interpretations of the
 /// dimensions of the [`ndarray`] crate to ensure long-term compatibility.
-pub trait Dim {
+pub trait RawDimension {
     private! {}
 }
 
-/// The [`DecrementAxis`] trait defines a method enabling an axis to decrement itself,
-pub trait DecrementAxis {
-    type Output;
-
-    fn dec(&self) -> Self::Output;
+pub trait Dim: RawDimension {
+    /// returns the total number of elements considered by the dimension
+    fn size(&self) -> usize;
 }
-/// The [`IncrementAxis`] trait defines a method enabling an axis to increment itself,
-/// effectively adding a new axis to the array.
-pub trait IncrementAxis {
-    type Output;
 
-    fn inc(&self) -> Self::Output;
-}
+
 /// The [`Unsqueeze`] trait establishes an interface for a routine that _unsqueezes_ an array,
 /// by inserting a new axis at a specified position. This is useful for reshaping arrays to
 /// meet specific dimensional requirements.
@@ -36,27 +29,17 @@ pub trait Unsqueeze {
 /*
  ************* Implementations *************
 */
-use ndarray::{ArrayBase, Axis, Dimension, RawData, RawDataClone, RemoveAxis};
+use ndarray::{ArrayBase, Axis, Dimension, RawData, RawDataClone};
 
-impl<D> Dim for D
+impl<D> RawDimension for D
 where
     D: ndarray::Dimension,
 {
     seal! {}
 }
 
-impl<D> DecrementAxis for D
-where
-    D: RemoveAxis,
-{
-    type Output = D::Smaller;
 
-    fn dec(&self) -> Self::Output {
-        self.remove_axis(Axis(self.ndim() - 1))
-    }
-}
-
-impl<A, S, D> Unsqueeze for ArrayBase<S, D, A>
+impl<S, D, A> Unsqueeze for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -68,7 +51,7 @@ where
     }
 }
 
-impl<A, S, D> Unsqueeze for &ArrayBase<S, D, A>
+impl<S, D, A> Unsqueeze for &ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawDataClone<Elem = A>,

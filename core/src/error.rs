@@ -14,16 +14,10 @@ use alloc::{boxed::Box, string::String};
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum Error {
-    #[cfg(feature = "alloc")]
-    #[error(transparent)]
-    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
-
     #[error("Invalid model configuration")]
     InvalidModelConfig,
     #[error("The model is not supported for the given input")]
     IncompatibleInput,
-    #[error("Mismatched Dimension: expected {expected}, found {found}")]
-    MismatchedDimension { expected: usize, found: usize },
     #[error("An invalid batch size was provided: {0}")]
     InvalidBatchSize(usize),
     #[error("Input is incompatible with the model: found {0} and expected {1}")]
@@ -38,15 +32,15 @@ pub enum Error {
     #[error("Unsupported model {0}")]
     UnsupportedModel(String),
     #[cfg(feature = "alloc")]
-    #[cfg(feature = "alloc")]
     #[error("An unsupported operation was attempted: {0}")]
     UnsupportedOperation(String),
-    #[error("Unknown Error: {0}")]
-    Unknown(String),
     #[error("Parameter Error")]
     ParameterError(String),
     #[error(transparent)]
-    AnyError(#[from] anyhow::Error),
+    AnyError(#[from] anyhow::Error),    
+    #[cfg(feature = "alloc")]
+    #[error(transparent)]
+    BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[error(transparent)]
     PadError(#[from] crate::utils::pad::PadError),
     #[error(transparent)]
@@ -55,8 +49,6 @@ pub enum Error {
     InitError(#[from] concision_init::InitError),
     #[error(transparent)]
     TraitError(#[from] concision_traits::Error),
-    #[error(transparent)]
-    ShapeError(#[from] ndarray::ShapeError),
     #[cfg(feature = "serde")]
     #[error(transparent)]
     DeserializeError(#[from] serde::de::value::Error),
@@ -68,16 +60,20 @@ pub enum Error {
     #[cfg(feature = "std")]
     #[error(transparent)]
     IoError(#[from] std::io::Error),
+    #[error(transparent)]
+    ShapeError(#[from] ndarray::ShapeError),
+    #[error("Unknown Error: {0}")]
+    UnknownError(String),
 }
 
 impl From<String> for Error {
     fn from(value: String) -> Self {
-        Self::Unknown(value)
+        Self::UnknownError(value)
     }
 }
 
 impl From<&str> for Error {
     fn from(value: &str) -> Self {
-        Self::Unknown(String::from(value))
+        Self::UnknownError(String::from(value))
     }
 }

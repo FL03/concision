@@ -7,8 +7,12 @@ use ndarray::{
     ShapeBuilder,
 };
 
-/// The [`ParamsBase`] struct is a generic container for a set of weights and biases for a
-/// model where the bias tensor is always `n-1` dimensions smaller than the `weights` tensor.
+/// The [`ParamsBase`] implementation aims to provide a generic, n-dimensional weight and bias 
+/// pair for a model (or layer). The object requires the bias tensor to be a single dimension 
+/// smaller than the weights tensor. 
+/// 
+/// Therefore, we allow the weight tensor to be the _shape_ of the parameters, using the shape 
+/// as the basis for the bias tensor by removing one axi (typically the first axis).
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
 /// that can be reduced by one axis, typically the "zero-th" axis: $`\mbox{rank}(D)>0`$.
 pub struct ParamsBase<S, D = ndarray::Ix2, A = <S as RawData>::Elem>
@@ -39,9 +43,8 @@ where
         F: Fn() -> A,
     {
         let shape = shape.into_shape_with_order();
-        let bshape = shape.raw_dim().remove_axis(Axis(0));
-        // initialize the bias and weights using the provided function for each element
-        let bias = ArrayBase::from_shape_fn(bshape, |_| init());
+        // initialize the bias using a shape that is 1 rank lower then the weights
+        let bias = ArrayBase::from_shape_fn(shape.raw_dim().remove_axis(Axis(0)), |_| init());
         let weights = ArrayBase::from_shape_fn(shape, |_| init());
         // create a new instance from the generated bias and weights
         Self::new(bias, weights)

@@ -116,7 +116,11 @@ where
         let n = A::from_usize(seq_len).unwrap();
 
         if seq_len == 0 {
-            return Err(cnc::params::ParamsError::InvalidInputShape.into());
+            return Err(cnc::params::ParamsError::MismatchedShapes {
+                expected: &[1],
+                found: 0,
+            }
+            .into());
         }
 
         // Create FFT planner
@@ -225,7 +229,7 @@ where
         let (seq_len, feature_dim) = input.dim();
 
         if seq_len == 0 {
-            return Err(cnc::params::ParamsError::InvalidInputShape.into());
+            return Err(anyhow::anyhow!("Input sequence length cannot be zero"));
         }
 
         // Create FFT planner

@@ -162,3 +162,61 @@ where
         self.weights().len()
     }
 }
+
+impl<const N: usize, T> RawParameter for [T; N]
+where
+    T: RawParameter,
+{
+    type Elem = T::Elem;
+
+    seal! {}
+}
+
+impl<const N: usize, T> TensorParams for [T; N]
+where
+    T: RawParameter,
+{
+    fn rank(&self) -> usize {
+        1
+    }
+
+    fn shape(&self) -> &[usize] {
+        &[N]
+    }
+
+    fn size(&self) -> usize {
+        N
+    }
+}
+
+#[cfg(feature = "alloc")]
+mod impl_alloc {
+    use alloc::vec::Vec;
+    use super::*;
+
+    impl<T> RawParameter for Vec<T>
+    where
+        T: RawParameter,
+    {
+        type Elem = T::Elem;
+
+        seal! {}
+    }
+
+    // impl<T> TensorParams for Vec<T>
+    // where
+    //     T: RawParameter,
+    // {
+    //     fn rank(&self) -> usize {
+    //         1
+    //     }
+
+    //     fn shape(&self) -> &[usize] {
+    //         &[self.len()]
+    //     }
+
+    //     fn size(&self) -> usize {
+    //         self.len()
+    //     }
+    // }
+}

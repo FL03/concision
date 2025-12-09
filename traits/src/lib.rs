@@ -58,6 +58,17 @@ pub mod math {
     mod unary;
 }
 
+pub mod ops {
+    //! composable operators for tensor manipulations and transformations, neural networks, and
+    //! more
+    #[allow(unused_imports)]
+    #[doc(inline)]
+    pub use self::{binary::*, unary::*};
+
+    mod binary;
+    mod unary;
+}
+
 pub mod tensor {
     #[doc(inline)]
     pub use self::{fill::*, like::*, linalg::*, ndtensor::*, shape::*};
