@@ -42,9 +42,17 @@ pub trait CallInPlace<T>: CallInto<T> {
 pub trait Apply<T> {
     type Cont<_T>;
 
-    fn apply<U, F>(&self, f: F) -> Self::Cont<U>
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
     where
         F: Fn(T) -> U;
+}
+
+pub trait ApplyRef<T> {
+    type Cont<_T>;
+
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(&T) -> U;
 }
 /// The [`ApplyMut`] trait mutates the each element of the container, in-place, using the given
 /// function.
@@ -57,15 +65,26 @@ pub trait ApplyMut<T> {
         F: FnMut(T) -> T;
 }
 
+pub trait ApplyInto<T> {
+    type Cont<_T>;
+
+    fn apply_into<F, U>(self, f: F) -> Self::Cont<U>
+    where
+        F: FnMut(T) -> U;
+}
+
 /*
  ************* Implementations *************
 */
 use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand};
 
-impl<T> Apply<T> for &T where T: Apply<T> {
+impl<T> Apply<T> for &T
+where
+    T: Apply<T>,
+{
     type Cont<V> = T::Cont<V>;
 
-    fn apply<U, F>(&self, f: F) -> Self::Cont<U>
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
     where
         F: Fn(T) -> U,
     {
@@ -73,10 +92,13 @@ impl<T> Apply<T> for &T where T: Apply<T> {
     }
 }
 
-impl<T> Apply<T> for &mut T where T: Apply<T> {
+impl<T> Apply<T> for &mut T
+where
+    T: Apply<T>,
+{
     type Cont<V> = T::Cont<V>;
 
-    fn apply<U, F>(&self, f: F) -> Self::Cont<U>
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
     where
         F: Fn(T) -> U,
     {
@@ -119,6 +141,17 @@ where
     }
 }
 
+impl<A> ApplyRef<A> for Option<A> {
+    type Cont<V> = Option<V>;
+
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(&A) -> U,
+    {
+        self.as_ref().map(|a| f(a))
+    }
+}
+
 impl<A, S, D> Apply<A> for ArrayBase<S, D, A>
 where
     A: Clone,
@@ -127,9 +160,9 @@ where
 {
     type Cont<V> = Array<V, D>;
 
-    fn apply<V, F>(&self, f: F) -> Self::Cont<V>
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
     where
-        F: Fn(A) -> V,
+        F: Fn(A) -> U,
     {
         self.mapv(f)
     }
@@ -143,9 +176,9 @@ where
 {
     type Cont<V> = Array<V, D>;
 
-    fn apply<B, F>(&self, f: F) -> Array<B, D>
+    fn apply<F, U>(&self, f: F) -> Array<U, D>
     where
-        F: Fn(A) -> B,
+        F: Fn(A) -> U,
     {
         self.mapv(f)
     }
@@ -159,9 +192,9 @@ where
 {
     type Cont<V> = Array<V, D>;
 
-    fn apply<B, F>(&self, f: F) -> Array<B, D>
+    fn apply<F, U>(&self, f: F) -> Array<U, D>
     where
-        F: Fn(A) -> B,
+        F: Fn(A) -> U,
     {
         self.mapv(f)
     }

@@ -3,8 +3,10 @@
     Created At: 2025.11.28:21:21:42
     Contrib: @FL03
 */
+use ndarray::iter as nditer;
 use ndarray::{ArrayBase, Data, DataMut, Dimension, RawData};
 
+/// A trait denoting an implementor with weights and associated methods
 pub trait Weighted<S, D, A = <S as RawData>::Elem>: Sized
 where
     D: Dimension,
@@ -32,16 +34,16 @@ where
         *self.weights_mut() = weights;
         self
     }
-    /// returns an iterator over the weights; see [`iter`](ndarray::iter::Iter) for more information
-    fn iter_weights<'a>(&'a self) -> ndarray::iter::Iter<'a, S::Elem, D>
+    /// returns an iterator over the weights; see [`iter`](nditer::Iter) for more information
+    fn iter_weights<'a>(&'a self) -> nditer::Iter<'a, S::Elem, D>
     where
         S: Data + 'a,
         D: 'a,
     {
         self.weights().iter()
     }
-    /// returns a mutable iterator over the weights; see [`iter_mut`](ndarray::iter::IterMut) for more information
-    fn iter_weights_mut<'a>(&'a mut self) -> ndarray::iter::IterMut<'a, S::Elem, D>
+    /// returns a mutable iterator over the weights; see [`iter_mut`](nditer::IterMut) for more information
+    fn iter_weights_mut<'a>(&'a mut self) -> nditer::IterMut<'a, S::Elem, D>
     where
         S: DataMut + 'a,
         D: 'a,
@@ -78,7 +80,7 @@ where
         self
     }
     /// returns an iterator over the bias
-    fn iter_bias<'a>(&'a self) -> ndarray::iter::Iter<'a, S::Elem, D::Smaller>
+    fn iter_bias<'a>(&'a self) -> nditer::Iter<'a, S::Elem, D::Smaller>
     where
         S: Data + 'a,
         D: 'a,
@@ -86,7 +88,7 @@ where
         self.bias().iter()
     }
     /// returns a mutable iterator over the bias
-    fn iter_bias_mut<'a>(&'a mut self) -> ndarray::iter::IterMut<'a, S::Elem, D::Smaller>
+    fn iter_bias_mut<'a>(&'a mut self) -> nditer::IterMut<'a, S::Elem, D::Smaller>
     where
         S: DataMut + 'a,
         D: 'a,

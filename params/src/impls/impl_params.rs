@@ -3,8 +3,10 @@
     authors: @FL03
 */
 use crate::params_base::ParamsBase;
+
+use crate::Params;
 use crate::traits::{Biased, Weighted};
-use concision_traits::{FillLike, OnesLike, ZerosLike};
+use concision_traits::{Apply, FillLike, OnesLike, ZerosLike};
 use core::iter::Once;
 use ndarray::{ArrayBase, Data, DataOwned, Dimension, Ix1, Ix2, RawData};
 use num_traits::{One, Zero};
@@ -174,6 +176,25 @@ where
 
     fn into_iter(self) -> Self::IntoIter {
         core::iter::once(self)
+    }
+}
+
+impl<A, S, D> Apply<A> for ParamsBase<S, D, A>
+where
+    D: Dimension,
+    S: Data<Elem = A>,
+    A: Clone,
+{
+    type Cont<V> = Params<V, D>;
+
+    fn apply<F, V>(&self, func: F) -> Self::Cont<V>
+    where
+        F: Fn(A) -> V,
+    {
+        ParamsBase {
+            bias: self.bias().apply(&func),
+            weights: self.weights().apply(&func),
+        }
     }
 }
 

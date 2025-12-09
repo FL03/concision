@@ -44,6 +44,7 @@ pub mod error;
 pub mod iter;
 
 mod params_base;
+mod types;
 
 #[macro_use]
 pub(crate) mod macros {
@@ -65,19 +66,11 @@ mod impls {
 }
 
 pub mod traits {
-    //! Traits for working with model parameters
+    //! Additional traits for working with parameters
     pub use self::{param::*, wnb::*};
 
     mod param;
     mod wnb;
-}
-
-mod types {
-    //! Supporting types and aliases for working with model parameters
-    #[doc(inline)]
-    pub use self::aliases::*;
-
-    mod aliases;
 }
 
 // re-exports
