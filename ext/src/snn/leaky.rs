@@ -44,7 +44,7 @@
 //! ```math
 //! I_{syn} = s
 //! ```
-use crate::snn::StepResult;
+use super::StepResult;
 use num_traits::{Float, FromPrimitive, NumAssign, Zero};
 
 /// A leaky integrate-and-fire (LIF) neuron with an adaptation term and exponential synaptic

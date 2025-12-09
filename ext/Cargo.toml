@@ -38,14 +38,6 @@ required-features = ["attention", "rand", "std"]
 name = "snn"
 required-features = ["approx", "snn", "std"]
 
-[[test]]
-name = "attention"
-required-features = ["approx", "attention", "rand", "std"]
-
-[[test]]
-name = "snn"
-required-features = ["approx", "snn", "std"]
-
 [dependencies]
 concision = { workspace = true }
 # custom
