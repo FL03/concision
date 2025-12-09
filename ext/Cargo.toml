@@ -16,7 +16,6 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-doc-scrape-examples = true
 features = ["full"]
 rustc-args = ["--cfg", "docsrs"]
 

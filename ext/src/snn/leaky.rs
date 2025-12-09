@@ -217,15 +217,9 @@ impl<T> Leaky<T> {
             // apply reset and adaptation increment
             self.v = self.v_reset;
             self.w += self.b;
-            StepResult {
-                spiked: true,
-                v: pre_spike_v,
-            }
+            StepResult::spiked(pre_spike_v)
         } else {
-            StepResult {
-                spiked: false,
-                v: self.v,
-            }
+            StepResult::not_spiked(self.v)
         }
     }
 }

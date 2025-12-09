@@ -11,6 +11,7 @@ use num_traits::{Float, FromPrimitive, NumAssign};
 
 /// A basic method for _discovering_ the minimum external drive required to make a spiking
 /// neuron spike
+#[inline]
 pub fn sweep_for_min_drive<T>(step_size: T) -> T
 where
     T: Float + FromPrimitive + NumAssign,

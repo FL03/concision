@@ -54,11 +54,7 @@ fn main() -> anyhow::Result<()> {
         if res.is_spiked() {
             spike_times.push(t);
             // print the pre-spike membrane potential from the step result
-            println!(
-                "Spike at {:.3} ms (pre-spike v = {:.3})",
-                t,
-                res.membrane_potential()
-            );
+            println!("Spike at {:.3} ms (pre-spike v = {:.3})", t, res.get());
         }
 
         // optionally, record v, w, s for analysis (omitted here for brevity)
@@ -72,7 +68,7 @@ fn main() -> anyhow::Result<()> {
             tracing::info!(
                 "t={:.1} ms, v={:.3} mV, w={:.3}, s={:.3}",
                 t,
-                res.membrane_potential(),
+                res.get(),
                 _w,
                 _s
             );
