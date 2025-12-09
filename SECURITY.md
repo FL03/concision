@@ -1,14 +1,15 @@
 # Security Policy
 
+    Current Version: 0.3.0
+
 ## Supported Versions
 
-Checkout the current and supported packages below
+Checkout the table below for information on which versions are currently supported:
 
-| Version           | Supported          |
-|:------------------|:-------------------|
-| 0.2.9             | :white_check_mark: |  
-| <=0.2.0,>0.2.9    | :white_check_mark: |
-| <=0.2.0           |  :x:               |
+| Version          | Supported          |
+|:-----------------|:-------------------|
+| 0.2.9,<=0.3.0    | :white_check_mark: |
+| <0.2.9           | :x:                |
 
 ## Reporting a Vulnerability
 

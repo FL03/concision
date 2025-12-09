@@ -46,6 +46,7 @@
 **/*.iws.*
 
 ### Visual Studio Code
+**/.vscode/
 
 !.vscode/settings.*
 !.vscode/launch.*
