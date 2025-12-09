@@ -4,6 +4,6 @@
     Contrib: @FL03
 */
 #[doc(inline)]
-pub use self::lif::LIFNeuron;
+pub use self::leaky::Leaky;
 
-pub mod lif;
+pub mod leaky;

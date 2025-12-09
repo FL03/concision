@@ -1,19 +1,57 @@
 /*
-    Appellation: neuron <module>
+    Appellation: leaky <module>
     Created At: 2025.11.25:09:33:30
     Contrib: @FL03
 */
-
+//! A leaky integrate-and-fire (LIF) neuron implementation with adaptation and exponential 
+//! synaptic current.
+//! 
+//! ### Model (forward-Euler integration; units are arbitrary but consistent):
+//!
+//! ```math
+//! \tau_m * \frac{dv}{dt} = -(v - v_{rest}) + R*(I_{ext} + I_{syn}) - \omega
+//! ```
+//!
+//! ```math
+//! \tau_w * \frac{d\omega}{dt} = -\omega
+//! ```
+//!
+//! ```math
+//! \tau_s * \frac{ds}{dt} = -s
+//! ```
+//!
+//! where:
+//! - $`\tau_{m}`$: membrane time constant
+//! - $`R`$: membrane resistance
+//! - $`v_{rest}`$: resting potential
+//! - $`I_{ext}`$: externally applied current
+//! - $`I_{syn}`$: synaptic current
+//! - $`\tau_{w}`$: adaptation time constant
+//! - $`\tau_{s}`$: synaptic time constant
+//! 
+//! - $`v`$: membrane potential
+//! - $`\omega`$: adaptation variable
+//! - $`s`$: synaptic variable representing total synaptic current
+//!
+//! If we allow the spike to be represented as $`\delta`$, then:
+//!
+//! ```math
+//! v\geq{v_{thresh}}\rightarrow{\delta},v\leftarrow{v_{reset}},\omega\mathrel{+}=b
+//! ```
+//!
+//! where $`b`$ is the adaptation increment added on spike. The synaptic current is given by:
+//!
+//! ```math
+//! I_{syn} = s
+//! ```
 use crate::snn::StepResult;
 use num_traits::{Float, FromPrimitive, NumAssign, Zero};
 
-/// Leaky Integrate-and-Fire (LIF) neuron with an adaptation term and exponential synaptic
-/// current.
-///
-/// The neuron dynamics are governed by the following equations:
+/// A leaky integrate-and-fire (LIF) neuron with an adaptation term and exponential synaptic
+/// current. The neuron's dynamics are governed by the following equations:
 ///
 /// ```math
-/// \frac{dv}{dt} = \frac{-(v - v_{rest}) + R \cdot (i_{ext} + s) - w}{\tau_{m}}
+/// \frac{dv}{dt} = \frac{-(v - v_{rest}) + R \cdot{(i_{ext} + s)} - w}{\tau_{m}}
 /// ```
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
@@ -21,7 +59,7 @@ use num_traits::{Float, FromPrimitive, NumAssign, Zero};
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "snake_case")
 )]
-pub struct LIFNeuron<T = f32> {
+pub struct Leaky<T = f32> {
     // ---- Parameters ----
     /// Membrane time constant $`\tau_{m}`$ (ms)
     pub tau_m: T,
@@ -54,7 +92,7 @@ pub struct LIFNeuron<T = f32> {
     pub min_dt: T,
 }
 
-impl<T> LIFNeuron<T> {
+impl<T> Leaky<T> {
     /// Create a neuron with explicit parameters and initial state.
     pub fn new(
         tau_m: T,
@@ -194,7 +232,7 @@ impl<T> LIFNeuron<T> {
     }
 }
 
-impl<T> Default for LIFNeuron<T>
+impl<T> Default for Leaky<T>
 where
     T: Float + FromPrimitive,
 {

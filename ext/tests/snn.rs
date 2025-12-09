@@ -4,11 +4,11 @@
     Contrib: @FL03
 */
 use approx::assert_abs_diff_eq;
-use concision_ext::snn::LIFNeuron;
+use concision_ext::snn::Leaky;
 
 #[test]
 fn test_snn_neuron_resting_no_input() {
-    let mut n = LIFNeuron::default();
+    let mut n = Leaky::default();
     let dt = 1.0;
     // simulate 100 ms with no input -> should not spike and v near v_rest
     for _ in 0..100 {
@@ -25,7 +25,7 @@ fn test_snn_neuron_spikes() {
     let dt = 1f64;
     let i_ext = 50f64; // large i_ext to force spiking
     // neuron
-    let mut n = LIFNeuron::default();
+    let mut n = Leaky::default();
     let mut spiked = false;
     let mut steps = 0usize;
     // run until spiked or max steps reached
@@ -41,7 +41,7 @@ fn test_snn_neuron_spikes() {
 
 #[test]
 fn test_snn_neuron_synaptic_state_change() {
-    let mut n = LIFNeuron::default();
+    let mut n = Leaky::default();
     let before = *n.synaptic_state();
     n.apply_spike(2.5);
     assert!(*n.synaptic_state() > before);

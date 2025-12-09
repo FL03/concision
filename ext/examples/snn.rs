@@ -5,7 +5,7 @@
 */
 //! Minimal demonstration of neuron usage. Simulates a neuron for `t_sim` ms with dt,
 //! injects a constant external current `i_ext`, and injects discrete synaptic events at specified times.
-use concision_ext::snn::{LIFNeuron, SynapticEvent};
+use concision_ext::snn::{Leaky, SynapticEvent};
 
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
@@ -18,7 +18,7 @@ fn main() -> anyhow::Result<()> {
     let steps = (t_sim / dt) as usize;
 
     // Create neuron with defaults
-    let mut neuron = LIFNeuron::default();
+    let mut neuron = Leaky::default();
 
     // Example external current (constant)
     // Increase drive so steady-state v can reach threshold (v_rest + R*i_ext > v_thresh).
