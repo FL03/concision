@@ -62,6 +62,28 @@ pub trait ApplyMut<T> {
 */
 use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand};
 
+impl<T> Apply<T> for &T where T: Apply<T> {
+    type Cont<V> = T::Cont<V>;
+
+    fn apply<U, F>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(T) -> U,
+    {
+        Apply::apply(*self, f)
+    }
+}
+
+impl<T> Apply<T> for &mut T where T: Apply<T> {
+    type Cont<V> = T::Cont<V>;
+
+    fn apply<U, F>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(T) -> U,
+    {
+        Apply::apply(*self, f)
+    }
+}
+
 impl<T> CallInto<T> for T {
     type Output = T;
 
@@ -99,7 +121,7 @@ where
 
 impl<A, S, D> Apply<A> for ArrayBase<S, D, A>
 where
-    A: ScalarOperand,
+    A: Clone,
     D: Dimension,
     S: Data<Elem = A>,
 {
@@ -112,22 +134,6 @@ where
         self.mapv(f)
     }
 }
-
-// impl<A, S, D> Apply<A> for TensorBase<S, D>
-// where
-//     A: ScalarOperand,
-//     D: Dimension,
-//     S: Data<Elem = A>,
-// {
-//     type Cont<V> = Tensor<V, D>;
-
-//     fn apply<V, F>(&self, f: F) -> Self::Cont<V>
-//     where
-//         F: Fn(A) -> V,
-//     {
-//         self.map(f)
-//     }
-// }
 
 impl<A, S, D> Apply<A> for &ArrayBase<S, D, A>
 where
