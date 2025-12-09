@@ -22,7 +22,10 @@ pub trait ActivatorGradient<T>: Activator<T> {
 /*
  ************* Implementations *************
 */
-impl<X, Y, F> Activator<X> for F where F: Fn(X) -> Y {
+impl<X, Y, F> Activator<X> for F
+where
+    F: Fn(X) -> Y,
+{
     type Output = Y;
 
     fn activate(&self, rhs: X) -> Self::Output {
