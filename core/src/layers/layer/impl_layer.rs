@@ -4,8 +4,8 @@
 */
 use crate::layers::LayerBase;
 
-use crate::layers::{Activator, Layer};
-use concision_params::ParamsBase;
+use crate::layers::{Activator, RawLayer};
+use concision_params::{ParamsBase, RawParameter};
 use ndarray::{DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
 impl<A, F, S, D> LayerBase<F, ParamsBase<S, D, A>>
@@ -29,24 +29,22 @@ where
     }
 }
 
-impl<A, F, S, D> Layer<S, D> for LayerBase<F, ParamsBase<S, D, A>>
+impl<F, P, A> RawLayer<F, P> for LayerBase<F, P>
 where
-    F: Activator<A, Output = A>,
-    D: Dimension,
-    S: RawData<Elem = A>,
+    F: Activator<P>,
+    P: RawParameter<Elem = A>,
 {
     type Elem = A;
-    type Rho = F;
 
-    fn rho(&self) -> &Self::Rho {
+    fn rho(&self) -> &F {
         &self.rho
     }
 
-    fn params(&self) -> &ParamsBase<S, D, A> {
+    fn params(&self) -> &P {
         &self.params
     }
 
-    fn params_mut(&mut self) -> &mut ParamsBase<S, D, A> {
+    fn params_mut(&mut self) -> &mut P {
         &mut self.params
     }
 }

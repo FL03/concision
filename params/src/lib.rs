@@ -45,6 +45,12 @@ pub mod iter;
 
 mod params_base;
 
+#[macro_use]
+pub(crate) mod macros {
+    #[macro_use]
+    pub mod seal;
+}
+
 mod impls {
     mod impl_params;
     mod impl_params_iter;
@@ -60,8 +66,9 @@ mod impls {
 
 pub mod traits {
     //! Traits for working with model parameters
-    pub use self::wnb::*;
+    pub use self::{param::*, wnb::*};
 
+    mod param;
     mod wnb;
 }
 
