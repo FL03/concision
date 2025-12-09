@@ -195,7 +195,7 @@ checksum = "a1d728cc89cf3aee9ff92b05e62b19ee65a02b5702cff7d5a377e32c6ae29d8d"
 
 [[package]]
 name = "concision"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "approx",
@@ -211,7 +211,7 @@ dependencies = [
 
 [[package]]
 name = "concision-core"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "approx",
@@ -239,7 +239,7 @@ dependencies = [
 
 [[package]]
 name = "concision-data"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "approx",
  "concision-core",
@@ -258,7 +258,7 @@ dependencies = [
 
 [[package]]
 name = "concision-derive"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -267,7 +267,7 @@ dependencies = [
 
 [[package]]
 name = "concision-ext"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "approx",
@@ -289,7 +289,7 @@ dependencies = [
 
 [[package]]
 name = "concision-init"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "approx",
  "getrandom 0.3.4",
@@ -312,7 +312,7 @@ dependencies = [
 
 [[package]]
 name = "concision-macros"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -321,7 +321,7 @@ dependencies = [
 
 [[package]]
 name = "concision-params"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "approx",
@@ -343,7 +343,7 @@ dependencies = [
 
 [[package]]
 name = "concision-traits"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "approx",
