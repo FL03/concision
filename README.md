@@ -30,11 +30,18 @@ _**Warning: The library still in development and is not yet ready for production
     - `Model`: A trait for defining a neural network model.
     - `Predict`: A trait extending the basic [`Forward`](cnc::Forward) pass.
     - `Train`: A trait for training a neural network model.
-- [ ] **v2**:
-  - [ ] **Models**:
-    - `Trainer`: A generic model trainer that can be used to train any model.
-  - [ ] **Layers**: Implement a standard model configuration and parameters.
-    - `LayerBase`: _functional_ wrappers for the `ParamsBase` structure.
+- [x] **v2**:
+  - [x] **`DeepModelParams`**: Extend the `ParamsBase` structure to support deep neural networks with multiple layers.
+  - [x] **Models**: Implement standard model configurations and parameters.
+    - `StandardModelConfig`: A standard configuration for neural network models.
+    - `ModelFeatures`: A structure to define the features of a model (e.g., number of layers, neurons per layer).
+  - [x] **Activation Functions**: Implement and refine various activation functions (`ReLU`, `Sigmoid`, `Tanh`, etc.)
+  - [x] **Loss Functions**: Implement common loss functions such as `MeanSquaredError` and `CrossEntropy`
+- [ ] **v3**:
+  - [ ] **Optimizers**: Implement optimization algorithms like `SGD` and `Adam`.
+  - [ ] **Scheduler**: Learning rate schedulers to adjust the learning rate during training.
+  - [ ] **Layers**: Refine a more functional layer-based architecture.
+  - [ ] **Utilities**: Additional utilities for data preprocessing, model evaluation, and visualization
 
 ## Usage
 
