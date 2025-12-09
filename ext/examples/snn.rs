@@ -8,6 +8,10 @@
 use concision_ext::snn::{LIFNeuron, SynapticEvent};
 
 fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::TRACE)
+        .with_timer(tracing_subscriber::fmt::time::Uptime::default())
+        .init();
     // Simulation parameters
     let dt = 0.1; // ms
     let t_sim = 5000.0; // ms
@@ -35,7 +39,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     // Simulation loop
-    let mut spike_times: Vec<f64> = Vec::new();
+    let mut spike_times = Vec::<f64>::new();
     for step in 0..steps {
         let t = step as f64 * dt;
 
@@ -65,7 +69,7 @@ fn main() -> anyhow::Result<()> {
         // small example of printing membrane potential every 50 ms
         if step % ((50.0 / dt) as usize) == 0 {
             // show the step result potential (pre-reset when a spike occurred)
-            println!(
+            tracing::info!(
                 "t={:.1} ms, v={:.3} mV, w={:.3}, s={:.3}",
                 t,
                 res.membrane_potential(),
@@ -75,8 +79,8 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
-    println!("Total spikes: {}", spike_times.len());
-    println!("Spike times: {:?}", spike_times);
+    tracing::info!("Total spikes: {}", spike_times.len());
+    tracing::info!("Spike times: {:?}", spike_times);
 
     Ok(())
 }

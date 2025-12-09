@@ -128,6 +128,7 @@ impl<T> LIFNeuron<T> {
         self.w = T::default();
         self.s = T::default();
     }
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     /// Integrate the neuron state forward by `dt` [ms] using forward Euler; the externally
     /// applied current, `i_ext`, is added to the synaptic current `s` for the integration
     /// step. Therefore it is important to maintain unitary consistency between `i_ext` and `s`
