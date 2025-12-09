@@ -8,7 +8,7 @@ use crate::{
 };
 #[cfg(feature = "rand")]
 use concision_init::{
-    InitRand,
+    NdInit,
     rand_distr::{Distribution, StandardNormal},
 };
 
@@ -108,21 +108,19 @@ impl<T> Model<T> for TestModel<T> {
     }
 }
 
-impl<A, S, D> Forward<ArrayBase<S, D>> for TestModel<A>
+impl<A, S, D> Forward<ArrayBase<S, D, A>> for TestModel<A>
 where
     A: Float + FromPrimitive + ScalarOperand,
     D: Dimension,
     S: Data<Elem = A>,
-    Params<A>: Forward<Array<A, D>, Output = Array<A, D>>,
+    Params<A>: Forward<ArrayBase<S, D, A>, Output = Array<A, D>> + Forward<Array<A, D>, Output = Array<A, D>>,
 {
     type Output = Array<A, D>;
 
     fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
-        let mut output = self
-            .params()
-            .input()
-            .forward_then(&input.to_owned(), |y| y.relu());
-
+        // complete the first forward pass using the input layer
+        let mut output = self.params().input().forward(input).relu();
+        // complete the forward pass for each hidden layer
         for layer in self.params().hidden() {
             output = layer.forward(&output).relu();
         }

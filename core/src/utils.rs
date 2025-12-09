@@ -7,19 +7,13 @@
 #[doc(inline)]
 pub use self::prelude::*;
 
-#[cfg(feature = "signal")]
-pub use self::fft::prelude::*;
-
-#[cfg(feature = "signal")]
-pub mod fft;
-
-pub(crate) mod arith;
-pub(crate) mod dropout;
-pub(crate) mod gradient;
-pub(crate) mod norm;
-pub(crate) mod pad;
-pub(crate) mod patterns;
-pub(crate) mod tensor;
+mod arith;
+mod dropout;
+mod gradient;
+mod norm;
+pub mod pad;
+mod patterns;
+mod tensor;
 
 pub(crate) mod prelude {
     pub use super::arith::*;
@@ -29,7 +23,4 @@ pub(crate) mod prelude {
     pub use super::pad::*;
     pub use super::patterns::*;
     pub use super::tensor::*;
-
-    #[cfg(feature = "signal")]
-    pub use super::fft::prelude::*;
 }

@@ -1,18 +1,13 @@
 /*
-    Appellation: depth <module>
-    Created At: 2025.11.28:15:03:02
+    Appellation: units <module>
+    Created At: 2025.12.08:19:44:33
     Contrib: @FL03
 */
 
-/// The [`NetworkDepth`] trait is used to define the depth/kind of a neural network model.
-pub trait NetworkDepth {
-    private!();
-}
-
-macro_rules! network_format {
+macro_rules! unit_types {
     (#[$tgt:ident] $vis:vis enum {$($name:ident),* $(,)?}) => {
         $(
-            network_format!(@impl #[$tgt] $vis $name);
+            unit_types!(@impl #[$tgt] $vis $name);
         )*
     };
     (@impl #[$tgt:ident] $vis:vis $name:ident) => {
@@ -24,12 +19,4 @@ macro_rules! network_format {
             seal!();
         }
     };
-}
-
-network_format! {
-    #[NetworkDepth]
-    pub enum {
-        Deep,
-        Shallow,
-    }
 }

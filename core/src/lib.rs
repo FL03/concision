@@ -61,9 +61,11 @@ pub use concision_traits::prelude::*;
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
+    pub mod config;
+    #[macro_use]
     pub mod seal;
     #[macro_use]
-    pub mod config;
+    pub mod units;
 }
 
 pub mod activate;

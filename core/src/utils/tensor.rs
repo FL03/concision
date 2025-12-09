@@ -2,23 +2,26 @@
     Appellation: tensor <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-pub use self::{generators::*, stack::*};
-use ndarray::*;
+#[cfg(feature = "alloc")]
+pub use self::impl_alloc::*;
+use ndarray::ScalarOperand;
+use ndarray::prelude::*;
 use num_traits::{NumAssign, Zero};
 
-#[cfg(feature = "alloc")]
-/// Creates an n-dimensional array from an iterator of n dimensional arrays.
-pub fn concat_iter<D, T>(axis: usize, iter: impl IntoIterator<Item = Array<T, D>>) -> Array<T, D>
+pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
+    Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
+}
+
+pub fn linarr<A, D>(dim: impl Clone + IntoDimension<Dim = D>) -> Result<Array<A, D>, ShapeError>
 where
-    D: RemoveAxis,
-    T: Clone,
+    A: Float,
+    D: Dimension,
 {
-    let mut arr = iter.into_iter().collect::<alloc::vec::Vec<_>>();
-    let mut out = arr.pop().unwrap();
-    for i in arr {
-        out = concatenate!(Axis(axis), out, i);
-    }
-    out
+    let dim = dim.into_dimension();
+    let n = dim.size();
+    Array::linspace(A::zero(), A::from(n - 1).unwrap(), n)
+        .to_shape(dim)
+        .map(|x| x.to_owned())
 }
 
 pub fn inverse<T>(matrix: &Array2<T>) -> Option<Array2<T>>
@@ -65,6 +68,22 @@ where
     Some(inverted.to_owned())
 }
 
+/// Creates a larger array from an iterator of smaller arrays.
+pub fn stack_iter<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
+where
+    T: Clone + Zero,
+{
+    let mut iter = iter.into_iter();
+    let first = iter.next().unwrap();
+    let shape = [iter.size_hint().0 + 1, first.len()];
+    let mut res = Array2::<T>::zeros(shape);
+    res.slice_mut(s![0, ..]).assign(&first);
+    for (i, s) in iter.enumerate() {
+        res.slice_mut(s![i + 1, ..]).assign(&s);
+    }
+    res
+}
+
 /// Returns the lower triangular portion of a matrix.
 pub fn tril<T>(a: &Array2<T>) -> Array2<T>
 where
@@ -92,52 +111,36 @@ where
     out
 }
 
-pub(crate) mod generators {
-    use ndarray::{Array, Array1, Dimension, IntoDimension, ShapeError};
-    use num_traits::{Float, NumCast};
+use ndarray::{Array, Array1, Dimension, IntoDimension, ShapeError};
+use num_traits::{Float, NumCast};
 
-    pub fn genspace<T: NumCast>(features: usize) -> Array1<T> {
-        Array1::from_iter((0..features).map(|x| T::from(x).unwrap()))
-    }
-
-    pub fn linarr<A, D>(dim: impl Clone + IntoDimension<Dim = D>) -> Result<Array<A, D>, ShapeError>
-    where
-        A: Float,
-        D: Dimension,
-    {
-        let dim = dim.into_dimension();
-        let n = dim.size();
-        Array::linspace(A::zero(), A::from(n - 1).unwrap(), n)
-            .to_shape(dim)
-            .map(|x| x.to_owned())
-    }
-}
-
-pub(crate) mod stack {
-    #[cfg(feature = "alloc")]
+#[cfg(feature = "alloc")]
+pub(crate) mod impl_alloc {
     use alloc::vec::Vec;
-    use ndarray::{Array1, Array2, s};
-    use num_traits::Num;
-    /// Creates a larger array from an iterator of smaller arrays.
-    pub fn stack_iter<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
+    use ndarray::{Array, Array1, Array2, Axis, RemoveAxis, concatenate, s};
+    use num_traits::Zero;
+
+    /// Creates an n-dimensional array from an iterator of n dimensional arrays.
+    pub fn concat_iter<D, T>(
+        axis: usize,
+        iter: impl IntoIterator<Item = Array<T, D>>,
+    ) -> Array<T, D>
     where
-        T: Clone + Num,
+        D: RemoveAxis,
+        T: Clone,
     {
-        let mut iter = iter.into_iter();
-        let first = iter.next().unwrap();
-        let shape = [iter.size_hint().0 + 1, first.len()];
-        let mut res = Array2::<T>::zeros(shape);
-        res.slice_mut(s![0, ..]).assign(&first);
-        for (i, s) in iter.enumerate() {
-            res.slice_mut(s![i + 1, ..]).assign(&s);
+        let mut arr = iter.into_iter().collect::<alloc::vec::Vec<_>>();
+        let mut out = arr.pop().unwrap();
+        for i in arr {
+            out = concatenate!(Axis(axis), out, i);
         }
-        res
+        out
     }
-    #[cfg(feature = "alloc")]
+
     /// stack a 1D array into a 2D array by stacking them horizontally.
     pub fn hstack<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
     where
-        T: Clone + Num,
+        T: Clone + Zero,
     {
         let iter = Vec::from_iter(iter);
         let mut res = Array2::<T>::zeros((iter.first().unwrap().len(), iter.len()));
@@ -146,11 +149,10 @@ pub(crate) mod stack {
         }
         res
     }
-    #[cfg(feature = "alloc")]
     /// stack a 1D array into a 2D array by stacking them vertically.
     pub fn vstack<T>(iter: impl IntoIterator<Item = Array1<T>>) -> Array2<T>
     where
-        T: Clone + Num,
+        T: Clone + Zero,
     {
         let iter = Vec::from_iter(iter);
         let mut res = Array2::<T>::zeros((iter.len(), iter.first().unwrap().len()));

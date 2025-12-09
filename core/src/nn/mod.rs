@@ -7,21 +7,11 @@
 //! of neural network models.
 //!
 #[doc(inline)]
-pub use self::{neural_network::*, types::*};
+pub use self::neural_network::*;
 
 mod neural_network;
 
-mod traits {}
-
-mod types {
-    #[doc(inline)]
-    pub use self::depth::*;
-
-    mod depth;
-}
-
 #[allow(unused)]
 pub(crate) mod prelude {
-    pub use super::traits::*;
-    pub use super::types::*;
+    pub use super::neural_network::*;
 }

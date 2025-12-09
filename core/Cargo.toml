@@ -26,17 +26,8 @@ tag-name = "v{{version}}"
 [lib]
 bench = false
 crate-type = ["cdylib", "rlib"]
-doc = true
 doctest = true
 test = true
-
-[[test]]
-name = "fft"
-required-features = ["alloc", "signal"]
-
-[[test]]
-name = "models"
-required-features = ["alloc", "approx"]
 
 [dependencies]
 concision-init = { workspace = true }

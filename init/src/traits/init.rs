@@ -3,6 +3,16 @@
     Contrib: @FL03
 */
 
+#[cfg(feature = "rand")]
+use rand::RngCore;
+/// Initializes parameters and state from RNG and/or config.
+/// Macro will implement this to produce shaped params/state.
+pub trait Initialize<R: RngCore> {
+    type Output;
+
+    fn init_random(rng: &mut R) -> Self::Output;
+}
+
 /// A trait for creating custom initialization routines for models or other entities.
 pub trait Init {
     /// consumes the current instance to initialize a new one
