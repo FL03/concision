@@ -72,7 +72,7 @@ pub mod ops {
 
 pub mod tensor {
     #[doc(inline)]
-    pub use self::{dimensionality::*, fill::*, like::*, linalg::*, ndtensor::*, reshape::*};
+    pub use self::{dimensionality::*, fill::*, like::*, linalg::*, ndtensor::*, reshape::*, tensor_data::*};
 
     mod dimensionality;
     mod fill;
@@ -80,6 +80,7 @@ pub mod tensor {
     mod linalg;
     mod ndtensor;
     mod reshape;
+    mod tensor_data;
 }
 
 // re-exports

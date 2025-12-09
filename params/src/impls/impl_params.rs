@@ -4,8 +4,10 @@
 */
 use crate::params_base::ParamsBase;
 use crate::traits::{Biased, Weighted};
+use concision_traits::{FillLike, OnesLike, ZerosLike};
 use core::iter::Once;
 use ndarray::{ArrayBase, Data, DataOwned, Dimension, Ix1, Ix2, RawData};
+use num_traits::{One, Zero};
 
 impl<A, S> ParamsBase<S, Ix1>
 where
@@ -172,5 +174,53 @@ where
 
     fn into_iter(self) -> Self::IntoIter {
         core::iter::once(self)
+    }
+}
+
+impl<A, S, D> OnesLike for ParamsBase<S, D, A>
+where
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+    A: Clone + One,
+{
+    type Output = ParamsBase<S, D, A>;
+
+    fn ones_like(&self) -> Self::Output {
+        ParamsBase {
+            bias: self.bias().ones_like(),
+            weights: self.weights().ones_like(),
+        }
+    }
+}
+
+impl<A, S, D> ZerosLike for ParamsBase<S, D, A>
+where
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+    A: Clone + Zero,
+{
+    type Output = ParamsBase<S, D, A>;
+
+    fn zeros_like(&self) -> Self::Output {
+        ParamsBase {
+            bias: self.bias().zeros_like(),
+            weights: self.weights().zeros_like(),
+        }
+    }
+}
+
+impl<A, S, D> FillLike<A> for ParamsBase<S, D, A>
+where
+    D: Dimension,
+    S: DataOwned<Elem = A>,
+    A: Clone,
+{
+    type Output = ParamsBase<S, D, A>;
+
+    fn fill_like(&self, elem: A) -> Self::Output {
+        ParamsBase {
+            bias: self.bias().fill_like(elem.clone()),
+            weights: self.weights().fill_like(elem),
+        }
     }
 }

@@ -61,16 +61,16 @@ mod traits {
     #[doc(inline)]
     pub use self::prelude::*;
 
-    mod init;
-    #[cfg(feature = "rand")]
     mod initialize;
+    #[cfg(feature = "rand")]
+    mod random;
 
     mod prelude {
         #[doc(inline)]
-        pub use super::init::*;
+        pub use super::initialize::*;
         #[doc(inline)]
         #[cfg(feature = "rand")]
-        pub use super::initialize::*;
+        pub use super::random::*;
     }
 }
 

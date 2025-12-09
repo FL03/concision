@@ -9,7 +9,7 @@ use crate::{
 };
 #[cfg(feature = "rand")]
 use concision_init::{
-    NdInit,
+    InitTensor,
     rand_distr::{Distribution, StandardNormal},
 };
 

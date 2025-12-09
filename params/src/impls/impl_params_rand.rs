@@ -5,7 +5,7 @@
 */
 use crate::params_base::ParamsBase;
 
-use concision_init::NdInit;
+use concision_init::InitTensor;
 use ndarray::{
     ArrayBase, Axis, DataOwned, Dimension, RawData, RemoveAxis, ScalarOperand, ShapeBuilder,
 };
@@ -53,11 +53,17 @@ where
     }
 }
 
-impl<A, S, D> NdInit<S, D, A> for ParamsBase<S, D, A>
+impl<A, S, D> InitTensor<S, D, A> for ParamsBase<S, D, A>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
+    type Tensor<_S, _D>
+        = ParamsBase<_S, _D, A>
+    where
+        _D: Dimension,
+        _S: RawData<Elem = A>;
+        
     fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self
     where
         Ds: Distribution<A>,

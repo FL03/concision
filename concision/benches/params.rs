@@ -4,7 +4,7 @@
 */
 extern crate concision as cnc;
 
-use cnc::init::NdInit;
+use cnc::init::InitTensor;
 
 use core::hint::black_box;
 use criterion::{BatchSize, BenchmarkId, Criterion};

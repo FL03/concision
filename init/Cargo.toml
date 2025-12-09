@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 
 [package.metadata.release]
@@ -26,9 +26,12 @@ tag-name = "v{{version}}"
 [lib]
 bench = false
 crate-type = ["cdylib", "rlib"]
-doc = true
-doctest = true
+doctest = false
 test = true
+
+[[test]]
+name = "distr"
+required-features = ["rand", "std"]
 
 [dependencies]
 # data & serialization
@@ -82,7 +85,9 @@ std = [
 wasi = []
 
 wasm = ["getrandom?/wasm_js"]
+
 # ************* [FF:Dependencies] *************
+
 alloc = ["num/alloc", "serde?/alloc"]
 
 approx = ["dep:approx", "ndarray/approx"]
@@ -106,11 +111,3 @@ serde = [
 ]
 
 tracing = ["dep:tracing"]
-
-# ************* [Unit Tests] *************
-[[test]]
-name = "default"
-
-[[test]]
-name = "init"
-required-features = ["rand", "std"]

@@ -46,6 +46,7 @@ hashbrown = { default-features = false, version = "0.16" }
 # tensors & arrays
 ndarray = { default-features = false, version = "0.17" }
 ndarray-linalg = { default-features = false, version = "0.18" }
+ndarray-rand = { default-features = false, version = "0.16" }
 ndarray-stats = "0.6"
 # benchmarking
 criterion = { version = "0.8" }
