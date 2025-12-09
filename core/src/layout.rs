@@ -27,7 +27,7 @@ pub trait RawModelLayout {
     /// the number of output features for the model
     fn output(&self) -> usize;
     /// returns the number of hidden layers within the network
-    fn layers(&self) -> usize;
+    fn depth(&self) -> usize;
 
     /// the dimension of the input layer; (input, hidden)
     fn dim_input(&self) -> (usize, usize) {
@@ -51,7 +51,7 @@ pub trait RawModelLayout {
     }
     /// the total number of hidden parameters in the model
     fn size_hidden(&self) -> usize {
-        self.hidden() * self.hidden() * self.layers()
+        self.hidden() * self.hidden() * self.depth()
     }
     /// the total number of output parameters in the model
     fn size_output(&self) -> usize {
@@ -133,6 +133,7 @@ type_tags! {
 )]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum ModelFormat {
+    Layer,
     Shallow { hidden: usize },
     Deep { hidden: usize, layers: usize },
 }
@@ -175,8 +176,8 @@ where
     fn hidden(&self) -> usize {
         <T as RawModelLayout>::hidden(self)
     }
-    fn layers(&self) -> usize {
-        <T as RawModelLayout>::layers(self)
+    fn depth(&self) -> usize {
+        <T as RawModelLayout>::depth(self)
     }
     fn output(&self) -> usize {
         <T as RawModelLayout>::output(self)
@@ -193,8 +194,8 @@ where
     fn hidden(&self) -> usize {
         <T as RawModelLayout>::hidden(self)
     }
-    fn layers(&self) -> usize {
-        <T as RawModelLayout>::layers(self)
+    fn depth(&self) -> usize {
+        <T as RawModelLayout>::depth(self)
     }
     fn output(&self) -> usize {
         <T as RawModelLayout>::output(self)
@@ -210,7 +211,7 @@ impl RawModelLayout for (usize, usize, usize) {
     fn hidden(&self) -> usize {
         self.1
     }
-    fn layers(&self) -> usize {
+    fn depth(&self) -> usize {
         1
     }
     fn output(&self) -> usize {
@@ -229,7 +230,7 @@ impl RawModelLayout for (usize, usize, usize, usize) {
         self.2
     }
 
-    fn layers(&self) -> usize {
+    fn depth(&self) -> usize {
         self.3
     }
 }
@@ -265,7 +266,7 @@ impl RawModelLayout for [usize; 3] {
         self[2]
     }
 
-    fn layers(&self) -> usize {
+    fn depth(&self) -> usize {
         1
     }
 }
@@ -283,7 +284,7 @@ impl RawModelLayout for [usize; 4] {
         self[2]
     }
 
-    fn layers(&self) -> usize {
+    fn depth(&self) -> usize {
         self[3]
     }
 }

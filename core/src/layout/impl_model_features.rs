@@ -2,7 +2,8 @@
     Appellation: layout <module>
     Contrib: @FL03
 */
-use super::{ModelFeatures, ModelFormat, RawModelLayout, RawModelLayoutMut};
+use super::ModelFeatures;
+use crate::layout::{ModelFormat, RawModelLayout, RawModelLayoutMut};
 
 /// verify if the input and hidden dimensions are compatible by checking:
 ///
@@ -22,6 +23,17 @@ where
 }
 
 impl ModelFeatures {
+    pub fn from_shape_and_size(shape: &[usize], size: usize) -> Self {
+        let input = shape[0];
+        let output = *shape.last().unwrap();
+        let hidden = if shape.len() > 2 {
+            shape[1]
+        } else {
+            (size - (input * output)) / (input + output)
+        };
+        let layers = if shape.len() > 2 { shape.len() - 2 } else { 1 };
+        Self::new(input, hidden, output, layers)
+    }
     /// creates a new instance of [`ModelFeatures`] for a neural network with `n` layers. If
     /// the number of layers is `<=1` then the [`ModelFormat`] is automatically
     /// configured as a _shallow_ neural network.
@@ -57,7 +69,7 @@ impl ModelFeatures {
     {
         Self {
             input: layout.input(),
-            inner: ModelFormat::new(layout.hidden(), layout.layers()),
+            inner: ModelFormat::new(layout.hidden(), layout.depth()),
             output: layout.output(),
         }
     }
@@ -189,7 +201,7 @@ impl RawModelLayout for ModelFeatures {
         self.hidden()
     }
 
-    fn layers(&self) -> usize {
+    fn depth(&self) -> usize {
         self.layers()
     }
 

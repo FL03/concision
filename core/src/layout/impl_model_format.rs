@@ -11,6 +11,10 @@ impl ModelFormat {
             _ => ModelFormat::Deep { hidden, layers },
         }
     }
+
+    pub const fn layout() -> Self {
+        ModelFormat::Layer
+    }
     /// initialize a new [`Deep`](ModelFormat::Deep) variant for a deep neural network with the
     /// given number of hidden features and layers
     pub const fn deep(hidden: usize, layers: usize) -> Self {
@@ -26,6 +30,7 @@ impl ModelFormat {
         match self {
             ModelFormat::Shallow { hidden } => *hidden,
             ModelFormat::Deep { hidden, .. } => *hidden,
+            ModelFormat::Layer => 0,
         }
     }
     /// returns a mutable reference to the hidden features for the model
@@ -33,6 +38,7 @@ impl ModelFormat {
         match self {
             ModelFormat::Shallow { hidden } => hidden,
             ModelFormat::Deep { hidden, .. } => hidden,
+            ModelFormat::Layer => panic!("Cannot mutate hidden features of a layout model"),
         }
     }
     /// returns a copy of the number of layers for the model; if the variant is
@@ -42,6 +48,7 @@ impl ModelFormat {
         match self {
             ModelFormat::Shallow { .. } => 1,
             ModelFormat::Deep { layers, .. } => *layers,
+            ModelFormat::Layer => 0,
         }
     }
     /// returns a mutable reference to the number of layers for the model; this will panic on
@@ -50,6 +57,7 @@ impl ModelFormat {
         match self {
             ModelFormat::Shallow { .. } => panic!("Cannot mutate layers of a shallow model"),
             ModelFormat::Deep { layers, .. } => layers,
+            ModelFormat::Layer => panic!("Cannot mutate layers of a layout model"),
         }
     }
     /// update the number of hidden features for the model
@@ -60,6 +68,9 @@ impl ModelFormat {
             }
             ModelFormat::Deep { hidden, .. } => {
                 *hidden = value;
+            }
+            ModelFormat::Layer => {
+                panic!("Cannot mutate hidden features of a layout model");
             }
         }
         self
@@ -83,6 +94,9 @@ impl ModelFormat {
             ModelFormat::Deep { layers, .. } => {
                 *layers = value;
             }
+            ModelFormat::Layer => {
+                panic!("Cannot mutate layers of a layout model");
+            }
         }
         self
     }
@@ -92,6 +106,7 @@ impl ModelFormat {
         match self {
             ModelFormat::Shallow { .. } => ModelFormat::Shallow { hidden },
             ModelFormat::Deep { layers, .. } => ModelFormat::Deep { hidden, layers },
+            ModelFormat::Layer => ModelFormat::Shallow { hidden },
         }
     }
     /// consumes the current instance and returns a new instance with the given number of
@@ -101,15 +116,18 @@ impl ModelFormat {
     /// variant if it is currently a [`Shallow`](ModelFormat::Shallow) variant and the number
     /// of layers becomes greater than 1
     pub fn with_layers(self, layers: usize) -> Self {
-        match self {
-            ModelFormat::Shallow { hidden } => {
-                if layers > 1 {
-                    ModelFormat::Deep { hidden, layers }
-                } else {
-                    ModelFormat::Shallow { hidden }
-                }
-            }
-            ModelFormat::Deep { hidden, .. } => ModelFormat::Deep { hidden, layers },
+        match layers {
+            0 => ModelFormat::Layer,
+            1 => match self {
+                ModelFormat::Shallow { hidden } => ModelFormat::Shallow { hidden },
+                ModelFormat::Deep { hidden, .. } => ModelFormat::Shallow { hidden },
+                ModelFormat::Layer => ModelFormat::Layer,
+            },
+            _ => match self {
+                ModelFormat::Shallow { hidden } => ModelFormat::Deep { hidden, layers },
+                ModelFormat::Deep { hidden, .. } => ModelFormat::Deep { hidden, layers },
+                ModelFormat::Layer => ModelFormat::Deep { hidden: 16, layers },
+            },
         }
     }
 }

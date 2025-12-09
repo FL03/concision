@@ -121,7 +121,7 @@ pub trait ModelExt<T>: Model<T> {
     }
     /// returns the total number of hidden layers in the model;
     fn hidden_layers_count(&self) -> usize {
-        self.layout().layers()
+        self.layout().depth()
     }
     /// returns a 2-tuple representing the dimensions of the output layer; (hidden, output)
     fn output_dim(&self) -> (usize, usize) {
