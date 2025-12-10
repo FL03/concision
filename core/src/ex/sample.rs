@@ -2,17 +2,19 @@
     appellation: model <test>
     authors: @FL03
 */
-#![cfg(feature = "std")]
+use crate::Error;
 use crate::activate::{ReLUActivation, SigmoidActivation};
-use crate::{
-    DeepModelParams, Error, Forward, Model, ModelFeatures, Norm, Params, StandardModelConfig, Train,
-};
+use crate::config::StandardModelConfig;
+use crate::layout::ModelFeatures;
+use crate::store::DeepModelParams;
+use crate::nn::Model;
 #[cfg(feature = "rand")]
 use concision_init::{
     InitTensor,
     rand_distr::{Distribution, StandardNormal},
 };
-
+use concision_params::Params;
+use concision_traits::{Forward, Norm, Train};
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign, Zero};

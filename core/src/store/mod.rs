@@ -22,18 +22,15 @@ mod impls {
 }
 
 mod types {
-    #[doc(inline)]
     pub use self::aliases::*;
 
     mod aliases;
 }
 
 mod traits {
-    #[doc(inline)]
-    pub use self::{hidden::*, model::*};
+    pub use self::hidden::*;
 
     mod hidden;
-    mod model;
 }
 
 pub(crate) mod prelude {

@@ -2,7 +2,7 @@
     appellation: impl_model_params <module>
     authors: @FL03
 */
-use crate::models::ModelParamsBase;
+use crate::store::ModelParamsBase;
 
 use crate::{DeepModelRepr, RawHidden};
 use concision_params::ParamsBase;

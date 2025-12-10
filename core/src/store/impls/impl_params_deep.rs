@@ -5,7 +5,7 @@
 use crate::{DeepParamsBase, ModelParamsBase};
 
 use crate::ModelFeatures;
-use crate::models::traits::DeepModelRepr;
+use crate::store::traits::DeepModelRepr;
 use concision_params::ParamsBase;
 use concision_traits::Forward;
 use ndarray::{Data, DataOwned, Dimension, Ix2, RawData};
