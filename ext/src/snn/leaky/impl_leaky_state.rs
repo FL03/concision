@@ -109,6 +109,8 @@ impl<T> LeakyState<T> {
     }
     /// reset all state variables to their logical defaults
     #[inline]
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
+
     pub fn reset(&mut self)
     where
         T: Default,
@@ -126,11 +128,17 @@ impl<T> LeakyState<T> {
     }
     /// Apply a presynaptic spike event to the neuron; this increments the synaptic variable `s`
     /// by `weight` instantaneously (models delta spike arrival).
-    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     pub fn apply_spike(&mut self, weight: T)
     where
         T: core::ops::AddAssign,
     {
         *self.s_mut() += weight;
+    }
+    /// Apply an incrementation to the adaptation variable `w` of the neuron.
+    pub fn apply_adaptation(&mut self, delta_w: T)
+    where
+        T: core::ops::AddAssign,
+    {
+        *self.w_mut() += delta_w;
     }
 }

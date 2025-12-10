@@ -286,7 +286,7 @@ impl<T> Leaky<T> {
         if v < v_thresh && v_next >= v_thresh {
             // apply reset and adaptation increment
             self.state_mut().set_v(v_reset);
-            self.state.w += b;
+            self.state_mut().apply_adaptation(b);
             StepResult::spiked(v_next)
         } else {
             StepResult::not_spiked(v)
