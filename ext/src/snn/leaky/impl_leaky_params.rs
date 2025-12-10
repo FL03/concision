@@ -33,6 +33,34 @@ impl<T> LeakyParams<T> {
     pub const fn b(&self) -> &T {
         &self.b
     }
+    /// returns a reference to the membrane resistance, `R`, of the neuron
+    pub const fn resistance(&self) -> &T {
+        &self.resistance
+    }
+    /// returns a reference to the membrane time constant, `tau_m`, of the neuron
+    pub const fn tau_m(&self) -> &T {
+        &self.tau_m
+    }
+    /// returns a reference to the synaptic time constant, `tau_s`, of the neuron
+    pub const fn tau_s(&self) -> &T {
+        &self.tau_s
+    }
+    /// returns a reference to the adaptation time constant, `tau_w`, of the neuron
+    pub const fn tau_w(&self) -> &T {
+        &self.tau_w
+    }
+    /// returns a reference to the reset potential, `v_reset`, of the neuron
+    pub const fn v_reset(&self) -> &T {
+        &self.v_reset
+    }
+    /// returns a reference to the resting membrane potential, `v_rest`, of the neuron
+    pub const fn v_rest(&self) -> &T {
+        &self.v_rest
+    }
+    /// returns a reference to the spike threshold, `v_thresh`, of the neuron
+    pub const fn v_thresh(&self) -> &T {
+        &self.v_thresh
+    }
 }
 
 impl<T> Default for LeakyParams<T>

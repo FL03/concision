@@ -48,9 +48,9 @@ mod tests {
         }
         let v = n.membrane_potential();
         assert!(
-            (v - &n.v_rest).abs() < 1e-5,
+            (v - n.v_rest()).abs() < 1e-5,
             "v = {v}, v_rest = {}",
-            n.v_rest
+            n.v_rest()
         );
     }
 

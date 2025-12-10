@@ -77,6 +77,7 @@ pub struct LeakyParams<T = f32> {
     /// Threshold potential $`v_{thresh}`$ (mV)
     pub v_thresh: T,
 }
+
 /// The state of a leaky integrate-and-fire (LIF) neuron
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
@@ -108,27 +109,10 @@ pub struct LeakyState<T = f32> {
 #[repr(C)]
 pub struct Leaky<T = f32> {
     // ---- Parameters ----
-    /// Adaptation increment added on spike `b` (same units as w/current)
-    pub b: T,
-    /// Membrane time constant $`\tau_{m}`$ (ms)
-    pub tau_m: T,
-    /// Synaptic time constant $`\tau_{s}`$ (ms)
-    pub tau_s: T,
-    /// Adaptation time constant $`\tau_{w}`$ (ms)
-    pub tau_w: T,
-    /// Membrane resistance `R` (MΩ or arbitrary)
-    pub resistance: T,
-    /// Resting potential $``v_{rest}`$ (mV)
-    pub v_rest: T,
-    /// Reset potential after spike $`v_{reset}`$ (mV)
-    pub v_reset: T,
-    /// Threshold potential $`v_{thresh}`$ (mV)
-    pub v_thresh: T,
-
+    pub params: LeakyParams<T>,
     // ---- State variables ----
     #[serde(flatten)]
     pub state: LeakyState<T>,
-
     /// Minimum allowed dt for integration (ms)
     pub min_dt: T,
 }
@@ -154,22 +138,34 @@ impl<T> Leaky<T> {
         } else {
             v_rest
         };
+        let params = LeakyParams {
+            b,
+            tau_m,
+            tau_s,
+            tau_w,
+            resistance,
+            v_rest,
+            v_reset,
+            v_thresh,
+        };
         let state = LeakyState::zero().with_membrane_potential(v0);
         let min_dt = T::from_f32(1e-6).unwrap();
 
         Self {
-            tau_m,
-            resistance,
-            v_rest,
-            v_thresh,
-            v_reset,
-            tau_w,
-            b,
-            tau_s,
+            params,
             state,
             min_dt,
         }
     }
+    /// returns a reference to the neuron's parameters
+    pub const fn params(&self) -> &LeakyParams<T> {
+        &self.params
+    }
+    /// returns a mutable reference to the neuron's parameters
+    pub const fn params_mut(&mut self) -> &mut LeakyParams<T> {
+        &mut self.params
+    }
+    /// returns a reference to the neuron's state
     pub const fn state(&self) -> &LeakyState<T> {
         &self.state
     }
@@ -188,13 +184,37 @@ impl<T> Leaky<T> {
     pub const fn synaptic_state(&self) -> &T {
         self.state().synaptic_state()
     }
-    /// returns a reference to the membrane time constant, `tau_m`, of the neuron
-    pub const fn tau_m(&self) -> &T {
-        &self.tau_m
+    /// returns a reference to the adaptation increment, `b`, of the neuron
+    pub const fn b(&self) -> &T {
+        self.params().b()
     }
     /// returns a reference to the membrane resistance, `R`, of the neuron
     pub const fn resistance(&self) -> &T {
-        &self.resistance
+        self.params().resistance()
+    }
+    /// returns a reference to the membrane time constant, `tau_m`, of the neuron
+    pub const fn tau_m(&self) -> &T {
+        self.params().tau_m()
+    }
+    /// returns a reference to the synaptic time constant, `tau_s`, of the neuron
+    pub const fn tau_s(&self) -> &T {
+        self.params().tau_s()
+    }
+    /// returns a reference to the adaptation time constant, `tau_w`, of the neuron
+    pub const fn tau_w(&self) -> &T {
+        self.params().tau_w()
+    }
+    /// returns a reference to the spike threshold, `v_thresh`, of the neuron
+    pub const fn v_thresh(&self) -> &T {
+        self.params().v_thresh()
+    }
+    /// returns a reference to the reset potential, `v_reset`, of the neuron
+    pub const fn v_reset(&self) -> &T {
+        self.params().v_reset()
+    }
+    /// returns a reference to the resting membrane potential, `v_rest`, of the neuron
+    pub const fn v_rest(&self) -> &T {
+        self.params().v_rest()
     }
     /// Apply a presynaptic spike event to the neuron; this increments the synaptic variable `s`
     /// by `weight` instantaneously (models delta spike arrival).
@@ -231,7 +251,16 @@ impl<T> Leaky<T> {
         } else {
             dt.max(self.min_dt)
         };
-
+        let LeakyParams {
+            b,
+            tau_m,
+            tau_s,
+            tau_w,
+            resistance,
+            v_rest,
+            v_reset,
+            v_thresh,
+        } = self.params;
         let LeakyState { v, w, s } = self.state;
 
         // remember previous membrane potential for crossing detection
@@ -239,7 +268,7 @@ impl<T> Leaky<T> {
 
         // synaptic current is represented by `s`
         // ds/dt = -s / tau_s
-        let ds = -s / self.tau_s;
+        let ds = -s / tau_s;
         let s_next = s + dt * ds;
 
         // total synaptic current for this step (use current s, or average between s and s_next)
@@ -247,23 +276,23 @@ impl<T> Leaky<T> {
         let i_syn = s;
 
         // membrane dv/dt = (-(v - v_rest) + R*(i_ext + i_syn) - w) / tau_m
-        let dv = (-(v - self.v_rest) + self.resistance * (i_ext + i_syn) - w) / self.tau_m;
+        let dv = (-(v - v_rest) + resistance * (i_ext + i_syn) - w) / tau_m;
         let v_next = v + dt * dv;
 
         // adaptation dw/dt = -w / tau_w
-        let dw = -w / self.tau_w;
+        let dw = -w / tau_w;
         let w_next = w + dt * dw;
 
         // Commit state tentatively
         self.state.update(v_next, w_next, s_next);
 
         // Check for threshold crossing (explicit crossing test to avoid misses)
-        if v_prev < self.v_thresh && v >= self.v_thresh {
+        if v_prev < v_thresh && v >= v_thresh {
             // spike: capture pre-reset potential if that is expected by StepResult consumers
             let pre_spike_v = v;
             // apply reset and adaptation increment
-            self.state.v = self.v_reset;
-            self.state.w += self.b;
+            self.state.v = v_reset;
+            self.state.w += b;
             StepResult::spiked(pre_spike_v)
         } else {
             StepResult::not_spiked(v)

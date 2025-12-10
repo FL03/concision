@@ -92,22 +92,6 @@ impl<T> LeakyState<T> {
     pub fn set_synaptic_state(&mut self, s: T) {
         self.s = s
     }
-
-    #[inline]
-    pub fn reset(&mut self)
-    where
-        T: Default,
-    {
-        self.v = T::default();
-        self.w = T::default();
-        self.s = T::default();
-    }
-    #[inline]
-    pub fn update(&mut self, v: T, w: T, s: T) {
-        self.set_adaptation(w);
-        self.set_membrane_potential(v);
-        self.set_synaptic_state(s);
-    }
     #[inline]
     /// consumes the current instance to create another with the given adaptation (`w`)
     pub fn with_adaptation(self, w: T) -> Self {
@@ -122,5 +106,31 @@ impl<T> LeakyState<T> {
     /// consumes the current instance to create another with the given synaptic state (`s`)
     pub fn with_synaptic_state(self, s: T) -> Self {
         Self { s, ..self }
+    }
+    /// reset all state variables to their logical defaults
+    #[inline]
+    pub fn reset(&mut self)
+    where
+        T: Default,
+    {
+        self.v = T::default();
+        self.w = T::default();
+        self.s = T::default();
+    }
+    /// update all state variables to the given values
+    #[inline]
+    pub fn update(&mut self, v: T, w: T, s: T) {
+        self.set_adaptation(w);
+        self.set_membrane_potential(v);
+        self.set_synaptic_state(s);
+    }
+    /// Apply a presynaptic spike event to the neuron; this increments the synaptic variable `s`
+    /// by `weight` instantaneously (models delta spike arrival).
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
+    pub fn apply_spike(&mut self, weight: T)
+    where
+        T: core::ops::AddAssign,
+    {
+        *self.membrane_potential_mut() += weight;
     }
 }
