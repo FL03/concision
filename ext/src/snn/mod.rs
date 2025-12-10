@@ -1,8 +1,4 @@
-//! Spiking neural networks (SNNs) for the [`concision`](https://crates.io/crates/concision) machine learning framework.
-//!
-//! ## References
-//!
-//! - [Deep Learning in Spiking Neural Networks](https://arxiv.org/abs/1804.08150)
+//! An implementation of Spiking Neural Networks (SNNs) in Rust.
 //!
 //! ## Background
 //!
@@ -12,6 +8,10 @@
 //! rather than continuous values. This allows SNNs to capture temporal dynamics and
 //! event-driven processing, making them suitable for tasks that involve time-series data
 //! or require low-power computation.
+//!
+//! ## References
+//!
+//! - [Deep Learning in Spiking Neural Networks](https://arxiv.org/abs/1804.08150)
 //!
 #[doc(inline)]
 pub use self::{leaky::*, types::*, utils::*};
@@ -30,7 +30,6 @@ mod types {
 
 pub(crate) mod prelude {
     pub use super::leaky::Leaky;
-    pub use super::types::{StepResult, SynapticEvent};
 }
 
 #[cfg(test)]
@@ -38,7 +37,7 @@ mod tests {
     use super::Leaky;
 
     #[test]
-    fn test_snn_neuron_resting_no_input() {
+    fn test_leaky_neuron_resting() {
         let mut n = Leaky::<f64>::default();
         let dt: f64 = 1.0;
         // simulate 100 ms with no input -> should not spike and v near v_rest
@@ -55,7 +54,7 @@ mod tests {
     }
 
     #[test]
-    fn test_snn_neuron_spikes() {
+    fn test_leaky_neuron_spiking() {
         // params
         let dt = 1f64;
         let i_ext = 50f64; // large i_ext to force spiking
@@ -75,7 +74,7 @@ mod tests {
     }
 
     #[test]
-    fn test_snn_neuron_synaptic_state_change() {
+    fn test_leaky_neuron_state_change() {
         let mut n = Leaky::default();
         let before = *n.synaptic_state();
         n.apply_spike(2.5);

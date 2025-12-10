@@ -3,11 +3,21 @@
     Created At: 2025.12.08:15:53:49
     Contrib: @FL03
 */
-
 use super::{Leaky, SynapticEvent};
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 use num_traits::{Float, FromPrimitive, NumAssign};
+
+/// Compute the minimum external drive required to make a leaky integrate-and-fire neuron spike
+/// over a single time step. This is based on the analytical solution of the leaky
+/// integrate-and-fire model.
+#[inline]
+pub fn get_min_drive<T: Float>(v_rest: T, v_th: T, tau_m: T, dt: T) -> T {
+    let exp_term = (-dt / tau_m).exp();
+    let numerator = v_th - v_rest * exp_term;
+    let denominator = T::one() - exp_term;
+    numerator / denominator
+}
 
 /// A basic method for _discovering_ the minimum external drive required to make a spiking
 /// neuron spike

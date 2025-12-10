@@ -129,12 +129,16 @@ impl<T> LeakyState<T> {
     }
     /// reset all state variables to their logical defaults
     #[inline]
-    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
-
+    #[cfg_attr(
+        feature = "tracing",
+        tracing::instrument(skip_all, target = "leaky", name = "leaky_state::reset")
+    )]
     pub fn reset(&mut self)
     where
         T: Default,
     {
+        #[cfg(feature = "tracing")]
+        tracing::trace!("Resetting leaky neuron state to default values.");
         self.v = T::default();
         self.w = T::default();
         self.s = T::default();
@@ -145,18 +149,20 @@ impl<T> LeakyState<T> {
         self.set_w(w).set_v(v).set_s(s);
     }
     /// Apply an incrementation to the adaptation variable `w` of the neuron.
-    pub fn apply_adaptation(&mut self, dw: T)
+    pub fn apply_adaptation(&mut self, dw: T) -> &mut Self
     where
         T: core::ops::AddAssign,
     {
-        self.w += dw
+        self.w += dw;
+        self
     }
     /// Apply the given increment to the synaptic variable `s` of the neuron.
-    pub fn apply_spike(&mut self, ds: T)
+    pub fn apply_spike(&mut self, ds: T) -> &mut Self
     where
         T: core::ops::AddAssign,
     {
-        self.s += ds
+        self.s += ds;
+        self
     }
 }
 

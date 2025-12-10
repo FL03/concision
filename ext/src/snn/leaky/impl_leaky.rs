@@ -5,9 +5,9 @@
 */
 use super::Leaky;
 
-use crate::snn::leaky::{LeakyState, LeakyParams};
 use crate::snn::StepResult;
-use num_traits::{Float, FromPrimitive};
+use crate::snn::leaky::{LeakyParams, LeakyState};
+use num_traits::{Float, FromPrimitive, Zero};
 
 impl<T> Leaky<T> {
     /// Create a neuron with explicit parameters and initial state.
@@ -20,16 +20,11 @@ impl<T> Leaky<T> {
         tau_w: T,
         b: T,
         tau_s: T,
-        initial_v: Option<T>,
+        v_init: Option<T>,
     ) -> Self
     where
-        T: Float + FromPrimitive,
+        T: Copy + FromPrimitive + Zero,
     {
-        let v0 = if let Some(v_init) = initial_v {
-            v_init
-        } else {
-            v_rest
-        };
         let params = LeakyParams {
             b,
             tau_m,
@@ -40,9 +35,21 @@ impl<T> Leaky<T> {
             v_reset,
             v_thresh,
         };
+        Self::from_params(params, v_init)
+    }
+    /// create a new instance of the LIF neuron from parameters and optional initial membrane
+    /// potential
+    pub fn from_params(params: LeakyParams<T>, v_init: Option<T>) -> Self
+    where
+        T: Copy + FromPrimitive + Zero,
+    {
+        let v0 = if let Some(vi) = v_init {
+            vi
+        } else {
+            params.v_rest
+        };
         let state = LeakyState::from_v(v0);
         let min_dt = T::from_f32(1e-6).unwrap();
-
         Self {
             params,
             state,
@@ -110,7 +117,6 @@ impl<T> Leaky<T> {
     }
     /// Apply a presynaptic spike event to the neuron; this increments the synaptic variable `s`
     /// by `weight` instantaneously (models delta spike arrival).
-    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     pub fn apply_spike(&mut self, weight: T)
     where
         T: core::ops::AddAssign,
@@ -130,19 +136,19 @@ impl<T> Leaky<T> {
     /// and to ensure that the provided `dt` is sufficiently small to avoid missing spikes, yet
     /// still greater than 0
     ///
-    /// **Note**: This method checks for threshold crossing explicitly to avoid missing spikes
-    /// due to large `dt`. Additionally, if `dt` is less than `min_dt`, it is clamped to
-    /// `min_dt`.
+    /// **Note**: The step function clamps `dt` to be at least `min_dt` to avoid numerical
+    /// issues while also ensuring the value is positve by using its absolute value.
+    /// Additionally, this method checks for threshold crossing explicitly to avoid missing
+    /// spikes due to large `dt`.
     #[cfg_attr(feature = "tracing", tracing::instrument(skip_all, level = "trace"))]
     pub fn step(&mut self, dt: T, i_ext: T) -> StepResult<T>
     where
         T: Float + FromPrimitive + core::ops::AddAssign,
     {
-        let dt = if dt.is_sign_negative() {
+        if dt.is_sign_negative() {
             panic!("dt must be > 0")
-        } else {
-            dt.max(self.min_dt)
-        };
+        }
+        let dt = dt.abs().max(self.min_dt);
         let LeakyParams {
             b,
             tau_m,
@@ -154,20 +160,28 @@ impl<T> Leaky<T> {
             v_thresh,
         } = self.params;
         let LeakyState { v, w, s } = self.state;
-        // synaptic current is represented by `s`
-        // ds/dt = -s / tau_s
-        let ds = -s / tau_s;
-        let s_next = s + dt * ds;
-        // The total synaptic current for this step is given by `s` (for explicit Euler consistency).
+
+        if i_ext < (v_rest - v_thresh) / resistance {
+            #[cfg(feature = "tracing")]
+            tracing::warn!("The external current i_ext may be too low to reach threshold.");
+        }
+        // The total synaptic current (i_syn) for this step is given by `s` (for explicit Euler consistency).
         let i_syn = s;
+        // evaluate ds/dt
+        let ds = -s / tau_s;
         // evaluate dv/dt
         let dv = (-(v - v_rest) + resistance * (i_ext + i_syn) - w) / tau_m;
-        let v_next = v + dt * dv;
         // adaptation dw/dt = -w / tau_w
         let dw = -w / tau_w;
-        let w_next = w + dt * dw;
-        // commit a new state
-        self.state_mut().update(v_next, w_next, s_next);
+        // compute next state values
+        let next_state = LeakyState {
+            v: v + dt * dv,
+            w: w + dt * dw,
+            s: s + dt * ds,
+        };
+        // replace the current state
+        let _prev = self.state_mut().replace(next_state);
+        let LeakyState { v: v_next, .. } = next_state;
         // check for crossing
         if v < v_thresh && v_next >= v_thresh {
             // apply reset and adaptation increment
@@ -184,10 +198,6 @@ where
     T: Float + FromPrimitive,
 {
     fn default() -> Self {
-        Self {
-            params: LeakyParams::default(),
-            state: LeakyState::default(),
-            min_dt: T::from_f32(1e-6).unwrap(),
-        }
+        Self::from_params(LeakyParams::default(), None)
     }
 }

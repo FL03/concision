@@ -1,10 +1,10 @@
-/*
-    Appellation: snn <module>
-    Created At: 2025.12.08:15:27:07
-    Contrib: @FL03
-*/
-//! Minimal demonstration of neuron usage. Simulates a neuron for `t_sim` ms with dt,
-//! injects a constant external current `i_ext`, and injects discrete synaptic events at specified times.
+//! ********************
+//! **** LIF Neuron ****
+//! ********************
+//!
+//! This example demonstrates the usage of a Leaky Integrate-and-Fire (LIF) neuron model,
+//! simulating its behavior over time with constant external current injection and discrete
+//! synaptic events.
 use concision_ext::snn::{Leaky, SynapticEvent};
 
 fn main() -> anyhow::Result<()> {
@@ -23,7 +23,7 @@ fn main() -> anyhow::Result<()> {
     // Example external current (constant)
     // Increase drive so steady-state v can reach threshold (v_rest + R*i_ext > v_thresh).
     // With default params: v_rest = -65, v_thresh = -50 → need i_ext >= 15.
-    let i_ext = 16.0; // stronger constant drive to induce spiking
+    let i_ext = 15.0; // stronger constant drive to induce spiking
 
     // Example presynaptic spike times (ms) and weights
     let presyn_spikes: Vec<(f64, f64)> =
@@ -54,7 +54,7 @@ fn main() -> anyhow::Result<()> {
         if res.is_spiked() {
             spike_times.push(t);
             // print the pre-spike membrane potential from the step result
-            println!("Spike at {:.3} ms (pre-spike v = {:.3})", t, res.get());
+            tracing::info!("Spike at {:.3} ms (pre-spike v = {:.3})", t, res.get());
         }
 
         // optionally, record v, w, s for analysis (omitted here for brevity)
@@ -65,7 +65,7 @@ fn main() -> anyhow::Result<()> {
         // small example of printing membrane potential every 50 ms
         if step % ((50.0 / dt) as usize) == 0 {
             // show the step result potential (pre-reset when a spike occurred)
-            tracing::info!(
+            tracing::trace!(
                 "t={:.1} ms, v={:.3} mV, w={:.3}, s={:.3}",
                 t,
                 res.get(),
