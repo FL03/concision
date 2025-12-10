@@ -264,10 +264,6 @@ impl<T> Leaky<T> {
             v_thresh,
         } = self.params;
         let LeakyState { v, w, s } = self.state;
-
-        // remember previous membrane potential for crossing detection
-        let v_prev = v;
-
         // synaptic current is represented by `s`
         // ds/dt = -s / tau_s
         let ds = -s / tau_s;
@@ -284,12 +280,10 @@ impl<T> Leaky<T> {
         // adaptation dw/dt = -w / tau_w
         let dw = -w / tau_w;
         let w_next = w + dt * dw;
-
-        // Commit state tentatively
+        // commit a new state
         self.state_mut().update(v_next, w_next, s_next);
-
-        // Check for threshold crossing (explicit crossing test to avoid misses)
-        if v_prev < v_thresh && v_next >= v_thresh {
+        // check for crossing
+        if v < v_thresh && v_next >= v_thresh {
             // apply reset and adaptation increment
             self.state_mut().set_v(v_reset);
             self.state.w += b;
