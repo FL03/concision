@@ -1,14 +1,31 @@
+/*
+    Appellation: impl_leaky_state <module>
+    Created At: 2025.12.10:13:08:07
+    Contrib: @FL03
+*/
 use super::LeakyState;
+use num_traits::{One, Zero};
 
 impl<T> LeakyState<T> {
     /// Create a new `LeakyState` with all state variables initialized to zero.
     pub const fn new(v: T, w: T, s: T) -> Self {
         Self { v, w, s }
     }
+    /// returns a new instance of the leak state with the given membrane potential
+    pub fn from_v(v: T) -> Self
+    where
+        T: Zero,
+    {
+        Self {
+            v,
+            w: T::zero(),
+            s: T::zero(),
+        }
+    }
     /// create a new state initialize to 1
     pub fn one() -> Self
     where
-        T: num_traits::One,
+        T: One,
     {
         Self {
             v: T::one(),
@@ -19,7 +36,7 @@ impl<T> LeakyState<T> {
     /// create a new state initialize to zero
     pub fn zero() -> Self
     where
-        T: num_traits::Zero,
+        T: Zero,
     {
         Self {
             v: T::zero(),
@@ -79,18 +96,21 @@ impl<T> LeakyState<T> {
     }
     #[inline]
     /// set the adaptation variable (`w`) to the given value
-    pub fn set_w(&mut self, w: T) {
-        self.w = w
+    pub fn set_w(&mut self, w: T) -> &mut Self {
+        self.w = w;
+        self
     }
     #[inline]
     /// set the membrane potential (`v`) to the given value
-    pub fn set_v(&mut self, v: T) {
-        self.v = v
+    pub fn set_v(&mut self, v: T) -> &mut Self {
+        self.v = v;
+        self
     }
     #[inline]
     /// update the synaptic state (`s`) to the given value
-    pub fn set_s(&mut self, s: T) {
-        self.s = s
+    pub fn set_s(&mut self, s: T) -> &mut Self {
+        self.s = s;
+        self
     }
     #[inline]
     /// consumes the current instance to create another with the given adaptation (`w`)
@@ -122,23 +142,29 @@ impl<T> LeakyState<T> {
     /// update all state variables to the given values
     #[inline]
     pub fn update(&mut self, v: T, w: T, s: T) {
-        self.set_w(w);
-        self.set_v(v);
-        self.set_s(s);
-    }
-    /// Apply a presynaptic spike event to the neuron; this increments the synaptic variable `s`
-    /// by `weight` instantaneously (models delta spike arrival).
-    pub fn apply_spike(&mut self, weight: T)
-    where
-        T: core::ops::AddAssign,
-    {
-        *self.s_mut() += weight;
+        self.set_w(w).set_v(v).set_s(s);
     }
     /// Apply an incrementation to the adaptation variable `w` of the neuron.
-    pub fn apply_adaptation(&mut self, delta_w: T)
+    pub fn apply_adaptation(&mut self, dw: T)
     where
         T: core::ops::AddAssign,
     {
-        *self.w_mut() += delta_w;
+        self.w += dw
+    }
+    /// Apply the given increment to the synaptic variable `s` of the neuron.
+    pub fn apply_spike(&mut self, ds: T)
+    where
+        T: core::ops::AddAssign,
+    {
+        self.s += ds
+    }
+}
+
+impl<T> Default for LeakyState<T>
+where
+    T: Zero,
+{
+    fn default() -> Self {
+        Self::zero()
     }
 }
