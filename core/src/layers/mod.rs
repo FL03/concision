@@ -8,30 +8,46 @@
 //! layer by associating
 //!
 #[doc(inline)]
-pub use self::{layer::Layer, traits::*, types::*};
+pub use self::{layer::*, types::*};
 
 mod layer;
 
 pub mod seq;
 
-mod traits {
-    #[doc(inline)]
-    pub use self::layers::*;
-
-    mod layers;
+pub(crate) mod prelude {
+    pub use super::layer::*;
+    pub use super::types::*;
 }
 
 mod types {
-    #[doc(inline)]
-    pub use self::aliases::*;
+    use super::Layer;
+    use crate::activate::{HeavySide, HyperbolicTangent, Linear, ReLU, Sigmoid};
+    use concision_params::{Params, ParamsBase};
+    use ndarray::Ix2;
 
-    mod aliases;
-}
+    pub type LayerParamsBase<F, S, D = Ix2, A = f32> = Layer<F, ParamsBase<S, D, A>>;
 
-pub(crate) mod prelude {
-    pub use super::layer::Layer;
-    pub use super::traits::*;
-    pub use super::types::*;
+    pub type LayerParams<F, A = f32, D = Ix2> = Layer<F, Params<A, D>>;
+
+    /// A type alias for a [`Layer`] configured with a [`Linear`] activation function.
+    pub type LinearLayer<T> = Layer<Linear, T>;
+    /// A type alias for a [`Layer`] configured with a [`Sigmoid`] activation function.
+    pub type SigmoidLayer<T> = Layer<Sigmoid, T>;
+    /// A type alias for a [`Layer`] configured with a [`HyperbolicTangent`] activation function.
+    pub type TanhLayer<T> = Layer<HyperbolicTangent, T>;
+    /// A type alias for a [`Layer`] configured with a [`ReLU`] activation function.
+    pub type ReluLayer<T> = Layer<ReLU, T>;
+    /// A type alias for a [`Layer`] configured with a [`HeavySide`] activation function.
+    /// This activation function is also known as the step function.
+    pub type HeavysideLayer<T> = Layer<HeavySide, T>;
+
+    #[cfg(feature = "alloc")]
+    /// A dynamic instance of the layer using a boxed activator.
+    pub type LayerDyn<'a, T> =
+        Layer<alloc::boxed::Box<dyn crate::Activator<T, Output = T> + 'a>, T>;
+    #[cfg(feature = "alloc")]
+    /// A dynamic, functional alias of the [`Layer`] implementation leveraging boxed closures.
+    pub type FnLayer<'a, T> = Layer<alloc::boxed::Box<dyn Fn(T) -> T + 'a>, T>;
 }
 
 #[cfg(test)]

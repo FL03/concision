@@ -6,8 +6,8 @@ use crate::Error;
 use crate::activate::{ReLUActivation, SigmoidActivation};
 use crate::config::StandardModelConfig;
 use crate::layout::ModelFeatures;
-use crate::store::DeepModelParams;
 use crate::nn::Model;
+use crate::store::DeepModelParams;
 #[cfg(feature = "rand")]
 use concision_init::{
     InitTensor,
