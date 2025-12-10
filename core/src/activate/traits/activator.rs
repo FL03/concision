@@ -89,7 +89,7 @@ activator! {
     pub struct Linear.linear where T: crate::activate::LinearActivation;
     pub struct ReLU.relu where T: crate::activate::ReLUActivation;
     pub struct Sigmoid.sigmoid where T: crate::activate::SigmoidActivation;
-    pub struct Tanh.tanh where T: crate::activate::TanhActivation;
+    pub struct HyperbolicTangent.tanh where T: crate::activate::TanhActivation;
     pub struct HeavySide.heavyside where T: crate::activate::HeavysideActivation;
     pub struct Softmax.softmax where T: crate::activate::SoftmaxActivation;
 }

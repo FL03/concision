@@ -6,7 +6,7 @@ mod impl_layer;
 mod impl_layer_deprecated;
 mod impl_layer_repr;
 
-use super::Activator;
+use crate::activate::Activator;
 use concision_traits::Forward;
 
 /// The [`Layer`] implementation works to provide a generic interface for layers within a

@@ -14,16 +14,14 @@ mod layer;
 
 pub mod seq;
 
-pub(crate) mod traits {
+mod traits {
     #[doc(inline)]
-    pub use self::{activator::*, layers::*};
+    pub use self::layers::*;
 
-    mod activator;
     mod layers;
-    mod store;
 }
 
-pub(crate) mod types {
+mod types {
     #[doc(inline)]
     pub use self::aliases::*;
 
@@ -31,7 +29,8 @@ pub(crate) mod types {
 }
 
 pub(crate) mod prelude {
-    pub use super::layer::*;
+    pub use super::layer::Layer;
+    pub use super::traits::*;
     pub use super::types::*;
 }
 

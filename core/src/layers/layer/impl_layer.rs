@@ -2,9 +2,9 @@
     appellation: impl_layer <module>
     authors: @FL03
 */
-use crate::layers::Layer;
-
-use crate::layers::{Activator, RawLayer};
+use super::Layer;
+use crate::activate::Activator;
+use crate::layers::RawLayer;
 use concision_params::{ParamsBase, RawParam};
 use concision_traits::Forward;
 use ndarray::{DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};

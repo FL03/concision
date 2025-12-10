@@ -2,8 +2,7 @@
     appellation: layers <module>
     authors: @FL03
 */
-use super::{Activator, ActivatorGradient};
-
+use crate::activate::{Activator, ActivatorGradient};
 use concision_params::{ParamsBase, RawParam};
 use concision_traits::{Backward, Forward};
 use ndarray::{Data, Dimension, RawData};

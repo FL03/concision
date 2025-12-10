@@ -4,7 +4,7 @@
 */
 use super::Layer;
 
-use crate::layers::{Linear, ReLU, Sigmoid, Tanh};
+use crate::activate::{HyperbolicTangent, Linear, ReLU, Sigmoid};
 
 impl<T> Layer<Linear, T> {
     /// initialize a new [`LayerBase`] using a [`Linear`] activation function and the given
@@ -28,11 +28,14 @@ impl<T> Layer<Sigmoid, T> {
     }
 }
 
-impl<T> Layer<Tanh, T> {
+impl<T> Layer<HyperbolicTangent, T> {
     /// initialize a new [`LayerBase`] using a [`Tanh`] activation function and the given
     /// parameters.
     pub const fn tanh(params: T) -> Self {
-        Self { rho: Tanh, params }
+        Self {
+            rho: HyperbolicTangent,
+            params,
+        }
     }
 }
 

@@ -262,13 +262,6 @@ where
             loss += match Train::<ArrayView1<A>, ArrayView1<A>>::train(self, &x, &e) {
                 Ok(l) => l,
                 Err(err) => {
-                    #[cfg(not(feature = "tracing"))]
-                    eprintln!(
-                        "Training failed for batch {}/{}: {:?}",
-                        i + 1,
-                        batch_size,
-                        err
-                    );
                     #[cfg(feature = "tracing")]
                     tracing::error!(
                         "Training failed for batch {}/{}: {:?}",

@@ -6,34 +6,45 @@ use ndarray::{Array, ArrayBase, Data, Dimension};
 use num_traits::Signed;
 
 macro_rules! unary {
-    (@branch $name:ident::$call:ident($($rest:tt)*)) => {
-        unary!(@impl $name::$call($($rest)*));
-    };
-    (@impl $name:ident::$call:ident(self)) => {
+    (@impl $name:ident::$call:ident($($rest:tt)*)) => {
         pub trait $name {
             type Output;
 
-            fn $call(self) -> Self::Output;
-        }
-    };
-    (@impl $name:ident::$call:ident(&self)) => {
-        pub trait $name {
-            type Output;
-
-            fn $call(&self) -> Self::Output;
-        }
-    };
-    (@impl $name:ident::$call:ident(&mut self)) => {
-        pub trait $name {
-            type Output;
-
-            fn $call(&self) -> Self::Output;
+            fn $call($($rest)*) -> Self::Output;
         }
     };
     ($($name:ident::$call:ident($($rest:tt)*)),* $(,)?) => {
         $(
             unary!(@impl $name::$call($($rest)*));
         )*
+    };
+}
+
+macro_rules! unary_impl {
+    (@impl $name:ident::<$T:ty>::$method:ident) => {
+        impl $name for $T {
+            type Output = $T;
+
+            fn $method(self) -> Self::Output {
+                <$T>::$method(self)
+            }
+        }
+    };
+    (@impl #[complex] $name:ident::<$T:ty>::$method:ident) => {
+        #[cfg(feature = "complex")]
+        impl $name for num_complex::Complex<$T>
+        where
+            num_complex::Complex<$T>: num_complex::ComplexFloat<Real = $T>,
+        {
+            type Output = num_complex::Complex<$T>;
+
+            fn $method(self) -> Self::Output {
+                num_complex::ComplexFloat::$method(self)
+            }
+        }
+    };
+    ($($name:ident::<[$($T:ty),*]>::$method:ident),* $(,)?) => {
+        $($(unary_impl!(@impl $name::<$T>::$method);)*)*
     };
 }
 
@@ -48,10 +59,7 @@ unary! {
     Tanh::tanh(self),
     Squared::pow2(self),
     Cubed::pow3(self),
-    SquareRoot::sqrt(self)
-}
-
-unary! {
+    SquareRoot::sqrt(self),
     Conjugate::conj(&self),
 }
 
@@ -59,40 +67,7 @@ unary! {
  ********* Implementations *********
 */
 
-macro_rules! unary_impl {
-    ($($name:ident<$T:ty$(, Output = $O:ty)?>::$method:ident),* $(,)?) => {
-        $(unary_impl!(@impl $name::$method<$T$(, Output = $O>)?);)*
-    };
-    ($($name:ident::<$T:ty, Output = $O:ty>::$method:ident),* $(,)?) => {
-        $(unary_impl!(@impl $name::$method<$T, Output = $O>);)*
-    };
-    ($($name:ident::<[$($T:ty),*]>::$method:ident),* $(,)?) => {
-        $(unary_impl!(@loop $name::$method<[$($T),*]>);)*
-    };
-    (@loop $name:ident::<[$($T:ty),* $(,)?]>::$method:ident) => {
-        $(unary_impl!(@impl $name::<$T>::$method);)*
-    };
-    (@impl $name:ident::<$T:ty>::$method:ident) => {
-        unary_impl!(@impl $name::<$T, Output = $T>::$method);
-    };
-    (@impl $name:ident::<$T:ty, Output = $O:ty>::$method:ident) => {
-        impl $name for $T {
-            type Output = $O;
-
-            fn $method(self) -> Self::Output {
-                <$T>::$method(self)
-            }
-        }
-    };
-}
-
-macro_rules! unary_impls {
-    ($($name:ident::<[$($T:ty),* $(,)?]>::$method:ident),* $(,)?) => {
-        $(unary_impl!(@loop $name::<[$($T),*]>::$method);)*
-    };
-}
-
-unary_impls! {
+unary_impl! {
     Abs::<[f32, f64]>::abs,
     Cos::<[f32, f64]>::cos,
     Cosh::<[f32, f64]>::cosh,
@@ -103,10 +78,6 @@ unary_impls! {
     Tanh::<[f32, f64]>::tanh,
     SquareRoot::<[f32, f64]>::sqrt
 }
-
-/*
- ************* implementations *************
-*/
 
 impl<A, S, D> Abs for ArrayBase<S, D>
 where
@@ -158,7 +129,18 @@ where
     }
 }
 
-#[cfg(not(feature = "complex"))]
+impl<A, B, S, D> Exp for ArrayBase<S, D>
+where
+    A: Clone + Exp<Output = B>,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    type Output = Array<B, D>;
+
+    fn exp(self) -> Self::Output {
+        self.mapv(|x| x.exp())
+    }
+}
 impl<A, S, D> Exp for &ArrayBase<S, D, A>
 where
     A: Clone + Exp<Output = A>,
@@ -172,24 +154,13 @@ where
     }
 }
 
-impl<A, B, S, D> Exp for ArrayBase<S, D>
-where
-    A: Clone + Exp<Output = B>,
-    D: Dimension,
-    S: Data<Elem = A>,
-{
-    type Output = Array<B, D>;
-
-    fn exp(self) -> Self::Output {
-        self.mapv(|x| x.exp())
-    }
-}
-
 #[cfg(feature = "complex")]
 mod impl_complex {
-    use super::*;
+    use super::{Conjugate, Cos, Exp, SquareRoot};
+
     use ndarray::{Array, Dimension};
     use num_complex::{Complex, ComplexFloat};
+    use num_traits::Signed;
 
     macro_rules! impl_conj {
     ($($t:ident<$res:ident>),*) => {
@@ -243,16 +214,14 @@ mod impl_complex {
         }
     }
 
-    impl<A, S, D> Exp for &ArrayBase<S, D, A>
+    impl<T> Exp for Complex<T>
     where
-        A: Clone + ComplexFloat,
-        D: Dimension,
-        S: Data<Elem = A>,
+        Complex<T>: ComplexFloat,
     {
-        type Output = Array<A, D>;
+        type Output = Self;
 
         fn exp(self) -> Self::Output {
-            self.mapv(|x| x.exp())
+            ComplexFloat::exp(self)
         }
     }
 

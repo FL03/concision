@@ -12,46 +12,48 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    /// returns the weights of the model
-    fn weights(&self) -> &ArrayBase<S, D, A>;
-    /// returns a mutable reference to the weights of the model
-    fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A>;
-    /// assigns the given bias to the current weight
-    fn assign_weights(&mut self, weights: &ArrayBase<S, D, A>) -> &mut Self
+    type Tensor<_S, _D, _A>
     where
-        S: DataMut,
-        S::Elem: Clone,
-    {
-        self.weights_mut().assign(weights);
-        self
-    }
+        _D: Dimension,
+        _S: RawData<Elem = _A>;
+    /// returns the weights of the model
+    fn weights(&self) -> &Self::Tensor<S, D, A>;
+    /// returns a mutable reference to the weights of the model
+    fn weights_mut(&mut self) -> &mut Self::Tensor<S, D, A>;
     /// replaces the current weights with the given weights
-    fn replace_weights(&mut self, weights: ArrayBase<S, D, A>) -> ArrayBase<S, D, A> {
+    fn replace_weights(&mut self, weights: Self::Tensor<S, D, A>) -> Self::Tensor<S, D, A> {
         core::mem::replace(self.weights_mut(), weights)
     }
     /// sets the weights of the model
-    fn set_weights(&mut self, weights: ArrayBase<S, D, A>) -> &mut Self {
+    fn set_weights(&mut self, weights: Self::Tensor<S, D, A>) -> &mut Self {
         *self.weights_mut() = weights;
         self
     }
-    /// returns an iterator over the weights; see [`iter`](nditer::Iter) for more information
-    fn iter_weights<'a>(&'a self) -> nditer::Iter<'a, S::Elem, D>
-    where
-        S: Data + 'a,
-        D: 'a,
-    {
-        self.weights().iter()
-    }
-    /// returns a mutable iterator over the weights; see [`iter_mut`](nditer::IterMut) for more information
-    fn iter_weights_mut<'a>(&'a mut self) -> nditer::IterMut<'a, S::Elem, D>
-    where
-        S: DataMut + 'a,
-        D: 'a,
-    {
-        self.weights_mut().iter_mut()
-    }
 }
 
+pub trait NdIter<A, D>
+where
+    D: Dimension,
+{
+    type Iter<'b, T>
+    where
+        T: 'b,
+        Self: 'b;
+    /// returns an iterator over the weights;
+    fn nditer(&self) -> Self::Iter<'_, A>;
+}
+
+pub trait NdIterMut<A, D>
+where
+    D: Dimension,
+{
+    type IterMut<'b, T>
+    where
+        T: 'b,
+        Self: 'b;
+    /// returns a mutable iterator over the weights
+    fn nditer_mut(&mut self) -> Self::IterMut<'_, A>;
+}
 pub trait Biased<S, D, A = <S as RawData>::Elem>: Weighted<S, D, A>
 where
     D: Dimension,
@@ -100,3 +102,35 @@ where
 /*
  ************* Implementations *************
 */
+
+impl<A, S, D> NdIter<A, D> for ArrayBase<S, D, A>
+where
+    S: Data<Elem = A>,
+    D: Dimension,
+{
+    type Iter<'b, T>
+        = nditer::Iter<'b, T, D>
+    where
+        T: 'b,
+        Self: 'b;
+
+    fn nditer(&self) -> Self::Iter<'_, A> {
+        self.iter()
+    }
+}
+
+impl<A, S, D> NdIterMut<A, D> for ArrayBase<S, D, A>
+where
+    S: DataMut<Elem = A>,
+    D: Dimension,
+{
+    type IterMut<'b, T>
+        = nditer::IterMut<'b, T, D>
+    where
+        T: 'b,
+        Self: 'b;
+
+    fn nditer_mut(&mut self) -> Self::IterMut<'_, A> {
+        self.iter_mut()
+    }
+}

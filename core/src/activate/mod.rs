@@ -22,21 +22,15 @@
 #[doc(inline)]
 pub use self::{traits::*, utils::*};
 
-pub(crate) mod utils;
+mod utils;
 
-pub(crate) mod traits {
+mod traits {
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{activate::*, activator::*, unary::*};
 
     mod activate;
+    mod activator;
     mod unary;
-
-    mod prelude {
-        #[doc(inline)]
-        pub use super::activate::*;
-        #[doc(inline)]
-        pub use super::unary::*;
-    }
 }
 
 mod impls {
@@ -48,4 +42,20 @@ mod impls {
 pub(crate) mod prelude {
     pub use super::traits::*;
     pub use super::utils::*;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_linear_activation() {
+        let linear = Linear;
+        let input = 5.0;
+        let output = linear.activate(input);
+        assert_eq!(output, 5.0);
+
+        let derivative = linear.activate_gradient(input);
+        assert_eq!(derivative, 1.0);
+    }
 }

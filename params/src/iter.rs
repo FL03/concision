@@ -54,6 +54,15 @@ where
     }
 }
 
+impl<'a, A, D> ExactSizeIterator for Iter<'a, A, D>
+where
+    D: Dimension,
+{
+    fn len(&self) -> usize {
+        self.weights.len()
+    }
+}
+
 impl<'a, A, D> Iterator for IterMut<'a, A, D>
 where
     D: Dimension,
@@ -65,14 +74,5 @@ where
             (Some(w), Some(b)) => Some((w, b)),
             _ => None,
         }
-    }
-}
-
-impl<'a, A, D> ExactSizeIterator for Iter<'a, A, D>
-where
-    D: Dimension,
-{
-    fn len(&self) -> usize {
-        self.weights.len()
     }
 }

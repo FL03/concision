@@ -46,13 +46,14 @@ pub trait Apply<T> {
     where
         F: Fn(T) -> U;
 }
-
-pub trait ApplyRef<T> {
+/// The [`ApplyOnce`] trait consumes the container and applies the given function to every
+/// element before returning a new container with the results.
+pub trait ApplyOnce<T> {
     type Cont<_T>;
 
-    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
+    fn apply_once<F, U>(self, f: F) -> Self::Cont<U>
     where
-        F: Fn(&T) -> U;
+        F: FnOnce(T) -> U;
 }
 /// The [`ApplyMut`] trait mutates the each element of the container, in-place, using the given
 /// function.
@@ -63,14 +64,6 @@ pub trait ApplyMut<T> {
     where
         T: 'a,
         F: FnMut(T) -> T;
-}
-
-pub trait ApplyInto<T> {
-    type Cont<_T>;
-
-    fn apply_into<F, U>(self, f: F) -> Self::Cont<U>
-    where
-        F: FnMut(T) -> U;
 }
 
 /*
@@ -141,12 +134,12 @@ where
     }
 }
 
-impl<A> ApplyRef<A> for Option<A> {
+impl<'a, A> Apply<&'a A> for &'a Option<A> {
     type Cont<V> = Option<V>;
 
     fn apply<F, U>(&self, f: F) -> Self::Cont<U>
     where
-        F: Fn(&A) -> U,
+        F: Fn(&'a A) -> U,
     {
         self.as_ref().map(|a| f(a))
     }

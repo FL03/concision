@@ -1,11 +1,12 @@
 /*
-    appellation: aliases <module>
+    appellation: types <module>
     authors: @FL03
 */
 #[cfg(feature = "alloc")]
 pub use self::impl_alloc::*;
 
-use crate::layers::{HeavySide, Layer, Linear, ReLU, Sigmoid, Tanh};
+use crate::activate::{HeavySide, HyperbolicTangent, Linear, ReLU, Sigmoid};
+use crate::layers::Layer;
 use concision_params::{Params, ParamsBase};
 use ndarray::Ix2;
 
@@ -18,7 +19,7 @@ pub type LinearLayer<T> = Layer<Linear, T>;
 /// A type alias for a [`Layer`] configured with a [`Sigmoid`] activation function.
 pub type SigmoidLayer<T> = Layer<Sigmoid, T>;
 /// A type alias for a [`Layer`] configured with a [`Tanh`] activation function.
-pub type TanhLayer<T> = Layer<Tanh, T>;
+pub type TanhLayer<T> = Layer<HyperbolicTangent, T>;
 /// A type alias for a [`Layer`] configured with a [`ReLU`] activation function.
 pub type ReluLayer<T> = Layer<ReLU, T>;
 /// A type alias for a [`Layer`] configured with a [`HeavySide`] activation function.
@@ -27,7 +28,8 @@ pub type HeavysideLayer<T> = Layer<HeavySide, T>;
 
 #[cfg(feature = "alloc")]
 mod impl_alloc {
-    use crate::layers::{Activator, Layer};
+    use crate::activate::Activator;
+    use crate::layers::Layer;
     use alloc::boxed::Box;
 
     /// A type alias for a [`Layer`] configured with a dynamic [`Activator`].

@@ -52,6 +52,12 @@ where
     S: RawData<Elem = A>,
     D: Dimension,
 {
+    type Tensor<_S, _D, _A>
+        = ArrayBase<_S, _D, _A>
+    where
+        _D: Dimension,
+        _S: RawData<Elem = _A>;
+
     fn weights(&self) -> &ArrayBase<S, D, A> {
         self.weights()
     }
