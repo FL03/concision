@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 use super::LeakyParams;
-use num_traits::{FromPrimitive, One};
+use num_traits::{Float, FromPrimitive};
 
 impl<T> LeakyParams<T> {
     /// Create a new `LeakyParams` with the given parameters.
@@ -65,18 +65,18 @@ impl<T> LeakyParams<T> {
 
 impl<T> Default for LeakyParams<T>
 where
-    T: FromPrimitive + One + core::ops::Neg<Output = T>,
+    T: Float + FromPrimitive,
 {
     fn default() -> Self {
         Self {
-            tau_m: T::from_usize(20).unwrap(),          // ms
+            b: T::from_f32(0.5).unwrap(),               // adaptation increment
             resistance: T::one(),                       // arbitrary
+            tau_m: T::from_usize(20).unwrap(),          // ms
+            tau_s: T::from_usize(5).unwrap(),           // ms (fast synapse)
+            tau_w: T::from_usize(200).unwrap(),         // ms (slow adaptation)
             v_rest: T::from_usize(65).unwrap().neg(),   // mV
             v_thresh: T::from_usize(50).unwrap().neg(), // mV
             v_reset: T::from_usize(65).unwrap().neg(),  // mV
-            tau_w: T::from_usize(200).unwrap(),         // ms (slow adaptation)
-            b: T::from_f32(0.5).unwrap(),               // adaptation increment
-            tau_s: T::from_usize(5).unwrap(),           // ms (fast synapse)
         }
     }
 }

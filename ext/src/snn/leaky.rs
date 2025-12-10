@@ -108,10 +108,8 @@ pub struct LeakyState<T = f32> {
 )]
 #[repr(C)]
 pub struct Leaky<T = f32> {
-    // ---- Parameters ----
     pub params: LeakyParams<T>,
-    // ---- State variables ----
-    #[serde(flatten)]
+    #[cfg_attr(feature = "serde", serde(flatten))]
     pub state: LeakyState<T>,
     /// Minimum allowed dt for integration (ms)
     pub min_dt: T,
@@ -148,7 +146,11 @@ impl<T> Leaky<T> {
             v_reset,
             v_thresh,
         };
-        let state = LeakyState::zero().with_membrane_potential(v0);
+        let state = LeakyState {
+            v: v0,
+            w: T::zero(),
+            s: T::zero(),
+        };
         let min_dt = T::from_f32(1e-6).unwrap();
 
         Self {
@@ -174,15 +176,15 @@ impl<T> Leaky<T> {
     }
     /// returns a reference to the neuron's adaptation variable (`w`)
     pub const fn adaptation(&self) -> &T {
-        self.state().adaptation()
+        self.state().w()
     }
     /// returns a reference to the membrane potential, `v`, of the neuron
     pub const fn membrane_potential(&self) -> &T {
-        self.state().membrane_potential()
+        self.state().v()
     }
     /// returns a reference to the current value, or synaptic state, of the neuron (`s`)
     pub const fn synaptic_state(&self) -> &T {
-        self.state().synaptic_state()
+        self.state().s()
     }
     /// returns a reference to the adaptation increment, `b`, of the neuron
     pub const fn b(&self) -> &T {
@@ -223,7 +225,7 @@ impl<T> Leaky<T> {
     where
         T: core::ops::AddAssign,
     {
-        *self.state_mut().membrane_potential_mut() += weight;
+        self.state_mut().apply_spike(weight);
     }
     /// reset state variables (keeps parameters).
     pub fn reset_state(&mut self)
@@ -284,16 +286,14 @@ impl<T> Leaky<T> {
         let w_next = w + dt * dw;
 
         // Commit state tentatively
-        self.state.update(v_next, w_next, s_next);
+        self.state_mut().update(v_next, w_next, s_next);
 
         // Check for threshold crossing (explicit crossing test to avoid misses)
-        if v_prev < v_thresh && v >= v_thresh {
-            // spike: capture pre-reset potential if that is expected by StepResult consumers
-            let pre_spike_v = v;
+        if v_prev < v_thresh && v_next >= v_thresh {
             // apply reset and adaptation increment
-            self.state.v = v_reset;
+            self.state_mut().set_v(v_reset);
             self.state.w += b;
-            StepResult::spiked(pre_spike_v)
+            StepResult::spiked(v_next)
         } else {
             StepResult::not_spiked(v)
         }

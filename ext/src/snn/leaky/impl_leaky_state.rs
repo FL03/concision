@@ -28,27 +28,27 @@ impl<T> LeakyState<T> {
         }
     }
     /// returns a reference to the neuron's adaptation variable (`w`)
-    pub const fn adaptation(&self) -> &T {
+    pub const fn w(&self) -> &T {
         &self.w
     }
     /// returns a mutable reference to the neuron's adaptation variable (`w`)
-    pub const fn adaptation_mut(&mut self) -> &mut T {
+    pub const fn w_mut(&mut self) -> &mut T {
         &mut self.w
     }
     /// returns a reference to the membrane potential, `v`, of the neuron
-    pub const fn membrane_potential(&self) -> &T {
+    pub const fn v(&self) -> &T {
         &self.v
     }
     /// returns a mutable reference to the membrane potential, `v`, of the neuron
-    pub const fn membrane_potential_mut(&mut self) -> &mut T {
+    pub const fn v_mut(&mut self) -> &mut T {
         &mut self.v
     }
     /// returns a reference to the current value, or synaptic state, of the neuron
-    pub const fn synaptic_state(&self) -> &T {
+    pub const fn s(&self) -> &T {
         &self.s
     }
     /// returns a mutable reference to the current value, or synaptic state, of the neuron
-    pub const fn synaptic_state_mut(&mut self) -> &mut T {
+    pub const fn s_mut(&mut self) -> &mut T {
         &mut self.s
     }
     /// [`replace`](core::mem::replace) the values of one state with another returning the previous state
@@ -79,32 +79,32 @@ impl<T> LeakyState<T> {
     }
     #[inline]
     /// set the adaptation variable (`w`) to the given value
-    pub fn set_adaptation(&mut self, w: T) {
+    pub fn set_w(&mut self, w: T) {
         self.w = w
     }
     #[inline]
     /// set the membrane potential (`v`) to the given value
-    pub fn set_membrane_potential(&mut self, v: T) {
+    pub fn set_v(&mut self, v: T) {
         self.v = v
     }
     #[inline]
     /// update the synaptic state (`s`) to the given value
-    pub fn set_synaptic_state(&mut self, s: T) {
+    pub fn set_s(&mut self, s: T) {
         self.s = s
     }
     #[inline]
     /// consumes the current instance to create another with the given adaptation (`w`)
-    pub fn with_adaptation(self, w: T) -> Self {
+    pub fn with_w(self, w: T) -> Self {
         Self { w, ..self }
     }
     #[inline]
     /// consumes the current instance to create another with the given membrane potential (`v`)
-    pub fn with_membrane_potential(self, v: T) -> Self {
+    pub fn with_v(self, v: T) -> Self {
         Self { v, ..self }
     }
     #[inline]
     /// consumes the current instance to create another with the given synaptic state (`s`)
-    pub fn with_synaptic_state(self, s: T) -> Self {
+    pub fn with_s(self, s: T) -> Self {
         Self { s, ..self }
     }
     /// reset all state variables to their logical defaults
@@ -120,9 +120,9 @@ impl<T> LeakyState<T> {
     /// update all state variables to the given values
     #[inline]
     pub fn update(&mut self, v: T, w: T, s: T) {
-        self.set_adaptation(w);
-        self.set_membrane_potential(v);
-        self.set_synaptic_state(s);
+        self.set_w(w);
+        self.set_v(v);
+        self.set_s(s);
     }
     /// Apply a presynaptic spike event to the neuron; this increments the synaptic variable `s`
     /// by `weight` instantaneously (models delta spike arrival).
@@ -131,6 +131,6 @@ impl<T> LeakyState<T> {
     where
         T: core::ops::AddAssign,
     {
-        *self.membrane_potential_mut() += weight;
+        *self.s_mut() += weight;
     }
 }

@@ -65,7 +65,7 @@ lazy_static = { workspace = true }
 tracing-subscriber = { features = ["std"], workspace = true }
 
 [features]
-default = ["attention", "std"]
+default = ["attention", "snn", "std"]
 
 full = [
   "default",
