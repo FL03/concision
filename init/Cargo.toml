@@ -1,6 +1,6 @@
 [package]
 build = "build.rs"
-description = "tthis crate provides various random distribution and initialization routines for the concision framework"
+description = "this crate provides various random distribution and initialization routines for the concision framework"
 name = "concision-init"
 
 authors.workspace = true
