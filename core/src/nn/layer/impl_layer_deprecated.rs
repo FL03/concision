@@ -3,8 +3,7 @@
     authors: @FL03
 */
 #![allow(deprecated)]
-
-use crate::layers::Layer;
+use super::Layer;
 
 #[doc(hidden)]
 impl<F, T> Layer<F, T> {}

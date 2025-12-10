@@ -3,10 +3,10 @@
     Created At: 2025.11.26:14:27:51
     Contrib: @FL03
 */
-use ndarray::{ArrayBase, DataMut, Dimension, OwnedRepr, RawData, RawDataMut};
+use ndarray::{ArrayBase, Data, DataMut, Dimension, OwnedRepr, RawData, RawDataMut};
 use num_traits::Float;
 
-pub trait RawTensor<S, D, A = <S as RawData>::Elem>
+pub trait NdTensor<S, D, A = <S as RawData>::Elem>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -27,27 +27,14 @@ where
     fn as_mut_ptr(&mut self) -> *mut A
     where
         S: RawDataMut;
-}
 
-pub trait NdTensor<S, D, A = <S as RawData>::Elem>: RawTensor<S, D, A> + Sized
-where
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    fn apply<F>(self, f: F) -> Self::Cont<S, D, A>
+    fn apply<F, B>(&self, f: F) -> Self::Cont<OwnedRepr<B>, D, B>
     where
-        F: FnMut(A) -> A,
+        F: FnMut(A) -> B,
         A: Clone,
-        S: DataMut;
+        S: Data;
 
-    fn apply_any<F, U>(self, f: F) -> Self::Cont<OwnedRepr<U>, D, U>
-    where
-        A: Clone + 'static,
-        U: 'static,
-        F: FnMut(A) -> U,
-        S: DataMut;
-
-    fn powi(self, n: i32) -> Self::Cont<S, D, A>
+    fn powi(&self, n: i32) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -55,7 +42,7 @@ where
         self.apply(|x| x.powi(n))
     }
 
-    fn exp(self) -> Self::Cont<S, D, A>
+    fn exp(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -63,7 +50,7 @@ where
         self.apply(|x| x.exp())
     }
 
-    fn log(self) -> Self::Cont<S, D, A>
+    fn log(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -71,7 +58,7 @@ where
         self.apply(|x| x.ln())
     }
 
-    fn cos(self) -> Self::Cont<S, D, A>
+    fn cos(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -79,7 +66,7 @@ where
         self.apply(|x| x.cos())
     }
 
-    fn cosh(self) -> Self::Cont<S, D, A>
+    fn cosh(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -87,7 +74,7 @@ where
         self.apply(|x| x.cosh())
     }
 
-    fn sin(self) -> Self::Cont<S, D, A>
+    fn sin(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -95,7 +82,7 @@ where
         self.apply(|x| x.sin())
     }
 
-    fn sinh(self) -> Self::Cont<S, D, A>
+    fn sinh(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -103,7 +90,7 @@ where
         self.apply(|x| x.sinh())
     }
 
-    fn tan(self) -> Self::Cont<S, D, A>
+    fn tan(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -111,7 +98,7 @@ where
         self.apply(|x| x.tan())
     }
 
-    fn tanh(self) -> Self::Cont<S, D, A>
+    fn tanh(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -125,7 +112,7 @@ where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    type Delta<_S, _D, _A>: RawTensor<_S, _D, _A>
+    type Delta<_S, _D, _A>: NdTensor<_S, _D, _A>
     where
         _D: Dimension,
         _S: RawData<Elem = _A>;
@@ -137,7 +124,7 @@ where
  ************* Implementations *************
 */
 
-impl<A, S, D> RawTensor<S, D, A> for ArrayBase<S, D, A>
+impl<A, S, D> NdTensor<S, D, A> for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -170,29 +157,13 @@ where
     {
         self.as_mut_ptr()
     }
-}
 
-impl<S, D, A> NdTensor<S, D, A> for ArrayBase<S, D, A>
-where
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    fn apply<F>(self, f: F) -> Self::Cont<S, D, A>
+    fn apply<F, B>(&self, f: F) -> Self::Cont<OwnedRepr<B>, D, B>
     where
         A: Clone,
-        F: FnMut(A) -> A,
-        S: DataMut,
+        F: FnMut(A) -> B,
+        S: Data,
     {
-        self.mapv_into(f)
-    }
-
-    fn apply_any<F, U>(self, f: F) -> Self::Cont<OwnedRepr<U>, D, U>
-    where
-        A: Clone + 'static,
-        U: 'static,
-        F: FnMut(A) -> U,
-        S: DataMut,
-    {
-        self.mapv_into_any(f)
+        self.mapv(f)
     }
 }

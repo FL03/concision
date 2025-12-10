@@ -67,9 +67,9 @@ mod impls {
 
 pub mod traits {
     //! Additional traits for working with parameters
-    pub use self::{param::*, wnb::*};
+    pub use self::{tensor::*, wnb::*};
 
-    mod param;
+    mod tensor;
     mod wnb;
 }
 

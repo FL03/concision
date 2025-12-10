@@ -1,30 +1,17 @@
 /*
     Appellation: layer <module>
+    Created At: 2025.12.10:16:50:03
     Contrib: @FL03
 */
-mod impl_layer;
-mod impl_layer_deprecated;
-mod impl_layer_repr;
-
 use crate::activate::{Activator, ActivatorGradient};
-use concision_params::{ParamsBase, RawParam};
+use concision_params::{ParamsBase, RawTensor};
 use concision_traits::{Backward, Forward};
 use ndarray::{Data, Dimension, RawData};
 
-/// The [`Layer`] implementation works to provide a generic interface for layers within a
-/// neural network. It associates an activation function of type `F` with parameters of
-/// type `P`.
-pub struct Layer<F, P> {
-    /// the activation function of the layer
-    pub(crate) rho: F,
-    /// the parameters of the layer is an object consisting of both a weight and a bias tensor.
-    pub(crate) params: P,
-}
-
-pub trait RawLayer<F, X, A = <X as RawParam>::Elem>
+pub trait RawLayer<F, X, A = <X as RawTensor>::Elem>
 where
     F: Activator<X>,
-    X: RawParam<Elem = A>,
+    X: RawTensor<Elem = A>,
 {
     /// the activation function of the layer
     fn rho(&self) -> &F;
