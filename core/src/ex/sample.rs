@@ -19,6 +19,11 @@ use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign, Zero};
 
+#[cfg(not(feature = "tracing"))]
+use eprintln as error;
+#[cfg(feature = "tracing")]
+use tracing::error;
+
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct TestModel<T = f64> {
     pub config: StandardModelConfig<T>,
@@ -264,8 +269,7 @@ where
             loss += match Train::<ArrayView1<A>, ArrayView1<A>>::train(self, &x, &e) {
                 Ok(l) => l,
                 Err(err) => {
-                    #[cfg(feature = "tracing")]
-                    tracing::error!(
+                    error!(
                         "Training failed for batch {}/{}: {:?}",
                         i + 1,
                         batch_size,

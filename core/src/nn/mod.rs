@@ -47,10 +47,10 @@ mod tests {
     fn test_linear_layer() {
         let params = Params::from_elem((3, 2), 0.5_f32);
         let layer = Layer::linear(params);
-        // initialize some inputs
-        let inputs = Array1::<f32>::linspace(1.0, 2.0, 3);
         // verify the shape of the layer's parameters
         assert_eq!(layer.params().shape(), &[3, 2]);
+        // initialize some inputs
+        let inputs = Array1::<f32>::linspace(1.0, 2.0, 3);
         // compare the actual output against the expected output
         assert_eq!(layer.forward(&inputs), Array1::from_elem(2, 2.75));
     }

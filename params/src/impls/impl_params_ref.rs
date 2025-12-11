@@ -6,8 +6,4 @@
 use crate::ParamsRef;
 use ndarray::Dimension;
 
-impl<A, D> ParamsRef<A, D>
-where
-    D: Dimension,
-{
-}
+impl<A, D> ParamsRef<A, D> where D: Dimension {}

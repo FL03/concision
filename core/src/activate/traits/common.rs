@@ -2,6 +2,12 @@
     appellation: unary <module>
     authors: @FL03
 */
+use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand};
+use num_traits::{Float, One, Zero};
+
+pub trait SoftmaxAxis: SoftmaxActivation {
+    fn softmax_axis(self, axis: usize) -> Self::Output;
+}
 
 macro_rules! unary {
     (@impl $name:ident::$call:ident(self)) => {
@@ -56,36 +62,29 @@ unary! {
     TanhActivation::tanh(&self),
 }
 
-pub trait SoftmaxAxis: SoftmaxActivation {
-    fn softmax_axis(self, axis: usize) -> Self::Output;
-}
-
 /*
  ************* Implementations *************
 */
 
-use ndarray::{Array, ArrayBase, Data, Dimension, ScalarOperand};
-use num_traits::{Float, One, Zero};
-
 macro_rules! impl_heavyside {
-    ($($ty:ty),* $(,)*) => {
+    ($($T:ty),* $(,)*) => {
         $(
-            impl HeavysideActivation for $ty {
-                type Output = $ty;
+            impl HeavysideActivation for $T {
+                type Output = $T;
 
                 fn heavyside(self) -> Self::Output {
-                    if self > <$ty>::zero() {
+                    if self > <$T>::zero() {
                         self
                     } else {
-                        <$ty>::zero()
+                        <$T>::zero()
                     }
                 }
 
                 fn heavyside_derivative(self) -> Self::Output {
-                    if self > <$ty>::zero() {
-                        <$ty>::one()
+                    if self > <$T>::zero() {
+                        <$T>::one()
                     } else {
-                        <$ty>::zero()
+                        <$T>::zero()
                     }
                 }
             }
@@ -93,8 +92,30 @@ macro_rules! impl_heavyside {
     };
 }
 
+macro_rules! impl_linear {
+    ($($T:ty),* $(,)*) => {
+        $(
+            impl LinearActivation for $T {
+                type Output = $T;
+
+                fn linear(self) -> Self::Output {
+                    self
+                }
+
+                fn linear_derivative(self) -> Self::Output {
+                    <$T>::one()
+                }
+            }
+        )*
+    };
+}
+
 impl_heavyside!(
-    f32, f64, i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize,
+    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64,
+);
+
+impl_linear!(
+    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64,
 );
 
 impl<A, B, S, D> HeavysideActivation for ArrayBase<S, D, A>
@@ -131,18 +152,20 @@ where
     }
 }
 
-impl<T> LinearActivation for T
+impl<A, S, D> LinearActivation for ArrayBase<S, D, A>
 where
-    T: Clone + Default,
+    A: Clone + One,
+    D: Dimension,
+    S: DataMut<Elem = A>,
 {
-    type Output = T;
+    type Output = ArrayBase<S, D, A>;
 
     fn linear(self) -> Self::Output {
-        self.clone()
+        self
     }
 
     fn linear_derivative(self) -> Self::Output {
-        <T>::default()
+        self.mapv_into(|_| <A>::one())
     }
 }
 

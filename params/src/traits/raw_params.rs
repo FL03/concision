@@ -38,7 +38,6 @@ pub trait ExactDimParams: NdParams {
     fn shape(&self) -> &Self::Shape;
 }
 
-
 /*
  ************* Implementations *************
 */
