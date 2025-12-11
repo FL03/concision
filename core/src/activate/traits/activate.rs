@@ -2,7 +2,7 @@
     appellation: activate <module>
     authors: @FL03
 */
-use super::unary::*;
+use super::common::*;
 
 use concision_traits::Apply;
 #[cfg(feature = "complex")]

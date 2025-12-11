@@ -2,9 +2,10 @@
     appellation: params <module>
     authors: @FL03
 */
-//! this module provides the [`ModelParamsBase`] type and its associated aliases. The
-//! implementation focuses on providing a generic container for the parameters of a neural
-//! network.
+//! this module works to provide a common interface for storing sets of parameters within a
+//! given model. The [`ModelParamsBase`] implementation generically captures the behavior of
+//! parameter storage, relying on the [`ParamsBase`](concision_params::ParamsBase) instance to represent
+//! individual layers within the network.
 #[doc(inline)]
 pub use self::{model_params::*, traits::*, types::*};
 

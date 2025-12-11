@@ -13,8 +13,8 @@
 //! values. At its core, the [`ParamsBase`] object is defined as an object composed of two
 //! independent tensors:
 //!
-//! - An $`n`$ dimensional weight tensor
-//! - An $`n-1`$ dimensional bias tensor
+//! - An $n$ dimensional weight tensor
+//! - An $n-1$ dimensional bias tensor
 //!
 //! These tensors can be of any shape or size, allowing for a wide range of neural network
 //! architectures to be represented. The crate also provides various utilities and traits for
@@ -65,7 +65,7 @@ mod impls {
     mod impl_params_serde;
 }
 
-pub mod traits {
+mod traits {
     //! Additional traits for working with parameters
     pub use self::{tensor::*, wnb::*};
 

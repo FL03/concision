@@ -14,7 +14,7 @@ use ndarray::{
 /// Therefore, we allow the weight tensor to be the _shape_ of the parameters, using the shape
 /// as the basis for the bias tensor by removing one axi (typically the first axis).
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
-/// that can be reduced by one axis, typically the "zero-th" axis: $`\mbox{rank}(D)>0`$.
+/// that can be reduced by one axis, typically the "zero-th" axis: $\text{rank}(D)$.
 pub struct ParamsBase<S, D = ndarray::Ix2, A = <S as RawData>::Elem>
 where
     D: Dimension,
