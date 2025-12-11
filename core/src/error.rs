@@ -47,8 +47,6 @@ pub enum Error {
     ParamError(#[from] concision_params::ParamsError),
     #[error(transparent)]
     InitError(#[from] concision_init::InitError),
-    #[error(transparent)]
-    TraitError(#[from] concision_traits::Error),
     #[cfg(feature = "serde")]
     #[error(transparent)]
     DeserializeError(#[from] serde::de::value::Error),

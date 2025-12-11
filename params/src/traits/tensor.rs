@@ -25,14 +25,14 @@ pub trait ScalarTensor: RawTensor<Elem = Self> + Sized {
     private!();
 }
 
-pub trait TensorParams: RawTensor {
+pub trait Tensor: RawTensor {
     /// returns the number of dimensions of the parameter
     fn rank(&self) -> usize;
     /// returns the size of the parameter
     fn size(&self) -> usize;
 }
 
-pub trait ExactDimTensor: TensorParams {
+pub trait ExactDimTensor: Tensor {
     type Shape: ?Sized;
     /// returns the shape of the parameter as a slice
     fn shape(&self) -> &Self::Shape;
@@ -82,7 +82,7 @@ macro_rules! impl_param {
             seal! {}
         }
 
-        impl TensorParams for $T {
+        impl Tensor for $T {
             fn rank(&self) -> usize {
                 0
             }
@@ -126,7 +126,7 @@ where
     seal! {}
 }
 
-impl<S, D, A> TensorParams for ArrayBase<S, D, A>
+impl<S, D, A> Tensor for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -162,7 +162,7 @@ where
     seal! {}
 }
 
-impl<S, D, A> TensorParams for ParamsBase<S, D, A>
+impl<S, D, A> Tensor for ParamsBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -212,7 +212,7 @@ impl<const N: usize, T> RawTensor for [T; N] {
     seal! {}
 }
 
-impl<const N: usize, T> TensorParams for [T; N] {
+impl<const N: usize, T> Tensor for [T; N] {
     fn rank(&self) -> usize {
         1
     }

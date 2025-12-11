@@ -8,6 +8,68 @@ mod impl_leaky;
 mod impl_leaky_params;
 mod impl_leaky_state;
 
+/// An implementation of a leaky integrate-and-fire (LIF) neuron with an adaptation term and 
+/// exponential synaptic current. Generally speaking, an intergate-and-fire neuron integrates 
+/// the input current over time until the membrane potential reaches a certain threshold,
+/// at which point it emits a spike and resets its membrane potential. The _leaky_ term speaks 
+/// to the decay of the membrane potential over time, simulating the effect of a leaky 
+/// capacitor.
+///
+/// ## Model
+///
+/// Here, we describe the dynamics of a leaky integrate-and-fire (LIF) neuron with an
+/// adaptation term and exponential synaptic current. The neuron's behavior is governed by the
+/// following differential equations:
+///
+/// ```math
+/// \begin{aligned}
+/// \tau_{m}\cdot{\frac{dv}{dt}} &= -(v - v_{rest}) + R\cdot{(I_{ext} + I_{syn})} - \omega \\
+/// \tau_{w}\cdot{\frac{d\omega}{dt}} &= -\omega \\
+/// \tau_{s}\cdot{\frac{ds}{dt}} &= -s
+/// \end{aligned}
+/// ```
+///
+/// If we allow the spike to be represented as $`\delta`$, then:
+///
+/// ```math
+/// v\geq{v_{thresh}}\rightarrow{\delta},v\leftarrow{v_{reset}},\omega\mathrel{+}=b
+/// ```
+///
+/// where $`b`$ is the adaptation increment added on spike. The synaptic current is given by:
+///
+/// ```math
+/// I_{syn} = s
+/// ```
+///
+/// ## Variables
+/// 
+/// - $`\tau_{m}`$: membrane time constant
+/// - $`R`$: membrane resistance
+/// - $`v_{rest}`$: resting potential
+/// - $`I_{ext}`$: externally applied current
+/// - $`I_{syn}`$: synaptic current
+/// - $`\tau_{w}`$: adaptation time constant
+/// - $`\tau_{s}`$: synaptic time constant
+///
+/// - $`v`$: membrane potential
+/// - $`\omega`$: adaptation variable
+/// - $`s`$: synaptic variable representing total synaptic current
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Deserialize, serde::Serialize),
+    serde(rename_all = "snake_case")
+)]
+#[repr(C)]
+pub struct Leaky<T = f32> {
+    #[cfg_attr(feature = "serde", serde(flatten))]
+    pub params: LeakyParams<T>,
+    #[cfg_attr(feature = "serde", serde(flatten))]
+    pub state: LeakyState<T>,
+    /// Minimum allowed dt for integration [ms]
+    pub min_dt: T,
+}
+
 /// The params of a leaky integrate-and-fire (LIF) neuron
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
@@ -61,66 +123,4 @@ pub struct LeakyState<T = f32> {
         serde(alias = "synaptic_current", alias = "synaptic_state")
     )]
     pub s: T,
-}
-/// A leaky integrate-and-fire (LIF) neuron with an adaptation term and exponential synaptic
-/// current. The neuron's dynamics are governed by the following equations:
-///
-/// ```math
-/// \frac{dv}{dt} = \frac{-(v - v_{rest}) + R \cdot{(i_{ext} + s)} - w}{\tau_{m}}
-/// ```
-/// A leaky integrate-and-fire (LIF) neuron implementation with adaptation and exponential
-/// synaptic current.
-///
-/// ## Model
-///
-/// Here, we describe the dynamics of a leaky integrate-and-fire (LIF) neuron with an
-/// adaptation term and exponential synaptic current. The neuron's behavior is governed by the
-/// following differential equations:
-///
-/// ```math
-/// \begin{aligned}
-/// \tau_{m}\cdot{\frac{dv}{dt}} &= -(v - v_{rest}) + R\cdot{(I_{ext} + I_{syn})} - \omega \\
-/// \tau_{w}\cdot{\frac{d\omega}{dt}} &= -\omega \\
-/// \tau_{s}\cdot{\frac{ds}{dt}} &= -s
-/// \end{aligned}
-/// ```
-///
-/// where:
-/// - $`\tau_{m}`$: membrane time constant
-/// - $`R`$: membrane resistance
-/// - $`v_{rest}`$: resting potential
-/// - $`I_{ext}`$: externally applied current
-/// - $`I_{syn}`$: synaptic current
-/// - $`\tau_{w}`$: adaptation time constant
-/// - $`\tau_{s}`$: synaptic time constant
-///
-/// - $`v`$: membrane potential
-/// - $`\omega`$: adaptation variable
-/// - $`s`$: synaptic variable representing total synaptic current
-///
-/// If we allow the spike to be represented as $`\delta`$, then:
-///
-/// ```math
-/// v\geq{v_{thresh}}\rightarrow{\delta},v\leftarrow{v_{reset}},\omega\mathrel{+}=b
-/// ```
-///
-/// where $`b`$ is the adaptation increment added on spike. The synaptic current is given by:
-///
-/// ```math
-/// I_{syn} = s
-/// ```
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "snake_case")
-)]
-#[repr(C)]
-pub struct Leaky<T = f32> {
-    #[cfg_attr(feature = "serde", serde(flatten))]
-    pub params: LeakyParams<T>,
-    #[cfg_attr(feature = "serde", serde(flatten))]
-    pub state: LeakyState<T>,
-    /// Minimum allowed dt for integration [ms]
-    pub min_dt: T,
 }

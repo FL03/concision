@@ -182,6 +182,7 @@ serde = [
   "dep:serde_derive",
   "concision-init/serde",
   "concision-params/serde",
+  "concision-traits/serde",
   "hashbrown/serde",
   "ndarray/serde",
   "num-complex?/serde",

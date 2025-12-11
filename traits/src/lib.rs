@@ -30,21 +30,17 @@ pub(crate) mod macros {
     pub mod seal;
 }
 
-pub mod error;
-
 mod apply;
 mod clip;
 mod codex;
 mod complex;
-mod container;
-mod convert;
 mod entropy;
 mod loss;
 mod norm;
 mod predict;
 mod propagation;
 mod rounding;
-mod store;
+mod cont;
 mod training;
 
 pub mod math {
@@ -85,17 +81,13 @@ pub mod tensor {
 
 // re-exports
 #[doc(inline)]
-pub use self::error::*;
-#[doc(inline)]
 pub use self::prelude::*;
-
+// prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
-    pub use crate::container::*;
-    pub use crate::convert::*;
     pub use crate::entropy::*;
     pub use crate::loss::*;
     pub use crate::math::*;
@@ -104,7 +96,7 @@ pub mod prelude {
     pub use crate::predict::*;
     pub use crate::propagation::*;
     pub use crate::rounding::*;
-    pub use crate::store::*;
+    pub use crate::cont::*;
     pub use crate::tensor::*;
     pub use crate::training::*;
 

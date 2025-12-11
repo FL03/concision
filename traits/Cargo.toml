@@ -37,6 +37,7 @@ required-features = ["complex"]
 # custom
 variants = { workspace = true }
 # data structures
+hashbrown = { optional = true, workspace = true }
 ndarray = { workspace = true }
 # error-handling
 anyhow = { workspace = true }
@@ -54,7 +55,7 @@ rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 
 [features]
-default = ["std"]
+default = ["hashbrown", "std"]
 
 full = [
   "approx",
@@ -63,12 +64,15 @@ full = [
   "rand",
 ]
 
-nightly = []
+nightly = [
+  "hashbrown?/nightly",
+]
 
 # ************* [FF:Dependencies] *************
 std = [
   "alloc",
   "anyhow/std",
+  "hashbrown?/default",
   "ndarray/std",
   "num-complex?/std",
   "num-integer/std",
@@ -82,7 +86,9 @@ wasi = []
 
 wasm = ["getrandom?/wasm_js"]
 # ************* [FF:Dependencies] *************
-alloc = []
+alloc = [
+  "hashbrown?/alloc",
+]
 
 approx = ["dep:approx", "ndarray/approx"]
 
@@ -90,7 +96,15 @@ blas = ["ndarray/blas"]
 
 complex = ["dep:num-complex"]
 
-rayon = ["ndarray/rayon"]
+hashbrown = [
+  "dep:hashbrown",
+  "alloc",
+]
+
+rayon = [
+  "hashbrown?/rayon", 
+  "ndarray/rayon"
+]
 
 rand = [
   "dep:rand",
@@ -103,4 +117,8 @@ rng = [
   "dep:getrandom",
   "rand?/small_rng",
   "rand?/thread_rng",
+]
+
+serde = [
+  "hashbrown?/serde",
 ]

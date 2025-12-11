@@ -80,3 +80,21 @@ where
         }
     }
 }
+
+impl<T> core::ops::Index<&str> for LeakyParams<T> {
+    type Output = T;
+
+    fn index(&self, index: &str) -> &Self::Output {
+        match index {
+            "b" | "adaptation_increment" => &self.b,
+            "resistance" | "r" => &self.resistance,
+            "tau_m" | "membrane_time_constant" => &self.tau_m,
+            "tau_s" | "synaptic_time_constant" => &self.tau_s,
+            "tau_w" | "adaptation_time_constant" => &self.tau_w,
+            "v_reset" | "reset_potential" => &self.v_reset,
+            "v_rest" | "resting_potential" => &self.v_rest,
+            "v_thresh" | "threshold_potential" => &self.v_thresh,
+            _ => panic!("invalid index for LeakyParams: {}", index),
+        }
+    }
+}

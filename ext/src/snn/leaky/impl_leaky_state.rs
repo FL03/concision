@@ -164,6 +164,32 @@ impl<T> LeakyState<T> {
         self.s += ds;
         self
     }
+    /// returns a reference to the value associated with the given key
+    ///
+    /// # Panics
+    ///
+    /// Panics if the key is not one of "v", "w", "s", or one of their respective aliases.
+    pub fn get(&self, key: &str) -> &T {
+        match key {
+            "v" | "membrane_potential" => &self.v,
+            "w" | "adaptation_variable" => &self.w,
+            "s" | "synaptic_current" => &self.s,
+            _ => panic!("invalid key for LeakyState: {}", key),
+        }
+    }
+    /// returns a reference to the value associated with the given key
+    ///
+    /// # Panics
+    ///
+    /// Panics if the key is not one of "v", "w", "s", or one of their respective aliases.
+    pub fn get_mut(&mut self, key: &str) -> &mut T {
+        match key {
+            "v" | "membrane_potential" => &mut self.v,
+            "w" | "adaptation_variable" => &mut self.w,
+            "s" | "synaptic_current" => &mut self.s,
+            _ => panic!("invalid key for LeakyState: {}", key),
+        }
+    }
 }
 
 impl<T> Default for LeakyState<T>
@@ -172,5 +198,44 @@ where
 {
     fn default() -> Self {
         Self::zero()
+    }
+}
+
+impl<T> core::ops::Index<usize> for LeakyState<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index % 3 {
+            0 => &self.v,
+            1 => &self.w,
+            2 => &self.s,
+            _ => unreachable!("modulo 3 should only yield 0, 1, or 2"),
+        }
+    }
+}
+
+impl<T> core::ops::Index<char> for LeakyState<T> {
+    type Output = T;
+
+    fn index(&self, index: char) -> &Self::Output {
+        match index {
+            'v' => &self.v,
+            'w' => &self.w,
+            's' => &self.s,
+            _ => panic!("invalid index for LeakyState: {}", index),
+        }
+    }
+}
+
+impl<T> core::ops::Index<&str> for LeakyState<T> {
+    type Output = T;
+
+    fn index(&self, index: &str) -> &Self::Output {
+        match index {
+            "v" | "membrane_potential" => &self.v,
+            "w" | "adaptation_variable" => &self.w,
+            "s" | "synaptic_current" => &self.s,
+            _ => panic!("invalid index for LeakyState: {}", index),
+        }
     }
 }

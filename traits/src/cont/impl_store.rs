@@ -1,21 +1,8 @@
 /*
-    appellation: store <module>
-    authors: @FL03
+    Appellation: impl_store <module>
+    Created At: 2025.12.10:21:32:17
+    Contrib: @FL03
 */
-/// The [`RawStore`] trait provides a generalized interface for all _containers_. The trait is
-/// sealed, preventing any external implementations and is primarily used as the basis for
-/// other traits, such as [`Sequential`].
-pub trait RawStore {
-    type Elem;
-
-    private!();
-}
-/// The [`Sequential`] trait is a marker trait defining a sequential collection of elements.
-/// It is sealed, preventing external implementations, and is used to indicate that a type can
-/// be treated as a sequence of elements, such as arrays or vectors.
-pub trait Sequential {
-    private!();
-}
 
 macro_rules! impl_raw_store {
     (@impl $($name:ident)::*<$T:ident>) => {
@@ -25,14 +12,8 @@ macro_rules! impl_raw_store {
             seal!();
         }
     };
-    {
-        $(
-            $($name:ident)::*<$T:ident>
-        ),* $(,)?
-    } => {
-        $(
-            impl_raw_store!(@impl $($name)::*<$T>);
-        )*
+    {$($($name:ident)::*<$T:ident>),* $(,)?} => {
+        $(impl_raw_store!(@impl $($name)::*<$T>);)*
     };
 }
 
@@ -42,11 +23,7 @@ macro_rules! impl_sequential {
             seal!();
         }
     };
-    {
-        $(
-            $($name:ident)::*<$T:ident>
-        ),* $(,)?
-    } => {
+     {$($($name:ident)::*<$T:ident>),* $(,)?} => {
         $(
             impl_sequential!(@impl $($name)::*<$T>);
         )*
@@ -111,7 +88,7 @@ impl_raw_store! {
 
 #[cfg(all(feature = "alloc", not(feature = "nightly")))]
 mod impl_alloc {
-    use super::RawStore;
+    use crate::store::RawStore;
 
     impl<K, V> RawStore for alloc::collections::BTreeMap<K, V> {
         type Elem = V;
@@ -129,16 +106,30 @@ mod impl_alloc {
     impl_sequential! {
         alloc::vec::Vec<T>,
     }
+
+    #[cfg(feature = "hashbrown")]
+    impl<K, V, S> RawStore for hashbrown::HashMap<K, V, S> {
+        type Elem = V;
+
+        seal!();
+    }
+    #[cfg(feature = "hashbrown")]
+    impl<K, S> RawStore for hashbrown::HashSet<K, S> {
+        type Elem = K;
+
+        seal!();
+    }
 }
 
 #[cfg(all(feature = "alloc", feature = "nightly"))]
 mod impl_alloc {
-    use super::RawStore;
+    use crate::store::RawStore;
     use alloc::alloc::Allocator;
+    use alloc::boxed::Box;
     use alloc::collections::{BTreeMap, BTreeSet};
     use alloc::vec::Vec;
 
-    impl<T, A> RawStore for alloc::boxed::Box<T, A>
+    impl<T, A> RawStore for Box<T, A>
     where
         A: Allocator + Clone,
     {
@@ -173,11 +164,30 @@ mod impl_alloc {
 
         seal!();
     }
+
+    #[cfg(feature = "hashbrown")]
+    impl<K, V, S, A> RawStore for hashbrown::HashMap<K, V, S, A>
+    where
+        A: Allocator,
+    {
+        type Elem = V;
+
+        seal!();
+    }
+    #[cfg(feature = "hashbrown")]
+    impl<K, S, A> RawStore for hashbrown::HashSet<K, S, A>
+    where
+        A: Allocator,
+    {
+        type Elem = K;
+
+        seal!();
+    }
 }
 
 #[cfg(feature = "std")]
 mod impl_std {
-    use super::RawStore;
+    use crate::store::RawStore;
 
     impl<K, V, S> RawStore for std::collections::HashMap<K, V, S> {
         type Elem = V;

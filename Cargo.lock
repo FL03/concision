@@ -348,6 +348,7 @@ dependencies = [
  "anyhow",
  "approx",
  "getrandom 0.3.4",
+ "hashbrown 0.16.1",
  "ndarray",
  "num-complex",
  "num-integer",

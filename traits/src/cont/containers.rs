@@ -1,35 +1,12 @@
 /*
-    Appellation: container <module>
-    Created At: 2025.11.28:15:30:46
+    Appellation: containers <module>
+    Created At: 2025.12.10:21:29:49
     Contrib: @FL03
 */
 /// The [`Container`] trait defines a generic interface for container types.
 pub trait Container {
     type Cont<U>: ?Sized;
     type Item;
-}
-
-pub trait KeyValue {
-    type Cont<_K, _V>;
-    type Key;
-    type Value;
-
-    fn key(&self) -> &Self::Key;
-    fn value(&self) -> &Self::Value;
-}
-
-impl<K, V> KeyValue for (K, V) {
-    type Cont<_K, _V> = (_K, _V);
-    type Key = K;
-    type Value = V;
-
-    fn key(&self) -> &Self::Key {
-        &self.0
-    }
-
-    fn value(&self) -> &Self::Value {
-        &self.1
-    }
 }
 
 macro_rules! container {
@@ -40,13 +17,13 @@ macro_rules! container {
     };
 
     (@impl $($container:ident)::*<$T:ident>) => {
-        impl<$T> $crate::container::Container for $($container)::*<$T> {
+        impl<$T> $crate::cont::Container for $($container)::*<$T> {
             type Cont<U> = $($container)::*<U>;
             type Item = $T;
         }
     };
     (@impl $($container:ident)::*<$K:ident, $V:ident>) => {
-        impl<$K, $V>  $crate::container::Container for $($container)::*<$K, $V> {
+        impl<$K, $V>  $crate::cont::Container for $($container)::*<$K, $V> {
             type Cont<U> = $($container)::*<$K, U>;
             type Item = $V;
         }
