@@ -3,45 +3,41 @@
     Created At: 2025.12.10:21:29:49
     Contrib: @FL03
 */
-/// The [`Container`] trait defines a generic interface for container types.
-pub trait Container {
-    type Cont<U>: ?Sized;
-    type Item;
-}
+use super::DataContainer;
 
-macro_rules! container {
+macro_rules! impl_data_container {
     ($(
         $($container:ident)::*<$A:ident $(, $B:ident)?>
     ),* $(,)?) => {
-        $(container!(@impl $($container)::*<$A $(, $B)?>);)*
+        $(impl_data_container!(@impl $($container)::*<$A $(, $B)?>);)*
     };
 
     (@impl $($container:ident)::*<$T:ident>) => {
-        impl<$T> $crate::cont::Container for $($container)::*<$T> {
+        impl<$T> $crate::cont::DataContainer for $($container)::*<$T> {
             type Cont<U> = $($container)::*<U>;
             type Item = $T;
         }
     };
     (@impl $($container:ident)::*<$K:ident, $V:ident>) => {
-        impl<$K, $V>  $crate::cont::Container for $($container)::*<$K, $V> {
+        impl<$K, $V>  $crate::cont::DataContainer for $($container)::*<$K, $V> {
             type Cont<U> = $($container)::*<$K, U>;
             type Item = $V;
         }
     };
 }
 
-impl<T> Container for [T] {
+impl<T> DataContainer for [T] {
     type Cont<U> = [U];
     type Item = T;
 }
 
-container! {
+impl_data_container! {
     core::option::Option<T>,
     core::result::Result<T, E>,
 }
 
 #[cfg(feature = "alloc")]
-container! {
+impl_data_container! {
     alloc::boxed::Box<T>,
     alloc::vec::Vec<T>,
     alloc::collections::BTreeMap<K, V>,
@@ -52,7 +48,7 @@ container! {
 }
 
 #[cfg(feature = "std")]
-container! {
+impl_data_container! {
     std::collections::HashMap<K, V>,
     std::collections::HashSet<K>,
     std::cell::Cell<T>,

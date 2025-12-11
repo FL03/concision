@@ -90,24 +90,14 @@ signal = ["complex", "rustfft"]
 
 # ********* [FF:Models] *********
 models = [
-  "s4",
   "snn",
-  "transformer",
 ]
 
 attention = []
 
-cnn = []
-
-kan = []
-
-rnn = []
-
-s4 = []
-
 snn = []
 
-transformer = ["attention"]
+transformer = []
 
 # ************* [FF:Environments] *************
 std = [

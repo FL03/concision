@@ -34,13 +34,15 @@ mod apply;
 mod clip;
 mod codex;
 mod complex;
+mod cont;
 mod entropy;
+mod get;
+mod hkt;
 mod loss;
 mod norm;
 mod predict;
 mod propagation;
 mod rounding;
-mod cont;
 mod training;
 
 pub mod math {
@@ -88,7 +90,10 @@ pub mod prelude {
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
+    pub use crate::cont::*;
     pub use crate::entropy::*;
+    pub use crate::get::*;
+    pub use crate::hkt::*;
     pub use crate::loss::*;
     pub use crate::math::*;
     pub use crate::norm::*;
@@ -96,7 +101,6 @@ pub mod prelude {
     pub use crate::predict::*;
     pub use crate::propagation::*;
     pub use crate::rounding::*;
-    pub use crate::cont::*;
     pub use crate::tensor::*;
     pub use crate::training::*;
 

@@ -28,32 +28,6 @@ mod impl_leaky_state;
 /// \tau_{s}\cdot{\frac{ds}{dt}} &= -s
 /// \end{aligned}
 /// ```
-///
-/// If we allow the spike to be represented as $`\delta`$, then:
-///
-/// ```math
-/// v\geq{v_{thresh}}\rightarrow{\delta},v\leftarrow{v_{reset}},\omega\mathrel{+}=b
-/// ```
-///
-/// where $`b`$ is the adaptation increment added on spike. The synaptic current is given by:
-///
-/// ```math
-/// I_{syn} = s
-/// ```
-///
-/// ## Variables
-/// 
-/// - $`\tau_{m}`$: membrane time constant
-/// - $`R`$: membrane resistance
-/// - $`v_{rest}`$: resting potential
-/// - $`I_{ext}`$: externally applied current
-/// - $`I_{syn}`$: synaptic current
-/// - $`\tau_{w}`$: adaptation time constant
-/// - $`\tau_{s}`$: synaptic time constant
-///
-/// - $`v`$: membrane potential
-/// - $`\omega`$: adaptation variable
-/// - $`s`$: synaptic variable representing total synaptic current
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",
