@@ -14,7 +14,7 @@ use ndarray::{Axis, Data, DataMut, Dimension, RawData, RemoveAxis};
 /// - immutable and mutable iterators over each parameter (weights and bias) respectively;
 /// - an iterator over the parameters, which zips together an axis iterator over the columns of
 ///   the weights and an iterator over the bias;
-impl<S, D, A> ParamsBase<S, D, A>
+impl<A, S, D> ParamsBase<S, D, A>
 where
     S: RawData<Elem = A>,
     D: Dimension,

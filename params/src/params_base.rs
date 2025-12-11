@@ -27,7 +27,7 @@ pub struct ParamsLayoutRef<A, D: Dimension> {
 /// smaller than the weights tensor.
 ///
 /// Therefore, we allow the weight tensor to be the _shape_ of the parameters, using the shape
-/// as the basis for the bias tensor by removing one axi (typically the first axis).
+/// as the basis for the bias tensor by removing the first axis.
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
 /// that can be reduced by one axis, typically the "zero-th" axis: $\text{rank}(D)$.
 pub struct ParamsBase<S, D = ndarray::Ix2, A = <S as RawData>::Elem>
@@ -65,19 +65,20 @@ where
         Self::new(bias, weights)
     }
     /// returns a new instance of the [`ParamsBase`] initialized use the given shape_function
-    pub fn from_shape_fn<Sh, F>(shape: Sh, f: F) -> Self
+    pub fn from_shape_fn<Sh, F1, F2>(shape: Sh, wf: F1, bf: F2) -> Self
     where
         A: Clone,
         D: RemoveAxis,
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
         D::Smaller: Dimension + ShapeArg,
-        F: Fn(<D::Smaller as Dimension>::Pattern) -> A + Fn(<D as Dimension>::Pattern) -> A,
+        F1: Fn(<D as Dimension>::Pattern) -> A,
+        F2: Fn(<D::Smaller as Dimension>::Pattern) -> A,
     {
         let shape = shape.into_shape_with_order();
         let bdim = shape.raw_dim().remove_axis(Axis(0));
-        let bias = ArrayBase::from_shape_fn(bdim, |s| f(s));
-        let weights = ArrayBase::from_shape_fn(shape, |s| f(s));
+        let bias = ArrayBase::from_shape_fn(bdim, |s| bf(s));
+        let weights = ArrayBase::from_shape_fn(shape, |s| wf(s));
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] with the given bias used the default weights
@@ -265,7 +266,7 @@ where
     where
         A: Clone,
         S: DataOwned,
-        Sh: ShapeBuilder,
+        Sh: ShapeBuilder<Dim = D>,
         Sh::Dim: Dimension + RemoveAxis,
     {
         let shape = shape.into_shape_with_order();
