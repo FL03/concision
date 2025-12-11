@@ -120,8 +120,8 @@ where
 /// H(x) =
 /// \left\{
 /// \begin{array}{rcl}
-/// 1 & \mbox{if} & x\gt{0} \\
-/// 0 & \mbox{if} & x\leq{0}
+/// 1 & \text{if } & x\gt{0} \\
+/// 0 & \text{if } & x\leq{0}
 /// \end{array}
 /// \right.
 /// ```
