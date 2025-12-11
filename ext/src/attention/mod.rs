@@ -24,7 +24,7 @@
 //!   expensive.
 //!
 #[doc(inline)]
-pub use self::{multi_head::MultiHeadAttention, qkv::*, scaled::ScaledDotProductAttention};
+pub use self::{multi_head::MultiHeadAttention, qkv::*, scaled::SDPA};
 
 #[cfg(feature = "signal")]
 pub mod fft;
@@ -47,12 +47,12 @@ pub(crate) mod prelude {
     #[doc(inline)]
     pub use super::qkv::QkvParamsBase;
     #[doc(inline)]
-    pub use super::scaled::ScaledDotProductAttention;
+    pub use super::scaled::SDPA;
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Qkv, ScaledDotProductAttention};
+    use super::{Qkv, SDPA};
 
     #[test]
     fn test_scaled_dot_product_attention() {
@@ -61,7 +61,7 @@ mod tests {
         // initialize some params
         let qkv = Qkv::<f64>::ones((m, n));
         // initialize the scaled dot-product attention layer
-        let layer = ScaledDotProductAttention::<f64>::new(0.1, 1.0);
+        let layer = SDPA::<f64>::new(0.1, 1.0);
         // compute the attention scores
         let z_score = layer.attention(&qkv);
         // verify the output dimensions

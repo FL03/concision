@@ -282,4 +282,15 @@ where
     {
         ParamsBase::new(self.bias.view_mut(), self.weights.view_mut())
     }
+
+    pub fn clamp(&mut self, min: A, max: A) -> crate::Params<A, D>
+    where
+        A: 'static + Clone + PartialOrd,
+        S: Data,
+    {
+        ParamsBase {
+            bias: self.bias().clamp(min.clone(), max.clone()),
+            weights: self.weights().clamp(min, max),
+        }
+    }
 }

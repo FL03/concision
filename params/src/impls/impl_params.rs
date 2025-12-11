@@ -8,43 +8,14 @@ use crate::Params;
 use crate::traits::{Biased, Weighted};
 use concision_traits::{Apply, FillLike, OnesLike, ZerosLike};
 use core::iter::Once;
-use ndarray::{ArrayBase, Data, DataOwned, Dimension, Ix1, Ix2, RawData};
+use ndarray::{ArrayBase, Data, DataOwned, Dimension, RawData};
 use num_traits::{One, Zero};
 
-impl<A, S> ParamsBase<S, Ix1>
+impl<A, S, D> ParamsBase<S, D, A>
 where
+    D: Dimension,
     S: RawData<Elem = A>,
 {
-    /// returns a new instance of the [`ParamsBase`] initialized using a _scalar_ bias along
-    /// with the given, one-dimensional weight tensor.
-    pub fn from_scalar_bias(bias: A, weights: ArrayBase<S, Ix1>) -> Self
-    where
-        A: Clone,
-        S: DataOwned,
-    {
-        Self {
-            bias: ArrayBase::from_elem((), bias),
-            weights,
-        }
-    }
-    /// returns the number of rows in the weights matrix
-    pub fn nrows(&self) -> usize {
-        self.weights().len()
-    }
-}
-
-impl<A, S> ParamsBase<S, Ix2>
-where
-    S: RawData<Elem = A>,
-{
-    /// returns the number of columns in the weights matrix
-    pub fn ncols(&self) -> usize {
-        self.weights().ncols()
-    }
-    /// returns the number of rows in the weights matrix
-    pub fn nrows(&self) -> usize {
-        self.weights().nrows()
-    }
 }
 
 impl<A, S, D> Weighted<S, D, A> for ParamsBase<S, D, A>
@@ -78,6 +49,18 @@ where
 
     fn bias_mut(&mut self) -> &mut ArrayBase<S, D::Smaller, A> {
         self.bias_mut()
+    }
+}
+
+impl<S, D> core::ops::Deref for ParamsBase<S, D>
+where
+    D: Dimension,
+    S: RawData,
+{
+    type Target = ndarray::LayoutRef<S::Elem, D>;
+
+    fn deref(&self) -> &Self::Target {
+        self.weights().as_layout_ref()
     }
 }
 

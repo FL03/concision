@@ -8,11 +8,11 @@ mod impl_leaky;
 mod impl_leaky_params;
 mod impl_leaky_state;
 
-/// An implementation of a leaky integrate-and-fire (LIF) neuron with an adaptation term and 
-/// exponential synaptic current. Generally speaking, an intergate-and-fire neuron integrates 
+/// An implementation of a leaky integrate-and-fire (LIF) neuron with an adaptation term and
+/// exponential synaptic current. Generally speaking, an intergate-and-fire neuron integrates
 /// the input current over time until the membrane potential reaches a certain threshold,
-/// at which point it emits a spike and resets its membrane potential. The _leaky_ term speaks 
-/// to the decay of the membrane potential over time, simulating the effect of a leaky 
+/// at which point it emits a spike and resets its membrane potential. The _leaky_ term speaks
+/// to the decay of the membrane potential over time, simulating the effect of a leaky
 /// capacitor.
 ///
 /// ## Model

@@ -56,6 +56,7 @@ mod impls {
     mod impl_params;
     mod impl_params_iter;
     mod impl_params_ops;
+    mod impl_params_repr;
 
     #[allow(deprecated)]
     mod impl_params_deprecated;

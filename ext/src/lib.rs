@@ -2,16 +2,20 @@
     Appellation: concision-ext <library>
     Contrib: @FL03
 */
-//! An extension of the [`concision`](https://crates.io/crates/concision) library, focusing on
-//! providing additional layers and other non-essential features for building more complex
-//! neural networks and machine learning models.
+//! An extension of the [`concision`](https://docs.rs/concision) library, focusing on
+//! implementing additional layers, models, and utilities for deep learning applications.
 //!
 //! ## Features
 //!
-//! - **attention**: Enables various attention mechanisms from scaled dot-product and
-//!   multi-headed attention to FFT-based attention.
+//! - `attention`: Enables attention mechanisms commonly used in transformer architectures.
+//! - `snn`: Introduces spiking neural network components for neuromorphic computing.
 //!
-#![allow(clippy::module_inception, clippy::needless_doctest_main)]
+#![allow(
+    clippy::missing_errors_doc,
+    clippy::module_inception,
+    clippy::needless_doctest_main,
+    clippy::upper_case_acronyms
+)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "alloc")]
@@ -26,7 +30,7 @@ pub mod snn;
 /// re-exports
 #[cfg(feature = "attention")]
 pub use self::prelude::*;
-
+// prelude
 #[doc(hidden)]
 pub mod prelude {
     #[cfg(feature = "attention")]

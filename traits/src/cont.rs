@@ -20,7 +20,6 @@ pub trait RawContainer {
 /// be treated as a sequence of elements, such as arrays or vectors.
 pub trait Sequential {
     private!();
-
 }
 
 /// The [`DataContainer`] trait defines a generic interface for container types.

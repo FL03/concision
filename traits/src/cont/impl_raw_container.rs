@@ -52,7 +52,6 @@ impl_raw_container! {
     Option<T>,
 }
 
-
 #[cfg(feature = "std")]
 impl<K, V, S> RawContainer for std::collections::HashMap<K, V, S> {
     type Elem = V;
@@ -83,7 +82,7 @@ mod impl_alloc {
         alloc::sync::Arc<T>,
         alloc::vec::Vec<T>
     }
-    
+
     #[cfg(feature = "hashbrown")]
     impl<K, V, S> RawContainer for hashbrown::HashMap<K, V, S> {
         type Elem = V;

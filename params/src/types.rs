@@ -8,6 +8,7 @@ use ndarray::{CowRepr, Ix2, OwnedArcRepr, OwnedRepr, RawViewRepr, ViewRepr};
 
 /// A type alias for a [`ParamsBase`] with an owned internal layout
 pub type Params<A = f32, D = Ix2> = ParamsBase<OwnedRepr<A>, D, A>;
+
 /// A type alias for shared parameters
 pub type ArcParams<A = f32, D = Ix2> = ParamsBase<OwnedArcRepr<A>, D, A>;
 /// A type alias for an immutable view of the parameters
