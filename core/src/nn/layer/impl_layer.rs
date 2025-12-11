@@ -5,7 +5,7 @@
 use super::Layer;
 use crate::activate::Activator;
 use crate::nn::RawLayer;
-use concision_params::RawTensor;
+use concision_params::RawParams;
 use concision_traits::Forward;
 
 impl<F, P> Layer<F, P> {
@@ -87,7 +87,7 @@ impl<F, P> Layer<F, P> {
 impl<F, P, X, Y> Forward<X> for Layer<F, P>
 where
     F: Activator<Y, Output = Y>,
-    P: RawTensor + Forward<X, Output = Y>,
+    P: RawParams + Forward<X, Output = Y>,
 {
     type Output = Y;
 
@@ -98,8 +98,8 @@ where
 
 impl<F, P, A> RawLayer<F, P> for Layer<F, P>
 where
-    F: Activator<P>,
-    P: RawTensor<Elem = A>,
+    F: Activator<A>,
+    P: RawParams<Elem = A>,
 {
     fn rho(&self) -> &F {
         &self.rho

@@ -5,7 +5,7 @@
 use super::Layer;
 
 use crate::activate::{Activator, HyperbolicTangent, Linear, ReLU, Sigmoid};
-use concision_params::{ParamsBase, RawTensor};
+use concision_params::{ParamsBase, RawParams};
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
 impl<F, S, D, A> Layer<F, ArrayBase<S, D, A>>
@@ -53,13 +53,13 @@ where
 impl<F, P, A> Layer<F, P>
 where
     F: Fn(A) -> A,
-    P: RawTensor<Elem = A>,
+    P: RawParams<Elem = A>,
 {
 }
 
 impl<A, P> Layer<Linear, P>
 where
-    P: RawTensor<Elem = A>,
+    P: RawParams<Elem = A>,
 {
     /// initialize a layer using the [`Linear`] activation function and the given params.
     pub const fn linear(params: P) -> Self {
@@ -72,7 +72,7 @@ where
 
 impl<A, P> Layer<Sigmoid, P>
 where
-    P: RawTensor<Elem = A>,
+    P: RawParams<Elem = A>,
 {
     /// initialize a layer using the [`Sigmoid`] activation function and the given params.
     pub const fn sigmoid(params: P) -> Self {
@@ -85,7 +85,7 @@ where
 
 impl<A, P> Layer<HyperbolicTangent, P>
 where
-    P: RawTensor<Elem = A>,
+    P: RawParams<Elem = A>,
 {
     /// initialize a new layer using a [`HyperbolicTangent`] activation function and the given
     /// parameters.
@@ -99,7 +99,7 @@ where
 
 impl<A, P> Layer<ReLU, P>
 where
-    P: RawTensor<Elem = A>,
+    P: RawParams<Elem = A>,
 {
     /// initialize a layer using the [`Sigmoid`] activation function and the given params.
     pub const fn relu(params: P) -> Self {

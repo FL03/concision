@@ -4,41 +4,52 @@
     Contrib: @FL03
 */
 use crate::activate::{Activator, ActivatorGradient};
-use concision_params::{ParamsBase, RawTensor};
+use concision_params::{ParamsBase, RawParams};
 use concision_traits::{Backward, Forward};
 use ndarray::{Data, Dimension, RawData};
 
-pub trait RawLayer<F, X, A = <X as RawTensor>::Elem>
+/// The [`RawLayer`] trait defines an interface for a core building block of all neural
+/// networks, the layer. Layers are composed of an activation function and a set of parameters
+/// that define the transformation applied to input data as it passes through the layer.
+pub trait RawLayer<F, P, A = <P as RawParams>::Elem>
 where
-    F: Activator<X>,
-    X: RawTensor<Elem = A>,
+    F: Activator<A>,
+    P: RawParams<Elem = A>,
 {
     /// the activation function of the layer
     fn rho(&self) -> &F;
     /// returns an immutable reference to the parameters of the layer
-    fn params(&self) -> &X;
+    fn params(&self) -> &P;
     /// returns a mutable reference to the parameters of the layer
-    fn params_mut(&mut self) -> &mut X;
+    fn params_mut(&mut self) -> &mut P;
+    /// update the layer parameters
+    fn set_params(&mut self, params: P) {
+        *self.params_mut() = params;
+    }
+    /// [`replace`](core::mem::replace) the params of the layer, returning the previous value
+    fn replace_params(&mut self, params: P) -> P {
+        core::mem::replace(self.params_mut(), params)
+    }
+    /// [`swap`](core::mem::swap) the params of the layer with another
+    fn swap_params(&mut self, other: &mut P) {
+        core::mem::swap(self.params_mut(), other);
+    }
+    /// complete a forward pass through the layer
+    fn forward<X, Y>(&self, input: &X) -> Y
+    where
+        P: Forward<X, Output = Y>,
+        Self: Activator<Y, Output = Y>,
+    {
+        self.params().forward_then(input, |y| self.activate(y))
+    }
 }
 /// A generic trait defining the composition of a _layer_ within a neural network.
-pub trait NdLayer<S, D, A = <S as RawData>::Elem>
+pub trait LayerExt<F, S, D, A = <S as RawData>::Elem>: RawLayer<F, ParamsBase<S, D>, A>
 where
+    F: Activator<A>,
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    /// The type of activator used by the layer; the type must implement [`ActivatorGradient`]
-    type Rho: Activator<A>;
-
-    fn rho(&self) -> &Self::Rho;
-    /// returns an immutable reference to the parameters of the layer
-    fn params(&self) -> &ParamsBase<S, D>;
-    /// returns a mutable reference to the parameters of the layer
-    fn params_mut(&mut self) -> &mut ParamsBase<S, D>;
-
-    /// update the layer parameters
-    fn set_params(&mut self, params: ParamsBase<S, D>) {
-        *self.params_mut() = params;
-    }
     /// backward propagate error through the layer
     fn backward<X, Y, Z, Dt>(&mut self, input: X, error: Y, gamma: A)
     where
@@ -49,13 +60,5 @@ where
     {
         let delta = self.activate_gradient(error);
         self.params_mut().backward(&input, &delta, gamma)
-    }
-    /// complete a forward pass through the layer
-    fn forward<X, Y>(&self, input: &X) -> Y
-    where
-        ParamsBase<S, D>: Forward<X, Output = Y>,
-        Self: Activator<Y, Output = Y>,
-    {
-        self.params().forward_then(input, |y| self.activate(y))
     }
 }

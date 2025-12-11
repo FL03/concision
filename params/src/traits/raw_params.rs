@@ -4,7 +4,7 @@
     Contrib: @FL03
 */
 
-/// The [`RawTensor`] trait is used to denote objects capable of being used as a paramater
+/// The [`RawParams`] trait is used to denote objects capable of being used as a paramater
 /// within a neural network or machine learning context. More over, it provides us with an
 /// ability to associate some generic element type with the parameter and thus allows us to
 /// consider so-called _parameter spaces_. If we allow a parameter space to simply be a
@@ -14,31 +14,30 @@
 /// and training in a more formal manner.
 ///
 /// **Note**: This trait is sealed and cannot be implemented outside of this crate.
-pub trait RawTensor {
+pub trait RawParams {
     type Elem: ?Sized;
 
     private! {}
 }
 
-/// The [`ScalarTensor`] is a marker trait automatically implemented for
-pub trait ScalarTensor: RawTensor<Elem = Self> + Sized {
+/// The [`ScalarParams`] is a marker trait automatically implemented for
+pub trait ScalarParams: RawParams<Elem = Self> + Sized {
     private!();
 }
 
-pub trait Tensor: RawTensor {
+pub trait NdParams: RawParams {
     /// returns the number of dimensions of the parameter
     fn rank(&self) -> usize;
     /// returns the size of the parameter
     fn size(&self) -> usize;
 }
 
-pub trait ExactDimTensor: Tensor {
+pub trait ExactDimParams: NdParams {
     type Shape: ?Sized;
     /// returns the shape of the parameter as a slice
     fn shape(&self) -> &Self::Shape;
 }
 
-pub trait DimConst<const N: usize> {}
 
 /*
  ************* Implementations *************
@@ -46,27 +45,27 @@ pub trait DimConst<const N: usize> {}
 use crate::ParamsBase;
 use ndarray::{ArrayBase, Dimension, RawData};
 
-impl<A, T> RawTensor for &T
+impl<A, T> RawParams for &T
 where
-    T: RawTensor<Elem = A>,
+    T: RawParams<Elem = A>,
 {
     type Elem = A;
 
     seal! {}
 }
 
-impl<A, T> RawTensor for &mut T
+impl<A, T> RawParams for &mut T
 where
-    T: RawTensor<Elem = A>,
+    T: RawParams<Elem = A>,
 {
     type Elem = A;
 
     seal! {}
 }
 
-impl<T> ScalarTensor for T
+impl<T> ScalarParams for T
 where
-    T: RawTensor<Elem = T>,
+    T: RawParams<Elem = T>,
 {
     seal! {}
 }
@@ -76,13 +75,13 @@ macro_rules! impl_param {
         $(impl_param!(@impl $T);)*
     };
     (@impl $T:ty) => {
-        impl RawTensor for $T {
+        impl RawParams for $T {
             type Elem = $T;
 
             seal! {}
         }
 
-        impl Tensor for $T {
+        impl NdParams for $T {
             fn rank(&self) -> usize {
                 0
             }
@@ -92,7 +91,7 @@ macro_rules! impl_param {
             }
         }
 
-        impl ExactDimTensor for $T {
+        impl ExactDimParams for $T {
             type Shape = [usize; 0];
 
             fn shape(&self) -> &Self::Shape {
@@ -110,13 +109,13 @@ impl_param! {
 }
 
 #[cfg(feature = "alloc")]
-impl RawTensor for alloc::string::String {
+impl RawParams for alloc::string::String {
     type Elem = u8;
 
     seal! {}
 }
 
-impl<S, D, A> RawTensor for ArrayBase<S, D, A>
+impl<S, D, A> RawParams for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -126,7 +125,7 @@ where
     seal! {}
 }
 
-impl<S, D, A> Tensor for ArrayBase<S, D, A>
+impl<S, D, A> NdParams for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -140,7 +139,7 @@ where
     }
 }
 
-impl<S, D, A> ExactDimTensor for ArrayBase<S, D, A>
+impl<S, D, A> ExactDimParams for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -152,7 +151,7 @@ where
     }
 }
 
-impl<S, D, A> RawTensor for ParamsBase<S, D, A>
+impl<S, D, A> RawParams for ParamsBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -162,7 +161,7 @@ where
     seal! {}
 }
 
-impl<S, D, A> Tensor for ParamsBase<S, D, A>
+impl<S, D, A> NdParams for ParamsBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -176,7 +175,7 @@ where
     }
 }
 
-impl<S, D, A> ExactDimTensor for ParamsBase<S, D, A>
+impl<S, D, A> ExactDimParams for ParamsBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -188,31 +187,31 @@ where
     }
 }
 
-impl<T> RawTensor for [T] {
+impl<T> RawParams for [T] {
     type Elem = T;
 
     seal! {}
 }
 
-impl<T> RawTensor for &[T] {
+impl<T> RawParams for &[T] {
     type Elem = T;
 
     seal! {}
 }
 
-impl<T> RawTensor for &mut [T] {
+impl<T> RawParams for &mut [T] {
     type Elem = T;
 
     seal! {}
 }
 
-impl<const N: usize, T> RawTensor for [T; N] {
+impl<const N: usize, T> RawParams for [T; N] {
     type Elem = T;
 
     seal! {}
 }
 
-impl<const N: usize, T> Tensor for [T; N] {
+impl<const N: usize, T> NdParams for [T; N] {
     fn rank(&self) -> usize {
         1
     }
@@ -222,7 +221,7 @@ impl<const N: usize, T> Tensor for [T; N] {
     }
 }
 
-impl<const N: usize, T> ExactDimTensor for [T; N] {
+impl<const N: usize, T> ExactDimParams for [T; N] {
     type Shape = [usize; 1];
 
     fn shape(&self) -> &Self::Shape {
@@ -235,9 +234,9 @@ mod impl_alloc {
     use super::*;
     use alloc::vec::Vec;
 
-    impl<T> RawTensor for Vec<T>
+    impl<T> RawParams for Vec<T>
     where
-        T: RawTensor,
+        T: RawParams,
     {
         type Elem = T::Elem;
 
