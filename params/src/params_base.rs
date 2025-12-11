@@ -19,7 +19,7 @@ pub struct ParamsRef<A, D: Dimension> {
 #[cfg(feature = "alloc")]
 pub struct ParamsLayoutRef<A, D: Dimension> {
     pub bias: Box<LayoutRef<A, D::Smaller>>,
-    pub weights: Box<LayoutRef<A, D>>,
+    pub weights: LayoutRef<A, D>,
 }
 
 /// The [`ParamsBase`] implementation aims to provide a generic, n-dimensional weight and bias
