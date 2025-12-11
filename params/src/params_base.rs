@@ -2,10 +2,25 @@
     Appellation: params <module>
     Contrib: @FL03
 */
+
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
 use ndarray::{
-    ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeArg,
-    ShapeBuilder,
+    ArrayBase, ArrayRef, Axis, Data, DataMut, DataOwned, Dimension, LayoutRef, RawData, RemoveAxis,
+    ShapeArg, ShapeBuilder,
 };
+
+#[cfg(feature = "alloc")]
+pub struct ParamsRef<A, D: Dimension> {
+    pub bias: Box<ArrayRef<A, D::Smaller>>,
+    pub weights: Box<ArrayRef<A, D>>,
+}
+
+#[cfg(feature = "alloc")]
+pub struct ParamsLayoutRef<A, D: Dimension> {
+    pub bias: Box<LayoutRef<A, D::Smaller>>,
+    pub weights: Box<LayoutRef<A, D>>,
+}
 
 /// The [`ParamsBase`] implementation aims to provide a generic, n-dimensional weight and bias
 /// pair for a model (or layer). The object requires the bias tensor to be a single dimension

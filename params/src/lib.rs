@@ -56,6 +56,7 @@ mod impls {
     mod impl_params;
     mod impl_params_iter;
     mod impl_params_ops;
+    mod impl_params_ref;
     mod impl_params_repr;
 
     #[allow(deprecated)]
@@ -76,7 +77,7 @@ mod traits {
 
 // re-exports
 #[doc(inline)]
-pub use self::{error::*, params_base::ParamsBase, traits::*, types::*};
+pub use self::{error::*, params_base::*, traits::*, types::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {

@@ -34,7 +34,7 @@ where
 /// the sigmoid activation function:
 ///
 /// ```math
-/// \mbox{f}(x)=\frac{1}{1+\exp(-x)}
+/// f(x)=(1+e^{-x})^{-1}
 /// ```
 pub fn sigmoid<T>(args: T) -> T
 where
