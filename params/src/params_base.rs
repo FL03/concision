@@ -2,7 +2,6 @@
     Appellation: params <module>
     Contrib: @FL03
 */
-
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
 use ndarray::{
@@ -13,13 +12,7 @@ use ndarray::{
 #[cfg(feature = "alloc")]
 pub struct ParamsRef<A, D: Dimension> {
     pub bias: Box<ArrayRef<A, D::Smaller>>,
-    pub weights: Box<ArrayRef<A, D>>,
-}
-
-#[cfg(feature = "alloc")]
-pub struct ParamsLayoutRef<A, D: Dimension> {
-    pub bias: Box<LayoutRef<A, D::Smaller>>,
-    pub weights: LayoutRef<A, D>,
+    pub weights: ArrayRef<A, D>,
 }
 
 /// The [`ParamsBase`] implementation aims to provide a generic, n-dimensional weight and bias
@@ -165,6 +158,34 @@ where
     /// returns a mutable reference to the weights
     pub const fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         &mut self.weights
+    }
+    /// returns an immutable rererence to the bias as a layout reference
+    pub fn bias_layout_ref(&self) -> &LayoutRef<A, D::Smaller>
+    where
+        S: Data,
+    {
+        self.bias().as_layout_ref()
+    }
+    /// returns a mutable rererence to the weights as a layout reference
+    pub fn bias_layout_ref_mut(&mut self) -> &mut LayoutRef<A, D::Smaller>
+    where
+        S: DataMut,
+    {
+        self.bias_mut().as_layout_ref_mut()
+    }
+    /// returns an immutable rererence to the weights as a layout reference
+    pub fn weights_layout_ref(&self) -> &LayoutRef<A, D>
+    where
+        S: Data,
+    {
+        self.weights().as_layout_ref()
+    }
+    /// returns a mutable rererence to the weights as a layout reference
+    pub fn weights_layout_ref_mut(&mut self) -> &mut LayoutRef<A, D>
+    where
+        S: DataMut,
+    {
+        self.weights_mut().as_layout_ref_mut()
     }
     /// assign the bias
     pub fn assign_bias(&mut self, bias: &ArrayBase<S, D::Smaller, A>) -> &mut Self
