@@ -1,6 +1,4 @@
-//! ********************
-//! **** LIF Neuron ****
-//! ********************
+//! # Example: Leaky Integrate-and-Fire Neuron
 //!
 //! This example demonstrates the usage of a Leaky Integrate-and-Fire (LIF) neuron model,
 //! simulating its behavior over time with constant external current injection and discrete

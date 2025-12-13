@@ -12,7 +12,7 @@
 macro_rules! config {
     (
         $(#[$attr:meta])*
-        $vis:vis struct $name:ident {$($field:ident: $T:ty),* $(,)?}
+        $name:ident {$($field:ident: $T:ty $(= $val:expr)?),* $(,)?}
     ) => {
         $(#[$attr])*
         #[cfg_attr(
@@ -21,44 +21,44 @@ macro_rules! config {
             serde(rename_all = "snake_case"),
         )]
         #[repr(C)]
-        #{derive(Clone, Debug, Default, PartialEq, PartialOrd)}
-        $vis struct $name {
-            $($field: $T),*
+        #[derive(Clone, Debug, Default, PartialEq, PartialOrd)]
+        pub struct $name {
+            $(pub $field: $T),*
         }
 
-        config!(@impl $vis struct $name {$($field: $T),*});
-    };
-    (@impl $vis:vis struct $name:ident {$($field:ident: $T:ty),* $(,)?}) => {
         impl $name {
-            pub fn new() -> Self {
-                Self {
-                    $($field: Default::default()),*
+            config!(@impl $($field: $T $(= $val)?),*);
+        }
+    };
+    (@impl $($field:ident: $T:ty $(= $val:expr)?),* $(,)?) => {
+        pub fn new() -> Self {
+            Self {
+                $($field: Default::default()),*
+            }
+        }
+        paste::paste! {
+            $(
+                /// returns an immutable reference to the field
+                pub const fn $field(&self) -> &$T {
+                    &self.$field
                 }
-            }
-            paste::paste! {
-                $(
-                    /// returns an immutable reference to the field
-                    pub const fn $field(&self) -> &$T {
-                        &self.$field
+                /// return a mutable reference to the field
+                pub const fn [<$field _mut>](&mut self) -> &mut $T {
+                    &mut self.$field
+                }
+                /// update the current value of the field and return a mutable reference to self
+                pub fn [<set_ $field>](&mut self, value: $T) -> &mut Self {
+                    self.$field = value;
+                    self
+                }
+                /// consume the current instance to create another with the given value
+                pub fn [<with_ $field>](self, $field: $T) -> Self {
+                    Self {
+                        $field,
+                        ..self
                     }
-                    /// return a mutable reference to the field
-                    pub const fn [<$field _mut>](&mut self) -> &mut $T {
-                        &mut self.$field
-                    }
-                    /// update the current value of the field and return a mutable reference to self
-                    pub fn [<set_ $field>](&mut self, value: $T) -> &mut Self {
-                        self.$field = value;
-                        self
-                    }
-                    /// consume the current instance to create another with the given value
-                    pub fn [<with_ $field>](self, $field: $T) -> Self {
-                        Self {
-                            $field,
-                            ..self
-                        }
-                    }
-                )*
-            }
+                }
+            )*
         }
     };
 }

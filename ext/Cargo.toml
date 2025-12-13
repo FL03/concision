@@ -41,7 +41,7 @@ name = "snn"
 required-features = ["approx", "snn", "std"]
 
 [dependencies]
-concision = { workspace = true }
+concision = { features = ["macros"], workspace = true }
 # custom
 variants = { workspace = true }
 # error handling
