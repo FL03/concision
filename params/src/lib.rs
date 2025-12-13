@@ -13,8 +13,8 @@
 //! values. At its core, the [`ParamsBase`] object is defined as an object composed of two
 //! independent tensors:
 //!
-//! - An $`n`$ dimensional weight tensor
-//! - An $`n-1`$ dimensional bias tensor
+//! - An $n$ dimensional weight tensor
+//! - An $n-1$ dimensional bias tensor
 //!
 //! These tensors can be of any shape or size, allowing for a wide range of neural network
 //! architectures to be represented. The crate also provides various utilities and traits for
@@ -44,6 +44,7 @@ pub mod error;
 pub mod iter;
 
 mod params_base;
+mod types;
 
 #[macro_use]
 pub(crate) mod macros {
@@ -55,6 +56,8 @@ mod impls {
     mod impl_params;
     mod impl_params_iter;
     mod impl_params_ops;
+    mod impl_params_ref;
+    mod impl_params_repr;
 
     #[allow(deprecated)]
     mod impl_params_deprecated;
@@ -64,25 +67,17 @@ mod impls {
     mod impl_params_serde;
 }
 
-pub mod traits {
-    //! Traits for working with model parameters
-    pub use self::{param::*, wnb::*};
+mod traits {
+    //! Additional traits for working with parameters
+    pub use self::{raw_params::*, wnb::*};
 
-    mod param;
+    mod raw_params;
     mod wnb;
-}
-
-mod types {
-    //! Supporting types and aliases for working with model parameters
-    #[doc(inline)]
-    pub use self::aliases::*;
-
-    mod aliases;
 }
 
 // re-exports
 #[doc(inline)]
-pub use self::{error::*, params_base::ParamsBase, traits::*, types::*};
+pub use self::{error::*, params_base::*, traits::*, types::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {

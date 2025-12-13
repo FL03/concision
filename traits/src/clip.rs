@@ -39,7 +39,7 @@ pub trait ClipMut<T = f32> {
  ************* Implementations *************
 */
 use crate::norm::{L1Norm, L2Norm};
-use ndarray::{ArrayBase, Data, DataMut, Dimension};
+use ndarray::{Array, ArrayBase, Data, DataMut, Dimension};
 use num_traits::Float;
 
 impl<A, S, D> Clip<A> for ArrayBase<S, D, A>
@@ -48,7 +48,7 @@ where
     S: Data<Elem = A>,
     D: Dimension,
 {
-    type Output = ndarray::Array<A, D>;
+    type Output = Array<A, D>;
 
     fn clip(&self, min: A, max: A) -> Self::Output {
         self.clamp(min, max)

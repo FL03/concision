@@ -42,9 +42,18 @@ pub trait CallInPlace<T>: CallInto<T> {
 pub trait Apply<T> {
     type Cont<_T>;
 
-    fn apply<U, F>(&self, f: F) -> Self::Cont<U>
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
     where
         F: Fn(T) -> U;
+}
+/// The [`ApplyOnce`] trait consumes the container and applies the given function to every
+/// element before returning a new container with the results.
+pub trait ApplyOnce<T> {
+    type Cont<_T>;
+
+    fn apply_once<F, U>(self, f: F) -> Self::Cont<U>
+    where
+        F: FnOnce(T) -> U;
 }
 /// The [`ApplyMut`] trait mutates the each element of the container, in-place, using the given
 /// function.
@@ -61,6 +70,34 @@ pub trait ApplyMut<T> {
  ************* Implementations *************
 */
 use ndarray::{Array, ArrayBase, Data, DataMut, Dimension, ScalarOperand};
+
+impl<T> Apply<T> for &T
+where
+    T: Apply<T>,
+{
+    type Cont<V> = T::Cont<V>;
+
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(T) -> U,
+    {
+        Apply::apply(*self, f)
+    }
+}
+
+impl<T> Apply<T> for &mut T
+where
+    T: Apply<T>,
+{
+    type Cont<V> = T::Cont<V>;
+
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(T) -> U,
+    {
+        Apply::apply(*self, f)
+    }
+}
 
 impl<T> CallInto<T> for T {
     type Output = T;
@@ -97,37 +134,32 @@ where
     }
 }
 
+impl<'a, A> Apply<&'a A> for &'a Option<A> {
+    type Cont<V> = Option<V>;
+
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(&'a A) -> U,
+    {
+        self.as_ref().map(|a| f(a))
+    }
+}
+
 impl<A, S, D> Apply<A> for ArrayBase<S, D, A>
 where
-    A: ScalarOperand,
+    A: Clone,
     D: Dimension,
     S: Data<Elem = A>,
 {
     type Cont<V> = Array<V, D>;
 
-    fn apply<V, F>(&self, f: F) -> Self::Cont<V>
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
     where
-        F: Fn(A) -> V,
+        F: Fn(A) -> U,
     {
         self.mapv(f)
     }
 }
-
-// impl<A, S, D> Apply<A> for TensorBase<S, D>
-// where
-//     A: ScalarOperand,
-//     D: Dimension,
-//     S: Data<Elem = A>,
-// {
-//     type Cont<V> = Tensor<V, D>;
-
-//     fn apply<V, F>(&self, f: F) -> Self::Cont<V>
-//     where
-//         F: Fn(A) -> V,
-//     {
-//         self.map(f)
-//     }
-// }
 
 impl<A, S, D> Apply<A> for &ArrayBase<S, D, A>
 where
@@ -137,9 +169,9 @@ where
 {
     type Cont<V> = Array<V, D>;
 
-    fn apply<B, F>(&self, f: F) -> Array<B, D>
+    fn apply<F, U>(&self, f: F) -> Array<U, D>
     where
-        F: Fn(A) -> B,
+        F: Fn(A) -> U,
     {
         self.mapv(f)
     }
@@ -153,9 +185,9 @@ where
 {
     type Cont<V> = Array<V, D>;
 
-    fn apply<B, F>(&self, f: F) -> Array<B, D>
+    fn apply<F, U>(&self, f: F) -> Array<U, D>
     where
-        F: Fn(A) -> B,
+        F: Fn(A) -> U,
     {
         self.mapv(f)
     }

@@ -3,53 +3,57 @@
     Created At: 2025.11.28:21:21:42
     Contrib: @FL03
 */
+use ndarray::iter as nditer;
 use ndarray::{ArrayBase, Data, DataMut, Dimension, RawData};
 
+/// A trait denoting an implementor with weights and associated methods
 pub trait Weighted<S, D, A = <S as RawData>::Elem>: Sized
 where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    /// returns the weights of the model
-    fn weights(&self) -> &ArrayBase<S, D, A>;
-    /// returns a mutable reference to the weights of the model
-    fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A>;
-    /// assigns the given bias to the current weight
-    fn assign_weights(&mut self, weights: &ArrayBase<S, D, A>) -> &mut Self
+    type Tensor<_S, _D, _A>
     where
-        S: DataMut,
-        S::Elem: Clone,
-    {
-        self.weights_mut().assign(weights);
-        self
-    }
+        _D: Dimension,
+        _S: RawData<Elem = _A>;
+    /// returns the weights of the model
+    fn weights(&self) -> &Self::Tensor<S, D, A>;
+    /// returns a mutable reference to the weights of the model
+    fn weights_mut(&mut self) -> &mut Self::Tensor<S, D, A>;
     /// replaces the current weights with the given weights
-    fn replace_weights(&mut self, weights: ArrayBase<S, D, A>) -> ArrayBase<S, D, A> {
+    fn replace_weights(&mut self, weights: Self::Tensor<S, D, A>) -> Self::Tensor<S, D, A> {
         core::mem::replace(self.weights_mut(), weights)
     }
     /// sets the weights of the model
-    fn set_weights(&mut self, weights: ArrayBase<S, D, A>) -> &mut Self {
+    fn set_weights(&mut self, weights: Self::Tensor<S, D, A>) -> &mut Self {
         *self.weights_mut() = weights;
         self
     }
-    /// returns an iterator over the weights; see [`iter`](ndarray::iter::Iter) for more information
-    fn iter_weights<'a>(&'a self) -> ndarray::iter::Iter<'a, S::Elem, D>
-    where
-        S: Data + 'a,
-        D: 'a,
-    {
-        self.weights().iter()
-    }
-    /// returns a mutable iterator over the weights; see [`iter_mut`](ndarray::iter::IterMut) for more information
-    fn iter_weights_mut<'a>(&'a mut self) -> ndarray::iter::IterMut<'a, S::Elem, D>
-    where
-        S: DataMut + 'a,
-        D: 'a,
-    {
-        self.weights_mut().iter_mut()
-    }
 }
 
+pub trait NdIter<A, D>
+where
+    D: Dimension,
+{
+    type Iter<'b, T>
+    where
+        T: 'b,
+        Self: 'b;
+    /// returns an iterator over the weights;
+    fn nditer(&self) -> Self::Iter<'_, A>;
+}
+
+pub trait NdIterMut<A, D>
+where
+    D: Dimension,
+{
+    type IterMut<'b, T>
+    where
+        T: 'b,
+        Self: 'b;
+    /// returns a mutable iterator over the weights
+    fn nditer_mut(&mut self) -> Self::IterMut<'_, A>;
+}
 pub trait Biased<S, D, A = <S as RawData>::Elem>: Weighted<S, D, A>
 where
     D: Dimension,
@@ -78,7 +82,7 @@ where
         self
     }
     /// returns an iterator over the bias
-    fn iter_bias<'a>(&'a self) -> ndarray::iter::Iter<'a, S::Elem, D::Smaller>
+    fn iter_bias<'a>(&'a self) -> nditer::Iter<'a, S::Elem, D::Smaller>
     where
         S: Data + 'a,
         D: 'a,
@@ -86,7 +90,7 @@ where
         self.bias().iter()
     }
     /// returns a mutable iterator over the bias
-    fn iter_bias_mut<'a>(&'a mut self) -> ndarray::iter::IterMut<'a, S::Elem, D::Smaller>
+    fn iter_bias_mut<'a>(&'a mut self) -> nditer::IterMut<'a, S::Elem, D::Smaller>
     where
         S: DataMut + 'a,
         D: 'a,
@@ -98,3 +102,35 @@ where
 /*
  ************* Implementations *************
 */
+
+impl<A, S, D> NdIter<A, D> for ArrayBase<S, D, A>
+where
+    S: Data<Elem = A>,
+    D: Dimension,
+{
+    type Iter<'b, T>
+        = nditer::Iter<'b, T, D>
+    where
+        T: 'b,
+        Self: 'b;
+
+    fn nditer(&self) -> Self::Iter<'_, A> {
+        self.iter()
+    }
+}
+
+impl<A, S, D> NdIterMut<A, D> for ArrayBase<S, D, A>
+where
+    S: DataMut<Elem = A>,
+    D: Dimension,
+{
+    type IterMut<'b, T>
+        = nditer::IterMut<'b, T, D>
+    where
+        T: 'b,
+        Self: 'b;
+
+    fn nditer_mut(&mut self) -> Self::IterMut<'_, A> {
+        self.iter_mut()
+    }
+}

@@ -31,23 +31,17 @@ doctest = false
 test = true
 
 [[example]]
+doc-scrape-examples = true
 name = "attention"
 required-features = ["attention", "rand", "std"]
 
 [[example]]
-name = "snn"
-required-features = ["approx", "snn", "std"]
-
-[[test]]
-name = "attention"
-required-features = ["approx", "attention", "rand", "std"]
-
-[[test]]
+doc-scrape-examples = true
 name = "snn"
 required-features = ["approx", "snn", "std"]
 
 [dependencies]
-concision = { workspace = true }
+concision = { features = ["macros"], workspace = true }
 # custom
 variants = { workspace = true }
 # error handling
@@ -74,7 +68,7 @@ lazy_static = { workspace = true }
 tracing-subscriber = { features = ["std"], workspace = true }
 
 [features]
-default = ["attention", "std"]
+default = ["attention", "snn", "std"]
 
 full = [
   "default",
@@ -96,24 +90,14 @@ signal = ["complex", "rustfft"]
 
 # ********* [FF:Models] *********
 models = [
-  "s4",
   "snn",
-  "transformer",
 ]
 
 attention = []
 
-cnn = []
-
-kan = []
-
-rnn = []
-
-s4 = []
-
 snn = []
 
-transformer = ["attention"]
+transformer = []
 
 # ************* [FF:Environments] *************
 std = [

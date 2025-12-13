@@ -149,9 +149,10 @@ rng = [
 ]
 
 serde = [
-  "concision-init/serde",
   "dep:serde",
   "dep:serde_derive",
+  "concision-init/serde",
+  "concision-traits/serde",
   "ndarray/serde",
   "num-complex?/serde",
   "rand?/serde",

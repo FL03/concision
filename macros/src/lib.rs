@@ -19,7 +19,7 @@ use proc_macro::TokenStream;
 #[proc_macro]
 /// [`model_config!`] is a procedural macro used to define the configuration for a model in the
 /// `concision` framework. It allows users to specify various parameters and settings for the model
-/// in a concise and structured manner, declaring a name for their instanc
+/// in a concise and structured manner, declaring a name for their instance
 pub fn model_config(input: TokenStream) -> TokenStream {
     let data = syn::parse_macro_input!(input as ast::ConfigAst);
     // use the handler to process the input data
@@ -32,6 +32,25 @@ pub fn model_config(input: TokenStream) -> TokenStream {
 /// the [`model!`]procedural macro is used to streamline the creation of custom models using the
 /// `concision` framework
 pub fn model(input: TokenStream) -> TokenStream {
+    let data = syn::parse_macro_input!(input as ModelAst);
+    // use the handler to process the input data
+    let res = impls::impl_model(data);
+    // convert the tokens into a TokenStream
+    res.into()
+}
+
+#[proc_macro]
+/// [`nn!`] is a procedural macro designed to streamline the process of creating new neural
+/// networks;
+///
+/// ```ignore
+/// nn! {
+///     name: MyNeuralNetwork,
+///     layers: [Linear, ReLU, Linear],
+///     layout: { input: 128, output: 10 },
+/// }
+/// ```
+pub fn nn(input: TokenStream) -> TokenStream {
     let data = syn::parse_macro_input!(input as ModelAst);
     // use the handler to process the input data
     let res = impls::impl_model(data);

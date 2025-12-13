@@ -30,30 +30,29 @@ pub(crate) mod macros {
     pub mod seal;
 }
 
-pub mod error;
-
 mod apply;
 mod clip;
 mod codex;
 mod complex;
-mod container;
-mod convert;
+mod cont;
 mod entropy;
+mod get;
+mod hkt;
 mod loss;
 mod norm;
 mod predict;
 mod propagation;
 mod rounding;
-mod store;
 mod training;
 
 pub mod math {
     //! Mathematically oriented operators and functions useful in machine learning contexts.
     #[doc(inline)]
-    pub use self::{difference::*, gradient::*, roots::*, stats::*, unary::*};
+    pub use self::{difference::*, gradient::*, linalg::*, roots::*, stats::*, unary::*};
 
     mod difference;
     mod gradient;
+    mod linalg;
     mod roots;
     mod stats;
     mod unary;
@@ -64,47 +63,45 @@ pub mod ops {
     //! more
     #[allow(unused_imports)]
     #[doc(inline)]
-    pub use self::{binary::*, unary::*};
+    pub use self::{binary::*, fill::*, like::*, reshape::*, unary::*};
 
     mod binary;
+    mod fill;
+    mod like;
+    mod reshape;
     mod unary;
 }
 
 pub mod tensor {
     #[doc(inline)]
-    pub use self::{dimensionality::*, fill::*, like::*, linalg::*, ndtensor::*, reshape::*};
+    pub use self::{dimensionality::*, ndtensor::*, tensor_data::*};
 
     mod dimensionality;
-    mod fill;
-    mod like;
-    mod linalg;
     mod ndtensor;
-    mod reshape;
+    mod tensor_data;
 }
 
 // re-exports
 #[doc(inline)]
-pub use self::error::*;
-#[doc(inline)]
 pub use self::prelude::*;
-
+// prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::math::*;
-    pub use crate::tensor::*;
-
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
-    pub use crate::container::*;
-    pub use crate::convert::*;
+    pub use crate::cont::*;
     pub use crate::entropy::*;
+    pub use crate::get::*;
+    pub use crate::hkt::*;
     pub use crate::loss::*;
+    pub use crate::math::*;
     pub use crate::norm::*;
+    pub use crate::ops::*;
     pub use crate::predict::*;
     pub use crate::propagation::*;
     pub use crate::rounding::*;
-    pub use crate::store::*;
+    pub use crate::tensor::*;
     pub use crate::training::*;
 
     #[cfg(feature = "complex")]

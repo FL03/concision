@@ -1,0 +1,50 @@
+/*
+    Appellation: layer <module>
+    Contrib: @FL03
+*/
+mod impl_layer;
+mod impl_layer_deprecated;
+mod impl_layer_repr;
+
+#[doc(inline)]
+pub use self::types::*;
+
+/// The [`Layer`] implementation works to provide a generic interface for layers within a
+/// neural network. It associates an activation function of type `F` with parameters of
+/// type `P`.
+pub struct Layer<F, P> {
+    /// the activation function of the layer
+    pub(crate) rho: F,
+    /// the parameters of the layer is an object consisting of both a weight and a bias tensor.
+    pub(crate) params: P,
+}
+
+mod types {
+    use super::Layer;
+    use crate::activate::{HeavySide, HyperbolicTangent, Linear, ReLU, Sigmoid};
+    #[cfg(feature = "alloc")]
+    use alloc::boxed::Box;
+    use concision_params::{Params, ParamsBase};
+
+    /// A type alias for a layer configured to use the [`ParamsBase`] instance
+    pub type LayerParamsBase<F, S, D = ndarray::Ix2, A = f32> = Layer<F, ParamsBase<S, D, A>>;
+    /// A type alias for an owned [`Layer`] configured to use the standard [`Params`] instance
+    pub type LayerParams<F, A = f32, D = ndarray::Ix2> = Layer<F, Params<A, D>>;
+    /// A type alias for a layer using a linear activation function.
+    pub type LinearLayer<T> = Layer<Linear, T>;
+    /// A type alias for a [`Layer`] using a sigmoid activation function.
+    pub type SigmoidLayer<T> = Layer<Sigmoid, T>;
+    /// An alias for a [`Layer`] that uses the hyperbolic tangent function.
+    pub type TanhLayer<T> = Layer<HyperbolicTangent, T>;
+    /// A [`Layer`] type using the ReLU activation function.
+    pub type ReluLayer<T> = Layer<ReLU, T>;
+    /// A [`Layer`] type using the heavyside activation function.
+    pub type HeavySideLayer<T> = Layer<HeavySide, T>;
+
+    #[cfg(feature = "alloc")]
+    /// A dynamic instance of the layer using a boxed activator.
+    pub type LayerDyn<'a, T> = Layer<Box<dyn crate::Activator<T, Output = T> + 'a>, T>;
+    #[cfg(feature = "alloc")]
+    /// A dynamic, functional alias of the [`Layer`] implementation leveraging boxed closures.
+    pub type FnLayer<'a, T> = Layer<Box<dyn Fn(T) -> T + 'a>, T>;
+}

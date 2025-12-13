@@ -12,40 +12,37 @@
 //! manifesting in a number of traits, utilities, and other primitives used to define various
 //! approaches to activation functions.
 //!
-//! - [`HeavysideActivation`]
-//! - [`LinearActivation`]
-//! - [`SigmoidActivation`]
-//! - [`SoftmaxActivation`]
-//! - [`ReLUActivation`]
-//! - [`TanhActivation`]
-//!
 #[doc(inline)]
 pub use self::{traits::*, utils::*};
 
-pub(crate) mod utils;
+mod utils;
 
-pub(crate) mod traits {
+mod traits {
     #[doc(inline)]
-    pub use self::prelude::*;
+    pub use self::{activator::*, common::*, rho::*};
 
-    mod activate;
-    mod unary;
-
-    mod prelude {
-        #[doc(inline)]
-        pub use super::activate::*;
-        #[doc(inline)]
-        pub use super::unary::*;
-    }
-}
-
-mod impls {
-    mod impl_binary;
-    mod impl_linear;
-    mod impl_nonlinear;
+    mod activator;
+    mod common;
+    mod rho;
 }
 
 pub(crate) mod prelude {
     pub use super::traits::*;
     pub use super::utils::*;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_linear_activation() {
+        let linear = Linear;
+        let input = 5.0;
+        let output = linear.activate(input);
+        assert_eq!(output, 5.0);
+
+        let derivative = linear.activate_gradient(input);
+        assert_eq!(derivative, 1.0);
+    }
 }

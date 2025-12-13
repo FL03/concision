@@ -5,6 +5,11 @@
 #[cfg(feature = "alloc")]
 use alloc::string::{String, ToString};
 
+pub struct KeyValue<K, V> {
+    pub key: K,
+    pub value: V,
+}
+
 /// An enumeration of common HyperParams used in neural network configurations.
 #[derive(
     Clone,

@@ -14,10 +14,13 @@ use ndarray::{Ix2, array};
 */
 #[test]
 fn test_params_fwd_dimensionality() {
-    let params = Params::<f64, Ix2>::ones((3, 4));
+    // define the input
     let input = array![1.0, 2.0, 3.0];
-    // should be of shape 4:
-    let output = params.forward(&input);
-    assert_eq!(output.dim(), 4);
-    assert_eq!(output, array![7.0, 7.0, 7.0, 7.0]);
+    // initialize the params
+    let params = Params::<f64, Ix2>::ones((3, 4));
+    // complete a forward pass
+    let y = params.forward(&input);
+    // verify the results
+    assert_eq!(y.dim(), 4);
+    assert_eq!(y, array![7.0, 7.0, 7.0, 7.0]);
 }

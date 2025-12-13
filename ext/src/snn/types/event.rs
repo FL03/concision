@@ -7,6 +7,7 @@
 /// A synaptic event that modifies the synaptic variable `s` by an instantaneous weight.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+#[repr(transparent)]
 pub struct SynapticEvent<T = f64> {
     /// instantaneous weight added to synaptic variable `s`.
     pub weight: T,

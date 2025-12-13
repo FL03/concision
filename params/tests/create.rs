@@ -34,7 +34,7 @@ fn test_params_zeros() {
 #[test]
 #[cfg(feature = "rand")]
 fn test_params_init_rand() -> anyhow::Result<()> {
-    use concision_init::NdInit;
+    use concision_init::InitTensor;
 
     let lecun = Params::<f64>::lecun_normal((3, 4));
     assert_eq!(lecun.dim(), (3, 4));

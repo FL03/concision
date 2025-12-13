@@ -3,6 +3,8 @@
     Created At: 2025.11.26:12:28:18
     Contrib: @FL03
 */
+#![cfg(feature = "complex")]
+
 use concision_traits::{AsComplex, Conjugate};
 use ndarray::prelude::*;
 use num_complex::Complex;

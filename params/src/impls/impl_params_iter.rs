@@ -14,7 +14,7 @@ use ndarray::{Axis, Data, DataMut, Dimension, RawData, RemoveAxis};
 /// - immutable and mutable iterators over each parameter (weights and bias) respectively;
 /// - an iterator over the parameters, which zips together an axis iterator over the columns of
 ///   the weights and an iterator over the bias;
-impl<S, D, A> ParamsBase<S, D, A>
+impl<A, S, D> ParamsBase<S, D, A>
 where
     S: RawData<Elem = A>,
     D: Dimension,
@@ -41,7 +41,7 @@ where
     {
         IterMut {
             bias: self.bias.iter_mut(),
-            weights: self.weights.axis_iter_mut(Axis(1)),
+            weights: self.weights.axis_iter_mut(Axis(0)),
         }
     }
     /// returns an iterator over the bias
@@ -71,5 +71,21 @@ where
         S: DataMut,
     {
         self.weights_mut().iter_mut()
+    }
+    /// returns an iterator over the weights along the specified axis
+    pub fn axis_iter_weights(&self, axis: Axis) -> nditer::AxisIter<'_, A, D::Smaller>
+    where
+        D: RemoveAxis,
+        S: Data,
+    {
+        self.weights().axis_iter(axis)
+    }
+    /// returns a mutable iterator over the weights along the specified axis
+    pub fn axis_iter_weights_mut(&mut self, axis: Axis) -> nditer::AxisIterMut<'_, A, D::Smaller>
+    where
+        D: RemoveAxis,
+        S: DataMut,
+    {
+        self.weights_mut().axis_iter_mut(axis)
     }
 }

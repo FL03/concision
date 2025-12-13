@@ -34,7 +34,7 @@ where
 /// the sigmoid activation function:
 ///
 /// ```math
-/// \mbox{f}(x)=\frac{1}{1+\exp(-x)}
+/// f(x)=(1+e^{-x})^{-1}
 /// ```
 pub fn sigmoid<T>(args: T) -> T
 where
@@ -120,8 +120,8 @@ where
 /// H(x) =
 /// \left\{
 /// \begin{array}{rcl}
-/// 1 & \mbox{if} & x\gt{0} \\
-/// 0 & \mbox{if} & x\leq{0}
+/// 1 & \text{if } & x\gt{0} \\
+/// 0 & \text{if } & x\leq{0}
 /// \end{array}
 /// \right.
 /// ```

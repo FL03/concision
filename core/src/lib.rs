@@ -63,6 +63,8 @@ pub(crate) mod macros {
     #[macro_use]
     pub mod config;
     #[macro_use]
+    pub mod gsw;
+    #[macro_use]
     pub mod seal;
     #[macro_use]
     pub mod units;
@@ -71,10 +73,9 @@ pub(crate) mod macros {
 pub mod activate;
 pub mod config;
 pub mod error;
-pub mod layers;
 pub mod layout;
-pub mod models;
 pub mod nn;
+pub mod store;
 pub mod utils;
 
 #[doc(hidden)]
@@ -85,8 +86,8 @@ pub mod ex {
 // re-exports
 #[doc(inline)]
 pub use self::{
-    activate::prelude::*, config::prelude::*, error::*, layers::Layer, layout::*,
-    models::prelude::*, utils::prelude::*,
+    activate::prelude::*, config::prelude::*, error::*, layout::*, nn::prelude::*,
+    store::prelude::*, utils::prelude::*,
 };
 // prelude
 #[doc(hidden)]
@@ -97,9 +98,8 @@ pub mod prelude {
 
     pub use crate::activate::prelude::*;
     pub use crate::config::prelude::*;
-    pub use crate::layers::prelude::*;
     pub use crate::layout::*;
-    pub use crate::models::prelude::*;
     pub use crate::nn::prelude::*;
+    pub use crate::store::prelude::*;
     pub use crate::utils::prelude::*;
 }
