@@ -75,12 +75,9 @@ impl<F, P> Layer<F, P> {
     /// given some input, complete a single forward pass through the layer
     pub fn forward<U, V>(&self, input: &U) -> V
     where
-        P: Forward<U, Output = V>,
-        F: Activator<V, Output = V>,
-        V: Clone,
+        Self: Forward<U, Output = V>,
     {
-        self.params()
-            .forward_then(input, |y| self.rho().activate(y))
+        <Self as Forward<U>>::forward(self, input)
     }
 }
 
@@ -92,7 +89,8 @@ where
     type Output = Y;
 
     fn forward(&self, input: &X) -> Self::Output {
-        self.rho().activate(self.params().forward(input))
+        self.params()
+            .forward_then(input, |y| self.rho().activate(y))
     }
 }
 

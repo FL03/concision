@@ -14,6 +14,8 @@ use alloc::{boxed::Box, string::String};
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum Error {
+    #[error("The provided batch is empty")]
+    EmptyBatch,
     #[error("Invalid model configuration")]
     InvalidModelConfig,
     #[error("The model is not supported for the given input")]

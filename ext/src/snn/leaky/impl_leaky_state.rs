@@ -201,6 +201,15 @@ where
     }
 }
 
+impl<T> core::fmt::Display for LeakyState<T>
+where
+    T: core::fmt::Display,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{{ v: {}, w: {}, s: {} }}", self.v, self.w, self.s)
+    }
+}
+
 impl<T> core::ops::Index<usize> for LeakyState<T> {
     type Output = T;
 

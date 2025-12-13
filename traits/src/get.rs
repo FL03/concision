@@ -26,7 +26,10 @@ pub trait GetMut<T>: Get<T> {
  ************* Implementations *************
 */
 
-impl<X, Y> Get<Y> for &X where X: Get<Y> {
+impl<X, Y> Get<Y> for &X
+where
+    X: Get<Y>,
+{
     type Key = X::Key;
 
     fn get<Q>(&self, index: Q) -> Option<&Y>

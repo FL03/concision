@@ -19,11 +19,11 @@ mod utils;
 
 mod traits {
     #[doc(inline)]
-    pub use self::{rho::*, activator::*, common::*};
+    pub use self::{activator::*, common::*, rho::*};
 
-    mod rho;
     mod activator;
     mod common;
+    mod rho;
 }
 
 pub(crate) mod prelude {

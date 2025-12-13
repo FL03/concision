@@ -28,6 +28,13 @@ mod impl_leaky_state;
 /// \tau_{s}\cdot{\frac{ds}{dt}} &= -s
 /// \end{aligned}
 /// ```
+///
+/// ## Design
+///
+/// The implementation consists of three main components: a parameter struct (`LeakyParams`),
+/// a state struct (`LeakyState`), and the main neuron struct (`Leaky`) that combines both
+/// parameters and state. The `Leaky` struct provides methods to update the neuron's state based
+/// on the input current and time step, check for spikes, and reset the neuron after a spike.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(
     feature = "serde",

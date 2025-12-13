@@ -146,7 +146,7 @@ impl<T> Leaky<T> {
         T: Float + FromPrimitive + core::ops::AddAssign,
     {
         if dt.is_sign_negative() {
-            panic!("dt must be > 0")
+            eprintln!("Warning: dt is negative, taking absolute value.");
         }
         let dt = dt.abs().max(self.min_dt);
         let LeakyParams {
