@@ -26,6 +26,17 @@ pub trait GetMut<T>: Get<T> {
  ************* Implementations *************
 */
 
+impl<X, Y> Get<Y> for &X where X: Get<Y> {
+    type Key = X::Key;
+
+    fn get<Q>(&self, index: Q) -> Option<&Y>
+    where
+        Q: core::borrow::Borrow<Self::Key>,
+    {
+        (*self).get(index)
+    }
+}
+
 impl<T> Get<T> for [T] {
     type Key = usize;
 
