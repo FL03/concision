@@ -19,9 +19,9 @@ mod utils;
 
 mod traits {
     #[doc(inline)]
-    pub use self::{activate::*, activator::*, common::*};
+    pub use self::{rho::*, activator::*, common::*};
 
-    mod activate;
+    mod rho;
     mod activator;
     mod common;
 }

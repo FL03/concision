@@ -52,6 +52,36 @@ impl_raw_container! {
     Option<T>,
 }
 
+#[cfg(all(feature = "alloc", not(feature = "nightly")))]
+impl_raw_container! {
+    alloc::vec::Vec<T>,
+    alloc::boxed::Box<T>,
+    alloc::rc::Rc<T>,
+    alloc::rc::Weak<T>,
+    alloc::sync::Arc<T>,
+    alloc::collections::BinaryHeap<T>,
+    alloc::collections::BTreeSet<T>,
+    alloc::collections::LinkedList<T>,
+    alloc::collections::VecDeque<T>,
+}
+
+#[cfg(feature = "std")]
+impl_raw_container! {
+    std::cell::Cell<T>,
+    std::cell::OnceCell<T>,
+    std::cell::RefCell<T>,
+    std::sync::Mutex<T>,
+    std::sync::RwLock<T>,
+    std::sync::LazyLock<T>,
+}
+
+#[cfg(all(feature = "alloc", not(feature = "nightly")))]
+impl<K, V> RawContainer for alloc::collections::BTreeMap<K, V> {
+    type Elem = V;
+
+    seal!();
+}
+
 #[cfg(feature = "std")]
 impl<K, V, S> RawContainer for std::collections::HashMap<K, V, S> {
     type Elem = V;
@@ -65,36 +95,17 @@ impl<K, S> RawContainer for std::collections::HashSet<K, S> {
     seal!();
 }
 
-#[cfg(all(feature = "alloc", not(feature = "nightly")))]
-mod impl_alloc {
-    use crate::cont::RawContainer;
+#[cfg(feature = "hashbrown")]
+impl<K, V, S> RawContainer for hashbrown::HashMap<K, V, S> {
+    type Elem = V;
 
-    impl<K, V> RawContainer for alloc::collections::BTreeMap<K, V> {
-        type Elem = V;
+    seal!();
+}
+#[cfg(feature = "hashbrown")]
+impl<K, S> RawContainer for hashbrown::HashSet<K, S> {
+    type Elem = K;
 
-        seal!();
-    }
-
-    impl_raw_container! {
-        alloc::boxed::Box<T>,
-        alloc::collections::BTreeSet<K>,
-        alloc::rc::Rc<T>,
-        alloc::sync::Arc<T>,
-        alloc::vec::Vec<T>
-    }
-
-    #[cfg(feature = "hashbrown")]
-    impl<K, V, S> RawContainer for hashbrown::HashMap<K, V, S> {
-        type Elem = V;
-
-        seal!();
-    }
-    #[cfg(feature = "hashbrown")]
-    impl<K, S> RawContainer for hashbrown::HashSet<K, S> {
-        type Elem = K;
-
-        seal!();
-    }
+    seal!();
 }
 
 #[cfg(all(feature = "alloc", feature = "nightly"))]

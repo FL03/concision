@@ -218,12 +218,12 @@ where
     type Output = Array<A, D>;
 
     fn softmax(&self) -> Self::Output {
-        &self.exp() / self.exp().sum()
+        let exp = self.exp();
+        &exp / exp.sum()
     }
 
     fn softmax_derivative(&self) -> Self::Output {
-        let e = self.exp();
-        let softmax = &e / e.sum();
+        let softmax = self.softmax();
 
         let ones = Array::<A, D>::ones(self.dim());
         &softmax * (&ones - &softmax)

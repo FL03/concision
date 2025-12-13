@@ -27,14 +27,14 @@ pub trait IntoComplex<T> {
     fn into_complex(self, real: bool) -> Self::Complex<T>
     where
         Self: Sized;
-
+    /// uses the current state as the real value of a complex number
     fn into_re(self) -> Self::Complex<T>
     where
         Self: Sized,
     {
         self.into_complex(true)
     }
-
+    /// uses the current state as the imaginary value of a complex number
     fn into_im(self) -> Self::Complex<T>
     where
         Self: Sized,
@@ -49,15 +49,12 @@ pub trait IntoComplex<T> {
 
 impl<T> AsComplex<T> for T
 where
-    T: Clone + Num,
+    T: Clone + IntoComplex<T>,
 {
-    type Complex<A> = Complex<A>;
+    type Complex<A> = <T as IntoComplex<T>>::Complex<A>;
 
-    fn as_complex(&self, real: bool) -> Complex<T> {
-        match real {
-            true => Complex::new(self.clone(), Self::zero()),
-            false => Complex::new(Self::zero(), self.clone()),
-        }
+    fn as_complex(&self, real: bool) -> Self::Complex<T> {
+        self.clone().into_complex(real)
     }
 }
 
@@ -71,9 +68,10 @@ where
     where
         Self: Sized,
     {
-        match real {
-            true => Complex::new(self, T::zero()),
-            false => Complex::new(T::zero(), self),
+        if real {
+            Complex::new(self, T::zero())
+        } else {
+            Complex::new(T::zero(), self)
         }
     }
 }
