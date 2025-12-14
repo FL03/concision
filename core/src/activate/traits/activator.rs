@@ -2,6 +2,8 @@
     appellation: activate <module>
     authors: @FL03
 */
+use concision_params::RawParams;
+
 /// The [`Activator`] trait defines a method for applying an activation function to an input
 /// tensor.
 pub trait Activator<T> {
@@ -47,39 +49,36 @@ impl<X, Y> Activator<X> for alloc::boxed::Box<dyn Activator<X, Output = Y>> {
  ************* Implementations *************
 */
 macro_rules! activator {
-    ($(
-        $vis:vis struct $name:ident.$method:ident where $T:ident: $($trait:ident)::*
-    );* $(;)?) => {
-        $(
-            activator!(@impl $vis struct $name.$method where $T: $($trait)::* );
-        )*
+    ($($vis:vis struct $name:ident.$method:ident where $T:ident: $($trait:ident)::*);* $(;)?) => {
+        $(activator! {
+            @impl $vis struct $name.$method where $T: $($trait)::*
+        })*
     };
     (@impl $vis:vis struct $name:ident.$method:ident where $T:ident: $($trait:ident)::* ) => {
-
         #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
         #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
         $vis struct $name;
 
-        impl<U> Activator<U> for $name
+        impl<$T> Activator<$T> for $name
         where
-            U: $($trait)::*,
+            $T: $($trait)::*,
         {
-            type Output = U::Output;
+            type Output = <$T>::Output;
 
-            fn activate(&self, x: U) -> Self::Output {
+            fn activate(&self, x: $T) -> Self::Output {
                 x.$method()
             }
         }
 
         paste::paste! {
-            impl<U> ActivatorGradient<U> for $name
+            impl<$T> ActivatorGradient<$T> for $name
             where
-                U: $($trait)::*,
+                $T: $($trait)::*,
             {
                 type Rel = Self;
-                type Delta = U::Output;
+                type Delta = <$T>::Output;
 
-                fn activate_gradient(&self, inputs: U) -> Self::Delta {
+                fn activate_gradient(&self, inputs: $T) -> Self::Delta {
                     inputs.[<$method _derivative>]()
                 }
             }

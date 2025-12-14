@@ -31,9 +31,13 @@ impl<T> DataContainer for [T] {
     type Item = T;
 }
 
+impl<T, E> DataContainer for core::result::Result<T, E> {
+    type Cont<U> = core::result::Result<U, E>;
+    type Item = T;
+}
+
 impl_data_container! {
     core::option::Option<T>,
-    core::result::Result<T, E>,
 }
 
 #[cfg(feature = "alloc")]

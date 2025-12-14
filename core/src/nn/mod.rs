@@ -41,7 +41,7 @@ mod tests {
         // verify the shape of the layer's parameters
         assert_eq!(layer.params().shape(), &[3, 2]);
         // compare the actual output against the expected output
-        assert_eq!(layer.forward(&inputs), Array1::from_elem(2, 7.5625));
+        assert_eq!(layer.forward(&inputs), Array1::from_elem(2, 7.5625).pow2());
     }
 
     #[test]
@@ -76,11 +76,8 @@ mod tests {
         // verify the shape of the layer's parameters
         assert_eq!(layer.params().shape(), &[3, 2]);
         // compare the actual output against the expected output
-        assert!(
-            (layer.forward(&inputs) - Array1::from_elem(2, 0.99185973))
-                .abs()
-                .iter()
-                .all(|&i| i < 1e-6)
-        );
+        let y = layer.forward(&inputs);
+        let exp = Array1::from_elem(2, 0.99185973).tanh();
+        assert!((y - exp).abs().iter().all(|&i| i < 1e-6));
     }
 }

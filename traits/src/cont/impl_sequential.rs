@@ -8,7 +8,9 @@ use super::Sequential;
 macro_rules! impl_sequential {
     (@impl $($name:ident)::*<$T:ident>) => {
         impl<$T> $crate::cont::Sequential for $($name)::*<$T> {
-            seal!();
+            fn len(&self) -> usize {
+                self.len()
+            }
         }
     };
      {$($($name:ident)::*<$T:ident>),* $(,)?} => {
@@ -22,23 +24,32 @@ impl<T> Sequential for &T
 where
     T: Sequential,
 {
-    seal!();
+    fn len(&self) -> usize {
+        Sequential::len(*self)
+    }
 }
 
 impl<T> Sequential for &mut T
 where
     T: Sequential,
 {
-    seal!();
+    fn len(&self) -> usize {
+        Sequential::len(*self)
+    }
 }
 
 impl<T> Sequential for [T] {
-    seal!();
+    fn len(&self) -> usize {
+        self.len()
+    }
 }
 
 impl<T, const N: usize> Sequential for [T; N] {
-    seal!();
+    fn len(&self) -> usize {
+        N
+    }
 }
+
 #[cfg(feature = "alloc")]
 impl_sequential! {
     alloc::vec::Vec<T>,
