@@ -69,6 +69,13 @@ where
             params: self.params,
         }
     }
+    /// apply the configured activation function onto some input, producing some output
+    pub fn activate<X, Y>(&self, input: X) -> Y
+    where
+        F: Activator<X, Output = Y>,
+    {
+        self.rho().activate(input)
+    }
     /// given some input, complete a single forward pass through the layer
     pub fn forward<U, V>(&self, input: &U) -> V
     where
@@ -78,15 +85,27 @@ where
     }
 }
 
-impl<F, P, X, Y> Forward<X> for Layer<F, P>
+impl<F, P, A, X, Y> Activator<X> for Layer<F, P>
+where
+    F: Activator<X, Output = Y>,
+    P: RawParams<Elem = A>,
+{
+    type Output = F::Output;
+
+    fn activate(&self, input: X) -> Self::Output {
+        self.rho().activate(input)
+    }
+}
+
+impl<F, P, A, X, Y> Forward<X> for Layer<F, P>
 where
     F: Activator<Y, Output = Y>,
-    P: Forward<X, Output = Y>,
+    P: RawParams<Elem = A> + Forward<X, Output = Y>,
 {
-    type Output = Y;
+    type Output = F::Output;
 
     fn forward(&self, input: &X) -> Self::Output {
-        self.params.forward_then(input, |y| self.rho.activate(y))
+        self.activate(self.params().forward_then(input, |y| self.activate(y)))
     }
 }
 

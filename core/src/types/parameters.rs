@@ -4,6 +4,21 @@
     Contrib: @FL03
 */
 
+pub trait HyperParamKey:
+    Eq + AsRef<str> + core::borrow::Borrow<str> + core::fmt::Debug + core::hash::Hash
+{
+    private! {}
+}
+
+impl HyperParamKey for str {
+    seal! {}
+}
+
+#[cfg(feature = "alloc")]
+impl HyperParamKey for alloc::string::String {
+    seal! {}
+}
+
 /// The [`Parameter`] struct represents a key-value pair used for configuration
 /// settings within the neural network framework.
 pub struct Parameter<K, V> {

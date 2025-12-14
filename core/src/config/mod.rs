@@ -41,7 +41,7 @@ pub trait ModelConfiguration<T>: RawConfig {
     where
         K: AsRef<str>;
 
-    fn keys(&self) -> Vec<HyperParam>;
+    fn keys(&self) -> Vec<&str>;
 }
 
 macro_rules! hyperparam_method {

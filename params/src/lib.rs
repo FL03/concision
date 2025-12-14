@@ -68,16 +68,23 @@ mod impls {
 }
 
 mod traits {
-    //! Additional traits for working with parameters
+    #[doc(inline)]
     pub use self::{raw_params::*, wnb::*};
 
     mod raw_params;
     mod wnb;
 }
 
+mod utils {
+    #[doc(inline)]
+    pub use self::shape::*;
+
+    mod shape;
+}
+
 // re-exports
 #[doc(inline)]
-pub use self::{error::*, params_base::*, traits::*, types::*};
+pub use self::{error::*, params_base::*, traits::*, types::*, utils::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
@@ -85,4 +92,5 @@ pub mod prelude {
     pub use crate::params_base::*;
     pub use crate::traits::*;
     pub use crate::types::*;
+    pub use crate::utils::*;
 }

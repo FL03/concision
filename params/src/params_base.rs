@@ -2,6 +2,7 @@
     Appellation: params <module>
     Contrib: @FL03
 */
+use crate::utils::get_bias_shape;
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
 use ndarray::{
@@ -50,15 +51,15 @@ where
         Sh: ShapeBuilder<Dim = D>,
         F: Fn() -> A,
     {
-        let shape = shape.into_shape_with_order();
-        // initialize the bias using a shape that is 1 rank lower then the weights
-        let bias = ArrayBase::from_shape_fn(shape.raw_dim().remove_axis(Axis(0)), |_| init());
         let weights = ArrayBase::from_shape_fn(shape, |_| init());
+        // initialize the bias using a shape that is 1 rank lower then the weights
+        let bshape = crate::utils::get_bias_shape(&weights);
+        let bias = ArrayBase::from_shape_fn(bshape, |_| init());
         // create a new instance from the generated bias and weights
         Self::new(bias, weights)
     }
     /// returns a new instance of the [`ParamsBase`] initialized use the given shape_function
-    pub fn from_shape_fn<Sh, F1, F2>(shape: Sh, wf: F1, bf: F2) -> Self
+    pub fn from_shape_fn<Sh, F1, F2>(shape: Sh, w: F1, b: F2) -> Self
     where
         A: Clone,
         D: RemoveAxis,
@@ -68,10 +69,12 @@ where
         F1: Fn(<D as Dimension>::Pattern) -> A,
         F2: Fn(<D::Smaller as Dimension>::Pattern) -> A,
     {
-        let shape = shape.into_shape_with_order();
-        let bdim = shape.raw_dim().remove_axis(Axis(0));
-        let bias = ArrayBase::from_shape_fn(bdim, |s| bf(s));
-        let weights = ArrayBase::from_shape_fn(shape, |s| wf(s));
+        // initialize the weights with some shape using the given function
+        let weights = ArrayBase::from_shape_fn(shape, |s| w(s));
+        // use the weight tensor to define the shape of the bias
+        let bdim = get_bias_shape(&weights);
+        let bias = ArrayBase::from_shape_fn(bdim, |s| b(s));
+        // return a new instance
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] with the given bias used the default weights
@@ -83,33 +86,32 @@ where
         Sh: ShapeBuilder<Dim = D>,
     {
         let weights = ArrayBase::from_elem(shape, A::default());
+        let bdim = get_bias_shape(&weights);
+        if bias.raw_dim() != bdim {
+            panic!("the given bias shape is invalid");
+        }
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] with the given weights used the default
     /// bias
-    pub fn from_weights<Sh>(shape: Sh, weights: ArrayBase<S, D, A>) -> Self
+    pub fn from_weights(weights: ArrayBase<S, D, A>) -> Self
     where
         A: Clone + Default,
         D: RemoveAxis,
         S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
     {
-        let shape = shape.into_shape_with_order();
-        let dim_bias = shape.raw_dim().remove_axis(Axis(0));
-        let bias = ArrayBase::from_elem(dim_bias, A::default());
+        let bias = ArrayBase::from_elem(get_bias_shape(&weights), A::default());
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] from the given shape and element;
-    pub fn from_elem<Sh>(shape: Sh, elem: A) -> Self
+    pub fn from_elem<Sh: ShapeBuilder<Dim = D>>(shape: Sh, elem: A) -> Self
     where
         A: Clone,
         D: RemoveAxis,
         S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
     {
         let weights = ArrayBase::from_elem(shape, elem.clone());
-        let dim = weights.raw_dim();
-        let bias = ArrayBase::from_elem(dim.remove_axis(Axis(0)), elem);
+        let bias = ArrayBase::from_elem(get_bias_shape(&weights), elem);
         Self::new(bias, weights)
     }
     #[allow(clippy::should_implement_trait)]

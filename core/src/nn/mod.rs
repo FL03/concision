@@ -78,8 +78,9 @@ mod tests {
         // compare the actual output against the expected output
         assert!(
             (layer.forward(&inputs) - Array1::from_elem(2, 0.99185973))
+                .abs()
                 .iter()
-                .all(|i| i.abs() < 1e-6)
+                .all(|&i| i < 1e-6)
         );
     }
 }

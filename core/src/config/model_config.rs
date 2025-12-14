@@ -4,6 +4,7 @@
 */
 use super::HyperParam;
 use super::{ExtendedModelConfig, ModelConfiguration, RawConfig};
+use alloc::string::{String, ToString};
 use hashbrown::DefaultHashBuilder;
 use hashbrown::hash_map::{self, HashMap};
 
@@ -16,7 +17,7 @@ use hashbrown::hash_map::{self, HashMap};
 pub struct StandardModelConfig<T> {
     pub batch_size: usize,
     pub epochs: usize,
-    pub hyperspace: HashMap<HyperParam, T>,
+    pub hyperspace: HashMap<String, T>,
 }
 
 impl<T> StandardModelConfig<T> {
@@ -44,37 +45,37 @@ impl<T> StandardModelConfig<T> {
         &mut self.epochs
     }
     /// returns a reference to the hyperparameters map
-    pub const fn hyperparameters(&self) -> &HashMap<HyperParam, T> {
+    pub const fn hyperparameters(&self) -> &HashMap<String, T> {
         &self.hyperspace
     }
     /// returns a mutable reference to the hyperparameters map
-    pub const fn hyperparameters_mut(&mut self) -> &mut HashMap<HyperParam, T> {
+    pub const fn hyperparameters_mut(&mut self) -> &mut HashMap<String, T> {
         &mut self.hyperspace
     }
     /// inserts a hyperparameter into the map, returning the previous value if it exists
-    pub fn add_parameter<P: Into<HyperParam>>(&mut self, key: P, value: T) -> Option<T> {
-        self.hyperparameters_mut().insert(key.into(), value)
+    pub fn add_parameter<K: ToString>(&mut self, key: K, value: T) -> Option<T> {
+        self.hyperparameters_mut().insert(key.to_string(), value)
     }
     /// gets a reference to a hyperparameter by key, returning None if it does not exist
     pub fn get<Q>(&self, key: &Q) -> Option<&T>
     where
         Q: ?Sized + Eq + core::hash::Hash,
-        HyperParam: core::borrow::Borrow<Q>,
+        String: core::borrow::Borrow<Q>,
     {
         self.hyperparameters().get(key)
     }
     /// returns an entry for the hyperparameter, allowing for insertion or modification
-    pub fn parameter<Q>(&mut self, key: Q) -> hash_map::Entry<'_, HyperParam, T, DefaultHashBuilder>
-    where
-        Q: AsRef<str>,
-    {
-        self.hyperparameters_mut().entry(key.as_ref().into())
+    pub fn parameter<Q: ToString>(
+        &mut self,
+        key: Q,
+    ) -> hash_map::Entry<'_, String, T, DefaultHashBuilder> {
+        self.hyperparameters_mut().entry(key.to_string())
     }
     /// removes a hyperparameter from the map, returning the value if it exists
     pub fn remove_hyperparameter<Q>(&mut self, key: &Q) -> Option<T>
     where
         Q: ?Sized + core::hash::Hash + Eq,
-        HyperParam: core::borrow::Borrow<Q>,
+        String: core::borrow::Borrow<Q>,
     {
         self.hyperparameters_mut().remove(key)
     }
@@ -168,7 +169,7 @@ impl<T> ModelConfiguration<T> for StandardModelConfig<T> {
         K: AsRef<str>,
     {
         self.hyperparameters_mut()
-            .insert(key.as_ref().into(), value)
+            .insert(key.as_ref().try_into().expect("invalid parameter"), value)
     }
 
     fn remove<K>(&mut self, key: K) -> Option<T>
@@ -185,8 +186,8 @@ impl<T> ModelConfiguration<T> for StandardModelConfig<T> {
         self.hyperparameters().contains_key(key.as_ref())
     }
 
-    fn keys(&self) -> Vec<HyperParam> {
-        self.hyperparameters().keys().cloned().collect()
+    fn keys(&self) -> Vec<&str> {
+        self.hyperparameters().keys().map(|k| k.as_str()).collect()
     }
 }
 
