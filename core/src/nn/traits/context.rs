@@ -8,6 +8,10 @@ pub trait RawContext {
     private! {}
 }
 
+/*
+ ************* Implementations *************
+*/
+
 impl RawContext for () {
     seal! {}
 }

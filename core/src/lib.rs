@@ -83,11 +83,18 @@ pub mod ex {
     pub mod sample;
 }
 
+pub mod types {
+    #[doc(inline)]
+    pub use self::parameters::*;
+
+    mod parameters;
+}
+
 // re-exports
 #[doc(inline)]
 pub use self::{
     activate::prelude::*, config::prelude::*, error::*, layout::*, nn::prelude::*,
-    store::prelude::*, utils::prelude::*,
+    store::prelude::*, types::*, utils::prelude::*,
 };
 // prelude
 #[doc(hidden)]
@@ -101,5 +108,6 @@ pub mod prelude {
     pub use crate::layout::*;
     pub use crate::nn::prelude::*;
     pub use crate::store::prelude::*;
+    pub use crate::types::*;
     pub use crate::utils::prelude::*;
 }

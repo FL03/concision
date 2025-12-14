@@ -5,11 +5,6 @@
 #[cfg(feature = "alloc")]
 use alloc::string::{String, ToString};
 
-pub struct KeyValue<K, V> {
-    pub key: K,
-    pub value: V,
-}
-
 /// An enumeration of common HyperParams used in neural network configurations.
 #[derive(
     Clone,
@@ -29,6 +24,7 @@ pub struct KeyValue<K, V> {
     derive(serde::Deserialize, serde::Serialize),
     serde(rename_all = "snake_case", untagged)
 )]
+#[strum(serialize_all = "snake_case")]
 pub enum HyperParam {
     Decay,
     #[serde(alias = "drop_out", alias = "p")]

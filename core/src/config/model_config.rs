@@ -56,7 +56,7 @@ impl<T> StandardModelConfig<T> {
         self.hyperparameters_mut().insert(key.into(), value)
     }
     /// gets a reference to a hyperparameter by key, returning None if it does not exist
-    pub fn get_parameter<Q>(&self, key: &Q) -> Option<&T>
+    pub fn get<Q>(&self, key: &Q) -> Option<&T>
     where
         Q: ?Sized + Eq + core::hash::Hash,
         HyperParam: core::borrow::Borrow<Q>,
@@ -118,19 +118,19 @@ impl<T> StandardModelConfig<T> {
     }
     /// returns a reference to the learning rate hyperparameter, if it exists
     pub fn learning_rate(&self) -> Option<&T> {
-        self.get_parameter(&LearningRate)
+        self.get("learning_rate")
     }
     /// returns a reference to the momentum hyperparameter, if it exists
     pub fn momentum(&self) -> Option<&T> {
-        self.get_parameter(&Momentum)
+        self.get("momentum")
     }
     /// returns a reference to the decay hyperparameter, if it exists
     pub fn decay(&self) -> Option<&T> {
-        self.get_parameter(&Decay)
+        self.get("decay")
     }
     /// returns a reference to the weight decay hyperparameter, if it exists
     pub fn weight_decay(&self) -> Option<&T> {
-        self.get_parameter(&WeightDecay)
+        self.get("weight_decay")
     }
 }
 

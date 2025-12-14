@@ -6,22 +6,24 @@
 use ndarray::{ArrayBase, Data, DataMut, Dimension, OwnedRepr, RawData, RawDataMut};
 use num_traits::Float;
 
-pub trait NdTensor<S, D, A = <S as RawData>::Elem>
-where
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
+pub trait RawTensor<S, D, A> {
     type Cont<_S, _D, _A>
     where
         _D: Dimension,
         _S: RawData<Elem = _A>;
-    /// returns the rank, or _dimensionality_, of the tensor
-    fn rank(&self) -> usize;
-    /// returns the shape of the tensor
-    fn shape(&self) -> &[usize];
-    /// returns the total number of elements in the tensor
-    fn len(&self) -> usize;
 
+    fn rank(&self) -> usize;
+
+    fn shape(&self) -> &[usize];
+
+    fn size(&self) -> usize;
+}
+
+pub trait NdTensor<S, D, A = <S as RawData>::Elem>: RawTensor<S, D, A>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
     fn as_ptr(&self) -> *const A;
 
     fn as_mut_ptr(&mut self) -> *mut A
@@ -51,6 +53,14 @@ where
     }
 
     fn log(&self) -> Self::Cont<OwnedRepr<A>, D, A>
+    where
+        A: Float,
+        S: DataMut,
+    {
+        self.apply(|x| x.ln())
+    }
+
+    fn ln(&self) -> Self::Cont<OwnedRepr<A>, D, A>
     where
         A: Float,
         S: DataMut,
@@ -124,7 +134,7 @@ where
  ************* Implementations *************
 */
 
-impl<A, S, D> NdTensor<S, D, A> for ArrayBase<S, D, A>
+impl<A, S, D> RawTensor<S, D, A> for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -143,10 +153,16 @@ where
         self.shape()
     }
 
-    fn len(&self) -> usize {
+    fn size(&self) -> usize {
         self.len()
     }
+}
 
+impl<A, S, D> NdTensor<S, D, A> for ArrayBase<S, D, A>
+where
+    D: Dimension,
+    S: RawData<Elem = A>,
+{
     fn as_ptr(&self) -> *const A {
         self.as_ptr()
     }
