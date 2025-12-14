@@ -12,17 +12,22 @@ mod impl_sequential;
 /// sealed, preventing any external implementations and is primarily used as the basis for
 /// other traits, such as [`Sequential`].
 pub trait RawContainer {
-    type Elem;
+    type Elem: ?Sized;
 }
-/// The [`Sequential`] trait is a marker trait defining a sequential collection of elements.
+/// The [`SeqContainer`] trait is a marker trait defining a sequential collection of elements.
 /// It is sealed, preventing external implementations, and is used to indicate that a type can
 /// be treated as a sequence of elements, such as arrays or vectors.
-pub trait Sequential: RawContainer {
+pub trait SeqContainer: RawContainer {
     fn len(&self) -> usize;
 }
 
 /// The [`DataContainer`] trait works to extend the functionality of the [`RawContainer`]
-pub trait DataContainer {
-    type Cont<U>: ?Sized + RawContainer<Elem = U>;
-    type Item;
+pub trait DataContainer<T> {
+    type Cont<_T>: ?Sized + RawContainer<Elem = _T>;
+}
+
+pub trait Container<T>: DataContainer<T> {
+    fn apply<F, U>(&self, f: F) -> Self::Cont<U>
+    where
+        F: FnMut(&T) -> U;
 }

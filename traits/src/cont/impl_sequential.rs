@@ -3,11 +3,11 @@
     Created At: 2025.12.10:21:44:00
     Contrib: @FL03
 */
-use super::Sequential;
+use super::SeqContainer;
 
 macro_rules! impl_sequential {
-    (@impl $($name:ident)::*<$T:ident>) => {
-        impl<$T> $crate::cont::Sequential for $($name)::*<$T> {
+    (@impl<$T:ident> $($name:ident)::*) => {
+        impl<$T> $crate::cont::SeqContainer for $($name)::*<$T> {
             fn len(&self) -> usize {
                 self.len()
             }
@@ -15,36 +15,38 @@ macro_rules! impl_sequential {
     };
      {$($($name:ident)::*<$T:ident>),* $(,)?} => {
         $(
-            impl_sequential!(@impl $($name)::*<$T>);
+            impl_sequential!(@impl<$T> $($name)::*);
         )*
     };
 }
 
-impl<T> Sequential for &T
+impl<C, T> SeqContainer for &C
 where
-    T: Sequential,
+    C: SeqContainer<Elem = T>,
+    T: Sized,
 {
     fn len(&self) -> usize {
-        Sequential::len(*self)
+        SeqContainer::len(*self)
     }
 }
 
-impl<T> Sequential for &mut T
+impl<C, T> SeqContainer for &mut C
 where
-    T: Sequential,
+    C: SeqContainer<Elem = T>,
+    T: Sized,
 {
     fn len(&self) -> usize {
-        Sequential::len(*self)
+        SeqContainer::len(*self)
     }
 }
 
-impl<T> Sequential for [T] {
+impl<T> SeqContainer for [T] {
     fn len(&self) -> usize {
         self.len()
     }
 }
 
-impl<T, const N: usize> Sequential for [T; N] {
+impl<T, const N: usize> SeqContainer for [T; N] {
     fn len(&self) -> usize {
         N
     }

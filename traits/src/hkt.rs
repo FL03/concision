@@ -36,13 +36,15 @@ pub trait FunctorRef<T>: HKT<T> {
  *************  Implementations  *************
 */
 macro_rules! hkt {
-    (@impl $($cont:ident)::*<$T:ident>) => {
+    (@impl<$T:ident> for $($cont:ident)::*) => {
         impl<$T> HKT<$T> for $($cont)::*<$T> {
             type Cont<_T> = $($cont)::*<_T>;
         }
     };
     ($($($cont:ident)::*<$T:ident>),* $(,)?) => {
-        $(hkt!(@impl $($cont)::*<$T>);)*
+        $(hkt!{
+            @impl<$T> for $($cont)::*
+        })*
     };
 }
 

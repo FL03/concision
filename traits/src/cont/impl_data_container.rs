@@ -6,34 +6,29 @@
 use super::DataContainer;
 
 macro_rules! impl_data_container {
-    ($(
-        $($container:ident)::*<$A:ident $(, $B:ident)?>
-    ),* $(,)?) => {
-        $(impl_data_container!(@impl $($container)::*<$A $(, $B)?>);)*
+    ($($($container:ident)::*<$A:ident $(, $B:ident)?>),* $(,)?) => {
+        $(impl_data_container! {
+            @impl<$A $(, $B)?> $($container)::*
+        })*
     };
-
-    (@impl $($container:ident)::*<$T:ident>) => {
-        impl<$T> $crate::cont::DataContainer for $($container)::*<$T> {
+    (@impl<$T:ident> $($container:ident)::*) => {
+        impl<$T> $crate::cont::DataContainer<$T> for $($container)::*<$T> {
             type Cont<U> = $($container)::*<U>;
-            type Item = $T;
         }
     };
-    (@impl $($container:ident)::*<$K:ident, $V:ident>) => {
-        impl<$K, $V>  $crate::cont::DataContainer for $($container)::*<$K, $V> {
+    (@impl<$K:ident, $V:ident> $($container:ident)::*) => {
+        impl<$K, $V>  $crate::cont::DataContainer<$V> for $($container)::*<$K, $V> {
             type Cont<U> = $($container)::*<$K, U>;
-            type Item = $V;
         }
     };
 }
 
-impl<T> DataContainer for [T] {
+impl<T> DataContainer<T> for [T] {
     type Cont<U> = [U];
-    type Item = T;
 }
 
-impl<T, E> DataContainer for core::result::Result<T, E> {
+impl<T, E> DataContainer<T> for core::result::Result<T, E> {
     type Cont<U> = core::result::Result<U, E>;
-    type Item = T;
 }
 
 impl_data_container! {
