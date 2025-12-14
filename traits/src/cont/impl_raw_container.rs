@@ -69,6 +69,14 @@ impl_raw_container! {
     std::sync::LazyLock<T>,
 }
 
+impl<A, S, D> RawContainer for ndarray::ArrayBase<S, D, A>
+where
+    D: ndarray::Dimension,
+    S: ndarray::RawData<Elem = A>,
+{
+    type Elem = A;
+}
+
 #[cfg(all(feature = "alloc", not(feature = "nightly")))]
 impl<K, V> RawContainer for alloc::collections::BTreeMap<K, V> {
     type Elem = V;

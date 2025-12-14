@@ -6,7 +6,7 @@
 use ndarray::{ArrayBase, Data, DataMut, Dimension, OwnedRepr, RawData, RawDataMut};
 use num_traits::Float;
 
-pub trait RawTensor<S, D, A> {
+pub trait TensorBase<S, D, A> {
     type Cont<_S, _D, _A>
     where
         _D: Dimension,
@@ -19,7 +19,8 @@ pub trait RawTensor<S, D, A> {
     fn size(&self) -> usize;
 }
 
-pub trait NdTensor<S, D, A = <S as RawData>::Elem>: RawTensor<S, D, A>
+pub trait NdTensor<S, D, A = <S as RawData>::Elem>:
+    TensorBase<S, D, A, Cont<S, D, A> = ArrayBase<S, D, A>>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -134,7 +135,7 @@ where
  ************* Implementations *************
 */
 
-impl<A, S, D> RawTensor<S, D, A> for ArrayBase<S, D, A>
+impl<A, S, D> TensorBase<S, D, A> for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,

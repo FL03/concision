@@ -5,8 +5,22 @@
 */
 
 pub trait RawTensorData {
-    type Elem;
+    type Elem: ?Sized;
+}
 
+pub trait RawTensor<S, D, A>
+where
+    S: RawTensorData,
+{
+    type Cont<_S, _D, _A>
+    where
+        _D: ?Sized,
+        _S: RawTensorData<Elem = _A>;
+}
+/// A marker trait used to denote tensors that represent scalar values; more specifically, we
+/// consider _**any**_ type implementing the [`RawTensorData`] type where the `Elem` associated
+/// type is the implementor itself a scalar value.
+pub trait ScalarTensorData: RawTensorData<Elem = Self> {
     private! {}
 }
 
@@ -14,11 +28,26 @@ pub trait RawTensorData {
  ************* Implementations *************
 */
 
-impl<A, S> RawTensorData for S
+impl<T> ScalarTensorData for T
 where
-    S: ndarray::RawData<Elem = A>,
+    T: RawTensorData<Elem = Self>,
 {
-    type Elem = A;
-
     seal! {}
+}
+
+macro_rules! impl_scalar_tensor {
+    {$($T:ty),* $(,)?} => {
+        $(
+            impl RawTensorData for $T {
+                type Elem = $T;
+            }
+        )*
+    };
+}
+
+impl_scalar_tensor! {
+    u8, u16, u32, u64, u128, usize,
+    i8, i16, i32, i64, i128, isize,
+    f32, f64,
+    bool, char, str
 }

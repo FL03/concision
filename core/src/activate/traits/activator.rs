@@ -2,8 +2,6 @@
     appellation: activate <module>
     authors: @FL03
 */
-use concision_params::RawParams;
-
 /// The [`Activator`] trait defines a method for applying an activation function to an input
 /// tensor.
 pub trait Activator<T> {
