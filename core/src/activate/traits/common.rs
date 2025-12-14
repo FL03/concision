@@ -74,7 +74,7 @@ macro_rules! impl_heavyside {
 
                 fn heavyside(self) -> Self::Output {
                     if self > <$T>::zero() {
-                        self
+                        <$T>::one()
                     } else {
                         <$T>::zero()
                     }

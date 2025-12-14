@@ -7,7 +7,7 @@ use super::common::*;
 use concision_traits::Apply;
 #[cfg(feature = "complex")]
 use num_complex::ComplexFloat;
-use num_traits::One;
+use num_traits::{One, Zero};
 
 /// The [`Rho`] trait defines a set of activation functions that can be applied to an
 /// implementor of the [`Apply`] trait. It provides methods for common activation functions
@@ -34,11 +34,11 @@ pub trait Rho<T> {
         self.rho(|_| <T>::one())
     }
 
-    fn heavyside(&self) -> Self::Cont<T::Output>
+    fn heavyside(&self) -> Self::Cont<T>
     where
-        T: HeavysideActivation,
+        T: One + Zero + PartialOrd,
     {
-        self.rho(|x| x.heavyside())
+        self.rho(crate::activate::heavyside)
     }
 
     fn heavyside_derivative(&self) -> Self::Cont<T::Output>

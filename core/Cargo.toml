@@ -32,7 +32,7 @@ test = true
 [dependencies]
 concision-init = { workspace = true }
 concision-params = { workspace = true }
-concision-traits = { workspace = true }
+concision-traits = { features = ["hashbrown"], workspace = true }
 # custom
 variants = { workspace = true }
 # concurrency & parallelism

@@ -13,13 +13,13 @@ pub trait HKT<T> {
 pub trait Functor<T>: HKT<T> {
     fn mapf<F, U>(self, f: F) -> Self::Cont<U>
     where
-        F: Fn(T) -> U;
+        F: FnOnce(T) -> U;
 }
 /// An alternative version of the [`Functor`] trait that works with references to the content
 pub trait FunctorRef<T>: HKT<T> {
     fn mapf<F, U>(&self, f: F) -> Self::Cont<U>
     where
-        F: Fn(&T) -> U;
+        F: Fn(T) -> U;
 }
 
 // pub trait Applicative<T>: Functor<T> {
@@ -76,6 +76,14 @@ hkt! {
     core::option::Option<T>,
 }
 
+impl<S, D, A> HKT<A> for ndarray::ArrayBase<S, D, A>
+where
+    S: ndarray::RawData<Elem = A>,
+    D: ndarray::Dimension,
+{
+    type Cont<U> = ndarray::ArrayBase<ndarray::OwnedRepr<U>, D>;
+}
+
 #[cfg(feature = "alloc")]
 hkt! {
     alloc::vec::Vec<T>,
@@ -120,29 +128,26 @@ impl<T, S> HKT<T> for hashbrown::HashSet<T, S> {
     type Cont<U> = hashbrown::HashSet<U, S>;
 }
 
-impl<A, S, D> HKT<A> for ndarray::ArrayBase<S, D, A>
-where
-    S: ndarray::RawData<Elem = A>,
-    D: ndarray::Dimension,
-{
-    type Cont<U> = ndarray::ArrayRef<U, D>;
-}
-
 impl<T> Functor<T> for Option<T> {
     fn mapf<F, U>(self, f: F) -> Self::Cont<U>
     where
-        F: Fn(T) -> U,
+        F: FnOnce(T) -> U,
     {
         self.map(f)
     }
 }
 
-impl<T> FunctorRef<T> for Option<T> {
+impl<A, S, D> FunctorRef<A> for ndarray::ArrayBase<S, D, A>
+where
+    A: Clone,
+    S: ndarray::Data<Elem = A>,
+    D: ndarray::Dimension,
+{
     fn mapf<F, U>(&self, f: F) -> Self::Cont<U>
     where
-        F: Fn(&T) -> U,
+        F: Fn(A) -> U,
     {
-        self.as_ref().map(f)
+        self.mapv(f)
     }
 }
 

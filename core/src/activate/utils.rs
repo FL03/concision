@@ -67,7 +67,7 @@ where
 /// Softmax function along a specific axis:
 ///
 /// ```math
-/// f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}
+/// f(x_i) = \frac{e^{x_i}}{\sum_{j} e^{x_j}}
 /// ```
 pub fn softmax_axis<A, S, D>(args: &ArrayBase<S, D, A>, axis: usize) -> Array<A, D>
 where
@@ -79,7 +79,7 @@ where
     let e = args.exp();
     &e / &e.sum_axis(axis)
 }
-/// the tanh activation function:
+/// Hyperbolic tangent
 ///
 /// ```math
 /// f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
@@ -117,13 +117,7 @@ where
 /// Heaviside activation function:
 ///
 /// ```math
-/// H(x) =
-/// \left\{
-/// \begin{array}{rcl}
-/// 1 & \text{if } & x\gt{0} \\
-/// 0 & \text{if } & x\leq{0}
-/// \end{array}
-/// \right.
+/// H(x)=\begin{cases}1 &x\gt{0} \\ 0 &x\leq{0} \end{cases}
 /// ```
 pub fn heavyside<T>(x: T) -> T
 where

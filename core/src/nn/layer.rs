@@ -22,7 +22,7 @@ pub struct Layer<F, P> {
 
 mod types {
     use super::Layer;
-    use crate::activate::{HeavySide, HyperbolicTangent, Linear, ReLU, Sigmoid};
+    use crate::activate::{HeavySide, Linear, ReLU, Sigmoid, TanhActivator};
     #[cfg(feature = "alloc")]
     use alloc::boxed::Box;
     use concision_params::{Params, ParamsBase};
@@ -36,7 +36,7 @@ mod types {
     /// A type alias for a [`Layer`] using a sigmoid activation function.
     pub type SigmoidLayer<T> = Layer<Sigmoid, T>;
     /// An alias for a [`Layer`] that uses the hyperbolic tangent function.
-    pub type TanhLayer<T> = Layer<HyperbolicTangent, T>;
+    pub type TanhLayer<T> = Layer<TanhActivator, T>;
     /// A [`Layer`] type using the ReLU activation function.
     pub type ReluLayer<T> = Layer<ReLU, T>;
     /// A [`Layer`] type using the heavyside activation function.

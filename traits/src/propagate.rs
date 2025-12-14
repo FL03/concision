@@ -36,7 +36,6 @@ pub trait BackwardStep<T> {
     fn backward(&mut self, input: &Self::Data<T>, delta: &Self::Grad<T>, gamma: T) -> Self::Output;
 }
 
-
 /// A consuming implementation of forward propagation
 pub trait ForwardOnce<Rhs> {
     type Output;

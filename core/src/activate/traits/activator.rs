@@ -2,8 +2,8 @@
     appellation: activate <module>
     authors: @FL03
 */
-/// The [`Activator`] trait defines a method for applying an activation function to an input
-/// tensor.
+/// An [`Activator`] defines an interface for _structural_ activation functions that can be
+/// applied onto various types.
 pub trait Activator<T> {
     type Output;
 
@@ -33,6 +33,19 @@ where
         self(rhs)
     }
 }
+
+// impl<F, S, D, A, B> Activator<ArrayBase<S, D, A>> for F
+// where
+//     F: Activator<A, Output = B>,
+//     S: Data<Elem = A>,
+//     D: Dimension,
+// {
+//     type Output = Array<B, D>;
+
+//     fn activate(&self, rhs: ArrayBase<S, D, A>) -> Self::Output {
+//         rhs.mapv(|x| self.activate(x))
+//     }
+// }
 
 #[cfg(feature = "alloc")]
 impl<X, Y> Activator<X> for alloc::boxed::Box<dyn Activator<X, Output = Y>> {
@@ -88,7 +101,7 @@ activator! {
     pub struct Linear.linear where T: crate::activate::LinearActivation;
     pub struct ReLU.relu where T: crate::activate::ReLUActivation;
     pub struct Sigmoid.sigmoid where T: crate::activate::SigmoidActivation;
-    pub struct HyperbolicTangent.tanh where T: crate::activate::TanhActivation;
+    pub struct TanhActivator.tanh where T: crate::activate::TanhActivation;
     pub struct HeavySide.heavyside where T: crate::activate::HeavysideActivation;
     pub struct Softmax.softmax where T: crate::activate::SoftmaxActivation;
 }

@@ -4,7 +4,7 @@
 */
 use super::Layer;
 
-use crate::activate::{Activator, HyperbolicTangent, Linear, ReLU, Sigmoid};
+use crate::activate::{Activator, Linear, ReLU, Sigmoid, TanhActivator};
 use concision_params::{ParamsBase, RawParams};
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
@@ -83,7 +83,7 @@ where
     }
 }
 
-impl<A, P> Layer<HyperbolicTangent, P>
+impl<A, P> Layer<TanhActivator, P>
 where
     P: RawParams<Elem = A>,
 {
@@ -91,7 +91,7 @@ where
     /// parameters.
     pub const fn tanh(params: P) -> Self {
         Self {
-            rho: HyperbolicTangent,
+            rho: TanhActivator,
             params,
         }
     }
