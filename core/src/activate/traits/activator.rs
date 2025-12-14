@@ -12,7 +12,8 @@ pub trait Activator<T> {
 }
 /// The [`ActivatorGradient`] trait extends the [`Activator`] trait to include a method for
 /// computing the gradient of the activation function.
-pub trait ActivatorGradient<T>: Activator<T> {
+pub trait ActivatorGradient<T> {
+    type Rel: Activator<T>;
     type Delta;
 
     /// compute the gradient of some input
@@ -75,6 +76,7 @@ macro_rules! activator {
             where
                 U: $($trait)::*,
             {
+                type Rel = Self;
                 type Delta = U::Output;
 
                 fn activate_gradient(&self, inputs: U) -> Self::Delta {

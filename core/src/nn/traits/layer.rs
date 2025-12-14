@@ -54,7 +54,7 @@ where
     fn backward<X, Y, Z, Dt>(&mut self, input: X, error: Y, gamma: A)
     where
         S: Data,
-        Self: ActivatorGradient<Y, Output = Z, Delta = Dt>,
+        Self: ActivatorGradient<Y, Rel = F, Delta = Dt>,
         A: Clone,
         ParamsBase<S, D>: Backward<X, Dt, Elem = A>,
     {
