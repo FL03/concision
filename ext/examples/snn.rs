@@ -11,12 +11,12 @@ fn main() -> anyhow::Result<()> {
         .with_timer(tracing_subscriber::fmt::time::Uptime::default())
         .init();
     // Simulation parameters
-    let dt = 0.1; // ms
-    let t_sim = 5000.0; // ms
+    let dt: f64 = 0.1; // ms
+    let t_sim: f64 = 5000.0; // ms
     let steps = (t_sim / dt) as usize;
 
     // Create neuron with defaults
-    let mut neuron = Leaky::default();
+    let mut neuron = Leaky::<f64>::default();
 
     // Example external current (constant)
     // Increase drive so steady-state v can reach threshold (v_rest + R*i_ext > v_thresh).
@@ -32,7 +32,7 @@ fn main() -> anyhow::Result<()> {
     for (t_spike, weight) in presyn_spikes {
         let idx = (t_spike / dt).round() as isize;
         if idx >= 0 && (idx as usize) < events.len() {
-            events[idx as usize].push(SynapticEvent { weight });
+            events[idx as usize].push(SynapticEvent::new(weight));
         }
     }
 

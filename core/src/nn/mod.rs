@@ -13,8 +13,9 @@ pub mod layer;
 
 mod traits {
     #[doc(inline)]
-    pub use self::{layer::*, model::*, neural_network::*};
+    pub use self::{context::*, layer::*, model::*, neural_network::*};
 
+    mod context;
     mod layer;
     mod model;
     mod neural_network;

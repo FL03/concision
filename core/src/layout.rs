@@ -108,26 +108,48 @@ pub trait LayoutExt: RawModelLayout + RawModelLayoutMut + Clone + core::fmt::Deb
 /// The [`NetworkDepth`] trait is used to define the depth/kind of a neural network model.
 pub trait NetworkDepth {
     private!();
+
+    fn is_deep(&self) -> bool {
+        false
+    }
 }
 
-type_tags! {
+macro_rules! impl_network_depth {
+    ( #[$tgt:ident] $vis:vis $s:ident {$($name:ident $({$($rest:tt)*})?),* $(,)?}) => {
+        $(
+            impl_network_depth!(@impl #[$tgt] $vis $s $name $({$($rest)*})?);
+        )*
+    };
+    (@impl #[$tgt:ident] $vis:vis enum $name:ident $({$($rest:tt)*})?) => {
+        #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+        $vis enum $name {}
+
+        impl $tgt for $name {
+            seal!();
+
+            $($($rest)*)?
+        }
+    };
+}
+
+impl_network_depth! {
     #[NetworkDepth]
     pub enum {
-        Deep,
+        Deep {
+            fn is_deep(&self) -> bool {
+                true
+            }
+        },
         Shallow,
     }
 }
 
 /// The [`ModelFormat`] type enumerates the various formats a neural network may take, either
 /// shallow or deep, providing a unified interface for accessing the number of hidden features
-/// and layers in the model. This is done largely for simplicity, as it eliminates the need to
-/// define a particular _type_ of network as its composition has little impact on the actual
-/// requirements / algorithms used to train or evaluate the model (that is, outside of the
-/// obvious need to account for additional hidden layers in deep configurations). In other
-/// words, both shallow and deep networks are requried to implement the same traits and
-/// fulfill the same requirements, so it makes sense to treat them as a single type with
-/// different configurations. The differences between the networks are largely left to the
-/// developer and their choice of activation functions, optimizers, and other considerations.
+/// and layers in the model. This is primarily used to generalize the allowed formats of a
+/// neural network without introducing any additional complexity with typing or other
+/// constructs.
 #[derive(
     Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, strum::EnumCount, strum::EnumIs,
 )]
@@ -151,6 +173,12 @@ pub struct ModelFeatures {
     /// the number of output features
     pub(crate) output: usize,
 }
+
+/// In contrast to the [`ModelFeatures`] type, the [`ModelLayout`] implementation aims to
+/// provide a generic foundation for using type-based features / layouts within neural network.
+/// Our goal with this struct is to eventually push the implementation to the point of being
+/// able to sufficiently describe everything about a model's layout (similar to what the
+/// [`ndarray`] developers have attained with the [`LayoutRef`](ndarray::LayoutRef)).
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct ModelLayout<F, D = Deep>

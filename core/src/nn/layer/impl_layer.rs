@@ -8,7 +8,10 @@ use crate::nn::RawLayer;
 use concision_params::RawParams;
 use concision_traits::Forward;
 
-impl<F, P> Layer<F, P> {
+impl<F, P, A> Layer<F, P>
+where
+    P: RawParams<Elem = A>,
+{
     /// create a new [`Layer`] from the given activation function and parameters.
     pub const fn new(rho: F, params: P) -> Self {
         Self { rho, params }
@@ -19,20 +22,14 @@ impl<F, P> Layer<F, P> {
     where
         F: Default,
     {
-        Self {
-            rho: F::default(),
-            params,
-        }
+        Self::new(<F>::default(), params)
     }
     /// create a new [`Layer`] from the given activation function and shape.
     pub fn from_rho<Sh>(rho: F) -> Self
     where
         P: Default,
     {
-        Self {
-            rho,
-            params: <P>::default(),
-        }
+        Self::new(rho, <P>::default())
     }
     /// returns an immutable reference to the layer's parameters
     pub const fn params(&self) -> &P {
@@ -84,13 +81,12 @@ impl<F, P> Layer<F, P> {
 impl<F, P, X, Y> Forward<X> for Layer<F, P>
 where
     F: Activator<Y, Output = Y>,
-    P: RawParams + Forward<X, Output = Y>,
+    P: Forward<X, Output = Y>,
 {
     type Output = Y;
 
     fn forward(&self, input: &X) -> Self::Output {
-        self.params()
-            .forward_then(input, |y| self.rho().activate(y))
+        self.params.forward_then(input, |y| self.rho.activate(y))
     }
 }
 
