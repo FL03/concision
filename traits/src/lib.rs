@@ -41,7 +41,7 @@ mod hkt;
 mod loss;
 mod norm;
 mod predict;
-mod propagation;
+mod propagate;
 mod rounding;
 mod training;
 
@@ -99,7 +99,7 @@ pub mod prelude {
     pub use crate::norm::*;
     pub use crate::ops::*;
     pub use crate::predict::*;
-    pub use crate::propagation::*;
+    pub use crate::propagate::*;
     pub use crate::rounding::*;
     pub use crate::tensor::*;
     pub use crate::training::*;
