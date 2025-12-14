@@ -30,20 +30,22 @@ pub(crate) mod macros {
     pub mod seal;
 }
 
-mod apply;
-mod clip;
-mod codex;
-mod complex;
-mod cont;
-mod entropy;
-mod get;
-mod hkt;
-mod loss;
-mod norm;
-mod predict;
-mod propagate;
-mod rounding;
-mod training;
+pub mod activate;
+pub mod apply;
+pub mod clip;
+pub mod codex;
+pub mod complex;
+pub mod cont;
+pub mod entropy;
+pub mod get;
+pub mod hkt;
+pub mod loss;
+pub mod norm;
+pub mod predict;
+pub mod propagate;
+pub mod rho;
+pub mod rounding;
+pub mod training;
 
 pub mod math {
     //! Mathematically oriented operators and functions useful in machine learning contexts.
@@ -87,6 +89,7 @@ pub use self::prelude::*;
 // prelude
 #[doc(hidden)]
 pub mod prelude {
+    pub use crate::activate::*;
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
@@ -100,6 +103,7 @@ pub mod prelude {
     pub use crate::ops::*;
     pub use crate::predict::*;
     pub use crate::propagate::*;
+    pub use crate::rho::*;
     pub use crate::rounding::*;
     pub use crate::tensor::*;
     pub use crate::training::*;

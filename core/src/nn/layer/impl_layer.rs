@@ -3,9 +3,9 @@
     authors: @FL03
 */
 use super::Layer;
-use crate::activate::Activator;
 use crate::nn::RawLayer;
 use concision_params::RawParams;
+use concision_traits::Activator;
 use concision_traits::Forward;
 
 impl<F, P, A> Layer<F, P>

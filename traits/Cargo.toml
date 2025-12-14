@@ -53,15 +53,20 @@ num-traits = { workspace = true }
 getrandom = { optional = true, workspace = true }
 rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
+# serialization
+serde = { optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
 
 [features]
-default = ["hashbrown", "std"]
+default = ["std"]
 
 full = [
+  "default",
   "approx",
   "complex",
-  "default",
+  "hashbrown",
   "rand",
+  "serde",
 ]
 
 nightly = [
@@ -79,6 +84,7 @@ std = [
   "num-traits/std",
   "rand?/std",
   "rand?/std_rng",
+  "serde?/std",
   "thiserror/std",
 ]
 
@@ -88,6 +94,7 @@ wasm = ["getrandom?/wasm_js"]
 # ************* [FF:Dependencies] *************
 alloc = [
   "hashbrown?/alloc",
+  "serde?/alloc",
 ]
 
 approx = ["dep:approx", "ndarray/approx"]
@@ -120,5 +127,7 @@ rng = [
 ]
 
 serde = [
+  "dep:serde",
+  "dep:serde_derive",
   "hashbrown?/serde",
 ]

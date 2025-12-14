@@ -5,9 +5,9 @@
 use crate::store::{ModelParamsBase, ShallowParamsBase};
 
 use crate::ModelFeatures;
-use crate::activate::{ReLUActivation, SigmoidActivation};
 use crate::store::traits::ShallowModelRepr;
 use concision_params::ParamsBase;
+use concision_traits::{ReLUActivation, SigmoidActivation};
 use ndarray::{
     Array1, ArrayBase, Data, DataOwned, Dimension, Ix2, RawData, RemoveAxis, ScalarOperand,
 };

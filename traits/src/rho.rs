@@ -2,11 +2,8 @@
     appellation: activate <module>
     authors: @FL03
 */
-use super::common::*;
-
-use concision_traits::Apply;
-#[cfg(feature = "complex")]
-use num_complex::ComplexFloat;
+use crate::Apply;
+use crate::activate::*;
 use num_traits::{One, Zero};
 
 /// The [`Rho`] trait defines a set of activation functions that can be applied to an
@@ -38,7 +35,7 @@ pub trait Rho<T> {
     where
         T: One + Zero + PartialOrd,
     {
-        self.rho(crate::activate::heavyside)
+        self.rho(|x| if x > T::zero() { T::one() } else { T::zero() })
     }
 
     fn heavyside_derivative(&self) -> Self::Cont<T::Output>
@@ -91,7 +88,6 @@ pub trait Rho<T> {
     }
 }
 
-#[cfg(feature = "complex")]
 /// The [`RhoComplex`] trait is similar to the [`Rho`] trait in that it provides various
 /// activation functions for implementos of the [`Apply`] trait, however, instead of being
 /// truly generic over a type `U`, it is generic over a type `U` that implements the
@@ -104,9 +100,10 @@ pub trait Rho<T> {
 /// to use a fully qualified syntax to disambiguate the two traits. If this becomes a problem,
 /// we may consider renaming the _complex_ methods accordingly to differentiate them from the
 /// _standard_ methods.
+#[cfg(feature = "complex")]
 pub trait RhoComplex<U>: Rho<U>
 where
-    U: ComplexFloat,
+    U: num_complex::ComplexFloat,
 {
     fn sigmoid(&self) -> Self::Cont<U> {
         self.rho(|x| U::one() / (U::one() + (-x).exp()))
@@ -152,6 +149,6 @@ where
 impl<U, S> RhoComplex<U> for S
 where
     S: Apply<U>,
-    U: ComplexFloat,
+    U: num_complex::ComplexFloat,
 {
 }

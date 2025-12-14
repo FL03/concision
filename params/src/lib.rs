@@ -69,9 +69,11 @@ mod impls {
 
 mod traits {
     #[doc(inline)]
-    pub use self::{raw_params::*, wnb::*};
+    pub use self::{iterators::*, raw_params::*, shape::*, wnb::*};
 
+    mod iterators;
     mod raw_params;
+    mod shape;
     mod wnb;
 }
 

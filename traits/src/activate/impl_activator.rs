@@ -2,27 +2,8 @@
     appellation: activate <module>
     authors: @FL03
 */
-/// An [`Activator`] defines an interface for _structural_ activation functions that can be
-/// applied onto various types.
-pub trait Activator<T> {
-    type Output;
+use super::{Activator, ActivatorGradient};
 
-    /// Applies the activation function to the input tensor.
-    fn activate(&self, input: T) -> Self::Output;
-}
-/// The [`ActivatorGradient`] trait extends the [`Activator`] trait to include a method for
-/// computing the gradient of the activation function.
-pub trait ActivatorGradient<T> {
-    type Rel: Activator<T>;
-    type Delta;
-
-    /// compute the gradient of some input
-    fn activate_gradient(&self, input: T) -> Self::Delta;
-}
-
-/*
- ************* Implementations *************
-*/
 impl<X, Y, F> Activator<X> for F
 where
     F: Fn(X) -> Y,

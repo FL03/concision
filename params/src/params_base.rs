@@ -2,7 +2,7 @@
     Appellation: params <module>
     Contrib: @FL03
 */
-use crate::utils::get_bias_shape;
+use crate::utils::extract_bias_dim;
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
 use ndarray::{
@@ -53,8 +53,7 @@ where
     {
         let weights = ArrayBase::from_shape_fn(shape, |_| init());
         // initialize the bias using a shape that is 1 rank lower then the weights
-        let bshape = crate::utils::get_bias_shape(&weights);
-        let bias = ArrayBase::from_shape_fn(bshape, |_| init());
+        let bias = ArrayBase::from_shape_fn(extract_bias_dim(&weights), |_| init());
         // create a new instance from the generated bias and weights
         Self::new(bias, weights)
     }
@@ -71,9 +70,8 @@ where
     {
         // initialize the weights with some shape using the given function
         let weights = ArrayBase::from_shape_fn(shape, |s| w(s));
-        // use the weight tensor to define the shape of the bias
-        let bdim = get_bias_shape(&weights);
-        let bias = ArrayBase::from_shape_fn(bdim, |s| b(s));
+        // initialize the bias tensor w.r.t. the weights
+        let bias = ArrayBase::from_shape_fn(extract_bias_dim(&weights), |s| b(s));
         // return a new instance
         Self::new(bias, weights)
     }
@@ -86,7 +84,7 @@ where
         Sh: ShapeBuilder<Dim = D>,
     {
         let weights = ArrayBase::from_elem(shape, A::default());
-        let bdim = get_bias_shape(&weights);
+        let bdim = extract_bias_dim(&weights);
         if bias.raw_dim() != bdim {
             panic!("the given bias shape is invalid");
         }
@@ -100,7 +98,7 @@ where
         D: RemoveAxis,
         S: DataOwned,
     {
-        let bias = ArrayBase::from_elem(get_bias_shape(&weights), A::default());
+        let bias = ArrayBase::from_elem(extract_bias_dim(&weights), A::default());
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] from the given shape and element;
@@ -111,7 +109,7 @@ where
         S: DataOwned,
     {
         let weights = ArrayBase::from_elem(shape, elem.clone());
-        let bias = ArrayBase::from_elem(get_bias_shape(&weights), elem);
+        let bias = ArrayBase::from_elem(extract_bias_dim(&weights), elem);
         Self::new(bias, weights)
     }
     #[allow(clippy::should_implement_trait)]

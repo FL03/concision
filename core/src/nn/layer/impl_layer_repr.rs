@@ -4,8 +4,8 @@
 */
 use super::Layer;
 
-use crate::activate::{Activator, Linear, ReLU, Sigmoid, TanhActivator};
 use concision_params::{ParamsBase, RawParams};
+use concision_traits::{Activator, Linear, ReLU, Sigmoid, TanhActivator};
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
 impl<F, S, D, A> Layer<F, ArrayBase<S, D, A>>

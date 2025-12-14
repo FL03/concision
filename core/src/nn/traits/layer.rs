@@ -3,9 +3,8 @@
     Created At: 2025.12.10:16:50:03
     Contrib: @FL03
 */
-use crate::activate::{Activator, ActivatorGradient};
 use concision_params::{ParamsBase, RawParams};
-use concision_traits::{Backward, Forward};
+use concision_traits::{Activator, ActivatorGradient, Backward, Forward};
 use ndarray::{Data, Dimension, RawData};
 
 /// The [`RawLayer`] trait defines an interface for a core building block of all neural
