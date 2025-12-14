@@ -16,6 +16,8 @@
 #[doc(inline)]
 pub use self::{leaky::*, types::*, utils::*};
 
+#[cfg(feature = "complex")]
+pub mod complex_neuron;
 pub mod leaky;
 
 mod utils;

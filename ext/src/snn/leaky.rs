@@ -19,7 +19,7 @@ mod impl_leaky_state;
 ///
 /// Here, we describe the dynamics of a leaky integrate-and-fire (LIF) neuron with an
 /// adaptation term and exponential synaptic current. The neuron's behavior is governed by the
-/// following differential equations:
+/// following set of equations:
 ///
 /// ```math
 /// \begin{aligned}
