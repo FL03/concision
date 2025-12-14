@@ -34,7 +34,7 @@ pub trait NdParams: RawParams {
 
 pub trait ExactDimParams: NdParams {
     type Shape: ?Sized;
-    /// returns the shape of the parameter as a slice
+    /// returns a reference to the shape of the parameter
     fn shape(&self) -> &Self::Shape;
 }
 
