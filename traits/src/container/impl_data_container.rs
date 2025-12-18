@@ -3,7 +3,7 @@
     Created At: 2025.12.10:21:29:49
     Contrib: @FL03
 */
-use super::DataContainer;
+use crate::container::Container;
 
 macro_rules! impl_data_container {
     ($($($container:ident)::*<$A:ident $(, $B:ident)?>),* $(,)?) => {
@@ -12,22 +12,22 @@ macro_rules! impl_data_container {
         })*
     };
     (@impl<$T:ident> $($container:ident)::*) => {
-        impl<$T> $crate::cont::DataContainer<$T> for $($container)::*<$T> {
+        impl<$T> Container<$T> for $($container)::*<$T> {
             type Cont<U> = $($container)::*<U>;
         }
     };
     (@impl<$K:ident, $V:ident> $($container:ident)::*) => {
-        impl<$K, $V>  $crate::cont::DataContainer<$V> for $($container)::*<$K, $V> {
+        impl<$K, $V>  Container<$V> for $($container)::*<$K, $V> {
             type Cont<U> = $($container)::*<$K, U>;
         }
     };
 }
 
-impl<T> DataContainer<T> for [T] {
+impl<T> Container<T> for [T] {
     type Cont<U> = [U];
 }
 
-impl<T, E> DataContainer<T> for core::result::Result<T, E> {
+impl<T, E> Container<T> for core::result::Result<T, E> {
     type Cont<U> = core::result::Result<U, E>;
 }
 

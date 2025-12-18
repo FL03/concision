@@ -3,37 +3,39 @@
     Created At: 2025.12.10:21:32:17
     Contrib: @FL03
 */
-use super::RawContainer;
+use crate::container::RawSpace;
 
-impl<S, T> RawContainer for &S
+impl<S, T> RawSpace for &S
 where
-    S: RawContainer<Elem = T>,
+    S: RawSpace<Elem = T>,
 {
     type Elem = T;
 }
 
-impl<S, T> RawContainer for &mut S
+impl<S, T> RawSpace for &mut S
 where
-    S: RawContainer<Elem = T>,
+    S: RawSpace<Elem = T>,
 {
     type Elem = T;
 }
 
-impl<T> RawContainer for [T] {
+impl<T> RawSpace for [T] {
     type Elem = T;
 }
 
-impl<T, const N: usize> RawContainer for [T; N] {
+impl<T, const N: usize> RawSpace for [T; N] {
     type Elem = T;
 }
 
-impl<T> RawContainer for core::slice::Iter<'_, T> {
+impl<T> RawSpace for core::slice::Iter<'_, T> {
     type Elem = T;
 }
 
-macro_rules! impl_raw_container  {
-    (impl<Elem = $elem:ident> $trait:ident for {$($($cont:ident)::*<$($T:ident),*> $({where $($rest:tt)*})?),* $(,)?} ) => {
-        $(impl_raw_container! {
+macro_rules! impl_raw_space  {
+    (impl<Elem = $elem:ident> $trait:ident for {$(
+        $($cont:ident)::*<$($T:ident),*> $({where $($rest:tt)*})?
+    ),* $(,)?}) => {
+        $(impl_raw_space! {
             @impl<Elem = $elem> $trait for $($cont)::*<$($T),*> $(where $($rest)*)?
         })*
     };
@@ -44,18 +46,23 @@ macro_rules! impl_raw_container  {
     };
 }
 
-impl_raw_container! {
-    impl<Elem = T> RawContainer for {
+impl_raw_space! {
+    impl<Elem = T> RawSpace for {
         core::option::Option<T>,
         core::cell::UnsafeCell<T>,
         core::ops::Range<T>,
         core::result::Result<T, E>,
+        ndarray::ArrayBase<S, D, T> {
+            where
+                S: ndarray::RawData<Elem = T>,
+                D: ndarray::Dimension
+        },
     }
 }
 
 #[cfg(feature = "alloc")]
-impl_raw_container! {
-    impl<Elem = T> RawContainer for {
+impl_raw_space! {
+    impl<Elem = T> RawSpace for {
         alloc::boxed::Box<T>,
         alloc::rc::Rc<T>,
         alloc::sync::Arc<T>,
@@ -69,8 +76,8 @@ impl_raw_container! {
 }
 
 #[cfg(feature = "std")]
-impl_raw_container! {
-    impl<Elem = T> RawContainer for {
+impl_raw_space! {
+    impl<Elem = T> RawSpace for {
         std::cell::Cell<T>,
         std::cell::OnceCell<T>,
         std::cell::RefCell<T>,
@@ -82,19 +89,10 @@ impl_raw_container! {
     }
 }
 
-impl<A, S, D> RawContainer for ndarray::ArrayBase<S, D, A>
-where
-    D: ndarray::Dimension,
-    S: ndarray::RawData<Elem = A>,
-{
-    type Elem = A;
-}
-
 #[cfg(feature = "hashbrown")]
-impl<K, V, S> RawContainer for hashbrown::HashMap<K, V, S> {
-    type Elem = V;
-}
-#[cfg(feature = "hashbrown")]
-impl<K, S> RawContainer for hashbrown::HashSet<K, S> {
-    type Elem = K;
+impl_raw_space! {
+    impl<Elem = T> RawSpace for {
+        hashbrown::HashMap<K, T, S>,
+        hashbrown::HashSet<T, S>,
+    }
 }

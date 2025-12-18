@@ -35,7 +35,7 @@ pub mod apply;
 pub mod clip;
 pub mod codex;
 pub mod complex;
-pub mod cont;
+pub mod container;
 pub mod entropy;
 pub mod get;
 pub mod hkt;
@@ -93,7 +93,7 @@ pub mod prelude {
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
-    pub use crate::cont::*;
+    pub use crate::container::*;
     pub use crate::entropy::*;
     pub use crate::get::*;
     pub use crate::hkt::*;

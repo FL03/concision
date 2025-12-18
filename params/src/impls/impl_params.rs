@@ -6,7 +6,7 @@ use crate::params_base::ParamsBase;
 
 use crate::Params;
 use crate::traits::{Biased, Weighted};
-use concision_traits::{Apply, FillLike, OnesLike, RawContainer, ZerosLike};
+use concision_traits::{Apply, FillLike, OnesLike, RawSpace, ZerosLike};
 use core::iter::Once;
 use ndarray::{ArrayBase, Data, DataOwned, Dimension, RawData};
 use num_traits::{One, Zero};
@@ -18,7 +18,7 @@ where
 {
 }
 
-impl<A, S, D> RawContainer for ParamsBase<S, D, A>
+impl<A, S, D> RawSpace for ParamsBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,

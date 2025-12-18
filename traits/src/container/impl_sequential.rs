@@ -3,11 +3,11 @@
     Created At: 2025.12.10:21:44:00
     Contrib: @FL03
 */
-use super::SeqContainer;
+use crate::container::SeqContainer;
 
 macro_rules! impl_sequential {
     (@impl<$T:ident> $($name:ident)::*) => {
-        impl<$T> $crate::cont::SeqContainer for $($name)::*<$T> {
+        impl<$T> SeqContainer for $($name)::*<$T> {
             fn len(&self) -> usize {
                 self.len()
             }
