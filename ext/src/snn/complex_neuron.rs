@@ -15,13 +15,13 @@
 //! Exact discrete update for constant input over a step dt:
 //!
 //! ```math
-//! \begin{euqation}\begin{aligned}
+//! \begin{equation}\begin{aligned}
 //! \phi &= e\cdot\Big((i\cdot\omega - \gamma)\cdot{dt}\Big)
-//! z_{n+1} &= \phi\cdot{z_n} + I\cdot\frac{1 - \phi}{i\cdot\omega - \gamma}
+//! z_{n+1} &= \phi\cdot{z_n} + I\cdot\Big(\frac{1 - \phi}{i\cdot\omega - \gamma}\Big)
 //! \end{aligned}\end{equation}
 //! ```
 //! Phase-based spike condition (example policy): fire when the unwrapped phase crosses
-//! $`\theta_{spike}`$ in the positive direction and magnitude |z| >= r_threshold. On spike,
+//! $`\theta_{spike}^{+}`$ in the positive direction and magnitude $`|z| >= r_{thresh}`$. On spike,
 //! radius may be reset to $`r_{reset}`$ while preserving phase.
 //!
 use ndarray::{ArrayBase, Dimension, RawData};
