@@ -4,8 +4,8 @@
     Contrib: @FL03
 */
 
-mod impl_data_container;
-mod impl_raw_container;
+mod impl_container;
+mod impl_raw_space;
 mod impl_sequential;
 
 /// The [`RawSpace`] trait provides a generalized interface for all _containers_. The trait is
@@ -28,8 +28,20 @@ pub trait Container<T> {
     type Cont<_T>: ?Sized + RawSpace<Elem = _T>;
 }
 
+pub trait ContainerRef<T>: Container<T> {
+    fn apply_ref<F, U>(&self, f: F) -> Self::Cont<U>
+    where
+        F: Fn(&T) -> U;
+}
+
 pub trait ContainerOwned<T>: Container<T> {
     fn apply<F, U>(&self, f: F) -> Self::Cont<U>
     where
-        F: FnMut(&T) -> U;
+        F: Fn(&T) -> U;
+}
+
+pub trait ContainerMut<T>: Container<T> {
+    fn apply_mut<F>(&mut self, f: F)
+    where
+        F: FnMut(&mut T);
 }

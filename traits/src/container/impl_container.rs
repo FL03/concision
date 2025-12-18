@@ -5,9 +5,9 @@
 */
 use crate::container::Container;
 
-macro_rules! impl_data_container {
+macro_rules! impl_container {
     ($($($container:ident)::*<$A:ident $(, $B:ident)?>),* $(,)?) => {
-        $(impl_data_container! {
+        $(impl_container! {
             @impl<$A $(, $B)?> $($container)::*
         })*
     };
@@ -31,12 +31,12 @@ impl<T, E> Container<T> for core::result::Result<T, E> {
     type Cont<U> = core::result::Result<U, E>;
 }
 
-impl_data_container! {
+impl_container! {
     core::option::Option<T>,
 }
 
 #[cfg(feature = "alloc")]
-impl_data_container! {
+impl_container! {
     alloc::boxed::Box<T>,
     alloc::vec::Vec<T>,
     alloc::collections::BTreeMap<K, V>,
@@ -47,7 +47,7 @@ impl_data_container! {
 }
 
 #[cfg(feature = "std")]
-impl_data_container! {
+impl_container! {
     std::collections::HashMap<K, V>,
     std::collections::HashSet<K>,
     std::cell::Cell<T>,
