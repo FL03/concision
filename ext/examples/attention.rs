@@ -3,7 +3,7 @@
     Created At: 2025.11.28:13:41:41
     Contrib: @FL03
 */
-use concision_ext::attention::{Qkv, ScaledDotProductAttention};
+use concision_ext::attention::{Qkv, SDPA};
 
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
@@ -13,7 +13,7 @@ fn main() -> anyhow::Result<()> {
     let (m, n) = (7, 10);
     let qkv = Qkv::<f64>::ones((m, n));
     // initialize the scaled dot-product attention layer
-    let layer = ScaledDotProductAttention::<f64>::new(0.1, 1.0);
+    let layer = SDPA::<f64>::new(0.1, 1.0);
     // compute the attention scores
     let z_score = layer.attention(&qkv);
     println!("z_score: {:?}", z_score);

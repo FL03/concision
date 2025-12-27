@@ -10,9 +10,9 @@ use rand_distr::{Distribution, StandardNormal};
 /// [LecunNormal] is a truncated [normal](rand_distr::Normal) distribution centered at 0
 /// with a standard deviation that is calculated as:
 ///
-/// $$
-/// \sigma = {n_{in}}^{-\frac{1}{2}}
-/// $$
+/// ```math
+/// \sigma = n_{in}^{-1/2}
+/// ```
 ///
 /// where $`n_{in}`$ is the number of input units.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -38,7 +38,7 @@ impl LecunNormal {
     /// ($`n_{in}`$) as follows:
     ///
     /// ```math
-    /// \sigma = {n_{in}}^{-\frac{1}{2}}
+    /// $$\sigma = n_{in}^{-1/2}$$
     /// ```
     pub fn std_dev<F>(&self) -> F
     where

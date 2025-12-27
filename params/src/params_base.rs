@@ -2,19 +2,28 @@
     Appellation: params <module>
     Contrib: @FL03
 */
+use crate::utils::extract_bias_dim;
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
 use ndarray::{
-    ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, RawData, RemoveAxis, ShapeArg,
-    ShapeBuilder,
+    ArrayBase, ArrayRef, Axis, Data, DataMut, DataOwned, Dimension, LayoutRef, RawData, RemoveAxis,
+    ShapeArg, ShapeBuilder,
 };
+
+#[cfg(feature = "alloc")]
+pub struct ParamsRef<A, D: Dimension> {
+    pub bias: Box<ArrayRef<A, D::Smaller>>,
+    pub weights: ArrayRef<A, D>,
+}
 
 /// The [`ParamsBase`] implementation aims to provide a generic, n-dimensional weight and bias
 /// pair for a model (or layer). The object requires the bias tensor to be a single dimension
 /// smaller than the weights tensor.
 ///
 /// Therefore, we allow the weight tensor to be the _shape_ of the parameters, using the shape
-/// as the basis for the bias tensor by removing one axi (typically the first axis).
+/// as the basis for the bias tensor by removing the first axis.
 /// Consequently, this constrains the [`ParamsBase`] implementation to only support dimensions
-/// that can be reduced by one axis, typically the "zero-th" axis: $`\mbox{rank}(D)>0`$.
+/// that can be reduced by one axis, typically the "zero-th" axis: $\text{rank}(D)$.
 pub struct ParamsBase<S, D = ndarray::Ix2, A = <S as RawData>::Elem>
 where
     D: Dimension,
@@ -42,27 +51,28 @@ where
         Sh: ShapeBuilder<Dim = D>,
         F: Fn() -> A,
     {
-        let shape = shape.into_shape_with_order();
-        // initialize the bias using a shape that is 1 rank lower then the weights
-        let bias = ArrayBase::from_shape_fn(shape.raw_dim().remove_axis(Axis(0)), |_| init());
         let weights = ArrayBase::from_shape_fn(shape, |_| init());
+        // initialize the bias using a shape that is 1 rank lower then the weights
+        let bias = ArrayBase::from_shape_fn(extract_bias_dim(&weights), |_| init());
         // create a new instance from the generated bias and weights
         Self::new(bias, weights)
     }
     /// returns a new instance of the [`ParamsBase`] initialized use the given shape_function
-    pub fn from_shape_fn<Sh, F>(shape: Sh, f: F) -> Self
+    pub fn from_shape_fn<Sh, F1, F2>(shape: Sh, w: F1, b: F2) -> Self
     where
         A: Clone,
         D: RemoveAxis,
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
         D::Smaller: Dimension + ShapeArg,
-        F: Fn(<D::Smaller as Dimension>::Pattern) -> A + Fn(<D as Dimension>::Pattern) -> A,
+        F1: Fn(<D as Dimension>::Pattern) -> A,
+        F2: Fn(<D::Smaller as Dimension>::Pattern) -> A,
     {
-        let shape = shape.into_shape_with_order();
-        let bdim = shape.raw_dim().remove_axis(Axis(0));
-        let bias = ArrayBase::from_shape_fn(bdim, |s| f(s));
-        let weights = ArrayBase::from_shape_fn(shape, |s| f(s));
+        // initialize the weights with some shape using the given function
+        let weights = ArrayBase::from_shape_fn(shape, |s| w(s));
+        // initialize the bias tensor w.r.t. the weights
+        let bias = ArrayBase::from_shape_fn(extract_bias_dim(&weights), |s| b(s));
+        // return a new instance
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] with the given bias used the default weights
@@ -74,33 +84,32 @@ where
         Sh: ShapeBuilder<Dim = D>,
     {
         let weights = ArrayBase::from_elem(shape, A::default());
+        let bdim = extract_bias_dim(&weights);
+        if bias.raw_dim() != bdim {
+            panic!("the given bias shape is invalid");
+        }
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] with the given weights used the default
     /// bias
-    pub fn from_weights<Sh>(shape: Sh, weights: ArrayBase<S, D, A>) -> Self
+    pub fn from_weights(weights: ArrayBase<S, D, A>) -> Self
     where
         A: Clone + Default,
         D: RemoveAxis,
         S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
     {
-        let shape = shape.into_shape_with_order();
-        let dim_bias = shape.raw_dim().remove_axis(Axis(0));
-        let bias = ArrayBase::from_elem(dim_bias, A::default());
+        let bias = ArrayBase::from_elem(extract_bias_dim(&weights), A::default());
         Self::new(bias, weights)
     }
     /// create a new instance of the [`ParamsBase`] from the given shape and element;
-    pub fn from_elem<Sh>(shape: Sh, elem: A) -> Self
+    pub fn from_elem<Sh: ShapeBuilder<Dim = D>>(shape: Sh, elem: A) -> Self
     where
         A: Clone,
         D: RemoveAxis,
         S: DataOwned,
-        Sh: ShapeBuilder<Dim = D>,
     {
         let weights = ArrayBase::from_elem(shape, elem.clone());
-        let dim = weights.raw_dim();
-        let bias = ArrayBase::from_elem(dim.remove_axis(Axis(0)), elem);
+        let bias = ArrayBase::from_elem(extract_bias_dim(&weights), elem);
         Self::new(bias, weights)
     }
     #[allow(clippy::should_implement_trait)]
@@ -149,6 +158,34 @@ where
     /// returns a mutable reference to the weights
     pub const fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         &mut self.weights
+    }
+    /// returns an immutable rererence to the bias as a layout reference
+    pub fn bias_layout_ref(&self) -> &LayoutRef<A, D::Smaller>
+    where
+        S: Data,
+    {
+        self.bias().as_layout_ref()
+    }
+    /// returns a mutable rererence to the weights as a layout reference
+    pub fn bias_layout_ref_mut(&mut self) -> &mut LayoutRef<A, D::Smaller>
+    where
+        S: DataMut,
+    {
+        self.bias_mut().as_layout_ref_mut()
+    }
+    /// returns an immutable rererence to the weights as a layout reference
+    pub fn weights_layout_ref(&self) -> &LayoutRef<A, D>
+    where
+        S: Data,
+    {
+        self.weights().as_layout_ref()
+    }
+    /// returns a mutable rererence to the weights as a layout reference
+    pub fn weights_layout_ref_mut(&mut self) -> &mut LayoutRef<A, D>
+    where
+        S: DataMut,
+    {
+        self.weights_mut().as_layout_ref_mut()
     }
     /// assign the bias
     pub fn assign_bias(&mut self, bias: &ArrayBase<S, D::Smaller, A>) -> &mut Self
@@ -250,7 +287,7 @@ where
     where
         A: Clone,
         S: DataOwned,
-        Sh: ShapeBuilder,
+        Sh: ShapeBuilder<Dim = D>,
         Sh::Dim: Dimension + RemoveAxis,
     {
         let shape = shape.into_shape_with_order();
@@ -281,5 +318,16 @@ where
         S: DataMut,
     {
         ParamsBase::new(self.bias.view_mut(), self.weights.view_mut())
+    }
+
+    pub fn clamp(&mut self, min: A, max: A) -> crate::Params<A, D>
+    where
+        A: 'static + Clone + PartialOrd,
+        S: Data,
+    {
+        ParamsBase {
+            bias: self.bias().clamp(min.clone(), max.clone()),
+            weights: self.weights().clamp(min, max),
+        }
     }
 }

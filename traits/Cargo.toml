@@ -35,12 +35,10 @@ required-features = ["complex"]
 
 [dependencies]
 # custom
-variants = { workspace = true }
+rspace = { workspace = true }
 # data structures
+hashbrown = { optional = true, workspace = true }
 ndarray = { workspace = true }
-# error-handling
-anyhow = { workspace = true }
-thiserror = { workspace = true }
 # macros & utilities
 paste = { workspace = true }
 # mathematics
@@ -48,59 +46,81 @@ approx = { optional = true, workspace = true }
 num-complex = { optional = true, workspace = true }
 num-integer = { workspace = true }
 num-traits = { workspace = true }
-# random
-getrandom = { optional = true, workspace = true }
-rand = { optional = true, workspace = true }
-rand_distr = { optional = true, workspace = true }
+# serialization
+serde = { optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
 
 [features]
 default = ["std"]
 
 full = [
+  "default",
   "approx",
   "complex",
-  "default",
+  "hashbrown",
   "rand",
+  "serde",
 ]
 
-nightly = []
+nightly = [
+  "hashbrown?/nightly",
+]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Environments *********
 std = [
   "alloc",
-  "anyhow/std",
+  "hashbrown?/default",
   "ndarray/std",
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
-  "rand?/std",
-  "rand?/std_rng",
-  "thiserror/std",
+  "rspace/std",
+  "serde?/std",
 ]
 
 wasi = []
 
-wasm = ["getrandom?/wasm_js"]
-# ************* [FF:Dependencies] *************
-alloc = []
+wasm = []
 
-approx = ["dep:approx", "ndarray/approx"]
+# ********* [FF] Dependencies *********
+alloc = [
+  "hashbrown?/alloc",
+  "rspace/alloc",
+  "serde?/alloc",
+]
+
+approx = [
+  "dep:approx", 
+  "ndarray/approx",
+]
 
 blas = ["ndarray/blas"]
 
-complex = ["dep:num-complex"]
-
-rayon = ["ndarray/rayon"]
-
-rand = [
-  "dep:rand",
-  "dep:rand_distr",
-  "num-complex?/rand",
-  "rng",
+complex = [
+  "dep:num-complex",
+  "rspace/complex",
 ]
 
-rng = [
-  "dep:getrandom",
-  "rand?/small_rng",
-  "rand?/thread_rng",
+hashbrown = [
+  "dep:hashbrown",
+  "alloc",
+]
+
+rayon = [
+  "hashbrown?/rayon", 
+  "ndarray/rayon",
+  "rspace/rayon",
+]
+
+rand = [
+  "num-complex?/rand",
+  "rspace/rand",
+]
+
+serde = [
+  "dep:serde",
+  "dep:serde_derive",
+  "serde?/derive",
+  "hashbrown?/serde",
+  "rspace/serde",
 ]

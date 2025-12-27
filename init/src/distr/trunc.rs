@@ -2,7 +2,7 @@
     Appellation: trunc <distr>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use num::traits::Float;
+use num_traits::Float;
 use rand::{Rng, RngCore};
 use rand_distr::{Distribution, Normal, StandardNormal};
 
@@ -42,9 +42,9 @@ where
     }
     /// compute the boundary of the truncated normal distribution
     /// which is two standard deviations from the mean:
-    /// $$
+    /// ```math
     /// \text{boundary} = \mu + 2\sigma
-    /// $$
+    /// ```
     pub fn boundary(&self) -> T
     where
         T: Float,
@@ -61,9 +61,9 @@ where
     }
     /// compute the score of the distribution at point `x`. The score is calculated by
     /// subtracing a scaled standard deviation from the mean:
-    /// $$
-    /// \text{score}(x) = \mu - \sigma \cdot x
-    /// $$
+    /// ```math
+    /// \text{score}(x)=\mu-\sigma\cdot{x}
+    /// ```
     ///
     /// where $\mu$ is the mean and $\sigma$ is the standard deviation.
     pub fn score(&self, x: T) -> T

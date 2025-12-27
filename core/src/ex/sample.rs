@@ -2,20 +2,27 @@
     appellation: model <test>
     authors: @FL03
 */
-#![cfg(feature = "std")]
-use crate::activate::{ReLUActivation, SigmoidActivation};
-use crate::{
-    DeepModelParams, Error, Forward, Model, ModelFeatures, Norm, Params, StandardModelConfig, Train,
-};
+use crate::Error;
+use crate::config::StandardModelConfig;
+use crate::layout::ModelFeatures;
+use crate::nn::Model;
+use crate::store::DeepModelParams;
 #[cfg(feature = "rand")]
 use concision_init::{
-    NdInit,
+    InitTensor,
     rand_distr::{Distribution, StandardNormal},
 };
-
+use concision_params::Params;
+use concision_traits::{Forward, Norm, Train};
+use concision_traits::{ReLUActivation, SigmoidActivation};
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign, Zero};
+
+#[cfg(not(feature = "tracing"))]
+use eprintln as error;
+#[cfg(feature = "tracing")]
+use tracing::error;
 
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct TestModel<T = f64> {
@@ -262,15 +269,7 @@ where
             loss += match Train::<ArrayView1<A>, ArrayView1<A>>::train(self, &x, &e) {
                 Ok(l) => l,
                 Err(err) => {
-                    #[cfg(not(feature = "tracing"))]
-                    eprintln!(
-                        "Training failed for batch {}/{}: {:?}",
-                        i + 1,
-                        batch_size,
-                        err
-                    );
-                    #[cfg(feature = "tracing")]
-                    tracing::error!(
+                    error!(
                         "Training failed for batch {}/{}: {:?}",
                         i + 1,
                         batch_size,

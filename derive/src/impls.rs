@@ -8,41 +8,19 @@ mod impl_config;
 mod impl_keys;
 
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
-use syn::{Data, DataStruct, DeriveInput};
+use syn::{Data, DeriveInput};
 
 pub fn impl_config(DeriveInput { ident, data, .. }: &DeriveInput) -> TokenStream {
-    // ensure the target object is a struct
-    let out = match &data {
+    match &data {
         Data::Struct(s) => impl_config::derive_config_from_struct(&s, &ident),
         _ => panic!("Only structs are supported"),
-    };
-
-    // Combine the generated code
-    quote! {
-        #out
     }
 }
 
-pub fn impl_keys(input: &DeriveInput) -> TokenStream {
-    // Get the name of the struct
-    let struct_name = &input.ident;
-    let store_name = format_ident!("{}Key", struct_name);
+pub fn impl_keys(DeriveInput { data, ident, .. }: &DeriveInput) -> TokenStream {
+    match &data {
+        Data::Struct(s) => impl_keys::generate_keys_for_struct(&s, &ident),
 
-    // Generate the parameter struct definition
-
-    // Generate the parameter keys enum
-    let param_keys_enum = match &input.data {
-        Data::Struct(s) => {
-            let DataStruct { fields, .. } = s;
-
-            impl_keys::generate_keys(fields, &store_name)
-        }
         _ => panic!("Only structs are supported"),
-    };
-
-    // Combine the generated code
-    quote! {
-        #param_keys_enum
     }
 }

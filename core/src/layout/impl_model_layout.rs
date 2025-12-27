@@ -41,7 +41,7 @@ where
     }
     /// returns a reference to the depth, or number of hidden layers, of the model
     pub fn layers(&self) -> usize {
-        self.features().layers()
+        self.features().depth()
     }
 }
 
