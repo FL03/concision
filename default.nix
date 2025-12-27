@@ -26,7 +26,7 @@ let
   };
 
   common = {
-    version = "0.3.3";
+    version = "0.3.1";
     src = ./.;
 
     cargoLock = {

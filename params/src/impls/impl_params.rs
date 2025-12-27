@@ -6,10 +6,11 @@ use crate::params_base::ParamsBase;
 
 use crate::Params;
 use crate::traits::{Biased, Weighted};
-use concision_traits::{Apply, FillLike, OnesLike, RawSpace, ZerosLike};
+use concision_traits::{Apply, FillLike, OnesLike, ZerosLike};
 use core::iter::Once;
 use ndarray::{ArrayBase, Data, DataOwned, Dimension, RawData};
 use num_traits::{One, Zero};
+use rspace::RawSpace;
 
 impl<A, S, D> ParamsBase<S, D, A>
 where

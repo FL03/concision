@@ -334,6 +334,7 @@ dependencies = [
  "rand_core 0.9.3",
  "rand_distr",
  "rayon-core",
+ "rspace",
  "serde",
  "serde_derive",
  "serde_json",
@@ -355,7 +356,6 @@ dependencies = [
  "rspace",
  "serde",
  "serde_derive",
- "variants",
 ]
 
 [[package]]
@@ -1618,6 +1618,7 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "thiserror",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1632,6 +1633,7 @@ dependencies = [
  "paste",
  "rayon-core",
  "serde",
+ "wasm-bindgen",
 ]
 
 [[package]]

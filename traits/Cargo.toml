@@ -36,7 +36,6 @@ required-features = ["complex"]
 [dependencies]
 # custom
 rspace = { workspace = true }
-variants = { workspace = true }
 # data structures
 hashbrown = { optional = true, workspace = true }
 ndarray = { workspace = true }
@@ -49,7 +48,7 @@ num-integer = { workspace = true }
 num-traits = { workspace = true }
 # serialization
 serde = { optional = true, workspace = true }
-serde_derive = { workspace = true }
+serde_derive = { optional = true, workspace = true }
 
 [features]
 default = ["std"]
@@ -97,7 +96,10 @@ approx = [
 
 blas = ["ndarray/blas"]
 
-complex = ["dep:num-complex"]
+complex = [
+  "dep:num-complex",
+  "rspace/complex",
+]
 
 hashbrown = [
   "dep:hashbrown",

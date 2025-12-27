@@ -4,8 +4,8 @@
 */
 use crate::InitTensor;
 use ndarray::{Array, ArrayBase, DataOwned, Dimension, IntoDimension, RawData, ShapeBuilder};
-use num_traits::Num;
 use num_complex::{Complex, ComplexDistribution};
+use num_traits::Num;
 use rand::{SeedableRng, rngs};
 use rand_distr::{
     Distribution, StandardNormal,

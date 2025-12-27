@@ -142,7 +142,11 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        Self::rand_with(shape, StandardNormal, &mut rand::rngs::StdRng::seed_from_u64(seed))
+        Self::rand_with(
+            shape,
+            StandardNormal,
+            &mut rand::rngs::StdRng::seed_from_u64(seed),
+        )
     }
     /// Initialize the object using the [`TruncatedNormal`] distribution
     fn truncnorm<Sh>(shape: Sh, mean: A, std: A) -> crate::InitResult<Self::Tensor<S, D>>
@@ -237,7 +241,11 @@ where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
     {
-        Self::rand_with(shape, distr, &mut rand::rngs::SmallRng::from_rng(&mut rand::rng()))
+        Self::rand_with(
+            shape,
+            distr,
+            &mut rand::rngs::SmallRng::from_rng(&mut rand::rng()),
+        )
     }
 
     fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self::Tensor<S, D>

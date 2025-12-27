@@ -33,6 +33,7 @@ test = true
 concision-init = { workspace = true }
 concision-traits = { workspace = true }
 # custom
+rspace = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
 rayon-core = { optional = true, workspace = true }
@@ -83,6 +84,7 @@ std = [
   "rand?/std",
   "rand_core?/std",
   "rand_distr?/std",
+  "rspace/std",
   "serde?/std",
   "thiserror/std",
   "variants/std",
@@ -91,6 +93,7 @@ std = [
 wasi = [
   "concision-init/wasi",
   "concision-traits/wasi",
+  "rspace/wasi",
 ]
 
 wasm = [
@@ -98,6 +101,7 @@ wasm = [
   "concision-traits/wasm",
   "getrandom?/wasm_js",
   "rayon-core?/web_spin_lock",
+  "rspace/wasm",
 ]
 
 # ************* [FF:Dependencies] *************
@@ -107,6 +111,7 @@ alloc = [
   "concision-traits/alloc",
   "rand?/alloc",
   "rand_distr?/alloc",
+  "rspace/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
@@ -124,12 +129,15 @@ blas = [
 ]
 
 complex = [
-  "concision-init/complex",
   "dep:num-complex",
+  "concision-init/complex",
+  "concision-traits/complex",
+  "rspace/complex",
 ]
 
 json = [
   "alloc",
+  "rspace/json",
   "serde",
   "serde_json",
 ]
@@ -141,11 +149,13 @@ rand = [
   "concision-init/rand",
   "concision-traits/rand",
   "num-complex?/rand",
+  "rspace/rand",
 ]
 
 rayon = [
   "dep:rayon-core",
   "ndarray/rayon",
+  "rspace/rayon",
 ]
 
 rng = [
@@ -164,6 +174,7 @@ serde = [
   "rand?/serde",
   "rand_core?/serde",
   "rand_distr?/serde",
+  "rspace/serde",
 ]
 
 serde_json = ["dep:serde_json"]
