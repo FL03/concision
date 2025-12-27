@@ -5,21 +5,6 @@
 mod impl_backward;
 mod impl_forward;
 
-/// The [`PropagationError`] type defines custom errors that can occur during forward and
-/// backward propagation.
-#[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
-pub enum PropagationError {
-    #[error("Forward Propagation Error: {0}")]
-    ForwardError(&'static str),
-    #[error("Backward Propagation Error: {0}")]
-    BackwardError(&'static str),
-    #[error("Mismatched Dimensions")]
-    MismatchedDimensions,
-    #[error("Invalid Input")]
-    InvalidInput,
-}
-
 /// The [`Backward`] trait establishes a common interface for completing a single backward
 /// step in a neural network or machine learning model.
 pub trait Backward<X, Delta = X> {

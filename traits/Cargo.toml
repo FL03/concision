@@ -35,13 +35,11 @@ required-features = ["complex"]
 
 [dependencies]
 # custom
+rspace = { workspace = true }
 variants = { workspace = true }
 # data structures
 hashbrown = { optional = true, workspace = true }
 ndarray = { workspace = true }
-# error-handling
-anyhow = { workspace = true }
-thiserror = { workspace = true }
 # macros & utilities
 paste = { workspace = true }
 # mathematics
@@ -49,13 +47,9 @@ approx = { optional = true, workspace = true }
 num-complex = { optional = true, workspace = true }
 num-integer = { workspace = true }
 num-traits = { workspace = true }
-# random
-getrandom = { optional = true, workspace = true }
-rand = { optional = true, workspace = true }
-rand_distr = { optional = true, workspace = true }
 # serialization
 serde = { optional = true, workspace = true }
-serde_derive = { optional = true, workspace = true }
+serde_derive = { workspace = true }
 
 [features]
 default = ["std"]
@@ -73,31 +67,33 @@ nightly = [
   "hashbrown?/nightly",
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Environments *********
 std = [
   "alloc",
-  "anyhow/std",
   "hashbrown?/default",
   "ndarray/std",
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
-  "rand?/std",
-  "rand?/std_rng",
+  "rspace/std",
   "serde?/std",
-  "thiserror/std",
 ]
 
 wasi = []
 
-wasm = ["getrandom?/wasm_js"]
-# ************* [FF:Dependencies] *************
+wasm = []
+
+# ********* [FF] Dependencies *********
 alloc = [
   "hashbrown?/alloc",
+  "rspace/alloc",
   "serde?/alloc",
 ]
 
-approx = ["dep:approx", "ndarray/approx"]
+approx = [
+  "dep:approx", 
+  "ndarray/approx",
+]
 
 blas = ["ndarray/blas"]
 
@@ -110,24 +106,19 @@ hashbrown = [
 
 rayon = [
   "hashbrown?/rayon", 
-  "ndarray/rayon"
+  "ndarray/rayon",
+  "rspace/rayon",
 ]
 
 rand = [
-  "dep:rand",
-  "dep:rand_distr",
   "num-complex?/rand",
-  "rng",
-]
-
-rng = [
-  "dep:getrandom",
-  "rand?/small_rng",
-  "rand?/thread_rng",
+  "rspace/rand",
 ]
 
 serde = [
   "dep:serde",
   "dep:serde_derive",
+  "serde?/derive",
   "hashbrown?/serde",
+  "rspace/serde",
 ]

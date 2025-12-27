@@ -295,11 +295,11 @@ dependencies = [
  "getrandom 0.3.4",
  "lazy_static",
  "ndarray",
- "num",
  "num-complex",
  "num-traits",
  "paste",
  "rand 0.9.2",
+ "rand_core 0.9.3",
  "rand_distr",
  "serde",
  "serde_derive",
@@ -307,7 +307,6 @@ dependencies = [
  "smart-default",
  "strum",
  "thiserror",
- "tracing",
 ]
 
 [[package]]
@@ -332,6 +331,7 @@ dependencies = [
  "num-complex",
  "num-traits",
  "rand 0.9.2",
+ "rand_core 0.9.3",
  "rand_distr",
  "rayon-core",
  "serde",
@@ -345,20 +345,16 @@ dependencies = [
 name = "concision-traits"
 version = "0.3.1"
 dependencies = [
- "anyhow",
  "approx",
- "getrandom 0.3.4",
  "hashbrown 0.16.1",
  "ndarray",
  "num-complex",
  "num-integer",
  "num-traits",
  "paste",
- "rand 0.9.2",
- "rand_distr",
+ "rspace",
  "serde",
  "serde_derive",
- "thiserror",
  "variants",
 ]
 
@@ -1593,6 +1589,49 @@ dependencies = [
  "libc",
  "untrusted",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "rspace"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0248468357ca14d6e7b0a5743323643200c6118138bebbd78c8b228129ac15be"
+dependencies = [
+ "rspace-core",
+]
+
+[[package]]
+name = "rspace-core"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6f4d39f8045581456f7ca5a41907fc5ad73c2cb2dc8b331d5e0d7823dfda5e7"
+dependencies = [
+ "getrandom 0.3.4",
+ "hashbrown 0.16.1",
+ "num-complex",
+ "num-traits",
+ "rand 0.9.2",
+ "rand_core 0.9.3",
+ "rand_distr",
+ "rspace-traits",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "rspace-traits"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "902cbbe69f00df4a0205a04c0550f273f1c36689577701dfbd077f9c3274ca4c"
+dependencies = [
+ "hashbrown 0.16.1",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "rayon-core",
+ "serde",
 ]
 
 [[package]]

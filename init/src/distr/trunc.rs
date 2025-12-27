@@ -2,7 +2,7 @@
     Appellation: trunc <distr>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
-use num::traits::Float;
+use num_traits::Float;
 use rand::{Rng, RngCore};
 use rand_distr::{Distribution, Normal, StandardNormal};
 

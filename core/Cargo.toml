@@ -89,8 +89,11 @@ init = ["rand"]
 
 macros = []
 
-json = ["alloc", "serde", "serde_json"]
-
+json = [
+  "alloc",
+  "serde",
+  "serde_json",
+]
 signal = ["complex", "rustfft"]
 
 # ************* [FF:Dependencies] *************
@@ -105,7 +108,7 @@ std = [
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
-  "serde/std",
+  "serde?/std",
   "strum/std",
   "thiserror/std",
   "tracing?/std",
@@ -172,7 +175,7 @@ rayon = [
 rng = [
   "concision-init/rng",
   "concision-params/rng",
-  "concision-traits/rand",
+  # "concision-traits/rng",
 ]
 
 rustfft = ["dep:rustfft"]
@@ -190,4 +193,4 @@ serde = [
 
 serde_json = ["dep:serde_json"]
 
-tracing = ["concision-init/tracing", "dep:tracing"]
+tracing = ["dep:tracing"]

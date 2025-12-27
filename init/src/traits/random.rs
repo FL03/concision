@@ -7,7 +7,6 @@ use crate::distr::*;
 use core::ops::Neg;
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, Shape, ShapeBuilder};
 use num_traits::{Float, FromPrimitive};
-use rand::rngs::{SmallRng, StdRng};
 use rand::{Rng, RngCore, SeedableRng};
 use rand_distr::uniform::{SampleUniform, Uniform};
 use rand_distr::{Bernoulli, BernoulliError, Distribution, Normal, NormalError, StandardNormal};
@@ -135,6 +134,7 @@ where
     {
         Self::rand(shape, StandardNormal)
     }
+    #[cfg(feature = "std")]
     /// Generate a random array using the [`StandardNormal`] distribution with a given seed
     fn stdnorm_from_seed<Sh>(shape: Sh, seed: u64) -> Self::Tensor<S, D>
     where
@@ -142,7 +142,7 @@ where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
     {
-        Self::rand_with(shape, StandardNormal, &mut StdRng::seed_from_u64(seed))
+        Self::rand_with(shape, StandardNormal, &mut rand::rngs::StdRng::seed_from_u64(seed))
     }
     /// Initialize the object using the [`TruncatedNormal`] distribution
     fn truncnorm<Sh>(shape: Sh, mean: A, std: A) -> crate::InitResult<Self::Tensor<S, D>>
@@ -165,6 +165,7 @@ where
     {
         Self::uniform_between(shape, dk.clone().neg(), dk)
     }
+    #[cfg(feature = "std")]
     /// randomly initialize the object using the [`Uniform`] distribution with values between
     /// the `start` and `stop` params using some random seed.
     fn uniform_from_seed<Sh>(
@@ -183,7 +184,7 @@ where
         Ok(Self::rand_with(
             shape,
             distr,
-            &mut StdRng::seed_from_u64(key),
+            &mut rand::rngs::StdRng::seed_from_u64(key),
         ))
     }
     /// initialize the object using the [`Uniform`] distribution with values bounded by the
@@ -236,7 +237,7 @@ where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
     {
-        Self::rand_with(shape, distr, &mut SmallRng::from_rng(&mut rand::rng()))
+        Self::rand_with(shape, distr, &mut rand::rngs::SmallRng::from_rng(&mut rand::rng()))
     }
 
     fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self::Tensor<S, D>
