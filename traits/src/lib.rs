@@ -35,15 +35,11 @@ pub mod apply;
 pub mod clip;
 pub mod codex;
 pub mod complex;
-pub mod container;
 pub mod entropy;
-pub mod get;
-pub mod hkt;
 pub mod loss;
 pub mod norm;
 pub mod predict;
 pub mod propagate;
-pub mod rho;
 pub mod rounding;
 pub mod training;
 
@@ -84,8 +80,14 @@ pub mod tensor {
 }
 
 // re-exports
+#[cfg(feature = "complex")]
 #[doc(inline)]
-pub use self::prelude::*;
+pub use self::complex::*;
+#[doc(inline)]
+pub use self::{
+    activate::*, apply::*, clip::*, codex::*, entropy::*, loss::*, math::*, norm::*, ops::*,
+    predict::*, propagate::*, rounding::*, tensor::*, training::*,
+};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
@@ -93,17 +95,13 @@ pub mod prelude {
     pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
-    pub use crate::container::*;
     pub use crate::entropy::*;
-    pub use crate::get::*;
-    pub use crate::hkt::*;
     pub use crate::loss::*;
     pub use crate::math::*;
     pub use crate::norm::*;
     pub use crate::ops::*;
     pub use crate::predict::*;
     pub use crate::propagate::*;
-    pub use crate::rho::*;
     pub use crate::rounding::*;
     pub use crate::tensor::*;
     pub use crate::training::*;
