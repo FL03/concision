@@ -73,7 +73,7 @@ jobs:
         run: cargo bench --locked --verbose --workspace --target ${{ matrix.target }} --features full
       - name: Upload the benchmarks
         id: artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Benchmark Report (${{ github.event.repository.name }})
           if-no-files-found: error
