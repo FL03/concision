@@ -97,15 +97,15 @@ where
     }
 }
 
-impl<F, P, A, X, Y> Forward<X> for LayerBase<F, P>
+impl<F, P, A, X, Y, Z> Forward<X> for LayerBase<F, P>
 where
-    F: Activator<Y, Output = Y>,
+    F: Activator<Y, Output = Z>,
     P: RawParams<Elem = A> + Forward<X, Output = Y>,
 {
     type Output = F::Output;
 
     fn forward(&self, input: &X) -> Self::Output {
-        self.activate(self.params().forward_then(input, |y| self.activate(y)))
+        self.activate(self.params().forward(input))
     }
 }
 

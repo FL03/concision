@@ -5,7 +5,7 @@
 use super::LayerBase;
 
 use concision_params::{ParamsBase, RawParams};
-use concision_traits::{Activator, Linear, ReLU, Sigmoid, TanhActivator};
+use concision_traits::{Activator, Linear, ReLU, Sigmoid, Forward, TanhActivator};
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
 impl<F, S, D, A> LayerBase<F, ArrayBase<S, D, A>>
@@ -54,7 +54,7 @@ where
         self.params().bias()
     }
 
-    pub fn bias_mut(&mut self) -> &mut ArrayBase<S, E, A> {
+    pub const fn bias_mut(&mut self) -> &mut ArrayBase<S, E, A> {
         self.params_mut().bias_mut()
     }
 
@@ -62,7 +62,7 @@ where
         self.params().weights()
     }
 
-    pub fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
+    pub const fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         self.params_mut().weights_mut()
     }
 }
