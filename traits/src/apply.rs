@@ -2,8 +2,8 @@
     appellation: apply <module>
     authors: @FL03
 */
-/// The [`Apply`] establishes an interface for _owned_ containers that are capable of applying
-/// some function onto their elements.
+/// [`MapTo`] defines an interface for _functors_ capable of mapping a function over each
+/// consituent element within the container.
 pub trait MapTo<F, U>
 where
     F: FnOnce(Self::Elem) -> U,

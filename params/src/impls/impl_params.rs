@@ -187,8 +187,7 @@ where
     type Cont<V> = Params<V, D>;
     type Elem = A;
 
-    fn apply(&self, func: F) -> Self::Cont<B>
-    {
+    fn apply(&self, func: F) -> Self::Cont<B> {
         ParamsBase {
             bias: self.bias().apply(&func),
             weights: self.weights().apply(&func),
