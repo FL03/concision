@@ -56,13 +56,12 @@ impl core::borrow::Borrow<str> for HyperParam {
 
 #[cfg(test)]
 mod tests {
-    use crate::Parameter;
-
     use super::HyperParam;
 
     #[test]
     fn test_hyper_params() {
         use HyperParam::*;
+        use core::str::FromStr;
 
         let tests = [
             ("decay", Decay),
@@ -72,9 +71,11 @@ mod tests {
             ("beta1", Beta1),
             ("beta2", Beta2),
             ("epsilon", Epsilon),
+            ("learning_rate", LearningRate),
+            ("weight_decay", WeightDecay),
         ];
         for (s, param) in tests {
-            assert!(HyperParam::try_from(s).ok(), Some(param));
+            assert_eq!(HyperParam::from_str(s).ok(), Some(param));
         }
     }
 }
