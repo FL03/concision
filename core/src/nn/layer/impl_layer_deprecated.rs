@@ -3,7 +3,7 @@
     authors: @FL03
 */
 #![allow(deprecated)]
-use super::Layer;
+use super::LayerBase;
 
 #[doc(hidden)]
-impl<F, T> Layer<F, T> {}
+impl<F, T> LayerBase<F, T> {}

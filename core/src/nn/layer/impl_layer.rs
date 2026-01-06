@@ -2,13 +2,13 @@
     appellation: impl_layer <module>
     authors: @FL03
 */
-use super::Layer;
+use super::LayerBase;
 use crate::nn::RawLayer;
 use concision_params::RawParams;
 use concision_traits::Activator;
 use concision_traits::Forward;
 
-impl<F, P, A> Layer<F, P>
+impl<F, P, A> LayerBase<F, P>
 where
     P: RawParams<Elem = A>,
 {
@@ -48,23 +48,23 @@ where
         &mut self.rho
     }
     /// consumes the current instance and returns another with the given parameters.
-    pub fn with_params<Y>(self, params: Y) -> Layer<F, Y>
+    pub fn with_params<Y>(self, params: Y) -> LayerBase<F, Y>
     where
         F: Activator<Y>,
     {
-        Layer {
+        LayerBase {
             rho: self.rho,
             params,
         }
     }
     /// consumes the current instance and returns another with the given activation function.
     /// This is useful during the creation of the model, when the activation function is not known yet.
-    pub fn with_rho<G>(self, rho: G) -> Layer<G, P>
+    pub fn with_rho<G>(self, rho: G) -> LayerBase<G, P>
     where
         G: Activator<P>,
         F: Activator<P>,
     {
-        Layer {
+        LayerBase {
             rho,
             params: self.params,
         }
@@ -85,7 +85,7 @@ where
     }
 }
 
-impl<F, P, A, X, Y> Activator<X> for Layer<F, P>
+impl<F, P, A, X, Y> Activator<X> for LayerBase<F, P>
 where
     F: Activator<X, Output = Y>,
     P: RawParams<Elem = A>,
@@ -97,7 +97,7 @@ where
     }
 }
 
-impl<F, P, A, X, Y> Forward<X> for Layer<F, P>
+impl<F, P, A, X, Y> Forward<X> for LayerBase<F, P>
 where
     F: Activator<Y, Output = Y>,
     P: RawParams<Elem = A> + Forward<X, Output = Y>,
@@ -109,7 +109,7 @@ where
     }
 }
 
-impl<F, P, A> RawLayer<F, P> for Layer<F, P>
+impl<F, P, A> RawLayer<F, P> for LayerBase<F, P>
 where
     F: Activator<A>,
     P: RawParams<Elem = A>,

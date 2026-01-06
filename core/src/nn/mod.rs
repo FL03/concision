@@ -35,7 +35,7 @@ mod tests {
     #[test]
     fn test_func_layer() {
         let params = Params::<f32>::from_elem((3, 2), 0.5);
-        let layer = Layer::new(|x: Array1<f32>| x.mapv(|i| i.powi(2)), params);
+        let layer = LayerBase::new(|x: Array1<f32>| x.mapv(|i| i.powi(2)), params);
         // initialize some inputs
         let inputs = Array1::<f32>::linspace(1.0, 2.0, 3);
         // verify the shape of the layer's parameters
@@ -47,7 +47,7 @@ mod tests {
     #[test]
     fn test_linear_layer() {
         let params = Params::from_elem((3, 2), 0.5_f32);
-        let layer = Layer::linear(params);
+        let layer = LayerBase::linear(params);
         // verify the shape of the layer's parameters
         assert_eq!(layer.params().shape(), &[3, 2]);
         // initialize some inputs
@@ -59,7 +59,7 @@ mod tests {
     #[test]
     fn test_relu_layer() {
         let params = Params::from_elem((3, 2), 0.5_f32);
-        let layer = Layer::relu(params);
+        let layer = LayerBase::relu(params);
         // initialize some inputs
         let inputs = Array1::<f32>::linspace(1.0, 2.0, 3);
         // verify the shape of the layer's parameters
@@ -70,7 +70,7 @@ mod tests {
     #[test]
     fn test_tanh_layer() {
         let params = Params::from_elem((3, 2), 0.5_f32);
-        let layer = Layer::tanh(params);
+        let layer = LayerBase::tanh(params);
         // initialize some inputs
         let inputs = Array1::<f32>::linspace(1.0, 2.0, 3);
         // verify the shape of the layer's parameters

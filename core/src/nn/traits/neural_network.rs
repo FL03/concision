@@ -6,7 +6,7 @@
 
 use ndarray::{Dimension, RawData};
 
-pub trait NeuralNetworkParams<S, D, A = <S as RawData>::Elem>
+pub trait NetworkParams<S, D, A = <S as RawData>::Elem>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -19,23 +19,24 @@ pub trait NeuralNetwork<S, D, A = <S as RawData>::Elem>
 where
     D: Dimension,
     S: RawData<Elem = A>,
+    Self::Params<S, D, A>: NetworkParams<S, D, A>,
 {
     /// The context of the neural network defines any additional information required for its operation.
     type Ctx;
     /// The configuration of the neural network defines its architecture and hyperparameters.
     type Config;
     /// The parameters of the neural network define its weights and biases.
-    type Params<_S, _D>: NeuralNetworkParams<_S, _D, A>
+    type Params<_S, _D, _A>
     where
-        _S: RawData<Elem = A>,
+        _S: RawData<Elem = _A>,
         _D: Dimension;
 
     /// returns a reference to the network configuration;
     fn config(&self) -> &Self::Config;
 
-    fn params(&self) -> &Self::Params<S, D>;
+    fn params(&self) -> &Self::Params<S, D, A>;
 
-    fn params_mut(&mut self) -> &mut Self::Params<S, D>;
+    fn params_mut(&mut self) -> &mut Self::Params<S, D, A>;
 }
 
 /// A trait defining common constants for neural networks.
