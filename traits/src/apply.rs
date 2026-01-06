@@ -36,8 +36,8 @@ where
 
     fn apply_once(self, f: F) -> Self::Cont<U>;
 }
-/// The [`ApplyMut`] trait mutates the each element of the container, in-place, using the given
-/// function.
+/// [`ApplyMut`] provides an interface for mutable containers that can apply a function onto 
+/// their elements, modifying them in place.
 pub trait ApplyMut<T> {
     type Cont<_T>;
 
