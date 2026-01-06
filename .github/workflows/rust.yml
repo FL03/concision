@@ -67,6 +67,9 @@ jobs:
           target: ${{ matrix.target }}
           toolchain: ${{ matrix.toolchain }}
           override: true
+      - name: Test (all-features)
+        if: matrix.features == 'all'
+        run: cargo test -r --locked --workspace --target ${{ matrix.target}} --all-features
       - name: Test (default)
         if: matrix.features == 'default'
         run: cargo test -r --locked --workspace --target ${{ matrix.target}}
