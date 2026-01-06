@@ -177,17 +177,17 @@ where
     }
 }
 
-impl<A, S, D> Apply<A> for ParamsBase<S, D, A>
+impl<A, B, S, D, F> Apply<F, B> for ParamsBase<S, D, A>
 where
     D: Dimension,
     S: Data<Elem = A>,
     A: Clone,
+    F: Fn(A) -> B,
 {
     type Cont<V> = Params<V, D>;
+    type Elem = A;
 
-    fn apply<F, V>(&self, func: F) -> Self::Cont<V>
-    where
-        F: Fn(A) -> V,
+    fn apply(&self, func: F) -> Self::Cont<B>
     {
         ParamsBase {
             bias: self.bias().apply(&func),
