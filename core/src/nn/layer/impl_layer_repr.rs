@@ -5,7 +5,7 @@
 use super::LayerBase;
 
 use concision_params::{ParamsBase, RawParams};
-use concision_traits::{Activator, Linear, ReLU, Sigmoid, Forward, TanhActivator};
+use concision_traits::{Activator, Linear, ReLU, Sigmoid, TanhActivator};
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
 impl<F, S, D, A> LayerBase<F, ArrayBase<S, D, A>>
