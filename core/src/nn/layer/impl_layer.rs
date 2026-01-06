@@ -12,11 +12,11 @@ impl<F, P, A> LayerBase<F, P>
 where
     P: RawParams<Elem = A>,
 {
-    /// create a new [`Layer`] from the given activation function and parameters.
+    /// create a new [`LayerBase`] from the given activation function and parameters.
     pub const fn new(rho: F, params: P) -> Self {
         Self { rho, params }
     }
-    /// create a new [`Layer`] from the given parameters assuming the logical default for
+    /// create a new [`LayerBase`] from the given parameters assuming the logical default for
     /// the activation of type `F`.
     pub fn from_params(params: P) -> Self
     where
@@ -24,7 +24,7 @@ where
     {
         Self::new(<F>::default(), params)
     }
-    /// create a new [`Layer`] from the given activation function and shape.
+    /// create a new [`LayerBase`] from the given activation function and shape.
     pub fn from_rho<Sh>(rho: F) -> Self
     where
         P: Default,
@@ -47,6 +47,7 @@ where
     pub const fn rho_mut(&mut self) -> &mut F {
         &mut self.rho
     }
+    #[inline]
     /// consumes the current instance and returns another with the given parameters.
     pub fn with_params<Y>(self, params: Y) -> LayerBase<F, Y>
     where
@@ -57,18 +58,19 @@ where
             params,
         }
     }
+    #[inline]
     /// consumes the current instance and returns another with the given activation function.
     /// This is useful during the creation of the model, when the activation function is not known yet.
     pub fn with_rho<G>(self, rho: G) -> LayerBase<G, P>
     where
         G: Activator<P>,
-        F: Activator<P>,
     {
         LayerBase {
             rho,
             params: self.params,
         }
     }
+    #[inline]
     /// apply the configured activation function onto some input, producing some output
     pub fn activate<X, Y>(&self, input: X) -> Y
     where

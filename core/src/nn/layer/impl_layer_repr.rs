@@ -5,7 +5,7 @@
 use super::LayerBase;
 
 use concision_params::{ParamsBase, RawParams};
-use concision_traits::{Activator, Linear, ReLU, Sigmoid, TanhActivator};
+use concision_traits::{Activator, HyperbolicTangent, Linear, ReLU, Sigmoid};
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
 impl<F, S, D, A> LayerBase<F, ArrayBase<S, D, A>>
@@ -26,6 +26,18 @@ where
             rho,
             params: ArrayBase::default(shape),
         }
+    }
+
+    pub fn dim(&self) -> D::Pattern {
+        self.params().dim()
+    }
+
+    pub fn raw_dim(&self) -> D {
+        self.params().raw_dim()
+    }
+
+    pub fn shape(&self) -> &[usize] {
+        self.params().shape()
     }
 }
 
@@ -65,6 +77,18 @@ where
     pub const fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         self.params_mut().weights_mut()
     }
+
+    pub fn dim(&self) -> D::Pattern {
+        self.params().dim()
+    }
+
+    pub fn raw_dim(&self) -> D {
+        self.params().raw_dim()
+    }
+
+    pub fn shape(&self) -> &[usize] {
+        self.params().shape()
+    }
 }
 
 impl<F, P, A> LayerBase<F, P>
@@ -100,15 +124,15 @@ where
     }
 }
 
-impl<A, P> LayerBase<TanhActivator, P>
+impl<A, P> LayerBase<HyperbolicTangent, P>
 where
     P: RawParams<Elem = A>,
 {
-    /// initialize a new layer using a [`HyperbolicTangent`] activation function and the given
+    /// initialize a new layer using a [`TanhActivator`] activation function and the given
     /// parameters.
     pub const fn tanh(params: P) -> Self {
         Self {
-            rho: TanhActivator,
+            rho: HyperbolicTangent,
             params,
         }
     }

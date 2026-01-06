@@ -25,7 +25,7 @@ mod types {
     #[cfg(feature = "alloc")]
     use alloc::boxed::Box;
     use concision_params::{Params, ParamsBase};
-    use concision_traits::activate::{HeavySide, Linear, ReLU, Sigmoid, TanhActivator};
+    use concision_traits::activate::{HeavySide, HyperbolicTangent, Linear, ReLU, Sigmoid};
 
     /// A type alias for a layer configured to use the [`ParamsBase`] instance
     pub type LayerParamsBase<F, S, D = ndarray::Ix2, A = f32> = LayerBase<F, ParamsBase<S, D, A>>;
@@ -36,7 +36,7 @@ mod types {
     /// A type alias for a [`Layer`] using a sigmoid activation function.
     pub type SigmoidLayer<T> = LayerBase<Sigmoid, T>;
     /// An alias for a [`Layer`] that uses the hyperbolic tangent function.
-    pub type TanhLayer<T> = LayerBase<TanhActivator, T>;
+    pub type TanhLayer<T> = LayerBase<HyperbolicTangent, T>;
     /// A [`Layer`] type using the ReLU activation function.
     pub type ReluLayer<T> = LayerBase<ReLU, T>;
     /// A [`Layer`] type using the heavyside activation function.
