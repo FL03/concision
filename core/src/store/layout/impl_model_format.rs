@@ -7,12 +7,13 @@ use super::ModelFormat;
 impl ModelFormat {
     pub const fn new(hidden: usize, layers: usize) -> Self {
         match layers {
-            0 | 1 => ModelFormat::Shallow { hidden },
+            0 => ModelFormat::Layer,
+            1 => ModelFormat::Shallow { hidden },
             _ => ModelFormat::Deep { hidden, layers },
         }
     }
 
-    pub const fn layout() -> Self {
+    pub const fn layer() -> Self {
         ModelFormat::Layer
     }
     /// initialize a new [`Deep`](ModelFormat::Deep) variant for a deep neural network with the
