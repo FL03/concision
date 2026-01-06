@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use super::ModelFeatures;
-use crate::layout::{ModelFormat, RawModelLayout, RawModelLayoutMut};
+use crate::store::{ModelFormat, RawModelLayout, RawModelLayoutMut};
 
 /// verify if the input and hidden dimensions are compatible by checking:
 ///

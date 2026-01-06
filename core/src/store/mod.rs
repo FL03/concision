@@ -7,8 +7,9 @@
 //! parameter storage, relying on the [`ParamsBase`](concision_params::ParamsBase) instance to represent
 //! individual layers within the network.
 #[doc(inline)]
-pub use self::{model_params::*, traits::*, types::*};
+pub use self::{layout::*, model_params::*, traits::*, types::*};
 
+pub mod layout;
 pub mod model_params;
 
 mod impls {
@@ -29,12 +30,15 @@ mod types {
 }
 
 mod traits {
-    pub use self::hidden::*;
+    pub use self::{format::*, hidden::*};
 
+    mod format;
     mod hidden;
 }
 
+#[doc(hidden)]
 pub(crate) mod prelude {
+    pub use super::layout::*;
     pub use super::model_params::*;
     pub use super::traits::*;
     pub use super::types::*;

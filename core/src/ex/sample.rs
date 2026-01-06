@@ -2,11 +2,10 @@
     appellation: model <test>
     authors: @FL03
 */
-use crate::Error;
 use crate::config::StandardModelConfig;
-use crate::layout::ModelFeatures;
+use crate::error::Error;
 use crate::nn::Model;
-use crate::store::DeepModelParams;
+use crate::store::{DeepModelParams, ModelFeatures};
 #[cfg(feature = "rand")]
 use concision_init::{
     InitTensor,

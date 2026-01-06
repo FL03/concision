@@ -72,7 +72,6 @@ pub(crate) mod macros {
 
 pub mod config;
 pub mod error;
-pub mod layout;
 pub mod nn;
 pub mod store;
 pub mod utils;
@@ -92,8 +91,7 @@ pub mod types {
 // re-exports
 #[doc(inline)]
 pub use self::{
-    config::prelude::*, error::*, layout::*, nn::prelude::*, store::prelude::*, types::*,
-    utils::prelude::*,
+    config::prelude::*, error::*, nn::prelude::*, store::prelude::*, types::*, utils::prelude::*,
 };
 // prelude
 #[doc(hidden)]
@@ -103,7 +101,6 @@ pub mod prelude {
     pub use concision_traits::prelude::*;
 
     pub use crate::config::prelude::*;
-    pub use crate::layout::*;
     pub use crate::nn::prelude::*;
     pub use crate::store::prelude::*;
     pub use crate::types::*;
