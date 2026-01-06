@@ -37,7 +37,6 @@ required-features = ["rand", "std"]
 # data & serialization
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
-serde_json = { optional = true, workspace = true }
 # error-handling
 thiserror = { workspace = true }
 # macros & utilities

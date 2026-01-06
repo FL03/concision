@@ -67,6 +67,8 @@ num-complex = { default-features = false, version = "0.4" }
 num-integer = { default-features = false, version = "0.1" }
 num-traits = { default-features = false, version = "0.2" }
 rustfft = { version = "6" }
+# networking
+reqwest = { default-features = false, version = "0.13" }
 # random
 getrandom = { default-features = false, version = "0.3" }
 rand = { default-features = false, version = "0.9" }
