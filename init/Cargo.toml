@@ -25,7 +25,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = ["lib"]
 doctest = false
 test = true
 
@@ -52,7 +52,7 @@ num-traits = { workspace = true }
 # random
 getrandom = { default-features = false, optional = true, workspace = true }
 rand = { optional = true, workspace = true }
-rand_core ={ optional = true, workspace = true }
+rand_core = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 
 [dev-dependencies]
@@ -62,10 +62,10 @@ lazy_static = { workspace = true }
 default = ["rand", "std"]
 
 full = [
-  "default", 
-  "approx", 
-  "complex", 
-  "serde", 
+  "default",
+  "approx",
+  "complex",
+  "serde",
   "rand",
 ]
 
@@ -101,7 +101,7 @@ alloc = [
 ]
 
 approx = [
-  "dep:approx", 
+  "dep:approx",
   "ndarray/approx",
 ]
 
@@ -110,14 +110,14 @@ blas = ["ndarray/blas"]
 complex = ["dep:num-complex"]
 
 rand = [
-  "dep:rand", 
-  "dep:rand_distr", 
-  "num-complex?/rand", 
-  "rng"
+  "dep:rand",
+  "dep:rand_distr",
+  "num-complex?/rand",
+  "rng",
 ]
 
 rng = [
-  "dep:getrandom", 
+  "dep:getrandom",
   "rand?/os_rng",
   "rand?/small_rng",
   "rand?/thread_rng",

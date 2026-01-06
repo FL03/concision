@@ -25,7 +25,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = ["lib"]
 doctest = false
 test = true
 
@@ -90,7 +90,7 @@ alloc = [
 ]
 
 approx = [
-  "dep:approx", 
+  "dep:approx",
   "ndarray/approx",
 ]
 
@@ -107,7 +107,7 @@ hashbrown = [
 ]
 
 rayon = [
-  "hashbrown?/rayon", 
+  "hashbrown?/rayon",
   "ndarray/rayon",
   "rspace/rayon",
 ]

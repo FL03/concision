@@ -26,7 +26,7 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
+crate-type = ["lib"]
 doctest = false
 test = true
 
