@@ -3,7 +3,7 @@
     Created At: 2025.12.14:11:13:15
     Contrib: @FL03
 */
-use super::{ReLUActivation, SigmoidActivation, SoftmaxActivation, TanhActivation};
+use crate::activate::{ReLUActivation, SigmoidActivation, SoftmaxActivation, TanhActivation};
 use ndarray::{Array, ArrayBase, Data, Dimension, ScalarOperand};
 use num_traits::{Float, One, Zero};
 
@@ -49,7 +49,7 @@ where
 
 impl<A, S, D> SoftmaxActivation for ArrayBase<S, D, A>
 where
-    A: ScalarOperand + Float,
+    A: Float + ScalarOperand,
     S: Data<Elem = A>,
     D: Dimension,
 {

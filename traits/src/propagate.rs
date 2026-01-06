@@ -1,9 +1,8 @@
 /*
-    Appellation: predict <module>
+    Appellation: propagate <module>
+    Created At: 2026.01.06:14:13:38
     Contrib: @FL03
 */
-mod impl_backward;
-mod impl_forward;
 
 /// The [`Backward`] trait establishes a common interface for completing a single backward
 /// step in a neural network or machine learning model.

@@ -35,7 +35,7 @@ required-features = ["complex"]
 
 [dependencies]
 # custom
-rspace = { workspace = true }
+rspace-traits = { workspace = true }
 # data structures
 hashbrown = { optional = true, workspace = true }
 ndarray = { workspace = true }
@@ -74,7 +74,7 @@ std = [
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
-  "rspace/std",
+  "rspace-traits/std",
   "serde?/std",
 ]
 
@@ -85,7 +85,7 @@ wasm = []
 # ********* [FF] Dependencies *********
 alloc = [
   "hashbrown?/alloc",
-  "rspace/alloc",
+  "rspace-traits/alloc",
   "serde?/alloc",
 ]
 
@@ -98,7 +98,7 @@ blas = ["ndarray/blas"]
 
 complex = [
   "dep:num-complex",
-  "rspace/complex",
+  "rspace-traits/complex",
 ]
 
 hashbrown = [
@@ -109,12 +109,12 @@ hashbrown = [
 rayon = [
   "hashbrown?/rayon",
   "ndarray/rayon",
-  "rspace/rayon",
+  "rspace-traits/rayon",
 ]
 
 rand = [
   "num-complex?/rand",
-  "rspace/rand",
+  "rspace-traits/rand",
 ]
 
 serde = [
@@ -122,5 +122,5 @@ serde = [
   "dep:serde_derive",
   "serde?/derive",
   "hashbrown?/serde",
-  "rspace/serde",
+  "rspace-traits/serde",
 ]

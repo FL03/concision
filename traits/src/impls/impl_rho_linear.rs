@@ -3,14 +3,14 @@
     Created At: 2025.12.14:11:14:22
     Contrib: @FL03
 */
-use super::{HeavysideActivation, LinearActivation};
+use crate::activate::{HeavysideActivation, LinearActivation};
 use ndarray::{Array, ArrayBase, Data, DataMut, Dimension};
 use num_traits::{One, Zero};
 
 macro_rules! impl_heavyside {
     ($($T:ty),* $(,)*) => {
         $(
-            impl HeavysideActivation for $T {
+            impl $crate::HeavysideActivation for $T {
                 type Output = $T;
 
                 fn heavyside(self) -> Self::Output {
@@ -36,7 +36,7 @@ macro_rules! impl_heavyside {
 macro_rules! impl_linear {
     ($($T:ty),* $(,)*) => {
         $(
-            impl LinearActivation for $T {
+            impl $crate::LinearActivation for $T {
                 type Output = $T;
 
                 fn linear(self) -> Self::Output {

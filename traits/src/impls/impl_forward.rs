@@ -3,7 +3,7 @@
     Created At: 2025.12.14:09:36:14
     Contrib: @FL03
 */
-use super::{Forward, ForwardMut, ForwardOnce};
+use crate::{Forward, ForwardMut, ForwardOnce};
 
 use ndarray::linalg::Dot;
 use ndarray::{ArrayBase, Data, Dimension};

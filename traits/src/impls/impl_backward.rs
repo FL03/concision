@@ -3,7 +3,7 @@
     Created At: 2025.12.14:09:36:08
     Contrib: @FL03
 */
-use super::Backward;
+use crate::Backward;
 use ndarray::linalg::Dot;
 use ndarray::{Array, ArrayBase, ArrayView, Data, DataMut, Dimension};
 use num_traits::Num;

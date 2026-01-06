@@ -30,8 +30,15 @@ pub(crate) mod macros {
     pub mod seal;
 }
 
+mod impls {
+    mod impl_activator;
+    mod impl_backward;
+    mod impl_forward;
+    mod impl_rho_linear;
+    mod impl_rho_nonlinear;
+}
+
 pub mod activate;
-pub mod apply;
 pub mod clip;
 pub mod codex;
 pub mod complex;
@@ -59,13 +66,13 @@ pub mod math {
 pub mod ops {
     //! composable operators for tensor manipulations and transformations, neural networks, and
     //! more
-    #[allow(unused_imports)]
     #[doc(inline)]
-    pub use self::{binary::*, fill::*, like::*, reshape::*, unary::*};
+    pub use self::{apply::*, fill::*, like::*, map::*, reshape::*, unary::*};
 
-    mod binary;
+    mod apply;
     mod fill;
     mod like;
+    mod map;
     mod reshape;
     mod unary;
 }
@@ -85,14 +92,13 @@ pub mod tensor {
 pub use self::complex::*;
 #[doc(inline)]
 pub use self::{
-    activate::*, apply::*, clip::*, codex::*, entropy::*, loss::*, math::*, norm::*, ops::*,
-    predict::*, propagate::*, rounding::*, tensor::*, training::*,
+    activate::*, clip::*, codex::*, entropy::*, loss::*, math::*, norm::*, ops::*, predict::*,
+    propagate::*, rounding::*, tensor::*, training::*,
 };
 // prelude
 #[doc(hidden)]
 pub mod prelude {
     pub use crate::activate::*;
-    pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
     pub use crate::entropy::*;

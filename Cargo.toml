@@ -41,7 +41,8 @@ concision-traits = { default-features = false, path = "traits", version = "0.3.1
 concision-ext = { default-features = false, path = "ext", version = "0.3.1" }
 # custom
 contained = { default-features = false, features = ["derive"], version = "0.2.2" }
-rspace = { default-features = false, version = "0.0.7" }
+rspace = { default-features = false, features = ["macros"], version = "0.0.7" }
+rspace-traits = { default-features = false, version = "0.0.7" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # data structures
 hashbrown = { default-features = false, version = "0.16" }

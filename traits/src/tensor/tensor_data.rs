@@ -3,9 +3,10 @@
     Created At: 2025.12.09:10:04:11
     Contrib: @FL03
 */
+use rspace_traits::RawSpace;
 
-pub trait RawTensorData {
-    type Elem: ?Sized;
+pub trait RawTensorData: RawSpace {
+    private! {}
 }
 
 pub trait RawTensor<S, D, A>
@@ -39,7 +40,7 @@ macro_rules! impl_scalar_tensor {
     {$($T:ty),* $(,)?} => {
         $(
             impl RawTensorData for $T {
-                type Elem = $T;
+                seal! {}
             }
         )*
     };
@@ -49,5 +50,10 @@ impl_scalar_tensor! {
     u8, u16, u32, u64, u128, usize,
     i8, i16, i32, i64, i128, isize,
     f32, f64,
-    bool, char, str
+    bool, char
+}
+
+#[cfg(feature = "alloc")]
+impl RawTensorData for alloc::string::String {
+    seal! {}
 }

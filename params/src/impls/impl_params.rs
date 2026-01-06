@@ -6,11 +6,11 @@ use crate::params_base::ParamsBase;
 
 use crate::Params;
 use crate::traits::{Biased, Weighted};
-use concision_traits::{Apply, FillLike, OnesLike, ZerosLike};
+use concision_traits::{Apply, FillLike, MapTo, OnesLike, ZerosLike};
 use core::iter::Once;
 use ndarray::{ArrayBase, Data, DataOwned, Dimension, RawData};
 use num_traits::{One, Zero};
-use rspace::RawSpace;
+use rspace_traits::RawSpace;
 
 impl<A, S, D> ParamsBase<S, D, A>
 where
@@ -177,11 +177,25 @@ where
     }
 }
 
-impl<A, B, S, D, F> Apply<F, B> for ParamsBase<S, D, A>
+impl<A, B, S, D, F> Apply<F> for ParamsBase<S, D, A>
 where
+    A: Clone,
     D: Dimension,
     S: Data<Elem = A>,
+    F: Fn(A) -> B,
+{
+    type Output = Params<B, D>;
+
+    fn apply(&self, func: F) -> Self::Output {
+        <ParamsBase<S, D, A> as MapTo<F, B>>::apply(self, func)
+    }
+}
+
+impl<A, B, S, D, F> MapTo<F, B> for ParamsBase<S, D, A>
+where
     A: Clone,
+    D: Dimension,
+    S: Data<Elem = A>,
     F: Fn(A) -> B,
 {
     type Cont<V> = Params<V, D>;
@@ -189,8 +203,8 @@ where
 
     fn apply(&self, func: F) -> Self::Cont<B> {
         ParamsBase {
-            bias: self.bias().apply(&func),
-            weights: self.weights().apply(&func),
+            bias: self.bias().mapv(&func),
+            weights: self.weights().mapv(&func),
         }
     }
 }
