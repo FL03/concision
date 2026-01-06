@@ -5,7 +5,7 @@
 #![cfg(feature = "complex")]
 
 use num_complex::Complex;
-use num_traits::Num;
+use num_traits::Zero;
 
 pub trait AsComplex<T> {
     type Complex<A>;
@@ -23,7 +23,8 @@ pub trait AsComplex<T> {
 /// Trait for converting a type into a complex number.
 pub trait IntoComplex<T> {
     type Complex<A>;
-
+    /// converts the current state into a complex number used either as the real or imaginary
+    /// part, depending on the `real` flag
     fn into_complex(self, real: bool) -> Self::Complex<T>
     where
         Self: Sized;
@@ -60,7 +61,7 @@ where
 
 impl<T> IntoComplex<T> for T
 where
-    T: Num,
+    T: Zero,
 {
     type Complex<A> = Complex<A>;
 
