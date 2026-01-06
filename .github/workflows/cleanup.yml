@@ -1,12 +1,11 @@
-name: Cleanup
+name: cleanup
 
 on:
   pull_request:
     types: [closed]
 
 jobs:
-  pr_cache_cleanup:
-    name: Cleanup PR Cache(s)
+  cache_cleanup:
     runs-on: ubuntu-latest
     permissions:
       actions: write

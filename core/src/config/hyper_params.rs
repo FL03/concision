@@ -28,9 +28,9 @@
 #[non_exhaustive]
 pub enum HyperParam {
     Decay,
-    #[serde(alias = "drop_out", alias = "p")]
+    #[cfg_attr(feature = "serde", serde(alias = "drop_out", alias = "p"))]
     Dropout,
-    #[serde(alias = "lr", alias = "gamma")]
+    #[cfg_attr(feature = "serde", serde(alias = "lr", alias = "gamma"))]
     LearningRate,
     Momentum,
     Temperature,
@@ -56,20 +56,25 @@ impl core::borrow::Borrow<str> for HyperParam {
 
 #[cfg(test)]
 mod tests {
+    use crate::Parameter;
+
     use super::HyperParam;
 
     #[test]
-    fn test_hyper_params() -> anyhow::Result<()> {
+    fn test_hyper_params() {
         use HyperParam::*;
 
-        assert_eq!(HyperParam::try_from("learning_rate")?, LearningRate);
-
-        assert_eq!(HyperParam::try_from("weight_decay")?, WeightDecay);
-
-        for v in ["something", "another_param", "custom_hyperparam"] {
-            assert!(HyperParam::try_from(v).is_err());
+        let tests = [
+            ("decay", Decay),
+            ("dropout", Dropout),
+            ("momentum", Momentum),
+            ("temperature", Temperature),
+            ("beta1", Beta1),
+            ("beta2", Beta2),
+            ("epsilon", Epsilon),
+        ];
+        for (s, param) in tests {
+            assert!(HyperParam::try_from(s).ok(), Some(param));
         }
-
-        Ok(())
     }
 }

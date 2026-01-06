@@ -3,8 +3,7 @@
    Contrib: FL03 <jo3mccain@icloud.com>
 */
 use crate::InitTensor;
-use ndarray::{Array, ArrayBase, DataOwned, Dimension, IntoDimension, RawData, ShapeBuilder};
-use num_traits::Num;
+use ndarray::{Array, ArrayBase, DataOwned, Dimension, IntoDimension, ShapeBuilder};
 use rand::{SeedableRng, rngs};
 use rand_distr::{
     Distribution, StandardNormal,
@@ -15,9 +14,9 @@ use rand_distr::{
 /// Generate a random array of complex numbers with real and imaginary parts in the range [0, 1)
 pub fn randc<A, S, D>(shape: impl IntoDimension<Dim = D>) -> ArrayBase<S, D>
 where
-    A: Clone + Num,
+    A: Clone + num_traits::Num,
     D: Dimension,
-    S: RawData + DataOwned<Elem = num_complex::Complex<A>>,
+    S: DataOwned<Elem = num_complex::Complex<A>>,
     num_complex::ComplexDistribution<A, A>: Distribution<S::Elem>,
 {
     let distr = num_complex::ComplexDistribution::<A, A>::new(A::one(), A::one());
