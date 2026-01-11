@@ -7,15 +7,18 @@
 use num_complex::Complex;
 use num_traits::Zero;
 
+/// [`AsComplex`] defines an interface for converting a reference of some numerical type into a
+/// complex number.
 pub trait AsComplex<T> {
     type Complex<A>;
-
+    /// converts the current state into a complex number as either the real or imaginary part,
+    /// depending on the `real` flag
     fn as_complex(&self, real: bool) -> Self::Complex<T>;
-
+    /// convert a reference of the current state into the real part of a complex number
     fn as_re(&self) -> Self::Complex<T> {
         self.as_complex(true)
     }
-
+    /// convert a reference of the current state into the imaginary part of a complex number
     fn as_im(&self) -> Self::Complex<T> {
         self.as_complex(false)
     }
