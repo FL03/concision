@@ -1,11 +1,23 @@
 version: 2
 
 updates:
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: rust-toolchain
+    directory: /
+    schedule:
+      interval: monthly
   - package-ecosystem: cargo
     schedule:
       interval: monthly
     directories:
-      - .
+      - /
       - /concision
       - /core
       - /data
@@ -15,11 +27,3 @@ updates:
       - /macros
       - /params
       - /traits
-  - package-ecosystem: devcontainers
-    directory: /
-    schedule:
-      interval: monthly
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: monthly
