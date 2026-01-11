@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 
 [package.metadata.release]
@@ -49,6 +49,8 @@ num-traits = { workspace = true }
 # serialization
 serde = { optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
+# wasmbindgen
+wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = ["std"]
@@ -124,3 +126,5 @@ serde = [
   "hashbrown?/serde",
   "rspace-traits/serde",
 ]
+
+wasm_bindgen = ["dep:wasm-bindgen"]

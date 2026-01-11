@@ -34,7 +34,10 @@ name = "distr"
 required-features = ["rand", "std"]
 
 [dependencies]
-# data & serialization
+# data-structures
+hashbrown = { optional = true, workspace = true }
+ndarray = { workspace = true }
+# serialization
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 # error-handling
@@ -46,14 +49,14 @@ smart-default = { workspace = true }
 strum = { workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
-ndarray = { workspace = true }
 num-complex = { optional = true, workspace = true }
 num-traits = { workspace = true }
 # random
 getrandom = { default-features = false, optional = true, workspace = true }
 rand = { optional = true, workspace = true }
-rand_core = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
+# WebAssembly (wasm)
+wasm-bindgen = { optional = true, workspace = true }
 
 [dev-dependencies]
 lazy_static = { workspace = true }
@@ -64,12 +67,14 @@ default = ["rand", "std"]
 full = [
   "default",
   "approx",
+  "hashbrown",
   "complex",
   "serde",
   "rand",
 ]
 
 nightly = [
+  "hashbrown?/nightly",
   "rand?/nightly",
 ]
 
@@ -78,12 +83,12 @@ std = [
   "alloc",
   "anyhow/std",
   "getrandom?/std",
+  "hashbrown?/default",
   "ndarray/std",
   "num-complex?/std",
   "num-traits/std",
   "rand?/std",
   "rand?/std_rng",
-  "rand_core?/std",
   "rand_distr?/std",
   "serde?/std",
   "strum/std",
@@ -92,11 +97,15 @@ std = [
 
 wasi = []
 
-wasm = ["getrandom?/wasm_js"]
+wasm = [
+  "wasm_bindgen",
+  "getrandom?/wasm_js"
+]
 
 # ************* [FF:Dependencies] *************
 
 alloc = [
+  "hashbrown?/alloc",
   "rand?/alloc",
   "rand_distr?/alloc",
   "serde?/alloc",
@@ -111,11 +120,13 @@ blas = ["ndarray/blas"]
 
 complex = ["dep:num-complex"]
 
+hashbrown = ["dep:hashbrown"]
+
 rand = [
   "dep:rand",
   "dep:rand_distr",
-  "num-complex?/rand",
   "rng",
+  "num-complex?/rand",
 ]
 
 rng = [
@@ -123,16 +134,17 @@ rng = [
   "rand?/os_rng",
   "rand?/small_rng",
   "rand?/thread_rng",
-  "rand_core?/os_rng",
 ]
 
 serde = [
   "dep:serde",
   "dep:serde_derive",
   "serde?/derive",
+  "hashbrown?/serde",
   "ndarray/serde",
   "num-complex?/serde",
   "rand?/serde",
-  "rand_core?/serde",
   "rand_distr?/serde",
 ]
+
+wasm_bindgen = ["dep:wasm-bindgen"]

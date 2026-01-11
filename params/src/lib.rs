@@ -30,27 +30,25 @@
     clippy::upper_case_acronyms,
     rustdoc::redundant_explicit_links
 )]
-
+#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
+// compiler checks
+#[cfg(not(any(feature = "alloc", feature = "std")))]
+compiler_error! { "Either the \"alloc\" or \"std\" feature must be enabled for this crate." }
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
-extern crate ndarray as nd;
-
-#[cfg(all(not(feature = "alloc"), not(feature = "std")))]
-compiler_error! {
- "Either the \"alloc\" or \"std\" feature must be enabled for this crate."
-}
-
-pub mod error;
-pub mod iter;
-
-mod params_base;
-mod types;
-
+// macros
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
 }
+// public modules
+pub mod error;
+pub mod iter;
+// internal modules
+mod params_base;
+mod types;
 
 mod impls {
     mod impl_params;
@@ -83,7 +81,6 @@ mod utils {
 
     mod shape;
 }
-
 // re-exports
 #[doc(inline)]
 pub use self::{error::*, params_base::*, traits::*, types::*, utils::*};

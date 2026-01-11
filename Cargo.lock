@@ -290,25 +290,29 @@ dependencies = [
  "thiserror 2.0.17",
  "tracing",
  "variants",
+ "wasm-bindgen",
 ]
 
 [[package]]
 name = "concision-data"
 version = "0.3.1"
 dependencies = [
+ "anyhow",
  "approx",
  "concision-core",
+ "hashbrown 0.16.1",
  "ndarray",
- "num",
  "num-complex",
  "num-traits",
  "rayon",
  "reqwest",
  "serde",
+ "serde_derive",
  "serde_json",
  "thiserror 2.0.17",
  "tracing",
  "variants",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -349,19 +353,20 @@ dependencies = [
  "anyhow",
  "approx",
  "getrandom 0.3.4",
+ "hashbrown 0.16.1",
  "lazy_static",
  "ndarray",
  "num-complex",
  "num-traits",
  "paste",
  "rand 0.9.2",
- "rand_core 0.9.3",
  "rand_distr",
  "serde",
  "serde_derive",
  "smart-default",
  "strum",
  "thiserror 2.0.17",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -394,6 +399,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.17",
  "variants",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -410,6 +416,7 @@ dependencies = [
  "rspace-traits",
  "serde",
  "serde_derive",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1651,11 +1658,12 @@ dependencies = [
 
 [[package]]
 name = "rspace-traits"
-version = "0.0.7"
+version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9a0ef5a8f6f27c6004e5be25e2cb1a16767e02826f0754ba5f0b9915f2b6082"
+checksum = "309a27b5c3e2c889fa140ac0fef65c5ac79be6e22d84048ec6148f6842c2d327"
 dependencies = [
  "hashbrown 0.16.1",
+ "ndarray",
  "num-complex",
  "num-traits",
  "paste",

@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 
 [package.metadata.release]
@@ -25,7 +25,6 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["lib"]
 doctest = false
 test = true
 
@@ -53,6 +52,8 @@ num-traits = { workspace = true }
 getrandom = { optional = true, workspace = true }
 rand = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
+# WebAssembly (wasm)
+wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = ["std"]
@@ -73,7 +74,6 @@ json = [
   "serde",
   "serde_json",
 ]
-
 
 nightly = [
   "concision-init/nightly",
@@ -106,6 +106,7 @@ wasi = [
 ]
 
 wasm = [
+  "wasm_bindgen",
   "concision-init/wasm",
   "concision-traits/wasm",
   "getrandom?/wasm_js",
@@ -178,3 +179,10 @@ serde = [
 ]
 
 serde_json = ["dep:serde_json"]
+
+wasm_bindgen = [
+  "dep:wasm-bindgen",
+  "concision-init/wasm_bindgen",
+  "concision-traits/wasm_bindgen",
+  "rspace-traits/wasm_bindgen",
+]

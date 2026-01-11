@@ -21,7 +21,7 @@ where
 impl<A, D, U> GetBiasDim<A, D> for U
 where
     D: RemoveAxis,
-    U: AsRef<nd::LayoutRef<A, D>>,
+    U: AsRef<ndarray::LayoutRef<A, D>>,
 {
     type Output = D::Smaller;
 

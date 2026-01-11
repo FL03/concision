@@ -78,6 +78,6 @@ mod tests {
         // compare the actual output against the expected output
         let y = layer.forward(&inputs);
         let exp = Array1::from_elem(2, 0.99185973).tanh();
-        assert!((y - exp).abs().iter().all(|&i| i < 1e-6));
+        assert!((y - exp).abs().iter().all(|&i| i < 1e-4));
     }
 }

@@ -274,7 +274,7 @@ where
         self.weights().len() + self.bias().len()
     }
     /// returns an owned instance of the parameters
-    pub fn to_owned(&self) -> ParamsBase<nd::OwnedRepr<A>, D>
+    pub fn to_owned(&self) -> ParamsBase<ndarray::OwnedRepr<A>, D>
     where
         A: Clone,
         S: DataOwned,
@@ -283,7 +283,10 @@ where
     }
     /// change the shape of the parameters; the shape of the bias parameters is determined by
     /// removing the "zero-th" axis of the given shape
-    pub fn to_shape<Sh>(&self, shape: Sh) -> crate::Result<ParamsBase<nd::CowRepr<'_, A>, Sh::Dim>>
+    pub fn to_shape<Sh>(
+        &self,
+        shape: Sh,
+    ) -> crate::Result<ParamsBase<ndarray::CowRepr<'_, A>, Sh::Dim>>
     where
         A: Clone,
         S: DataOwned,
@@ -298,7 +301,7 @@ where
     }
     /// returns a new [`ParamsBase`] instance with the same paramaters, but using a shared
     /// representation of the data;
-    pub fn to_shared(&self) -> ParamsBase<nd::OwnedArcRepr<A>, D>
+    pub fn to_shared(&self) -> ParamsBase<ndarray::OwnedArcRepr<A>, D>
     where
         A: Clone,
         S: Data,
@@ -306,14 +309,14 @@ where
         ParamsBase::new(self.bias().to_shared(), self.weights().to_shared())
     }
     /// returns a "view" of the parameters; see [`view`](ndarray::ViewRepr) for more information
-    pub fn view(&self) -> ParamsBase<nd::ViewRepr<&'_ A>, D>
+    pub fn view(&self) -> ParamsBase<ndarray::ViewRepr<&'_ A>, D>
     where
         S: Data,
     {
         ParamsBase::new(self.bias().view(), self.weights().view())
     }
     /// returns mutable view of the parameters
-    pub fn view_mut(&mut self) -> ParamsBase<nd::ViewRepr<&'_ mut A>, D>
+    pub fn view_mut(&mut self) -> ParamsBase<ndarray::ViewRepr<&'_ mut A>, D>
     where
         S: DataMut,
     {
