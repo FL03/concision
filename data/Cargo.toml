@@ -1,13 +1,14 @@
 [package]
-authors.workspace = true
 build = "build.rs"
-categories.workspace = true
 description = "this crate provides additional tools for working with datasets"
+name = "concision-data"
+
+authors.workspace = true
+categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-data"
 readme.workspace = true
 repository.workspace = true
 rust-version.workspace = true

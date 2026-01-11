@@ -38,6 +38,7 @@ required-features = ["rand", "std"]
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
 # error-handling
+anyhow = { workspace = true }
 thiserror = { workspace = true }
 # macros & utilities
 paste = { workspace = true }
@@ -75,6 +76,8 @@ nightly = [
 # ************* [FF:Dependencies] *************
 std = [
   "alloc",
+  "anyhow/std",
+  "getrandom?/std",
   "ndarray/std",
   "num-complex?/std",
   "num-traits/std",

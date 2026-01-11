@@ -176,7 +176,6 @@ rayon = [
 rng = [
   "concision-init/rng",
   "concision-params/rng",
-  # "concision-traits/rng",
 ]
 
 rustfft = ["dep:rustfft"]
@@ -184,6 +183,7 @@ rustfft = ["dep:rustfft"]
 serde = [
   "dep:serde",
   "dep:serde_derive",
+  "serde?/derive",
   "concision-init/serde",
   "concision-params/serde",
   "concision-traits/serde",
