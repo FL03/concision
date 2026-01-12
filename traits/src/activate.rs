@@ -23,15 +23,17 @@ pub trait ActivatorGradient<T> {
     fn activate_gradient(&self, input: T) -> Self::Delta;
 }
 
-pub trait SoftmaxAxis: SoftmaxActivation {
-    fn softmax_axis(self, axis: usize) -> Self::Output;
-}
 pub trait Rho<T> {
     type Cont<U>;
 
     fn rho<F, U>(&self, f: F) -> Self::Cont<U>
     where
         F: Fn(T) -> U;
+}
+
+/// Compute the softmax activation along a specified axis.
+pub trait SoftmaxAxis: SoftmaxActivation {
+    fn softmax_axis(self, axis: usize) -> Self::Output;
 }
 
 macro_rules! unary {
@@ -53,29 +55,19 @@ macro_rules! unary {
     };
 }
 
-unary! {
-    HeavysideActivation::heavyside(self),
-    LinearActivation::linear(self),
-    SigmoidActivation::sigmoid(self),
-    SoftmaxActivation::softmax(&self),
-    ReLUActivation::relu(&self),
-    TanhActivation::tanh(&self),
-}
-
 macro_rules! activator {
-    ($($vis:vis struct $name:ident.$method:ident where $T:ident: $($trait:ident)::*);* $(;)?) => {
+    ($($vis:vis struct $name:ident::<$T:ident>::$method:ident $({where $($where:tt)*})?),* $(,)?) => {
         $(activator! {
-            @impl $vis struct $name.$method where $T: $($trait)::*
+            @impl $vis struct $name::<$T>::$method $({where $($where)*})?
         })*
     };
-    (@impl $vis:vis struct $name:ident.$method:ident where $T:ident: $($trait:ident)::* ) => {
+    (@impl $vis:vis struct $name:ident::<$T:ident>::$method:ident $({where $($where:tt)*})? ) => {
         #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
         #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
         $vis struct $name;
 
         impl<$T> Activator<$T> for $name
-        where
-            $T: $($trait)::*,
+        $(where $($where)*)?
         {
             type Output = <$T>::Output;
 
@@ -86,8 +78,7 @@ macro_rules! activator {
 
         paste::paste! {
             impl<$T> ActivatorGradient<$T> for $name
-            where
-                $T: $($trait)::*,
+            $(where $($where)*)?,
             {
                 type Rel = Self;
                 type Delta = <$T>::Output;
@@ -100,11 +91,20 @@ macro_rules! activator {
     };
 }
 
+unary! {
+    HeavysideActivation::heavyside(self),
+    LinearActivation::linear(self),
+    SigmoidActivation::sigmoid(self),
+    SoftmaxActivation::softmax(&self),
+    ReLUActivation::relu(&self),
+    TanhActivation::tanh(&self),
+}
+
 activator! {
-    pub struct Linear.linear where T: crate::activate::LinearActivation;
-    pub struct ReLU.relu where T: crate::activate::ReLUActivation;
-    pub struct Sigmoid.sigmoid where T: crate::activate::SigmoidActivation;
-    pub struct HyperbolicTangent.tanh where T: crate::activate::TanhActivation;
-    pub struct HeavySide.heavyside where T: crate::activate::HeavysideActivation;
-    pub struct Softmax.softmax where T: crate::activate::SoftmaxActivation;
+    pub struct Linear::<T>::linear { where T: crate::activate::LinearActivation },
+    pub struct ReLU::<T>::relu { where T: crate::activate::ReLUActivation },
+    pub struct Sigmoid::<T>::sigmoid { where T: crate::activate::SigmoidActivation },
+    pub struct HyperbolicTangent::<T>::tanh { where T: crate::activate::TanhActivation },
+    pub struct HeavySide::<T>::heavyside { where T: crate::activate::HeavysideActivation },
+    pub struct Softmax::<T>::softmax { where T: crate::activate::SoftmaxActivation },
 }
