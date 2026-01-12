@@ -3,7 +3,6 @@
     Contrib: @FL03
 */
 //! Iterators for parameters within a neural network
-
 use ndarray::Dimension;
 use ndarray::iter::{AxisIter, AxisIterMut};
 use ndarray::iter::{Iter as NdIter, IterMut as NdIterMut};
