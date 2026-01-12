@@ -3,61 +3,62 @@
     Created At: 2025.12.10:16:50:03
     Contrib: @FL03
 */
-use concision_params::{ParamsBase, RawParams};
+use concision_params::RawParams;
 use concision_traits::{Activator, ActivatorGradient, Backward, Forward};
-use ndarray::{Data, Dimension, RawData};
 
-/// The [`RawLayer`] trait defines an interface for a core building block of all neural
-/// networks, the layer. Layers are composed of an activation function and a set of parameters
-/// that define the transformation applied to input data as it passes through the layer.
-pub trait RawLayer<F, P, A = <P as RawParams>::Elem>
+/// The [`RawLayer`] trait establishes a common interface for all _layers_ within a given
+/// model. Implementors will need to define the type of parameters they utilize, as well as
+/// provide methods to access both the activation function and the parameters of the layer.
+pub trait RawLayer<F, A>
 where
     F: Activator<A>,
-    P: RawParams<Elem = A>,
+    Self::Params<A>: RawParams<Elem = A>,
 {
+    type Params<_T>;
     /// the activation function of the layer
     fn rho(&self) -> &F;
     /// returns an immutable reference to the parameters of the layer
-    fn params(&self) -> &P;
-    /// returns a mutable reference to the parameters of the layer
-    fn params_mut(&mut self) -> &mut P;
-    /// update the layer parameters
-    fn set_params(&mut self, params: P) {
-        *self.params_mut() = params;
-    }
-    /// [`replace`](core::mem::replace) the params of the layer, returning the previous value
-    fn replace_params(&mut self, params: P) -> P {
-        core::mem::replace(self.params_mut(), params)
-    }
-    /// [`swap`](core::mem::swap) the params of the layer with another
-    fn swap_params(&mut self, other: &mut P) {
-        core::mem::swap(self.params_mut(), other);
-    }
+    fn params(&self) -> &Self::Params<A>;
     /// complete a forward pass through the layer
-    fn forward<X, Y>(&self, input: &X) -> Y
+    fn forward<X, Y, Z>(&self, input: &X) -> Z
     where
-        P: Forward<X, Output = Y>,
-        Self: Activator<Y, Output = Y>,
+        F: Activator<Y, Output = Z>,
+        Self::Params<A>: Forward<X, Output = Y>,
     {
-        self.params().forward_then(input, |y| self.activate(y))
+        let y = self.params().forward(input);
+        self.rho().activate(y)
     }
 }
-/// A generic trait defining the composition of a _layer_ within a neural network.
-pub trait LayerExt<F, S, D, A = <S as RawData>::Elem>: RawLayer<F, ParamsBase<S, D>, A>
+/// The [`RawLayerMut`] trait extends the [`RawLayer`] trait by providing mutable access to the
+/// layer's parameters and additional methods for training the layer, such as backward
+/// propagation and parameter updates.
+pub trait RawLayerMut<F, A>: RawLayer<F, A>
 where
     F: Activator<A>,
-    D: Dimension,
-    S: RawData<Elem = A>,
+    Self::Params<A>: RawParams<Elem = A>,
 {
+    /// returns a mutable reference to the parameters of the layer
+    fn params_mut(&mut self) -> &mut Self::Params<A>;
     /// backward propagate error through the layer
     fn backward<X, Y, Z, Dt>(&mut self, input: X, error: Y, gamma: A)
     where
-        S: Data,
-        Self: ActivatorGradient<Y, Rel = F, Delta = Dt>,
         A: Clone,
-        ParamsBase<S, D>: Backward<X, Dt, Elem = A>,
+        F: ActivatorGradient<Y, Rel = F, Delta = Dt>,
+        Self::Params<A>: Backward<X, Dt, Elem = A>,
     {
-        let delta = self.activate_gradient(error);
+        let delta = self.rho().activate_gradient(error);
         self.params_mut().backward(&input, &delta, gamma)
+    }
+    /// update the layer parameters
+    fn set_params(&mut self, params: Self::Params<A>) {
+        *self.params_mut() = params;
+    }
+    /// [`replace`](core::mem::replace) the params of the layer, returning the previous value
+    fn replace_params(&mut self, params: Self::Params<A>) -> Self::Params<A> {
+        core::mem::replace(self.params_mut(), params)
+    }
+    /// [`swap`](core::mem::swap) the params of the layer with another
+    fn swap_params(&mut self, other: &mut Self::Params<A>) {
+        core::mem::swap(self.params_mut(), other);
     }
 }

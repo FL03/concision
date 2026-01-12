@@ -25,14 +25,14 @@ pub trait ScalarParams: RawParams<Elem = Self> + Sized {
     private!();
 }
 
-pub trait NdParams: RawParams {
+pub trait TensorParams: RawParams {
     /// returns the number of dimensions of the parameter
     fn rank(&self) -> usize;
     /// returns the size of the parameter
     fn size(&self) -> usize;
 }
 
-pub trait ExactDimParams: NdParams {
+pub trait ExactDimParams: TensorParams {
     type Shape: ?Sized;
     /// returns a reference to the shape of the parameter
     fn shape(&self) -> &Self::Shape;
@@ -69,9 +69,9 @@ where
     seal! {}
 }
 
-macro_rules! impl_param {
+macro_rules! impl_scalar_param {
     ($($T:ty),* $(,)?) => {
-        $(impl_param!(@impl $T);)*
+        $(impl_scalar_param!(@impl $T);)*
     };
     (@impl $T:ty) => {
         impl RawParams for $T {
@@ -80,7 +80,7 @@ macro_rules! impl_param {
             seal! {}
         }
 
-        impl NdParams for $T {
+        impl TensorParams for $T {
             fn rank(&self) -> usize {
                 0
             }
@@ -100,7 +100,7 @@ macro_rules! impl_param {
     };
 }
 
-impl_param! {
+impl_scalar_param! {
     u8, u16, u32, u64, u128, usize,
     i8, i16, i32, i64, i128, isize,
     f32, f64,
@@ -109,7 +109,7 @@ impl_param! {
 
 #[cfg(feature = "alloc")]
 impl RawParams for alloc::string::String {
-    type Elem = u8;
+    type Elem = alloc::string::String;
 
     seal! {}
 }
@@ -124,7 +124,7 @@ where
     seal! {}
 }
 
-impl<S, D, A> NdParams for ArrayBase<S, D, A>
+impl<S, D, A> TensorParams for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -160,7 +160,7 @@ where
     seal! {}
 }
 
-impl<S, D, A> NdParams for ParamsBase<S, D, A>
+impl<S, D, A> TensorParams for ParamsBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -210,7 +210,7 @@ impl<const N: usize, T> RawParams for [T; N] {
     seal! {}
 }
 
-impl<const N: usize, T> NdParams for [T; N] {
+impl<const N: usize, T> TensorParams for [T; N] {
     fn rank(&self) -> usize {
         1
     }

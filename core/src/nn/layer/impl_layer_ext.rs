@@ -3,7 +3,7 @@
     Created At: 2026.01.12:09:33:36
     Contrib: @FL03
 */
-use crate::nn::RawLayer;
+use crate::nn::{RawLayer, RawLayerMut};
 use crate::nn::layer::LayerBase;
 use concision_params::RawParams;
 use concision_traits::{Activator, Forward};
@@ -32,11 +32,13 @@ where
     }
 }
 
-impl<F, P, A> RawLayer<F, P> for LayerBase<F, P>
+impl<F, P, A> RawLayer<F, A> for LayerBase<F, P>
 where
     F: Activator<A>,
     P: RawParams<Elem = A>,
 {
+    type Params<_T> = P;
+
     fn rho(&self) -> &F {
         &self.rho
     }
@@ -44,7 +46,12 @@ where
     fn params(&self) -> &P {
         &self.params
     }
-
+}
+impl<F, P, A> RawLayerMut<F, A> for LayerBase<F, P>
+where
+    F: Activator<A>,
+    P: RawParams<Elem = A>,
+{
     fn params_mut(&mut self) -> &mut P {
         &mut self.params
     }
