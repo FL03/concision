@@ -29,6 +29,10 @@ crate-type = ["lib"]
 doctest = true
 test = true
 
+[[test]]
+name = "models"
+required-features = ["approx", "rand"]
+
 [dependencies]
 concision-init = { workspace = true }
 concision-params = { workspace = true }
