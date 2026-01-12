@@ -31,7 +31,7 @@ test = true
 
 [[test]]
 name = "models"
-required-features = ["approx", "rand"]
+required-features = ["default", "approx", "rand"]
 
 [dependencies]
 concision-init = { workspace = true }
