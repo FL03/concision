@@ -58,6 +58,10 @@ impl<T> TestModel<T> {
     pub const fn params_mut(&mut self) -> &mut DeepModelParams<T> {
         &mut self.params
     }
+    #[cfg(not(feature = "rand"))]
+    pub fn init(self) -> Self {
+        self
+    }
     #[cfg(feature = "rand")]
     /// consumes the current instance to initalize another with random parameters
     pub fn init(self) -> Self
