@@ -1,9 +1,10 @@
 /*
     Appellation: layer <module>
+    Created At: 2026.01.12:09:34:59
     Contrib: @FL03
 */
 mod impl_layer;
-mod impl_layer_deprecated;
+mod impl_layer_ext;
 mod impl_layer_repr;
 
 #[doc(inline)]

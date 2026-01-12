@@ -31,24 +31,25 @@ pub(crate) mod macros {
 }
 
 mod impls {
+    mod impl_activate_linear;
+    mod impl_activate_nonlinear;
     mod impl_activator;
     mod impl_backward;
     mod impl_forward;
-    mod impl_rho_linear;
-    mod impl_rho_nonlinear;
 }
 
-pub mod activate;
-pub mod clip;
-pub mod codex;
-pub mod complex;
-pub mod entropy;
-pub mod loss;
-pub mod norm;
-pub mod predict;
-pub mod propagate;
-pub mod rounding;
-pub mod training;
+mod activate;
+mod clip;
+mod codex;
+mod complex;
+mod entropy;
+mod loss;
+mod norm;
+mod predict;
+mod propagate;
+mod rho;
+mod rounding;
+mod training;
 
 pub mod math {
     //! Mathematically oriented operators and functions useful in machine learning contexts.
@@ -93,7 +94,7 @@ pub use self::complex::*;
 #[doc(inline)]
 pub use self::{
     activate::*, clip::*, codex::*, entropy::*, loss::*, math::*, norm::*, ops::*, predict::*,
-    propagate::*, rounding::*, tensor::*, training::*,
+    propagate::*, rho::*, rounding::*, tensor::*, training::*,
 };
 // prelude
 #[doc(hidden)]
@@ -108,6 +109,7 @@ pub mod prelude {
     pub use crate::ops::*;
     pub use crate::predict::*;
     pub use crate::propagate::*;
+    pub use crate::rho::*;
     pub use crate::rounding::*;
     pub use crate::tensor::*;
     pub use crate::training::*;

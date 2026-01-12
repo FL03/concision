@@ -2,8 +2,7 @@
     appellation: impl_layer_repr <module>
     authors: @FL03
 */
-use super::LayerBase;
-
+use crate::nn::layer::LayerBase;
 use concision_params::{ParamsBase, RawParams};
 use concision_traits::{Activator, HyperbolicTangent, Linear, ReLU, Sigmoid};
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};

@@ -23,14 +23,6 @@ pub trait ActivatorGradient<T> {
     fn activate_gradient(&self, input: T) -> Self::Delta;
 }
 
-pub trait Rho<T> {
-    type Cont<U>;
-
-    fn rho<F, U>(&self, f: F) -> Self::Cont<U>
-    where
-        F: Fn(T) -> U;
-}
-
 /// Compute the softmax activation along a specified axis.
 pub trait SoftmaxAxis: SoftmaxActivation {
     fn softmax_axis(self, axis: usize) -> Self::Output;
@@ -101,10 +93,10 @@ unary! {
 }
 
 activator! {
-    pub struct Linear::<T>::linear { where T: crate::activate::LinearActivation },
-    pub struct ReLU::<T>::relu { where T: crate::activate::ReLUActivation },
-    pub struct Sigmoid::<T>::sigmoid { where T: crate::activate::SigmoidActivation },
-    pub struct HyperbolicTangent::<T>::tanh { where T: crate::activate::TanhActivation },
-    pub struct HeavySide::<T>::heavyside { where T: crate::activate::HeavysideActivation },
-    pub struct Softmax::<T>::softmax { where T: crate::activate::SoftmaxActivation },
+    pub struct Linear::<T>::linear { where T: LinearActivation },
+    pub struct ReLU::<T>::relu { where T: ReLUActivation },
+    pub struct Sigmoid::<T>::sigmoid { where T: SigmoidActivation },
+    pub struct HyperbolicTangent::<T>::tanh { where T: TanhActivation },
+    pub struct HeavySide::<T>::heavyside { where T: HeavysideActivation },
+    pub struct Softmax::<T>::softmax { where T: SoftmaxActivation },
 }
