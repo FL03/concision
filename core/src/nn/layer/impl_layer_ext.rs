@@ -28,7 +28,7 @@ where
     type Output = F::Output;
 
     fn forward(&self, input: &X) -> Self::Output {
-        self.activate(self.params().forward(input))
+        self.rho().activate(self.params().forward(input))
     }
 }
 
