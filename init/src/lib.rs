@@ -87,7 +87,6 @@ pub use self::{error::*, traits::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::error::InitError;
     pub use crate::traits::*;
 
     #[cfg(feature = "rand")]

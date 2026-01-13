@@ -72,7 +72,7 @@ where
         Self::rand(shape, distr)
     }
     /// Initialize the object according to the Glorot Initialization scheme.
-    fn glorot_uniform<Sh>(shape: Sh) -> crate::InitResult<Self::Tensor<S, D>>
+    fn glorot_uniform<Sh>(shape: Sh) -> crate::Result<Self::Tensor<S, D>>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -144,7 +144,7 @@ where
         )
     }
     /// Initialize the object using the [`TruncatedNormal`] distribution
-    fn truncnorm<Sh>(shape: Sh, mean: A, std: A) -> crate::InitResult<Self::Tensor<S, D>>
+    fn truncnorm<Sh>(shape: Sh, mean: A, std: A) -> crate::Result<Self::Tensor<S, D>>
     where
         StandardNormal: Distribution<A>,
         S: DataOwned,
@@ -155,7 +155,7 @@ where
         Ok(Self::rand(shape, distr))
     }
     /// initialize the object using the [`Uniform`] distribution with values bounded by `+/- dk`
-    fn uniform<Sh>(shape: Sh, dk: A) -> crate::InitResult<Self::Tensor<S, D>>
+    fn uniform<Sh>(shape: Sh, dk: A) -> crate::Result<Self::Tensor<S, D>>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -172,7 +172,7 @@ where
         start: A,
         stop: A,
         key: u64,
-    ) -> crate::InitResult<Self::Tensor<S, D>>
+    ) -> crate::Result<Self::Tensor<S, D>>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -189,7 +189,7 @@ where
     /// initialize the object using the [`Uniform`] distribution with values bounded by the
     /// size of the specified axis.
     /// The values are bounded by `+/- dk` where `dk = 1 / size(axis)`.
-    fn uniform_along<Sh>(shape: Sh, axis: usize) -> crate::InitResult<Self::Tensor<S, D>>
+    fn uniform_along<Sh>(shape: Sh, axis: usize) -> crate::Result<Self::Tensor<S, D>>
     where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
@@ -204,7 +204,7 @@ where
     }
     /// initialize the object using the [`Uniform`] distribution with values between then given
     /// bounds, `a` and `b`.
-    fn uniform_between<Sh>(shape: Sh, a: A, b: A) -> crate::InitResult<Self::Tensor<S, D>>
+    fn uniform_between<Sh>(shape: Sh, a: A, b: A) -> crate::Result<Self::Tensor<S, D>>
     where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,

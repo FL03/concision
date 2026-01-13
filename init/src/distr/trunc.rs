@@ -29,7 +29,7 @@ where
 {
     /// create a new [`TruncatedNormal`] distribution with the given mean and standard
     /// deviation; both of which are type `T`.
-    pub const fn new(mean: T, std: T) -> crate::InitResult<Self> {
+    pub const fn new(mean: T, std: T) -> crate::Result<Self> {
         Ok(Self { mean, std })
     }
     /// returns a copy of the mean for the distribution
@@ -43,11 +43,11 @@ where
     /// compute the boundary of the truncated normal distribution
     /// which is two standard deviations from the mean:
     /// ```math
-    /// \text{boundary} = \mu + 2\sigma
+    /// \text{boundary}=\mu + 2\sigma
     /// ```
     pub fn boundary(&self) -> T
     where
-        T: Float,
+        T: Float + core::ops::Mul<Output = T> + core::ops::Add<Output = T>,
     {
         self.mean() + self.std_dev() * T::from(2).unwrap()
     }
@@ -68,7 +68,7 @@ where
     /// where $\mu$ is the mean and $\sigma$ is the standard deviation.
     pub fn score(&self, x: T) -> T
     where
-        T: Float,
+        T: core::ops::Mul<Output = T> + core::ops::Sub<Output = T>,
     {
         self.mean() - self.std_dev() * x
     }
@@ -92,6 +92,30 @@ where
         x
     }
 }
+// impl<T> Distribution<T> for TruncatedNormal<T>
+// where
+//     T: Copy
+//         + PartialOrd
+//         + FromPrimitive
+//         + core::ops::Add<Output = T>
+//         + core::ops::Mul<Output = T>
+//         + core::ops::Sub<Output = T>
+//         + core::ops::Neg<Output = T>,
+//     StandardNormal: Distribution<T>,
+// {
+//     fn sample<R>(&self, rng: &mut R) -> T
+//     where
+//         R: RngCore + ?Sized,
+//     {
+//         let bnd = self.boundary();
+//         let mut x = self.score(rng.sample(StandardNormal));
+//         // if x is outside of the boundary, re-sample
+//         while x < -bnd || x > bnd {
+//             x = self.score(rng.sample(StandardNormal));
+//         }
+//         x
+//     }
+// }
 
 impl<T> From<Normal<T>> for TruncatedNormal<T>
 where
