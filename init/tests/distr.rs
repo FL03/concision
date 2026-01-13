@@ -2,7 +2,7 @@
    Appellation: random <test>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use concision_init::InitTensor;
+use concision_init::RandTensor;
 use concision_init::distr::LecunNormal;
 use ndarray::prelude::*;
 

@@ -2,7 +2,7 @@
    Appellation: utils <mod>
    Contrib: FL03 <jo3mccain@icloud.com>
 */
-use crate::InitTensor;
+use crate::RandTensor;
 use ndarray::{Array, ArrayBase, DataOwned, Dimension, IntoDimension, ShapeBuilder};
 use rand::{SeedableRng, rngs};
 use rand_distr::{

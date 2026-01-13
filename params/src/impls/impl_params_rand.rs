@@ -5,7 +5,7 @@
 */
 use crate::params_base::ParamsBase;
 
-use concision_init::InitTensor;
+use concision_init::RandTensor;
 use ndarray::{
     ArrayBase, Axis, DataOwned, Dimension, RawData, RemoveAxis, ScalarOperand, ShapeBuilder,
 };
@@ -53,7 +53,7 @@ where
     }
 }
 
-impl<A, S, D> InitTensor<S, D, A> for ParamsBase<S, D, A>
+impl<A, S, D> RandTensor<S, D, A> for ParamsBase<S, D, A>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,

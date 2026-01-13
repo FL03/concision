@@ -11,7 +11,7 @@ use rand_distr::{Distribution, StandardNormal};
 /// with a standard deviation that is calculated as:
 ///
 /// ```math
-/// \sigma = n_{in}^{-1/2}
+/// \sigma=\sqrt\frac{1}{n_{in}}
 /// ```
 ///
 /// where $`n_{in}`$ is the number of input units.
@@ -33,12 +33,11 @@ impl LecunNormal {
     {
         TruncatedNormal::new(F::zero(), self.std_dev())
     }
-    /// Calculate the standard deviation ($`\sigma`$) of the distribution.
-    /// This is done by computing the root of the reciprocal of the number of inputs
-    /// ($`n_{in}`$) as follows:
+    /// compute the standard deviation ($`\sigma`$) of the distribution by calculating the 
+    /// root of the reciprocal of the number of inputs.
     ///
     /// ```math
-    /// $$\sigma = n_{in}^{-1/2}$$
+    /// \sigma=\sqrt\frac{1}{n_{in}}
     /// ```
     pub fn std_dev<F>(&self) -> F
     where

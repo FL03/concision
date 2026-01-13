@@ -21,18 +21,13 @@ where
     (a, b)
 }
 
-pub trait InitRand<R: RngCore> {
-    type Output;
-    fn init_random(rng: &mut R) -> Self::Output;
-}
-
-/// The [`InitTensor`] trait focuses on providing an interface for initializing n-dimensional
+/// The [`RandTensor`] trait focuses on providing an interface for initializing n-dimensional
 /// tensors. Similar to the `RandomExt` trait from the `ndarray_rand` crate, it offers methods to
 /// create tensors filled with random values drawn from various probability distributions.
 /// The trait is similar to the `RandomExt` trait provided by the `ndarray_rand` crate,
 /// however, it is designed to be more generic, extensible, and optimized for neural network
 /// initialization routines.
-pub trait InitTensor<S, D, A = <S as RawData>::Elem>: Sized
+pub trait RandTensor<S, D, A = <S as RawData>::Elem>: Sized
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -224,7 +219,7 @@ where
  ************ Implementations ************
 */
 
-impl<A, S, D> InitTensor<S, D, A> for ArrayBase<S, D, A>
+impl<A, S, D> RandTensor<S, D, A> for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,

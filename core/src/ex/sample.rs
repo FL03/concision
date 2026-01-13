@@ -8,7 +8,7 @@ use crate::nn::Model;
 use crate::store::{DeepModelParams, ModelFeatures};
 #[cfg(feature = "rand")]
 use concision_init::{
-    InitTensor,
+    RandTensor,
     rand_distr::{Distribution, StandardNormal},
 };
 use concision_params::Params;
