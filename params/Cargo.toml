@@ -157,6 +157,7 @@ rand = [
 rayon = [
   "dep:rayon",
   "ndarray/rayon",
+  "concision-init/rayon",
   "rspace-traits/rayon",
 ]
 

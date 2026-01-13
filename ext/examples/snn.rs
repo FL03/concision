@@ -7,6 +7,7 @@ use concision_ext::snn::{Leaky, SynapticEvent};
 
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .with_max_level(tracing::Level::TRACE)
         .with_timer(tracing_subscriber::fmt::time::Uptime::default())
         .init();
@@ -24,8 +25,7 @@ fn main() -> anyhow::Result<()> {
     let i_ext = 15.0; // stronger constant drive to induce spiking
 
     // Example presynaptic spike times (ms) and weights
-    let presyn_spikes: Vec<(f64, f64)> =
-        vec![(50.0, 2.0), (100.0, 1.5), (150.0, 2.2), (300.0, 3.0)];
+    let presyn_spikes = [(50.0, 2.0), (100.0, 1.5), (150.0, 2.2), (300.0, 3.0)];
 
     // Convert into an index-able event list
     let mut events: Vec<Vec<SynapticEvent>> = vec![Vec::new(); steps + 1];

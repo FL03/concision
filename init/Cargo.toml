@@ -54,6 +54,7 @@ num-traits = { workspace = true }
 # random
 getrandom = { default-features = false, optional = true, workspace = true }
 rand = { optional = true, workspace = true }
+rand_core = { optional = true, workspace = true }
 rand_distr = { optional = true, workspace = true }
 # WebAssembly (wasm)
 wasm-bindgen = { optional = true, workspace = true }
@@ -62,7 +63,7 @@ wasm-bindgen = { optional = true, workspace = true }
 lazy_static = { workspace = true }
 
 [features]
-default = ["rand", "std"]
+default = ["std"]
 
 full = [
   "default",
@@ -89,6 +90,8 @@ std = [
   "num-traits/std",
   "rand?/std",
   "rand?/std_rng",
+  "rand?/thread_rng",
+  "rand_core?/std",
   "rand_distr?/std",
   "serde?/std",
   "strum/std",
@@ -124,16 +127,21 @@ hashbrown = ["dep:hashbrown"]
 
 rand = [
   "dep:rand",
+  "dep:rand_core",
   "dep:rand_distr",
   "rng",
   "num-complex?/rand",
 ]
 
+rayon = [
+  "hashbrown?/rayon",
+  "ndarray/rayon",
+]
+
 rng = [
   "dep:getrandom",
   "rand?/os_rng",
-  "rand?/small_rng",
-  "rand?/thread_rng",
+  "rand_core?/os_rng",
 ]
 
 serde = [

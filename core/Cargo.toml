@@ -29,10 +29,6 @@ crate-type = ["lib"]
 doctest = true
 test = true
 
-[[test]]
-name = "models"
-required-features = ["default"]
-
 [dependencies]
 concision-init = { workspace = true }
 concision-params = { workspace = true }
@@ -73,9 +69,9 @@ lazy_static = { workspace = true }
 default = ["macros", "std"]
 
 full = [
+  "default",
   "approx",
   "complex",
-  "default",
   "json",
   "rand",
   "serde",
@@ -101,7 +97,10 @@ json = [
   "serde_json",
 ]
 
-signal = ["complex", "rustfft"]
+signal = [
+  "complex", 
+  "rustfft"
+]
 
 # ************* [FF:Dependencies] *************
 std = [
@@ -174,6 +173,7 @@ rand = [
 
 rayon = [
   "dep:rayon",
+  "concision-init/rayon",
   "concision-params/rayon",
   "concision-traits/rayon",
   "hashbrown/rayon",

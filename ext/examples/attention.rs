@@ -7,6 +7,7 @@ use concision_ext::attention::{Qkv, SDPA};
 
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .with_max_level(tracing::Level::TRACE)
         .with_timer(tracing_subscriber::fmt::time::Uptime::default())
         .init();

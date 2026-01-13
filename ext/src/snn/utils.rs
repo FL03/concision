@@ -20,7 +20,7 @@ where
 /// over a single time step. This is based on the analytical solution of the leaky
 /// integrate-and-fire model.
 #[inline]
-pub fn get_min_drive<T: Float>(v_rest: T, v_th: T, tau_m: T, dt: T) -> T {
+pub fn compute_min_drive<T: Float>(v_rest: T, v_th: T, tau_m: T, dt: T) -> T {
     let exp_term = (-dt / tau_m).exp();
     (v_th - v_rest * exp_term) / (T::one() - exp_term)
 }

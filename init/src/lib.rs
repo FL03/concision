@@ -70,24 +70,18 @@ mod traits {
 
 #[cfg(feature = "rand")]
 pub mod distr {
-    //! random distributions and initializers for tensors, neural networks, and more.
+    //! random distributions optimized for neural network initialization.
     #[doc(inline)]
     pub use self::{lecun::*, trunc::*, xavier::*};
 
-    pub mod lecun;
-    pub mod trunc;
-    pub mod xavier;
-
-    pub(crate) mod prelude {
-        pub use super::lecun::*;
-        pub use super::trunc::*;
-        pub use super::xavier::*;
-    }
+    mod lecun;
+    mod trunc;
+    mod xavier;
 }
 // re-exports
 #[doc(inline)]
 #[cfg(feature = "rand")]
-pub use self::{distr::prelude::*, utils::*};
+pub use self::{distr::*, utils::*};
 #[doc(inline)]
 pub use self::{error::*, traits::*};
 // prelude
@@ -97,7 +91,7 @@ pub mod prelude {
     pub use crate::traits::*;
 
     #[cfg(feature = "rand")]
-    pub use crate::distr::prelude::*;
+    pub use crate::distr::*;
     #[cfg(feature = "rand")]
     pub use crate::utils::*;
 }
