@@ -1,7 +1,3 @@
-/*
-   Appellation: concision <library>
-   Contrib: FL03 <jo3mccain@icloud.com>
-*/
 //! # concision (cnc)
 //!
 //! [![crates.io](https://img.shields.io/crates/v/concision?style=for-the-badge&logo=rust)](https://crates.io/crates/concision)
@@ -22,12 +18,14 @@
 //!
 //! - `data`: Provides utilities for data loading, preprocessing, and augmentation.
 //! - `derive`: Custom derive macros for automatic implementation of traits
-//! - `init`: Enables various initialization strategies for model parameters.
-//! - `macros`: Procedural macros for simplifying common tasks in machine learning.
-//! - `neural`: A neural network module that includes layers, optimizers, and training
-//!   utilities.
+//! - `macros`: Procedural macros focused on facilitating the creation of new neural networks
 //!
-//! ### _Extensions_
+//! ### Experimental Features
+//!
+//! - `autodiff`: toggle the use of Rust's nightly `autodiff` feature for automatic
+//!   differentiation.
+//!
+//! ### Optional
 //!
 //! The crate is integrated with several optional externcal crates that are commonly used in
 //! Rust development; listed below are some of the most relevant of these _extensions_ as they
@@ -35,7 +33,8 @@
 //!
 //! - [`approx`](https://docs.rs/approx): Enables approximate equality checks for
 //!   floating-point arithmetic, useful for testing and validation of model outputs.
-//! - `json`: Enables JSON serialization and deserialization for models and data.
+//! - [`json`](https://docs.rs/serde_json): Enables JSON serialization and deserialization for models and data.
+//! - [`rand`](https://docs.rs/rand): Enable random number generation and associated initialization routines.
 //! - [`rayon`](https://docs.rs/rayon): Enables parallel processing for data loading and
 //!   training.
 //! - [`serde`](https://serde.rs): Enables the `serde` crate for the serialization and
@@ -43,22 +42,20 @@
 //! - [`tracing`](https://docs.rs/tracing): Enables the `tracing` crate for structured logging
 //!   and diagnostics.
 //!
-//! ## Roadmap
-//!
-//! - **DSL**: Create a pseudo-DSL for defining machine learning models and training processes.
-//! - **GPU**: Support for GPU acceleration to speed up training and inference.
-//! - **Interoperability**: Integrate with other libraries and frameworks (TensorFlow, PyTorch)
-//! - **Visualization**: Utilities for visualizing model architectures and training progress
-//! - **WASM**: Native support for WebAssembly enabling models to be run in web browsers.
-//!
 #![crate_type = "lib"]
 #![allow(
+    clippy::missing_docs_in_private_items,
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc,
     clippy::missing_safety_doc,
     clippy::module_inception,
     clippy::needless_doctest_main,
-    clippy::upper_case_acronyms
+    clippy::non_canonical_partial_ord_impl,
+    clippy::upper_case_acronyms,
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(all(feature = "nightly", feature = "alloc"), feature(allocator_api))]
+#![cfg_attr(all(feature = "nightly", feature = "autodiff"), feature(autodiff))]
 
 #[doc(inline)]
 pub use concision_core::*;

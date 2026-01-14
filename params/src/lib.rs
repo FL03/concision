@@ -30,8 +30,8 @@
     clippy::upper_case_acronyms,
     rustdoc::redundant_explicit_links
 )]
-#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
-#![cfg_attr(all(feature = "autodiff", feature = "nightly"), feature(autodiff))]
+#![cfg_attr(all(feature = "nightly", feature = "alloc"), feature(allocator_api))]
+#![cfg_attr(all(feature = "nightly", feature = "autodiff"), feature(autodiff))]
 // compiler checks
 #[cfg(not(any(feature = "alloc", feature = "std")))]
 compiler_error! { "Either the \"alloc\" or \"std\" feature must be enabled for this crate." }

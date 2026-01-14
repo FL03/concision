@@ -10,8 +10,8 @@
     rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
-#![cfg_attr(all(feature = "autodiff", feature = "nightly"), feature(autodiff))]
+#![cfg_attr(all(feature = "nightly", feature = "alloc"), feature(allocator_api))]
+#![cfg_attr(all(feature = "nightly", feature = "autodiff"), feature(autodiff))]
 // compile-time checks
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
