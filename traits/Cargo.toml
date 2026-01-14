@@ -25,9 +25,6 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["lib"]
-doctest = false
-test = true
 
 [[test]]
 name = "complex"
