@@ -50,7 +50,7 @@ impl Default for Dropout {
 #[cfg(feature = "rand")]
 mod impl_rand {
     use super::*;
-    use concision_init::RandTensor;
+    use concision_init::NdRandom;
     use concision_traits::Forward;
     use ndarray::{Array, ArrayBase, DataOwned, Dimension, ScalarOperand};
     use num_traits::Num;

@@ -12,11 +12,11 @@ where
     type Cont<_T>;
     type Elem;
 
-    fn apply(self, f: F) -> Self::Cont<U>;
+    fn mapi(self, f: F) -> Self::Cont<U>;
 }
 
 /// [`MapTo`] establishes an interface for containers capable of applying a given function onto
-/// each of their elements, by reference. While similar to the [`Apply`](crate::Apply) trait
+/// each of their elements, by reference.
 pub trait MapTo<F, U>
 where
     F: FnOnce(Self::Elem) -> U,
@@ -24,12 +24,13 @@ where
     type Cont<_T>;
     type Elem;
 
-    fn apply(&self, f: F) -> Self::Cont<U>;
+    fn mapt(&self, f: F) -> Self::Cont<U>;
 }
 
 /*
  ************* Implementations *************
 */
+use ndarray::{Array, ArrayBase, Data, Dimension};
 
 impl<U, V, F> MapInto<F, V> for Option<U>
 where
@@ -38,7 +39,7 @@ where
     type Cont<W> = Option<W>;
     type Elem = U;
 
-    fn apply(self, f: F) -> Self::Cont<V> {
+    fn mapi(self, f: F) -> Self::Cont<V> {
         self.map(|a| f(a))
     }
 }
@@ -50,27 +51,52 @@ where
     type Cont<W> = Option<W>;
     type Elem = &'a U;
 
-    fn apply(&self, f: F) -> Self::Cont<V> {
+    fn mapt(&self, f: F) -> Self::Cont<V> {
         self.as_ref().map(|a| f(a))
     }
 }
 
-mod impl_ndarray {
-    use super::MapTo;
-    use ndarray::{Array, ArrayBase, Data, Dimension};
+impl<A, B, S, D, F> MapInto<F, B> for ArrayBase<S, D, A>
+where
+    A: Clone,
+    D: Dimension,
+    S: Data<Elem = A>,
+    F: Fn(A) -> B,
+{
+    type Cont<V> = Array<V, D>;
+    type Elem = A;
 
-    impl<A, B, S, D, F> MapTo<F, B> for ArrayBase<S, D, A>
-    where
-        A: Clone,
-        D: Dimension,
-        S: Data<Elem = A>,
-        F: Fn(A) -> B,
-    {
-        type Cont<V> = Array<V, D>;
-        type Elem = A;
+    fn mapi(self, f: F) -> Self::Cont<B> {
+        self.mapv(f)
+    }
+}
 
-        fn apply(&self, f: F) -> Self::Cont<B> {
-            self.mapv(f)
-        }
+impl<'a, A, B, S, D, F> MapInto<F, B> for &'a ArrayBase<S, D, A>
+where
+    A: Clone,
+    D: Dimension,
+    S: Data<Elem = A>,
+    F: Fn(A) -> B,
+{
+    type Cont<V> = Array<V, D>;
+    type Elem = A;
+
+    fn mapi(self, f: F) -> Self::Cont<B> {
+        self.mapv(f)
+    }
+}
+
+impl<A, B, S, D, F> MapTo<F, B> for ArrayBase<S, D, A>
+where
+    A: Clone,
+    D: Dimension,
+    S: Data<Elem = A>,
+    F: Fn(A) -> B,
+{
+    type Cont<V> = Array<V, D>;
+    type Elem = A;
+
+    fn mapt(&self, f: F) -> Self::Cont<B> {
+        self.mapv(f)
     }
 }

@@ -1,8 +1,6 @@
-/*
-    Appellation: concision-traits <library>
-    Contrib: @FL03
-*/
-//! Traits for the concicion machine learning framework
+//! Core traits defining fundamental abstractions and operations useful for neural networks.
+//! 
+#![crate_type = "lib"]
 #![allow(
     clippy::missing_safety_doc,
     clippy::module_inception,
@@ -13,16 +11,14 @@
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
-#![crate_type = "lib"]
-
+// compile-time checks
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
     "At least one of the \"std\" or \"alloc\" features must be enabled for the crate to compile."
 }
-
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
-extern crate ndarray as nd;
 
 #[macro_use]
 pub(crate) mod macros {
@@ -31,23 +27,19 @@ pub(crate) mod macros {
 }
 
 mod impls {
-    mod impl_activate_linear;
-    mod impl_activate_nonlinear;
-    mod impl_activator;
     mod impl_backward;
     mod impl_forward;
 }
 
-mod activate;
 mod clip;
 mod codex;
 mod complex;
 mod entropy;
 mod loss;
 mod norm;
+mod init;
 mod predict;
 mod propagate;
-mod rho;
 mod rounding;
 mod training;
 
@@ -88,18 +80,18 @@ pub mod tensor {
 }
 
 // re-exports
-#[cfg(feature = "complex")]
 #[doc(inline)]
+#[cfg(feature = "complex")]
 pub use self::complex::*;
 #[doc(inline)]
 pub use self::{
-    activate::*, clip::*, codex::*, entropy::*, loss::*, math::*, norm::*, ops::*, predict::*,
-    propagate::*, rho::*, rounding::*, tensor::*, training::*,
+    clip::*, codex::*, entropy::*, loss::*, math::*, init::*, norm::*, ops::*, predict::*, propagate::*,
+    rounding::*, tensor::*, training::*,
 };
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::activate::*;
+    pub use crate::init::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
     pub use crate::entropy::*;
@@ -109,7 +101,6 @@ pub mod prelude {
     pub use crate::ops::*;
     pub use crate::predict::*;
     pub use crate::propagate::*;
-    pub use crate::rho::*;
     pub use crate::rounding::*;
     pub use crate::tensor::*;
     pub use crate::training::*;

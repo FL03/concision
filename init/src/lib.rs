@@ -1,19 +1,7 @@
-/*
-    Appellation: concision-init <library>
-    Contrib: FL03 <jo3mccain@icloud.com>
-*/
-//! Initialization related tools and utilities for neural networks and machine learning models.
-//! This crate provides various initialization distributions and traits to facilitate
-//! the effective initialization of model parameters.
+//! Custom random number distributions and initializers focused on neural networks.
 //!
-//! ## Features
-//!
-//! - `rand`: Enables random number generation functionalities using the `rand` crate.
-//!
-//! Implementors of the [`Initialize`] trait can leverage the various initialization
-//! distributions provided within this crate to initialize their model parameters in a
-//! manner conducive to effective training and convergence.
-//!
+#![crate_name = "concision_init"]
+#![crate_type = "lib"]
 #![allow(
     clippy::missing_safety_doc,
     clippy::module_inception,
@@ -23,52 +11,21 @@
     rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-
+#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
+// compile-time checks
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compiler_error! { "At least one of the \"std\" or \"alloc\" features must be enabled for the crate to compile." }
+// external crate
 #[cfg(feature = "alloc")]
 extern crate alloc;
-
-#[cfg(feature = "rand")]
+// re-declarations
 #[doc(no_inline)]
 pub use rand;
-#[cfg(feature = "rand")]
 #[doc(no_inline)]
 pub use rand_distr;
-
+// modules
 pub mod error;
 
-pub(crate) mod utils {
-    //! this module provides various utility functions for random initialization.
-    #[doc(inline)]
-    #[cfg(feature = "rand")]
-    pub use self::prelude::*;
-
-    #[cfg(feature = "rand")]
-    mod rand_utils;
-
-    mod prelude {
-        #[cfg(feature = "rand")]
-        pub use super::rand_utils::*;
-    }
-}
-
-mod traits {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    mod init;
-    #[cfg(feature = "rand")]
-    mod random;
-
-    mod prelude {
-        #[doc(inline)]
-        pub use super::init::*;
-        #[doc(inline)]
-        #[cfg(feature = "rand")]
-        pub use super::random::*;
-    }
-}
-
-#[cfg(feature = "rand")]
 pub mod distr {
     //! random distributions optimized for neural network initialization.
     #[doc(inline)]
@@ -78,19 +35,27 @@ pub mod distr {
     mod trunc;
     mod xavier;
 }
+
+mod traits {
+    #[doc(inline)]
+    pub use self::ndrand::*;
+
+    mod ndrand;
+}
+
+mod utils {
+    #[doc(inline)]
+    pub use self::rand_utils::*;
+
+    mod rand_utils;
+}
 // re-exports
 #[doc(inline)]
-#[cfg(feature = "rand")]
-pub use self::{distr::*, utils::*};
-#[doc(inline)]
-pub use self::{error::*, traits::*};
+pub use self::{distr::*, error::*, traits::*, utils::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::traits::*;
-
-    #[cfg(feature = "rand")]
     pub use crate::distr::*;
-    #[cfg(feature = "rand")]
+    pub use crate::traits::*;
     pub use crate::utils::*;
 }

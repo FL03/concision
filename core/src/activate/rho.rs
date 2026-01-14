@@ -1,9 +1,9 @@
 /*
-    appellation: unary <module>
-    authors: @FL03
+    Appellation: rho <module>
+    Created At: 2026.01.13:18:09:21
+    Contrib: @FL03
 */
-#[allow(dead_code)]
-pub(crate) mod utils;
+//! this module defines _structural_ implementations of various activation functions
 
 /// An [`Activator`] defines an interface for _structural_ activation functions that can be
 /// applied onto various types.
@@ -21,30 +21,6 @@ pub trait ActivatorGradient<T> {
 
     /// compute the gradient of some input
     fn activate_gradient(&self, input: T) -> Self::Delta;
-}
-
-/// Compute the softmax activation along a specified axis.
-pub trait SoftmaxAxis: SoftmaxActivation {
-    fn softmax_axis(self, axis: usize) -> Self::Output;
-}
-
-macro_rules! unary {
-    (@impl $name:ident::$call:ident($($rest:tt)*)) => {
-        paste::paste! {
-            pub trait $name {
-                type Output;
-
-                fn $call($($rest)*) -> Self::Output;
-
-                fn [<$call _derivative>]($($rest)*) -> Self::Output;
-            }
-        }
-    };
-    ($($name:ident::$call:ident($($rest:tt)*)),* $(,)?) => {
-        $(
-            unary!(@impl $name::$call($($rest)*));
-        )*
-    };
 }
 
 macro_rules! activator {
@@ -83,20 +59,11 @@ macro_rules! activator {
     };
 }
 
-unary! {
-    HeavysideActivation::heavyside(self),
-    LinearActivation::linear(self),
-    SigmoidActivation::sigmoid(self),
-    SoftmaxActivation::softmax(&self),
-    ReLUActivation::relu(&self),
-    TanhActivation::tanh(&self),
-}
-
 activator! {
-    pub struct Linear::<T>::linear { where T: LinearActivation },
-    pub struct ReLU::<T>::relu { where T: ReLUActivation },
-    pub struct Sigmoid::<T>::sigmoid { where T: SigmoidActivation },
-    pub struct HyperbolicTangent::<T>::tanh { where T: TanhActivation },
-    pub struct HeavySide::<T>::heavyside { where T: HeavysideActivation },
-    pub struct Softmax::<T>::softmax { where T: SoftmaxActivation },
+    pub struct Linear::<T>::linear { where T: crate::activate::LinearActivation },
+    pub struct ReLU::<T>::relu { where T: crate::activate::ReLUActivation },
+    pub struct Sigmoid::<T>::sigmoid { where T: crate::activate::SigmoidActivation },
+    pub struct HyperbolicTangent::<T>::tanh { where T: crate::activate::TanhActivation },
+    pub struct HeavySide::<T>::heavyside { where T: crate::activate::HeavysideActivation },
+    pub struct Softmax::<T>::softmax { where T: crate::activate::SoftmaxActivation },
 }

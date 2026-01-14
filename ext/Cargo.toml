@@ -33,7 +33,7 @@ test = true
 [[example]]
 doc-scrape-examples = true
 name = "attention"
-required-features = ["attention", "rand", "std"]
+required-features = ["attention", "init", "std"]
 
 [[example]]
 doc-scrape-examples = true
@@ -76,15 +76,29 @@ full = [
   "complex",
   "json",
   "models",
-  "rand",
+  "init",
   "serde",
   "tracing",
 ]
 
-nightly = ["concision/nightly"]
+nightly = [
+  "concision/nightly"
+]
 
 # ************* [FF:Toggles] *************
-json = ["alloc", "serde", "serde_json"]
+
+init = [
+  "concision/init",
+  "num/rand",
+  "num-complex?/rand",
+]
+
+json = [
+  "alloc", 
+  "serde", 
+  "serde_json",
+  "concision/json",
+]
 
 signal = ["complex", "rustfft"]
 
@@ -115,13 +129,18 @@ std = [
   "variants/std",
 ]
 
-wasi = ["concision/wasi"]
+wasi = [
+  "concision/wasi"
+]
 
 wasm = [
+  "wasm_bindgen",
   "concision/wasm",
   "rayon?/web_spin_lock",
 ]
-# ************* [FF:Dependencies] *************
+
+# ********* [FF] Dependencies *********
+
 alloc = [
   "concision/alloc",
   "num/alloc",
@@ -138,13 +157,15 @@ approx = [
 
 blas = ["concision/blas", "ndarray/blas"]
 
-complex = ["dep:num-complex"]
+complex = [
+  "dep:num-complex",
+  "concision/complex",
+]
 
-rand = ["concision/rand", "num-complex?/rand", "num/rand"]
-
-rayon = ["concision/rayon", "ndarray/rayon"]
-
-rng = ["concision/rng"]
+rayon = [
+  "concision/rayon", 
+  "ndarray/rayon"
+]
 
 rustfft = ["dep:rustfft"]
 
@@ -157,9 +178,16 @@ serde = [
   "num/serde",
 ]
 
-serde_json = ["dep:serde_json"]
+serde_json = [
+  "dep:serde_json",
+  "concision/serde_json",
+]
 
 tracing = [
   "dep:tracing",
   "concision/tracing",
+]
+
+wasm_bindgen = [
+  "concision/wasm_bindgen"
 ]

@@ -3,10 +3,11 @@
     Created At: 2026.01.12:09:33:36
     Contrib: @FL03
 */
+use crate::activate::Activator;
 use crate::nn::layer::LayerBase;
 use crate::nn::{RawLayer, RawLayerMut};
 use concision_params::RawParams;
-use concision_traits::{Activator, Forward};
+use concision_traits::Forward;
 
 impl<F, P, A, X, Y> Activator<X> for LayerBase<F, P>
 where

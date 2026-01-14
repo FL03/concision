@@ -2,9 +2,10 @@
     appellation: impl_layer <module>
     authors: @FL03
 */
+use crate::activate::Activator;
 use crate::nn::layer::LayerBase;
 use concision_params::RawParams;
-use concision_traits::{Activator, Forward};
+use concision_traits::Forward;
 
 impl<F, P, A> LayerBase<F, P>
 where

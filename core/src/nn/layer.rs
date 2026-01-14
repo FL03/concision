@@ -23,10 +23,10 @@ pub struct LayerBase<F, P> {
 
 mod types {
     use super::LayerBase;
+    use crate::activate::{HeavySide, HyperbolicTangent, Linear, ReLU, Sigmoid};
     #[cfg(feature = "alloc")]
     use alloc::boxed::Box;
     use concision_params::{Params, ParamsBase};
-    use concision_traits::{HeavySide, HyperbolicTangent, Linear, ReLU, Sigmoid};
 
     /// A type alias for a layer configured to use the [`ParamsBase`] instance
     pub type LayerParamsBase<F, S, D = ndarray::Ix2, A = f32> = LayerBase<F, ParamsBase<S, D, A>>;
@@ -46,7 +46,7 @@ mod types {
     #[cfg(feature = "alloc")]
     /// A dynamic instance of the layer using a boxed activator.
     pub type LayerDyn<'a, T> =
-        LayerBase<Box<dyn concision_traits::Activator<T, Output = T> + 'a>, T>;
+        LayerBase<Box<dyn crate::activate::Activator<T, Output = T> + 'a>, T>;
     #[cfg(feature = "alloc")]
     /// A dynamic, functional alias of the [`Layer`] implementation leveraging boxed closures.
     pub type FnLayer<'a, T> = LayerBase<Box<dyn Fn(T) -> T + 'a>, T>;

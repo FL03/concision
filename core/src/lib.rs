@@ -47,11 +47,13 @@ extern crate alloc;
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]
+#[cfg(feature = "init")]
 pub use concision_init as init;
 #[doc(inline)]
 pub use concision_params as params;
 
 #[doc(inline)]
+#[cfg(feature = "init")]
 pub use concision_init::prelude::*;
 #[doc(inline)]
 pub use concision_params::prelude::*;
@@ -70,6 +72,7 @@ pub(crate) mod macros {
     pub mod units;
 }
 
+pub mod activate;
 pub mod config;
 pub mod error;
 pub mod nn;
@@ -91,11 +94,18 @@ pub mod types {
 // re-exports
 #[doc(inline)]
 pub use self::{
-    config::prelude::*, error::*, nn::prelude::*, store::prelude::*, types::*, utils::prelude::*,
+    activate::{Activate, Activator, ActivatorGradient},
+    config::StandardModelConfig,
+    error::*,
+    nn::prelude::*,
+    store::prelude::*,
+    types::*,
+    utils::*,
 };
 // prelude
 #[doc(hidden)]
 pub mod prelude {
+    #[cfg(feature = "init")]
     pub use concision_init::prelude::*;
     pub use concision_params::prelude::*;
     pub use concision_traits::prelude::*;
@@ -104,5 +114,5 @@ pub mod prelude {
     pub use crate::nn::prelude::*;
     pub use crate::store::prelude::*;
     pub use crate::types::*;
-    pub use crate::utils::prelude::*;
+    pub use crate::utils::*;
 }

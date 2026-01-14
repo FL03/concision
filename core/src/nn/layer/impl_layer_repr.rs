@@ -2,9 +2,9 @@
     appellation: impl_layer_repr <module>
     authors: @FL03
 */
+use crate::activate::{Activator, HyperbolicTangent, Linear, ReLU, Sigmoid};
 use crate::nn::layer::LayerBase;
 use concision_params::{ParamsBase, RawParams};
-use concision_traits::{Activator, HyperbolicTangent, Linear, ReLU, Sigmoid};
 use ndarray::{ArrayBase, DataOwned, Dimension, RawData, RemoveAxis, ShapeBuilder};
 
 impl<F, S, D, A> LayerBase<F, ArrayBase<S, D, A>>

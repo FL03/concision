@@ -10,7 +10,7 @@ use num_traits::{One, Zero};
 macro_rules! impl_heavyside {
     ($($T:ty),* $(,)*) => {
         $(
-            impl $crate::HeavysideActivation for $T {
+            impl $crate::activate::HeavysideActivation for $T {
                 type Output = $T;
 
                 fn heavyside(self) -> Self::Output {
@@ -36,7 +36,7 @@ macro_rules! impl_heavyside {
 macro_rules! impl_linear {
     ($($T:ty),* $(,)*) => {
         $(
-            impl $crate::LinearActivation for $T {
+            impl $crate::activate::LinearActivation for $T {
                 type Output = $T;
 
                 fn linear(self) -> Self::Output {
@@ -51,13 +51,17 @@ macro_rules! impl_linear {
     };
 }
 
-impl_heavyside!(
-    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64,
-);
+impl_heavyside! {
+    i8, i16, i32, i64, i128, isize,
+    u8, u16, u32, u64, u128, usize,
+    f32, f64,
+}
 
-impl_linear!(
-    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64,
-);
+impl_linear! {
+    i8, i16, i32, i64, i128, isize,
+    u8, u16, u32, u64, u128, usize,
+    f32, f64,
+}
 
 impl<A, B, S, D> HeavysideActivation for ArrayBase<S, D, A>
 where

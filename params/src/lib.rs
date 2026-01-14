@@ -52,16 +52,12 @@ mod types;
 
 mod impls {
     mod impl_params;
+    mod impl_params_ext;
     mod impl_params_iter;
     mod impl_params_ops;
+    mod impl_params_rand;
     mod impl_params_ref;
     mod impl_params_repr;
-
-    #[allow(deprecated)]
-    mod impl_params_deprecated;
-    #[cfg(feature = "rand")]
-    mod impl_params_rand;
-    #[cfg(feature = "serde")]
     mod impl_params_serde;
 }
 

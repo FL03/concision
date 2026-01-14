@@ -3,12 +3,12 @@
     Created At: 2026.01.12:09:50:26
     Contrib: @FL03
 */
-use crate::math::Tanh;
+use concision_traits::Tanh;
 use num_traits::{Float, One, Zero};
 
-/// [`Rho`] is a higher-kinded trait that provides a mechanism to apply a function over the
+/// [`Activate`] is a higher-kinded trait that provides a mechanism to apply a function over the
 /// elements within a container or structure.
-pub trait Rho<T> {
+pub trait Activate<T> {
     type Cont<U>;
 
     fn rho<F, U>(&self, f: F) -> Self::Cont<U>
@@ -47,7 +47,7 @@ pub trait Rho<T> {
 */
 use ndarray::{Array, ArrayBase, Data, Dimension};
 
-impl<S, D, A> Rho<A> for ArrayBase<S, D, A>
+impl<S, D, A> Activate<A> for ArrayBase<S, D, A>
 where
     S: Data<Elem = A>,
     D: Dimension,

@@ -21,36 +21,36 @@ where
     (a, b)
 }
 
-/// The [`RandTensor`] trait focuses on providing an interface for initializing n-dimensional
+/// The [`NdRandom`] trait focuses on providing an interface for initializing n-dimensional
 /// tensors. Similar to the `RandomExt` trait from the `ndarray_rand` crate, it offers methods to
 /// create tensors filled with random values drawn from various probability distributions.
 /// The trait is similar to the `RandomExt` trait provided by the `ndarray_rand` crate,
 /// however, it is designed to be more generic, extensible, and optimized for neural network
 /// initialization routines.
-pub trait RandTensor<S, D, A = <S as RawData>::Elem>: Sized
+pub trait NdRandom<S, D, A = <S as RawData>::Elem>: Sized
 where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    type Tensor<_S, _D>
+    type Cont<_S, _D>
     where
         _D: Dimension,
         _S: RawData<Elem = A>;
 
-    fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self::Tensor<S, D>
+    fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self::Cont<S, D>
     where
         Ds: Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned;
 
-    fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self::Tensor<S, D>
+    fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self::Cont<S, D>
     where
         R: RngCore + ?Sized,
         Ds: Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned;
 
-    fn bernoulli<Sh>(shape: Sh, p: f64) -> Result<Self::Tensor<S, D>, BernoulliError>
+    fn bernoulli<Sh>(shape: Sh, p: f64) -> Result<Self::Cont<S, D>, BernoulliError>
     where
         Bernoulli: Distribution<A>,
         S: DataOwned,
@@ -60,7 +60,7 @@ where
         Ok(Self::rand(shape, dist))
     }
     /// Initialize the object according to the Glorot Initialization scheme.
-    fn glorot_normal<Sh: ShapeBuilder<Dim = D>>(shape: Sh) -> Self::Tensor<S, D>
+    fn glorot_normal<Sh: ShapeBuilder<Dim = D>>(shape: Sh) -> Self::Cont<S, D>
     where
         StandardNormal: Distribution<A>,
         S: DataOwned,
@@ -72,7 +72,7 @@ where
         Self::rand(shape, distr)
     }
     /// Initialize the object according to the Glorot Initialization scheme.
-    fn glorot_uniform<Sh>(shape: Sh) -> crate::Result<Self::Tensor<S, D>>
+    fn glorot_uniform<Sh>(shape: Sh) -> crate::Result<Self::Cont<S, D>>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -88,7 +88,7 @@ where
     /// LecunNormal distributions are truncated [Normal](rand_distr::Normal)
     /// distributions centered at 0 with a standard deviation equal to the
     /// square root of the reciprocal of the number of inputs.
-    fn lecun_normal<Sh>(shape: Sh) -> Self::Tensor<S, D>
+    fn lecun_normal<Sh>(shape: Sh) -> Self::Cont<S, D>
     where
         StandardNormal: Distribution<A>,
         S: DataOwned,
@@ -100,7 +100,7 @@ where
         Self::rand(shape, distr)
     }
     /// Given a shape, mean, and standard deviation generate a new object using the [Normal](rand_distr::Normal) distribution
-    fn normal<Sh>(shape: Sh, mean: A, std: A) -> Result<Self::Tensor<S, D>, NormalError>
+    fn normal<Sh>(shape: Sh, mean: A, std: A) -> Result<Self::Cont<S, D>, NormalError>
     where
         StandardNormal: Distribution<A>,
         S: DataOwned,
@@ -111,7 +111,7 @@ where
         Ok(Self::rand(shape, distr))
     }
     #[cfg(feature = "complex")]
-    fn randc<Sh>(shape: Sh, re: A, im: A) -> Self::Tensor<S, D>
+    fn randc<Sh>(shape: Sh, re: A, im: A) -> Self::Cont<S, D>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -121,7 +121,7 @@ where
         Self::rand(shape, &distr)
     }
     /// Generate a random array using the [StandardNormal](rand_distr::StandardNormal) distribution
-    fn stdnorm<Sh>(shape: Sh) -> Self::Tensor<S, D>
+    fn stdnorm<Sh>(shape: Sh) -> Self::Cont<S, D>
     where
         StandardNormal: Distribution<A>,
         S: DataOwned,
@@ -131,7 +131,7 @@ where
     }
     #[cfg(feature = "std")]
     /// Generate a random array using the [`StandardNormal`] distribution with a given seed
-    fn stdnorm_from_seed<Sh>(shape: Sh, seed: u64) -> Self::Tensor<S, D>
+    fn stdnorm_from_seed<Sh>(shape: Sh, seed: u64) -> Self::Cont<S, D>
     where
         StandardNormal: Distribution<A>,
         S: DataOwned,
@@ -144,7 +144,7 @@ where
         )
     }
     /// Initialize the object using the [`TruncatedNormal`] distribution
-    fn truncnorm<Sh>(shape: Sh, mean: A, std: A) -> crate::Result<Self::Tensor<S, D>>
+    fn truncnorm<Sh>(shape: Sh, mean: A, std: A) -> crate::Result<Self::Cont<S, D>>
     where
         StandardNormal: Distribution<A>,
         S: DataOwned,
@@ -155,7 +155,7 @@ where
         Ok(Self::rand(shape, distr))
     }
     /// initialize the object using the [`Uniform`] distribution with values bounded by `+/- dk`
-    fn uniform<Sh>(shape: Sh, dk: A) -> crate::Result<Self::Tensor<S, D>>
+    fn uniform<Sh>(shape: Sh, dk: A) -> crate::Result<Self::Cont<S, D>>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -172,7 +172,7 @@ where
         start: A,
         stop: A,
         key: u64,
-    ) -> crate::Result<Self::Tensor<S, D>>
+    ) -> crate::Result<Self::Cont<S, D>>
     where
         S: DataOwned,
         Sh: ShapeBuilder<Dim = D>,
@@ -189,7 +189,7 @@ where
     /// initialize the object using the [`Uniform`] distribution with values bounded by the
     /// size of the specified axis.
     /// The values are bounded by `+/- dk` where `dk = 1 / size(axis)`.
-    fn uniform_along<Sh>(shape: Sh, axis: usize) -> crate::Result<Self::Tensor<S, D>>
+    fn uniform_along<Sh>(shape: Sh, axis: usize) -> crate::Result<Self::Cont<S, D>>
     where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
@@ -204,7 +204,7 @@ where
     }
     /// initialize the object using the [`Uniform`] distribution with values between then given
     /// bounds, `a` and `b`.
-    fn uniform_between<Sh>(shape: Sh, a: A, b: A) -> crate::Result<Self::Tensor<S, D>>
+    fn uniform_between<Sh>(shape: Sh, a: A, b: A) -> crate::Result<Self::Cont<S, D>>
     where
         Sh: ShapeBuilder<Dim = D>,
         S: DataOwned,
@@ -219,18 +219,18 @@ where
  ************ Implementations ************
 */
 
-impl<A, S, D> RandTensor<S, D, A> for ArrayBase<S, D, A>
+impl<A, S, D> NdRandom<S, D, A> for ArrayBase<S, D, A>
 where
     D: Dimension,
     S: RawData<Elem = A>,
 {
-    type Tensor<_S, _D>
+    type Cont<_S, _D>
         = ArrayBase<_S, _D, A>
     where
         _D: Dimension,
         _S: RawData<Elem = A>;
 
-    fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self::Tensor<S, D>
+    fn rand<Sh, Ds>(shape: Sh, distr: Ds) -> Self::Cont<S, D>
     where
         Ds: Distribution<A>,
         Sh: ShapeBuilder<Dim = D>,
@@ -243,7 +243,7 @@ where
         )
     }
 
-    fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self::Tensor<S, D>
+    fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self::Cont<S, D>
     where
         R: Rng + ?Sized,
         Ds: Distribution<A>,

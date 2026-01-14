@@ -3,9 +3,9 @@
     Created At: 2025.11.26:15:28:12
     Contrib: @FL03
 */
+#![cfg(feature = "init")]
 use crate::params_base::ParamsBase;
-
-use concision_init::RandTensor;
+use concision_init::{NdRandom, rand, rand_distr};
 use ndarray::{
     ArrayBase, Axis, DataOwned, Dimension, RawData, RemoveAxis, ScalarOperand, ShapeBuilder,
 };
@@ -53,12 +53,13 @@ where
     }
 }
 
-impl<A, S, D> RandTensor<S, D, A> for ParamsBase<S, D, A>
+#[cfg(feature = "init")]
+impl<A, S, D> NdRandom<S, D, A> for ParamsBase<S, D, A>
 where
     D: RemoveAxis,
     S: RawData<Elem = A>,
 {
-    type Tensor<_S, _D>
+    type Cont<_S, _D>
         = ParamsBase<_S, _D, A>
     where
         _D: Dimension,

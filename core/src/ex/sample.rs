@@ -2,18 +2,18 @@
     appellation: model <test>
     authors: @FL03
 */
+use crate::activate::{ReLUActivation, SigmoidActivation};
 use crate::config::StandardModelConfig;
 use crate::error::Error;
 use crate::nn::Model;
 use crate::store::{DeepModelParams, ModelFeatures};
 #[cfg(feature = "rand")]
 use concision_init::{
-    RandTensor,
+    NdRandom,
     rand_distr::{Distribution, StandardNormal},
 };
 use concision_params::Params;
 use concision_traits::{Forward, Norm, Train};
-use concision_traits::{ReLUActivation, SigmoidActivation};
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign, Zero};

@@ -3,8 +3,8 @@
     authors: @FL03
 */
 
-/// [`Apply`] is a chainable, binary operator for applying some object onto the caller or their
-/// elements.
+/// [`Apply`] is a composable binary operator generally used to apply some object or function
+/// onto the caller to produce some output.
 pub trait Apply<Rhs> {
     type Output;
 
@@ -39,6 +39,18 @@ where
     }
 }
 
+impl<A, S, D, F> ApplyMut<F> for ArrayBase<S, D, A>
+where
+    A: Clone,
+    D: Dimension,
+    S: DataMut<Elem = A>,
+    F: FnMut(A) -> A,
+{
+    fn apply_mut(&mut self, f: F) {
+        self.mapv_inplace(f)
+    }
+}
+
 impl<A, B, S, D, F> Apply<F> for ArrayBase<S, D, A>
 where
     A: Clone,
@@ -50,17 +62,5 @@ where
 
     fn apply(&self, f: F) -> Self::Output {
         self.mapv(f)
-    }
-}
-
-impl<A, S, D, F> ApplyMut<F> for ArrayBase<S, D, A>
-where
-    A: Clone,
-    D: Dimension,
-    S: DataMut<Elem = A>,
-    F: FnMut(A) -> A,
-{
-    fn apply_mut(&mut self, f: F) {
-        self.mapv_inplace(f)
     }
 }

@@ -30,10 +30,11 @@ doctest = true
 test = true
 
 [dependencies]
-concision-init = { workspace = true }
+concision-init = { optional = true, workspace = true }
 concision-params = { workspace = true }
 concision-traits = { features = ["hashbrown"], workspace = true }
 # custom
+rspace-traits = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
@@ -72,22 +73,29 @@ full = [
   "default",
   "approx",
   "complex",
+  "init",
   "json",
-  "rand",
   "serde",
   "signal",
   "tracing",
 ]
 
 nightly = [
-  "concision-init/nightly",
+  "concision-init?/nightly",
   "concision-params/nightly",
   "concision-traits/nightly",
   "hashbrown/nightly",
 ]
 
-# ************* [FF:Features] *************
-init = ["rand"]
+# ********* [FF] Flags *********
+
+init = [
+  "dep:concision-init",
+  "concision-params/init",
+  "concision-traits/rand",
+  "num-complex?/rand",
+  "rspace-traits/rand",
+]
 
 macros = []
 
@@ -102,11 +110,12 @@ signal = [
   "rustfft"
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Environments *********
+
 std = [
   "alloc",
   "anyhow/std",
-  "concision-init/std",
+  "concision-init?/std",
   "concision-params/std",
   "concision-traits/std",
   "hashbrown/default",
@@ -122,21 +131,22 @@ std = [
 ]
 
 wasi = [
-  "concision-init/wasi",
+  "concision-init?/wasi",
   "concision-params/wasi",
   "concision-traits/wasi",
 ]
 
 wasm = [
   "wasm_bindgen",
-  "concision-init/wasm",
+  "concision-init?/wasm",
   "concision-params/wasm",
   "concision-traits/wasm",
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Dependencies *********
+
 alloc = [
-  "concision-init/alloc",
+  "concision-init?/alloc",
   "concision-params/alloc",
   "concision-traits/alloc",
   "hashbrown/alloc",
@@ -147,42 +157,31 @@ alloc = [
 
 approx = [
   "dep:approx",
-  "concision-init/approx",
+  "concision-init?/approx",
   "concision-params/approx",
   "ndarray/approx",
 ]
 
 blas = [
-  "concision-init/blas",
+  "concision-init?/blas",
   "concision-params/blas",
   "ndarray/blas",
 ]
 
 complex = [
   "dep:num-complex",
-  "concision-init/complex",
+  "concision-init?/complex",
   "concision-params/complex",
   "concision-traits/complex",
 ]
 
-rand = [
-  "concision-init/rand",
-  "concision-params/rand",
-  "concision-traits/rand",
-]
-
 rayon = [
   "dep:rayon",
-  "concision-init/rayon",
+  "concision-init?/rayon",
   "concision-params/rayon",
   "concision-traits/rayon",
   "hashbrown/rayon",
   "ndarray/rayon",
-]
-
-rng = [
-  "concision-init/rng",
-  "concision-params/rng",
 ]
 
 rustfft = ["dep:rustfft"]
@@ -191,7 +190,7 @@ serde = [
   "dep:serde",
   "dep:serde_derive",
   "serde?/derive",
-  "concision-init/serde",
+  "concision-init?/serde",
   "concision-params/serde",
   "concision-traits/serde",
   "hashbrown/serde",
@@ -205,7 +204,7 @@ tracing = ["dep:tracing"]
 
 wasm_bindgen = [
   "dep:wasm-bindgen",
-  "concision-init/wasm_bindgen",
+  "concision-init?/wasm_bindgen",
   "concision-params/wasm_bindgen",
   "concision-traits/wasm_bindgen",
 ]

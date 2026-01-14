@@ -34,15 +34,15 @@ test = true
 harness = false
 name = "params"
 path = "benches/params.rs"
-required-features = ["approx", "rand", "std", "tracing"]
+required-features = ["approx", "init", "std", "tracing"]
 
 [[example]]
 name = "params"
-required-features = ["rand", "std", "tracing"]
+required-features = ["init", "std", "tracing"]
 
 [[example]]
 name = "simple"
-required-features = ["rand", "std", "tracing"]
+required-features = ["init", "std", "tracing"]
 
 [dependencies]
 concision-core = { workspace = true }
@@ -69,7 +69,7 @@ default = [
 full = [
   "default",
   "approx",
-  "rand",
+  "init",
   "serde",
   "tracing",
 ]
@@ -80,13 +80,20 @@ nightly = [
 ]
 
 # ************* [FF:Features] *************
+
 derive = ["dep:concision-derive"]
 
 macros = ["concision-core/macros", "dep:concision-macros"]
 
 data = ["dep:concision-data"]
 
+init = [
+  "concision-core/init",
+  "concision-data?/init",
+]
+
 # ************* [FF:Environments] *************
+
 std = [
   "alloc",
   "concision-core/std",
@@ -124,16 +131,6 @@ json = [
   "concision-data?/json",
 ]
 
-rand = [
-  "concision-core/rand",
-  "concision-data?/rand",
-]
-
-rng = [
-  "concision-core/rng",
-  "concision-data?/rng",
-]
-
 rayon = [
   "concision-core/rayon",
   "concision-data?/rayon",
@@ -148,9 +145,19 @@ serde = [
   "concision-data?/serde",
 ]
 
+serde_json = [
+  "concision-core/serde_json",
+  "concision-data?/serde_json",
+]
+
 tracing = [
   "concision-core/tracing",
   "concision-data?/tracing",
+]
+
+wasm_bindgen = [
+  "concision-core/wasm_bindgen",
+  "concision-data?/wasm_bindgen",
 ]
 
 # ********* [FF] Blas *********

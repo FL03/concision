@@ -1,7 +1,9 @@
 /*
-    appellation: impl_params_serde <module>
-    authors: @FL03
+    Appellation: impl_params_serde <module>
+    Created At: 2026.01.13:18:35:20
+    Contrib: @FL03
 */
+#![cfg(feature = "serde")]
 use crate::params_base::ParamsBase;
 use ndarray::{Data, DataOwned, Dimension, RawData};
 use serde::de::{Deserialize, Deserializer, Error, Visitor};

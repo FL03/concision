@@ -7,8 +7,8 @@ use rand::{Rng, RngCore};
 use rand_distr::{Distribution, Normal, StandardNormal};
 
 /// The [`TruncatedNormal`] distribution is similar to the [`StandardNormal`] distribution,
-/// differing in that is computes a boundary equal to two standard deviations from the mean.
-/// More formally, the boundary is defined as:
+/// differing in that is computes a boundary equal to two standard deviations from the mean
+/// ($`\mu`$). More formally, the boundary is defined as:
 ///
 /// ```math
 /// \text{boundary} = \mu + 2\sigma

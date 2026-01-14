@@ -67,7 +67,7 @@ where
 
 impl<D> Dim for D
 where
-    D: nd::Dimension,
+    D: ndarray::Dimension,
 {
     type Shape = D::Pattern;
 

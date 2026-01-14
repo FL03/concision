@@ -3,8 +3,9 @@
     Created At: 2025.12.10:16:50:03
     Contrib: @FL03
 */
+use crate::activate::{Activator, ActivatorGradient};
 use concision_params::RawParams;
-use concision_traits::{Activator, ActivatorGradient, Backward, Forward};
+use concision_traits::{Backward, Forward};
 
 /// The [`RawLayer`] trait establishes a common interface for all _layers_ within a given
 /// model. Implementors will need to define the type of parameters they utilize, as well as

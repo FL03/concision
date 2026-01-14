@@ -31,9 +31,6 @@ doctest = true
 test = true
 
 [[test]]
-name = "default"
-
-[[test]]
 name = "loader"
 required-features = ["loader"]
 
@@ -68,11 +65,11 @@ wasm-bindgen = { optional = true, workspace = true }
 default = ["std"]
 
 full = [
+  "default",
   "approx",
   "complex",
-  "default",
+  "init",
   "json",
-  "rand",
   "serde",
   "tracing",
 ]
@@ -82,6 +79,11 @@ nightly = [
 ]
 
 # ************* [FF:Features] *************
+
+init = [
+  "concision-core/init",
+]
+
 loader = [
   "json",
   "reqwest",
@@ -153,15 +155,6 @@ rayon = [
   "dep:rayon",
   "concision-core/rayon",
   "hashbrown?/rayon",
-]
-
-rand = [
-  "concision-core/rand",
-  "rng",
-]
-
-rng = [
-  "concision-core/rng",
 ]
 
 reqwest = ["dep:reqwest"]

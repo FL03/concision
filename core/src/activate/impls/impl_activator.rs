@@ -2,7 +2,7 @@
     appellation: activate <module>
     authors: @FL03
 */
-use crate::Activator;
+use crate::activate::Activator;
 
 impl<X, Y, F> Activator<X> for F
 where

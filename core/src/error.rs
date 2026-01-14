@@ -44,8 +44,6 @@ pub enum Error {
     #[error(transparent)]
     BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[error(transparent)]
-    PadError(#[from] crate::utils::pad::PadError),
-    #[error(transparent)]
     ParamError(#[from] concision_params::ParamsError),
     #[error(transparent)]
     InitError(#[from] concision_init::InitError),
