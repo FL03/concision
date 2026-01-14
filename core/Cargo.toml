@@ -198,7 +198,10 @@ serde = [
   "num-complex?/serde",
 ]
 
-serde_json = ["dep:serde_json"]
+serde_json = [
+  "dep:serde_json",
+  "concision-params/serde_json",
+]
 
 tracing = ["dep:tracing"]
 

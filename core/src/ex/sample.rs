@@ -7,7 +7,7 @@ use crate::config::StandardModelConfig;
 use crate::error::Error;
 use crate::nn::Model;
 use crate::store::{DeepModelParams, ModelFeatures};
-#[cfg(feature = "rand")]
+#[cfg(feature = "init")]
 use concision_init::{
     NdRandom,
     rand_distr::{Distribution, StandardNormal},
@@ -58,11 +58,11 @@ impl<T> TestModel<T> {
     pub const fn store_mut(&mut self) -> &mut DeepModelParams<T> {
         &mut self.store
     }
-    #[cfg(not(feature = "rand"))]
+    #[cfg(not(feature = "init"))]
     pub fn init(self) -> Self {
         self
     }
-    #[cfg(feature = "rand")]
+    #[cfg(feature = "init")]
     /// consumes the current instance to initalize another with random parameters
     pub fn init(self) -> Self
     where
