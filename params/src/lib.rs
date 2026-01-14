@@ -49,7 +49,6 @@ pub mod error;
 pub mod iter;
 // internal modules
 mod params_base;
-mod types;
 
 mod impls {
     mod impl_params;
@@ -80,13 +79,11 @@ mod utils {
 }
 // re-exports
 #[doc(inline)]
-pub use self::{error::*, params_base::*, traits::*, types::*, utils::*};
+pub use self::{error::*, params_base::*, traits::*, utils::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::error::ParamsError;
     pub use crate::params_base::*;
     pub use crate::traits::*;
-    pub use crate::types::*;
     pub use crate::utils::*;
 }

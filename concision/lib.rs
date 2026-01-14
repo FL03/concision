@@ -51,7 +51,7 @@
     clippy::module_inception,
     clippy::needless_doctest_main,
     clippy::non_canonical_partial_ord_impl,
-    clippy::upper_case_acronyms,
+    clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(all(feature = "nightly", feature = "alloc"), feature(allocator_api))]

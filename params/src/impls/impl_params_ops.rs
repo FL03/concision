@@ -8,7 +8,52 @@ use ndarray::linalg::Dot;
 use ndarray::{
     Array, ArrayBase, ArrayView, Data, Dimension, Ix0, Ix1, Ix2, RemoveAxis, ScalarOperand,
 };
-use num_traits::{Float, FromPrimitive, Num};
+use num_traits::{Float, FromPrimitive, Num, Signed};
+
+macro_rules! impl_tensor_unary {
+    (@impl $method:ident $(where $($where:tt)*)?) => {
+        pub fn $method(&self) -> Params<A, D> $(where $($where)*)? {
+            self.mapv(|x| x.$method())
+        }
+    };
+    ($($method:ident),* $(,)?) => {
+        $(impl_tensor_unary! { @impl $method where A: Float })*
+    }
+}
+
+impl<S, D, A> ParamsBase<S, D, A>
+where
+    A: 'static + Clone,
+    D: Dimension,
+    S: Data<Elem = A>,
+{
+    impl_tensor_unary! {
+        cos,
+        cosh,
+        exp,
+        ln,
+        sin,
+        sinh,
+        sqrt,
+        tan,
+        tanh,
+    }
+    /// take the absolute value of each element within the parameters
+    pub fn abs(&self) -> Params<A, D>
+    where
+        A: Signed,
+    {
+        self.mapv(|x| x.abs())
+    }
+    #[cfg(feature = "complex")]
+    /// compute the conjugate of each element within the parameters
+    pub fn conj(&self) -> Params<A, D>
+    where
+        A: num_complex::ComplexFloat,
+    {
+        self.mapv(|x| x.conj())
+    }
+}
 
 impl<A, S, D> ParamsBase<S, D, A>
 where

@@ -3,11 +3,12 @@
     Created At: 2026.01.13:18:36:16
     Contrib: @FL03
 */
+use crate::Params;
 use crate::params_base::ParamsBase;
 use crate::utils::extract_bias_dim;
 use ndarray::{
-    ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, LayoutRef, RawData, RemoveAxis, ShapeArg,
-    ShapeBuilder,
+    ArrayBase, Axis, Data, DataMut, DataOwned, Dimension, LayoutRef, RawData, RawRef, RemoveAxis,
+    ShapeArg, ShapeBuilder,
 };
 
 impl<A, S, D> ParamsBase<S, D, A>
@@ -136,6 +137,20 @@ where
     pub const fn weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         &mut self.weights
     }
+    /// returns a raw reference to the bias tensor
+    pub fn bias_as_raw_ref(&self) -> &RawRef<A, D::Smaller>
+    where
+        S: Data,
+    {
+        self.bias().as_raw_ref()
+    }
+    /// returns a raw reference of the weights
+    pub fn weights_as_raw_ref(&self) -> &RawRef<A, D>
+    where
+        S: Data,
+    {
+        self.weights().as_raw_ref()
+    }
     /// returns an immutable rererence to the bias as a layout reference
     pub fn bias_layout_ref(&self) -> &LayoutRef<A, D::Smaller>
     where
@@ -251,7 +266,7 @@ where
         self.weights().len() + self.bias().len()
     }
     /// returns an owned instance of the parameters
-    pub fn to_owned(&self) -> ParamsBase<ndarray::OwnedRepr<A>, D>
+    pub fn to_owned(&self) -> Params<A, D>
     where
         A: Clone,
         S: DataOwned,
@@ -299,8 +314,8 @@ where
     {
         ParamsBase::new(self.bias.view_mut(), self.weights.view_mut())
     }
-
-    pub fn clamp(&mut self, min: A, max: A) -> crate::Params<A, D>
+    /// clamps all values within the parameters between the given min and max values
+    pub fn clamp(&mut self, min: A, max: A) -> Params<A, D>
     where
         A: 'static + Clone + PartialOrd,
         S: Data,
@@ -308,6 +323,18 @@ where
         ParamsBase {
             bias: self.bias().clamp(min.clone(), max.clone()),
             weights: self.weights().clamp(min, max),
+        }
+    }
+    /// applies the given function onto each element, capturing the results in a new instance
+    pub fn mapv<F, U>(&self, f: F) -> Params<U, D>
+    where
+        A: Clone,
+        S: Data,
+        F: Fn(A) -> U,
+    {
+        ParamsBase {
+            bias: self.bias().mapv(&f),
+            weights: self.weights().mapv(&f),
         }
     }
 }
