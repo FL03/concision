@@ -52,21 +52,18 @@ where
     }
     /// set the input layer of the model
     #[inline]
-    pub fn set_input(&mut self, input: ParamsBase<S, D>) -> &mut Self {
-        *self.input_mut() = input;
-        self
+    pub fn set_input(&mut self, input: ParamsBase<S, D>)  {
+        *self.input_mut() = input
     }
     /// set the hidden layers of the model
     #[inline]
-    pub fn set_hidden(&mut self, hidden: H) -> &mut Self {
-        *self.hidden_mut() = hidden;
-        self
+    pub fn set_hidden(&mut self, hidden: H)  {
+        *self.hidden_mut() = hidden
     }
     /// set the output layer of the model
     #[inline]
-    pub fn set_output(&mut self, output: ParamsBase<S, D>) -> &mut Self {
-        *self.output_mut() = output;
-        self
+    pub fn set_output(&mut self, output: ParamsBase<S, D>)  {
+        *self.output_mut() = output
     }
     /// consumes the current instance and returns another with the specified input layer
     #[inline]
@@ -124,6 +121,10 @@ where
     pub const fn output_weights_mut(&mut self) -> &mut ArrayBase<S, D, A> {
         self.output_mut().weights_mut()
     }
+    /// returns the total number of layers in the model, including input, hidden, and output
+    pub fn layers(&self) -> usize{
+        2 + self.count_hidden()
+    }
     /// returns the number of hidden layers in the model
     pub fn count_hidden(&self) -> usize {
         self.hidden().count()
@@ -139,11 +140,6 @@ where
     #[inline]
     pub fn is_deep(&self) -> bool {
         self.count_hidden() > 1
-    }
-    /// returns the total number of layers within the model, including the input and output layers
-    #[inline]
-    pub fn len(&self) -> usize {
-        self.count_hidden() + 2 // +2 for input and output layers
     }
 }
 
@@ -201,18 +197,16 @@ impl<A, S, D, H> core::ops::Index<usize> for ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     S: Data<Elem = A>,
-    H: DeepModelRepr<S, D>,
+    H: RawHidden<S, D> + core::ops::Index<usize, Output = ParamsBase<S, D>>,
     A: Clone,
 {
     type Output = ParamsBase<S, D>;
 
     fn index(&self, index: usize) -> &Self::Output {
-        if index == 0 {
-            self.input()
-        } else if index == self.count_hidden() + 1 {
-            self.output()
-        } else {
-            &self.hidden().as_slice()[index - 1]
+        match index % self.layers() {
+            0 => self.input(),
+            i if i == self.count_hidden() + 1 => self.output(),
+            _ => &self.hidden()[index - 1],
         }
     }
 }
@@ -221,16 +215,14 @@ impl<A, S, D, H> core::ops::IndexMut<usize> for ModelParamsBase<S, D, H, A>
 where
     D: Dimension,
     S: Data<Elem = A>,
-    H: DeepModelRepr<S, D>,
+    H: RawHidden<S, D> + core::ops::IndexMut<usize, Output = ParamsBase<S, D>>,
     A: Clone,
 {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        if index == 0 {
-            self.input_mut()
-        } else if index == self.count_hidden() + 1 {
-            self.output_mut()
-        } else {
-            &mut self.hidden_mut().as_mut_slice()[index - 1]
+        match index % self.layers() {
+            0 => self.input_mut(),
+            i if i == self.count_hidden() + 1 => self.output_mut(),
+            _ => &mut self.hidden_mut()[index - 1],
         }
     }
 }

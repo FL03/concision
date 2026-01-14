@@ -2,10 +2,9 @@
     appellation: gsw <module>
     authors: @FL03
 */
-#![cfg(feature = "macros")]
 
-#[macro_export]
-/// [`get!`] is a macro used to generate get, set, and with methods for a struct's fields.
+#[allow(unused_macros)]
+/// [`get!`] is a macro used to generate getter methods for a struct's fields.
 macro_rules! get {
     ($($field:ident: $T:ty),* $(,)?) => {
         paste::paste! {
@@ -36,8 +35,27 @@ macro_rules! get {
         }
     };
 }
-#[macro_export]
+
+#[allow(unused_macros)]
 /// [`set_with!`] is a macro used to generate `set_` and `with_` methods for a struct's fields.
+/// 
+/// ```ignore
+/// #[derive(Default)]
+/// pub struct Something<T> {
+///     field1: T,
+///     field2: u8,
+/// }
+/// 
+/// impl<T> Something<T> {
+///     set_with! {
+///         field1: T,
+///         field2: u8,
+///     }
+/// }
+/// 
+/// let mut something = Something::<f32>::default().with_field1(core::f32::consts::PI);
+/// something.set_field2(42);
+/// ```
 macro_rules! set_with {
     ($($field:ident: $F:ty),* $(,)?) => {
         paste::paste! {
