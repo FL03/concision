@@ -52,17 +52,17 @@ where
     }
     /// set the input layer of the model
     #[inline]
-    pub fn set_input(&mut self, input: ParamsBase<S, D>)  {
+    pub fn set_input(&mut self, input: ParamsBase<S, D>) {
         *self.input_mut() = input
     }
     /// set the hidden layers of the model
     #[inline]
-    pub fn set_hidden(&mut self, hidden: H)  {
+    pub fn set_hidden(&mut self, hidden: H) {
         *self.hidden_mut() = hidden
     }
     /// set the output layer of the model
     #[inline]
-    pub fn set_output(&mut self, output: ParamsBase<S, D>)  {
+    pub fn set_output(&mut self, output: ParamsBase<S, D>) {
         *self.output_mut() = output
     }
     /// consumes the current instance and returns another with the specified input layer
@@ -122,7 +122,7 @@ where
         self.output_mut().weights_mut()
     }
     /// returns the total number of layers in the model, including input, hidden, and output
-    pub fn layers(&self) -> usize{
+    pub fn layers(&self) -> usize {
         2 + self.count_hidden()
     }
     /// returns the number of hidden layers in the model

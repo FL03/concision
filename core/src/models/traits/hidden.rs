@@ -29,7 +29,8 @@ pub trait DeepModelRepr<S, D>: RawHidden<S, D>
 where
     S: RawData,
     D: Dimension,
-    Self: IntoIterator<Item = ParamsBase<S, D>> + core::ops::Index<usize, Output = ParamsBase<S, D>>
+    Self:
+        IntoIterator<Item = ParamsBase<S, D>> + core::ops::Index<usize, Output = ParamsBase<S, D>>,
 {
     private! {}
 

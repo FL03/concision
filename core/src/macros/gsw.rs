@@ -38,21 +38,21 @@ macro_rules! get {
 
 #[allow(unused_macros)]
 /// [`set_with!`] is a macro used to generate `set_` and `with_` methods for a struct's fields.
-/// 
+///
 /// ```ignore
 /// #[derive(Default)]
 /// pub struct Something<T> {
 ///     field1: T,
 ///     field2: u8,
 /// }
-/// 
+///
 /// impl<T> Something<T> {
 ///     set_with! {
 ///         field1: T,
 ///         field2: u8,
 ///     }
 /// }
-/// 
+///
 /// let mut something = Something::<f32>::default().with_field1(core::f32::consts::PI);
 /// something.set_field2(42);
 /// ```
