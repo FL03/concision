@@ -52,7 +52,8 @@ jobs:
         with:
           cache-key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           target: ${{ matrix.target }}
-      - uses: taiki-e/install-action@v2
+      - name: Install cargo-criterion
+        uses: taiki-e/install-action@v2
         with:
           tool: cargo-criterion
       - name: Benchmark the workspace (${{ matrix.target }})
