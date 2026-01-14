@@ -46,6 +46,7 @@ pub enum Error {
     #[error(transparent)]
     ParamError(#[from] concision_params::ParamsError),
     #[error(transparent)]
+    #[cfg(feature = "concision_init")]
     InitError(#[from] concision_init::InitError),
     #[cfg(feature = "serde")]
     #[error(transparent)]

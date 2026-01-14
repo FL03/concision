@@ -89,14 +89,6 @@ nightly = [
 
 # ********* [FF] Flags *********
 
-rand = [
-  "dep:concision-init",
-  "concision-params/rand",
-  "concision-traits/rand",
-  "num-complex?/rand",
-  "rspace-traits/rand",
-]
-
 macros = []
 
 json = [
@@ -173,6 +165,16 @@ complex = [
   "concision-init?/complex",
   "concision-params/complex",
   "concision-traits/complex",
+]
+
+concision_init = ["dep:concision-init"]
+
+rand = [
+  "concision_init",
+  "concision-params/rand",
+  "concision-traits/rand",
+  "num-complex?/rand",
+  "rspace-traits/rand",
 ]
 
 rayon = [
