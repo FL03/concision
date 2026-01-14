@@ -19,7 +19,7 @@ macro_rules! unary {
     };
 }
 
-macro_rules! unary_impl {
+macro_rules! impl_unary_op {
     (@impl $name:ident::<$T:ty>::$method:ident) => {
         impl $name for $T {
             type Output = $T;
@@ -29,21 +29,23 @@ macro_rules! unary_impl {
             }
         }
     };
-    (@impl #[complex] $name:ident::<$T:ty>::$method:ident) => {
-        #[cfg(feature = "complex")]
-        impl $name for num_complex::Complex<$T>
-        where
-            num_complex::Complex<$T>: num_complex::ComplexFloat<Real = $T>,
-        {
-            type Output = num_complex::Complex<$T>;
+    ($($name:ident::<[$($T:ty),*]>::$method:ident),* $(,)?) => {
+        $($(impl_unary_op! { @impl $name::<$T>::$method })*)*
+    };
+}
 
-            fn $method(self) -> Self::Output {
-                num_complex::ComplexFloat::$method(self)
+macro_rules! impl_something {
+    (@impl $trait:ident::<$T:ty>::$method:ident($self:ident $(, $($input:ident: $I:ty),*)?) -> $out:ty {$func:expr}) => {
+        impl $trait for $T {
+            type Output = $out;
+
+            fn $method($self $(, $($input: $I),*)?) -> Self::Output {
+                $func
             }
         }
     };
-    ($($name:ident::<[$($T:ty),*]>::$method:ident),* $(,)?) => {
-        $($(unary_impl!(@impl $name::<$T>::$method);)*)*
+    ($($trait:ident::<[$($T:ty),* $(,)?]>::$method:ident($self:ident) -> $out:ty {$func:expr});* $(;)?) => {
+        $($(impl_something! { @impl $trait::<$T>::$method($self) -> $out {$func} } )*)*
     };
 }
 
@@ -62,11 +64,7 @@ unary! {
     Conjugate::conj(&self),
 }
 
-/*
- ********* Implementations *********
-*/
-
-unary_impl! {
+impl_unary_op! {
     Abs::<[i8, i16, i32, i64, i128, isize, f32, f64]>::abs,
     Cos::<[f32, f64]>::cos,
     Cosh::<[f32, f64]>::cosh,
@@ -76,21 +74,6 @@ unary_impl! {
     Tan::<[f32, f64]>::tan,
     Tanh::<[f32, f64]>::tanh,
     SquareRoot::<[f32, f64]>::sqrt
-}
-
-macro_rules! impl_something {
-    (@impl $trait:ident::<$T:ty>::$method:ident($self:ident $(, $($input:ident: $I:ty),*)?) -> $out:ty {$func:expr}) => {
-        impl $trait for $T {
-            type Output = $out;
-
-            fn $method($self $(, $($input: $I),*)?) -> Self::Output {
-                $func
-            }
-        }
-    };
-    ($($trait:ident::<[$($T:ty),* $(,)?]>::$method:ident($self:ident) -> $out:ty {$func:expr});* $(;)?) => {
-        $($(impl_something! { @impl $trait::<$T>::$method($self) -> $out {$func} } )*)*
-    };
 }
 
 impl_something! {
@@ -173,6 +156,7 @@ mod impl_complex {
     use ndarray::{Array, Dimension};
     use num_complex::{Complex, ComplexFloat};
     use num_traits::Signed;
+
     macro_rules! impl_complex_for {
         (@impl $name:ident::<$T:ident>::$method:ident) => {
             #[cfg(feature = "complex")]

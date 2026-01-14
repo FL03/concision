@@ -2,7 +2,7 @@
     appellation: aliases <module>
     authors: @FL03
 */
-use crate::store::ModelParamsBase;
+use crate::models::ModelParamsBase;
 use concision_params::ParamsBase;
 use ndarray::{Ix2, OwnedRepr};
 

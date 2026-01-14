@@ -85,6 +85,11 @@ nightly = [
 ]
 
 # ********* [FF] Flags *********
+autodiff = [
+  "nightly",
+  "concision-params/autodiff",
+  "concision-traits/autodiff",
+]
 
 macros = []
 

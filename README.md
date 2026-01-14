@@ -23,25 +23,11 @@ _**Warning: The library still in development and is not yet ready for production
 
 ### Roadmap
 
-- [x] **v1**:
-  - [x] **`ParamsBase`**: Design a basic structure for storing model parameters.
-  - [x]  **Traits**: Create a set of traits for defining the basics of a neural network model.
-    - `Forward` and `Backward`: traits defining forward and backward propagation
-    - `Model`: A trait for defining a neural network model.
-    - `Predict`: A trait extending the basic [`Forward`](cnc::Forward) pass.
-    - `Train`: A trait for training a neural network model.
-- [x] **v2**:
-  - [x] **`DeepModelParams`**: Extend the `ParamsBase` structure to support deep neural networks with multiple layers.
-  - [x] **Models**: Implement standard model configurations and parameters.
-    - `StandardModelConfig`: A standard configuration for neural network models.
-    - `ModelFeatures`: A structure to define the features of a model (e.g., number of layers, neurons per layer).
-  - [x] **Activation Functions**: Implement and refine various activation functions (`ReLU`, `Sigmoid`, `Tanh`, etc.)
-  - [x] **Loss Functions**: Implement common loss functions such as `MeanSquaredError` and `CrossEntropy`
-- [ ] **v3**:
-  - [ ] **Optimizers**: Implement optimization algorithms like `SGD` and `Adam`.
-  - [ ] **Scheduler**: Learning rate schedulers to adjust the learning rate during training.
-  - [ ] **Layers**: Refine a more functional layer-based architecture.
-  - [ ] **Utilities**: Additional utilities for data preprocessing, model evaluation, and visualization
+- Implement additional optimization algorithms (e.g., Adam, RMSProp).
+- Add support for convolutional and recurrent neural networks.
+- Expand the set of built-in layers and activation functions.
+- Improve documentation and provide more examples and tutorials.
+- Implement support for automatic differentiation using the `autodiff` crate.
 
 ## Getting Started
 

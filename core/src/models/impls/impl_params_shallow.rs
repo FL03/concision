@@ -2,11 +2,11 @@
     Appellation: controller <module>
     Contrib: @FL03
 */
-use crate::store::{ModelParamsBase, ShallowParamsBase};
+use crate::models::{ModelParamsBase, ShallowParamsBase};
 
 use crate::ModelFeatures;
 use crate::activate::{ReLUActivation, SigmoidActivation};
-use crate::store::traits::ShallowModelRepr;
+use crate::models::traits::ShallowModelRepr;
 use concision_params::ParamsBase;
 use ndarray::{
     Array1, ArrayBase, Data, DataOwned, Dimension, Ix2, RawData, RemoveAxis, ScalarOperand,

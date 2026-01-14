@@ -5,7 +5,7 @@
 */
 use super::ModelLayout;
 
-use crate::store::{Deep, NetworkDepth, RawModelLayout, Shallow};
+use crate::models::{Deep, NetworkDepth, RawModelLayout, Shallow};
 
 impl<F, D> ModelLayout<F, D>
 where

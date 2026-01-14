@@ -2,7 +2,7 @@
     appellation: impl_model_params_rand <module>
     authors: @FL03
 */
-use crate::store::{DeepParamsBase, ShallowParamsBase};
+use crate::models::{DeepParamsBase, ShallowParamsBase};
 
 use crate::ModelFeatures;
 use concision_init::distr as init;

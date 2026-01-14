@@ -33,8 +33,12 @@ path = "benches/params.rs"
 required-features = ["approx", "rand", "std", "tracing"]
 
 [[example]]
+name = "mnist"
+required-features = ["full"]
+
+[[example]]
 name = "params"
-required-features = ["rand", "std", "tracing"]
+required-features = ["default", "tracing"]
 
 [[example]]
 name = "simple"
@@ -71,6 +75,10 @@ full = [
 ]
 
 # ********* [FF] Features *********
+autodiff = [
+  "concision-core/autodiff",
+  "concision-data?/autodiff",
+]
 
 derive = ["dep:concision-derive"]
 

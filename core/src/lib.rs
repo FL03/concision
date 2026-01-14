@@ -33,32 +33,20 @@
     rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
-
+#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
+#![cfg_attr(all(feature = "autodiff", feature = "nightly"), feature(autodiff))]
+// compile-time checks
 #[cfg(not(any(feature = "std", feature = "alloc")))]
-compiler_error! {
-    "Either the \"std\" feature or the \"alloc\" feature must be enabled."
-}
-
+compiler_error! { "Either the \"std\" feature or the \"alloc\" feature must be enabled." }
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
-
-/// this module establishes generic random initialization routines for models, params, and
-/// tensors.
+// re-definitions
 #[doc(inline)]
 #[cfg(feature = "rand")]
 pub use concision_init as init;
 #[doc(inline)]
 pub use concision_params as params;
-
-#[doc(inline)]
-#[cfg(feature = "rand")]
-pub use concision_init::prelude::*;
-#[doc(inline)]
-pub use concision_params::prelude::*;
-#[doc(inline)]
-pub use concision_traits::prelude::*;
-
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
@@ -74,8 +62,8 @@ pub(crate) mod macros {
 pub mod activate;
 pub mod config;
 pub mod error;
+pub mod models;
 pub mod nn;
-pub mod store;
 pub mod utils;
 
 #[doc(hidden)]
@@ -83,24 +71,31 @@ pub mod ex {
     pub mod sample;
 }
 
-pub mod types {
+mod types {
     #[doc(inline)]
     pub use self::parameters::*;
 
     mod parameters;
 }
-
 // re-exports
 #[doc(inline)]
 pub use self::{
     activate::{Activate, Activator, ActivatorGradient},
     config::StandardModelConfig,
     error::*,
+    models::prelude::*,
     nn::prelude::*,
-    store::prelude::*,
     types::*,
     utils::*,
 };
+#[doc(inline)]
+#[cfg(feature = "rand")]
+pub use concision_init::prelude::*;
+#[doc(inline)]
+pub use concision_params::prelude::*;
+#[doc(inline)]
+pub use concision_traits::prelude::*;
+
 // prelude
 #[doc(hidden)]
 pub mod prelude {
@@ -110,8 +105,8 @@ pub mod prelude {
     pub use concision_traits::prelude::*;
 
     pub use crate::config::prelude::*;
+    pub use crate::models::prelude::*;
     pub use crate::nn::prelude::*;
-    pub use crate::store::prelude::*;
     pub use crate::types::*;
     pub use crate::utils::*;
 }

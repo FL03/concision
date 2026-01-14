@@ -5,8 +5,8 @@
 use crate::activate::{ReLUActivation, SigmoidActivation};
 use crate::config::StandardModelConfig;
 use crate::error::Error;
+use crate::models::{DeepModelParams, ModelFeatures};
 use crate::nn::Model;
-use crate::store::{DeepModelParams, ModelFeatures};
 #[cfg(feature = "rand")]
 use concision_init::{
     NdRandom,

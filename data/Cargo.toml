@@ -75,6 +75,10 @@ nightly = [
 ]
 
 # ************* [FF:Features] *************
+autodiff = [
+  "nightly",
+  "concision-core/autodiff",
+]
 
 rand = [
   "concision-core/rand",

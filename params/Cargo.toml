@@ -62,6 +62,10 @@ full = [
 ]
 
 # ********* [FF] Features *********
+autodiff = [
+  "nightly",
+  "concision-traits/autodiff"
+]
 
 json = [
   "alloc",

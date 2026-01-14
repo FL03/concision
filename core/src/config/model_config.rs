@@ -8,6 +8,7 @@ use alloc::string::{String, ToString};
 use hashbrown::DefaultHashBuilder;
 use hashbrown::hash_map::{self, HashMap};
 
+/// The [`StandardModelConfig`] struct is a standard implementation of the
 #[derive(Clone, Debug)]
 #[cfg_attr(
     feature = "serde",
@@ -144,6 +145,18 @@ impl<T> Default for StandardModelConfig<T> {
 unsafe impl<T> Send for StandardModelConfig<T> where T: Send {}
 
 unsafe impl<T> Sync for StandardModelConfig<T> where T: Sync {}
+
+impl<T> crate::nn::NetworkConfig<String, T> for StandardModelConfig<T> {
+    type Store = HashMap<String, T, DefaultHashBuilder>;
+
+    fn store(&self) -> &Self::Store {
+        &self.hyperspace
+    }
+
+    fn store_mut(&mut self) -> &mut Self::Store {
+        &mut self.hyperspace
+    }
+}
 
 impl<T> RawConfig for StandardModelConfig<T> {
     type Ctx = T;

@@ -10,7 +10,8 @@
     rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
+#![cfg_attr(all(feature = "alloc", feature = "nightly"), feature(allocator_api))]
+#![cfg_attr(all(feature = "autodiff", feature = "nightly"), feature(autodiff))]
 // compile-time checks
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
@@ -42,6 +43,7 @@ mod norm;
 mod predict;
 mod propagate;
 mod rounding;
+mod store;
 mod training;
 
 pub mod math {
@@ -83,7 +85,7 @@ pub mod tensor {
 #[doc(inline)]
 pub use self::{
     clip::*, codex::*, complex::*, entropy::*, gradient::*, init::*, loss::*, math::*, norm::*,
-    ops::*, predict::*, propagate::*, rounding::*, tensor::*, training::*,
+    ops::*, predict::*, propagate::*, rounding::*, store::*, tensor::*, training::*,
 };
 // prelude
 #[doc(hidden)]
@@ -101,6 +103,7 @@ pub mod prelude {
     pub use crate::predict::*;
     pub use crate::propagate::*;
     pub use crate::rounding::*;
+    pub use crate::store::*;
     pub use crate::tensor::*;
     pub use crate::training::*;
 }

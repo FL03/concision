@@ -80,6 +80,7 @@ nightly = [
 ]
 
 # ************* [FF:Toggles] *************
+autodiff = ["concision/autodiff"]
 
 rand = [
   "concision/rand",

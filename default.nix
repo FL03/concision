@@ -27,7 +27,7 @@ let
 
   common = {
     version = "0.3.1";
-    src = ./.;
+    src = self; # ./.;
 
     cargoLock = {
       lockFile = ./Cargo.lock;
