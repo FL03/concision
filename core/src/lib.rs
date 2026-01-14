@@ -20,7 +20,7 @@
 //! - `approx`: Enables approximate equality checks for floating-point numbers.
 //! - `complex`: Enables complex number support.
 //! - `json`: Enables JSON serialization and deserialization capabilities.
-//! - `rand`: Enables random number generation 
+//! - `rand`: Enables random number generation
 //! - `serde`: Enables serialization and deserialization capabilities.
 //! - `tracing`: Enables tracing capabilities for debugging and logging.
 //!

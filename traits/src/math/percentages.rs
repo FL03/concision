@@ -3,7 +3,13 @@
     Created At: 2025.11.26:12:09:51
     Contrib: @FL03
 */
+/// The [`PercentChange`] trait establishes a binary operator for computing the percent change
+/// between two values where the caller is considered the original value.
+pub trait PercentChange<Rhs = Self> {
+    type Output;
 
+    fn percent_change(self, rhs: Rhs) -> Self::Output;
+}
 /// Compute the percentage difference between two values.
 /// The percentage difference is defined as:
 ///
@@ -14,12 +20,6 @@ pub trait PercentDiff<Rhs = Self> {
     type Output;
 
     fn percent_diff(self, rhs: Rhs) -> Self::Output;
-}
-
-pub trait PercentChange<Rhs = Self> {
-    type Output;
-
-    fn percent_change(self, rhs: Rhs) -> Self::Output;
 }
 
 /*

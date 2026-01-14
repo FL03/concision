@@ -1,5 +1,5 @@
 //! Core traits defining fundamental abstractions and operations useful for neural networks.
-//! 
+//!
 #![crate_type = "lib"]
 #![allow(
     clippy::missing_safety_doc,
@@ -35,9 +35,10 @@ mod clip;
 mod codex;
 mod complex;
 mod entropy;
+mod gradient;
+mod init;
 mod loss;
 mod norm;
-mod init;
 mod predict;
 mod propagate;
 mod rounding;
@@ -46,11 +47,10 @@ mod training;
 pub mod math {
     //! Mathematically oriented operators and functions useful in machine learning contexts.
     #[doc(inline)]
-    pub use self::{difference::*, gradient::*, linalg::*, roots::*, stats::*, unary::*};
+    pub use self::{linalg::*, percentages::*, roots::*, stats::*, unary::*};
 
-    mod difference;
-    mod gradient;
     mod linalg;
+    mod percentages;
     mod roots;
     mod stats;
     mod unary;
@@ -81,20 +81,19 @@ pub mod tensor {
 
 // re-exports
 #[doc(inline)]
-#[cfg(feature = "complex")]
-pub use self::complex::*;
-#[doc(inline)]
 pub use self::{
-    clip::*, codex::*, entropy::*, loss::*, math::*, init::*, norm::*, ops::*, predict::*, propagate::*,
-    rounding::*, tensor::*, training::*,
+    clip::*, codex::*, complex::*, entropy::*, gradient::*, init::*, loss::*, math::*, norm::*,
+    ops::*, predict::*, propagate::*, rounding::*, tensor::*, training::*,
 };
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::init::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
+    pub use crate::complex::*;
     pub use crate::entropy::*;
+    pub use crate::gradient::*;
+    pub use crate::init::*;
     pub use crate::loss::*;
     pub use crate::math::*;
     pub use crate::norm::*;
@@ -104,7 +103,4 @@ pub mod prelude {
     pub use crate::rounding::*;
     pub use crate::tensor::*;
     pub use crate::training::*;
-
-    #[cfg(feature = "complex")]
-    pub use crate::complex::*;
 }
