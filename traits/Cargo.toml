@@ -44,7 +44,7 @@ num-complex = { optional = true, workspace = true }
 num-integer = { workspace = true }
 num-traits = { workspace = true }
 # random
-rand_core = { optional = true, workspace = true }
+rand = { optional = true, workspace = true }
 # serialization
 serde = { optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
@@ -69,6 +69,7 @@ autodiff = [
 
 nightly = [
   "hashbrown?/nightly",
+  "rand?/nightly",
 ]
 
 # ********* [FF] Environments *********
@@ -79,7 +80,7 @@ std = [
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
-  "rand_core?/std",
+  "rand?/std",
   "rspace-traits/std",
   "serde?/std",
 ]
@@ -91,6 +92,7 @@ wasm = []
 # ********* [FF] Dependencies *********
 alloc = [
   "hashbrown?/alloc",
+  "rand?/alloc",
   "rspace-traits/alloc",
   "serde?/alloc",
 ]
@@ -119,7 +121,7 @@ rayon = [
 ]
 
 rand = [
-  "dep:rand_core",
+  "dep:rand",
   "num-complex?/rand",
   "rspace-traits/rand",
 ]
@@ -129,6 +131,9 @@ serde = [
   "dep:serde_derive",
   "serde?/derive",
   "hashbrown?/serde",
+  "ndarray/serde",
+  "num-complex?/serde",
+  "rand?/serde",
   "rspace-traits/serde",
 ]
 
