@@ -41,7 +41,7 @@ where
     match mode.into_pad_action() {
         PadAction::StopAfterCopy => {
             // Do nothing
-            return Some(true);
+            Some(true)
         }
         _ => unimplemented!(),
     }

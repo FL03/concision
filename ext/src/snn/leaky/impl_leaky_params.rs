@@ -7,6 +7,7 @@ use super::LeakyParams;
 use num_traits::{FromPrimitive, One};
 
 impl<T> LeakyParams<T> {
+    #[allow(clippy::too_many_arguments)]
     /// Create a new `LeakyParams` with the given parameters.
     pub const fn new(
         b: T,
@@ -93,21 +94,16 @@ impl<T> LeakyParams<T> {
     pub const fn v_thresh_mut(&mut self) -> &mut T {
         &mut self.v_thresh
     }
-    /// consumes the current instance to create another with the given adaptation
-    pub fn with_b(self, b: T) -> Self {
-        Self { b, ..self }
-    }
-    /// consumes the current instance to create another with the given resistance
-    pub fn with_resistance(self, resistance: T) -> Self {
-        Self { resistance, ..self }
-    }
-    /// consumes the current instance to create another with the given membrane time constant
-    pub fn with_tau_m(self, tau_m: T) -> Self {
-        Self { tau_m, ..self }
-    }
 
-    pub fn with_tau_s(self, tau_s: T) -> Self {
-        Self { tau_s, ..self }
+    set_with! {
+        b: T,
+        tau_m: T,
+        tau_s: T,
+        tau_w: T,
+        resistance: T,
+        v_rest: T,
+        v_reset: T,
+        v_thresh: T,
     }
 }
 

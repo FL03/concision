@@ -26,6 +26,6 @@ where
     type Output = D::Smaller;
 
     fn get_bias_dim(&self) -> Self::Output {
-        crate::extract_bias_dim(&self)
+        crate::extract_bias_dim(self)
     }
 }

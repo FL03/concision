@@ -48,10 +48,8 @@ where
             }
         }
         let mut spiked = false;
-        for step in 0..steps {
-            for ev in &events[step] {
-                neuron.apply_spike(ev.weight);
-            }
+        for ev in events.iter().take(steps) {
+            ev.iter().for_each(|event| neuron.apply_spike(event.weight));
             let res = neuron.step(dt, i_ext);
             if res.is_spiked() {
                 spiked = true;

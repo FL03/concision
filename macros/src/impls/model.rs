@@ -22,8 +22,7 @@ pub fn impl_model(
     // if edges are defined, but no nodes, return an error
     if layers.is_some() && params.is_none() {
         return syn::Error::new_spanned(model, "edges cannot be defined without nodes")
-            .to_compile_error()
-            .into();
+            .to_compile_error();
     }
     // initialize a vector to hold the statements
     let mut stmts = Vec::new();

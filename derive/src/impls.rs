@@ -12,14 +12,14 @@ use syn::{Data, DeriveInput};
 
 pub fn impl_config(DeriveInput { ident, data, .. }: &DeriveInput) -> TokenStream {
     match &data {
-        Data::Struct(s) => impl_config::derive_config_from_struct(&s, &ident),
+        Data::Struct(s) => impl_config::derive_config_from_struct(s, ident),
         _ => panic!("Only structs are supported"),
     }
 }
 
 pub fn impl_keys(DeriveInput { data, ident, .. }: &DeriveInput) -> TokenStream {
     match &data {
-        Data::Struct(s) => impl_keys::generate_keys_for_struct(&s, &ident),
+        Data::Struct(s) => impl_keys::generate_keys_for_struct(s, ident),
 
         _ => panic!("Only structs are supported"),
     }

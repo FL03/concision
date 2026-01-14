@@ -337,6 +337,7 @@ dependencies = [
  "num",
  "num-complex",
  "num-traits",
+ "paste",
  "rayon",
  "rustfft",
  "serde",

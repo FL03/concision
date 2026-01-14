@@ -13,7 +13,7 @@ pub fn generate_keys_for_struct(
 ) -> TokenStream {
     let store_name = format_ident!("{}Key", ident);
     match &fields {
-        Fields::Named(inner) => handle_named(&inner, &store_name),
+        Fields::Named(inner) => handle_named(inner, &store_name),
         _ => panic!("Only named fields are supported"),
     }
 }

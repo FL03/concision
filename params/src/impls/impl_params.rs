@@ -47,9 +47,9 @@ where
         F2: Fn(<D::Smaller as Dimension>::Pattern) -> A,
     {
         // initialize the weights with some shape using the given function
-        let weights = ArrayBase::from_shape_fn(shape, |s| w(s));
+        let weights = ArrayBase::from_shape_fn(shape, w);
         // initialize the bias tensor w.r.t. the weights
-        let bias = ArrayBase::from_shape_fn(extract_bias_dim(&weights), |s| b(s));
+        let bias = ArrayBase::from_shape_fn(extract_bias_dim(&weights), b);
         // return a new instance
         Self::new(bias, weights)
     }

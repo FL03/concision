@@ -35,7 +35,7 @@ where
     type Output = Option<V>;
 
     fn apply_once(self, f: F) -> Self::Output {
-        self.map(|a| f(a))
+        self.map(f)
     }
 }
 

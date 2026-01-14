@@ -206,7 +206,7 @@ where
     }
 }
 
-impl<'a, A, B, S, D, F> MapInto<F, B> for &'a ParamsBase<S, D, A>
+impl<A, B, S, D, F> MapInto<F, B> for &ParamsBase<S, D, A>
 where
     A: Clone,
     D: Dimension,

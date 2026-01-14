@@ -40,7 +40,7 @@ where
     type Elem = U;
 
     fn mapi(self, f: F) -> Self::Cont<V> {
-        self.map(|a| f(a))
+        self.map(f)
     }
 }
 
@@ -71,7 +71,7 @@ where
     }
 }
 
-impl<'a, A, B, S, D, F> MapInto<F, B> for &'a ArrayBase<S, D, A>
+impl<A, B, S, D, F> MapInto<F, B> for &ArrayBase<S, D, A>
 where
     A: Clone,
     D: Dimension,

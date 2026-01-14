@@ -109,7 +109,7 @@ where
         ParamsBase<S, D>: Forward<X, Output = Y> + Forward<Y, Output = Y>,
     {
         let mut output = self.input().forward(input);
-        self.hidden().into_iter().for_each(|layer| {
+        self.hidden().iter().for_each(|layer| {
             output = layer.forward(&output);
         });
         self.output().forward(&output)

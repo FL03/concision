@@ -29,6 +29,13 @@ compiler_error! {
 extern crate alloc;
 extern crate concision as cnc;
 
+#[macro_use]
+mod macros {
+    #[macro_use]
+    pub(crate) mod seal;
+    #[macro_use]
+    mod gsw;
+}
 #[cfg(feature = "attention")]
 pub mod attention;
 #[cfg(feature = "snn")]

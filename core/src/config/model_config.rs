@@ -182,7 +182,7 @@ impl<T> ModelConfiguration<T> for StandardModelConfig<T> {
         K: AsRef<str>,
     {
         self.hyperparameters_mut()
-            .insert(key.as_ref().try_into().expect("invalid parameter"), value)
+            .insert(key.as_ref().into(), value)
     }
 
     fn remove<K>(&mut self, key: K) -> Option<T>
