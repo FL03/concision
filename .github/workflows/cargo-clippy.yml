@@ -6,7 +6,7 @@ concurrency:
 
 on:
   pull_request:
-    types: [auto_merge_enabled, opened, ready_for_review, reopened]
+    types: [synchronize]
   push:
     branches: [main, master]
     tags: [latest, v*.*.*, "*-nightly"]
