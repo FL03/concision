@@ -43,6 +43,7 @@ mod norm;
 mod predict;
 mod propagate;
 mod rounding;
+mod shuffle;
 mod store;
 mod training;
 
@@ -85,7 +86,7 @@ pub mod tensor {
 #[doc(inline)]
 pub use self::{
     clip::*, codex::*, complex::*, entropy::*, gradient::*, init::*, loss::*, math::*, norm::*,
-    ops::*, predict::*, propagate::*, rounding::*, store::*, tensor::*, training::*,
+    ops::*, predict::*, propagate::*, rounding::*, shuffle::*, store::*, tensor::*, training::*,
 };
 // prelude
 #[doc(hidden)]
@@ -103,6 +104,7 @@ pub mod prelude {
     pub use crate::predict::*;
     pub use crate::propagate::*;
     pub use crate::rounding::*;
+    pub use crate::shuffle::*;
     pub use crate::store::*;
     pub use crate::tensor::*;
     pub use crate::training::*;

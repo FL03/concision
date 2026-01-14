@@ -18,7 +18,7 @@ pub trait InitWith<F, U> {
 /// The [`InitRand`] trait provides a generic interface for initializing objects using
 /// random number generators. This trait is particularly useful for types that require
 /// random initialization, such as neural network weights, biases, or other parameters.
-pub trait InitRand<R: rand_core::RngCore> {
+pub trait InitRand<R: rand::RngCore> {
     type Output;
     /// use the provided random number generator `rng` to initialize the object
     fn init_random(rng: &mut R) -> Self::Output;

@@ -412,7 +412,7 @@ dependencies = [
  "num-integer",
  "num-traits",
  "paste",
- "rand_core 0.9.5",
+ "rand 0.9.2",
  "rspace-traits",
  "serde",
  "serde_derive",
