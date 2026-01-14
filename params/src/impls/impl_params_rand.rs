@@ -3,14 +3,13 @@
     Created At: 2025.11.26:15:28:12
     Contrib: @FL03
 */
-#![cfg(feature = "init")]
+#![cfg(feature = "rand")]
 use crate::params_base::ParamsBase;
 use concision_init::{NdRandom, rand, rand_distr};
 use ndarray::{
     ArrayBase, Axis, DataOwned, Dimension, RawData, RemoveAxis, ScalarOperand, ShapeBuilder,
 };
 use num_traits::{Float, FromPrimitive};
-use rand::rngs::SmallRng;
 use rand_distr::Distribution;
 
 impl<A, S, D> ParamsBase<S, D, A>
@@ -53,7 +52,6 @@ where
     }
 }
 
-#[cfg(feature = "init")]
 impl<A, S, D> NdRandom<S, D, A> for ParamsBase<S, D, A>
 where
     D: RemoveAxis,
@@ -72,7 +70,11 @@ where
         S: DataOwned,
     {
         use rand::SeedableRng;
-        Self::rand_with(shape, distr, &mut SmallRng::from_rng(&mut rand::rng()))
+        Self::rand_with(
+            shape,
+            distr,
+            &mut rand::rngs::SmallRng::from_rng(&mut rand::rng()),
+        )
     }
 
     fn rand_with<Sh, Ds, R>(shape: Sh, distr: Ds, rng: &mut R) -> Self

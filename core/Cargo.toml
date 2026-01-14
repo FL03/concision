@@ -73,7 +73,7 @@ full = [
   "default",
   "approx",
   "complex",
-  "init",
+  "rand",
   "json",
   "serde",
   "signal",
@@ -89,9 +89,9 @@ nightly = [
 
 # ********* [FF] Flags *********
 
-init = [
+rand = [
   "dep:concision-init",
-  "concision-params/init",
+  "concision-params/rand",
   "concision-traits/rand",
   "num-complex?/rand",
   "rspace-traits/rand",

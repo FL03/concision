@@ -58,18 +58,12 @@ full = [
   "default",
   "approx",
   "complex",
-  "init",
+  "rand",
   "json",
   "serde",
 ]
 
 # ********* [FF] Features *********
-
-init = [
-  "dep:concision-init",
-  "num-complex?/rand",
-  "rspace-traits/rand",
-]
 
 json = [
   "alloc",
@@ -141,7 +135,8 @@ complex = [
   "rspace-traits/complex",
 ]
 
-rand = [
+rand = [  
+  "dep:concision-init",
   "concision-traits/rand",
   "num-complex?/rand",
   "rspace-traits/rand",

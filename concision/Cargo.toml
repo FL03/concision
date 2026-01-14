@@ -34,15 +34,15 @@ test = true
 harness = false
 name = "params"
 path = "benches/params.rs"
-required-features = ["approx", "init", "std", "tracing"]
+required-features = ["approx", "rand", "std", "tracing"]
 
 [[example]]
 name = "params"
-required-features = ["init", "std", "tracing"]
+required-features = ["rand", "std", "tracing"]
 
 [[example]]
 name = "simple"
-required-features = ["init", "std", "tracing"]
+required-features = ["rand", "std", "tracing"]
 
 [dependencies]
 concision-core = { workspace = true }
@@ -69,17 +69,12 @@ default = [
 full = [
   "default",
   "approx",
-  "init",
+  "rand",
   "serde",
   "tracing",
 ]
 
-nightly = [
-  "concision-core/nightly",
-  "concision-data?/nightly",
-]
-
-# ************* [FF:Features] *************
+# ********* [FF] Features *********
 
 derive = ["dep:concision-derive"]
 
@@ -87,12 +82,12 @@ macros = ["concision-core/macros", "dep:concision-macros"]
 
 data = ["dep:concision-data"]
 
-init = [
-  "concision-core/init",
-  "concision-data?/init",
-]
+# ********* [FF] Environments *********
 
-# ************* [FF:Environments] *************
+nightly = [
+  "concision-core/nightly",
+  "concision-data?/nightly",
+]
 
 std = [
   "alloc",
@@ -110,7 +105,8 @@ wasm = [
   "concision-data?/wasm",
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Dependencies *********
+
 alloc = [
   "concision-core/alloc",
   "concision-data?/alloc",
@@ -129,6 +125,11 @@ complex = [
 json = [
   "concision-core/json",
   "concision-data?/json",
+]
+
+rand = [
+  "concision-core/rand",
+  "concision-data?/rand",
 ]
 
 rayon = [

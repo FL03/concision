@@ -10,7 +10,6 @@
 //! The crate is heavily feature-gate, enabling users to customize their experience based on
 //! their needs.
 //!
-//! - `init`: Enables (random) initialization routines for models, parameters, and tensors.
 //! - `utils`: Provides various utilities for developing machine learning models.
 //!
 //! ### Dependency-specific Features
@@ -21,7 +20,7 @@
 //! - `approx`: Enables approximate equality checks for floating-point numbers.
 //! - `complex`: Enables complex number support.
 //! - `json`: Enables JSON serialization and deserialization capabilities.
-//! - `rand`: Enables random number generation capabilities.
+//! - `rand`: Enables random number generation 
 //! - `serde`: Enables serialization and deserialization capabilities.
 //! - `tracing`: Enables tracing capabilities for debugging and logging.
 //!
@@ -47,13 +46,13 @@ extern crate alloc;
 /// this module establishes generic random initialization routines for models, params, and
 /// tensors.
 #[doc(inline)]
-#[cfg(feature = "init")]
+#[cfg(feature = "rand")]
 pub use concision_init as init;
 #[doc(inline)]
 pub use concision_params as params;
 
 #[doc(inline)]
-#[cfg(feature = "init")]
+#[cfg(feature = "rand")]
 pub use concision_init::prelude::*;
 #[doc(inline)]
 pub use concision_params::prelude::*;
@@ -105,7 +104,7 @@ pub use self::{
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    #[cfg(feature = "init")]
+    #[cfg(feature = "rand")]
     pub use concision_init::prelude::*;
     pub use concision_params::prelude::*;
     pub use concision_traits::prelude::*;

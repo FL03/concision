@@ -68,7 +68,7 @@ full = [
   "default",
   "approx",
   "complex",
-  "init",
+  "rand",
   "json",
   "serde",
   "tracing",
@@ -80,8 +80,9 @@ nightly = [
 
 # ************* [FF:Features] *************
 
-init = [
-  "concision-core/init",
+rand = [
+  "concision-core/rand",
+  "num-complex?/rand",
 ]
 
 loader = [
