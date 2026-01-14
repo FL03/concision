@@ -24,28 +24,21 @@ no-dev-version = true
 tag-name = "v{{version}}"
 
 [lib]
-bench = true
-crate-type = ["cdylib", "rlib"]
-doc = true
-doctest = true
-name = "concision"
 path = "lib.rs"
-test = true
 
 [[bench]]
 harness = false
 name = "params"
 path = "benches/params.rs"
-required-features = [
-  "approx",
-  "rand",
-  "std",
-  "tracing",
-]
+required-features = ["approx", "rand", "std", "tracing"]
+
+[[example]]
+name = "mnist"
+required-features = ["full"]
 
 [[example]]
 name = "params"
-required-features = ["rand", "std", "tracing"]
+required-features = ["default", "tracing"]
 
 [[example]]
 name = "simple"
@@ -67,34 +60,39 @@ tracing-subscriber = { workspace = true }
 
 [features]
 default = [
-  "rand",
+  "data",
+  "derive",
+  "macros",
   "std",
 ]
 
 full = [
-  "approx",
-  "data",
   "default",
-  "derive",
-  "macros",
+  "approx",
   "rand",
   "serde",
   "tracing",
 ]
 
-nightly = [
-  "concision-core/nightly",
-  "concision-data?/nightly",
+# ********* [FF] Features *********
+autodiff = [
+  "concision-core/autodiff",
+  "concision-data?/autodiff",
 ]
 
-# ************* [FF:Features] *************
 derive = ["dep:concision-derive"]
 
 macros = ["concision-core/macros", "dep:concision-macros"]
 
 data = ["dep:concision-data"]
 
-# ************* [FF:Environments] *************
+# ********* [FF] Environments *********
+
+nightly = [
+  "concision-core/nightly",
+  "concision-data?/nightly",
+]
+
 std = [
   "alloc",
   "concision-core/std",
@@ -111,7 +109,8 @@ wasm = [
   "concision-data?/wasm",
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Dependencies *********
+
 alloc = [
   "concision-core/alloc",
   "concision-data?/alloc",
@@ -137,11 +136,6 @@ rand = [
   "concision-data?/rand",
 ]
 
-rng = [
-  "concision-core/rng",
-  "concision-data?/rng",
-]
-
 rayon = [
   "concision-core/rayon",
   "concision-data?/rayon",
@@ -156,9 +150,19 @@ serde = [
   "concision-data?/serde",
 ]
 
+serde_json = [
+  "concision-core/serde_json",
+  "concision-data?/serde_json",
+]
+
 tracing = [
   "concision-core/tracing",
   "concision-data?/tracing",
+]
+
+wasm_bindgen = [
+  "concision-core/wasm_bindgen",
+  "concision-data?/wasm_bindgen",
 ]
 
 # ********* [FF] Blas *********

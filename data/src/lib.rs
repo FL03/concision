@@ -11,28 +11,27 @@
     clippy::upper_case_acronyms
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
+#![cfg_attr(all(feature = "nightly", feature = "alloc"), feature(allocator_api))]
+#![cfg_attr(all(feature = "nightly", feature = "autodiff"), feature(autodiff))]
 #![crate_type = "lib"]
-
+// compile-time checks
 #[cfg(not(any(feature = "std", feature = "alloc")))]
-compiler_error! {
-    "Either the \"std\" feature or the \"alloc\" feature must be enabled."
-}
-
+compiler_error! { "Either the \"std\" feature or the \"alloc\" feature must be enabled." }
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
-
-pub mod dataset;
-pub mod error;
-#[cfg(feature = "loader")]
-pub mod loader;
-pub mod trainer;
-
+// macros
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
 }
+// modules
+pub mod dataset;
+pub mod error;
+#[cfg(feature = "loader")]
+pub mod loader;
+pub mod trainer;
 
 pub mod traits {
     //! Additional traits and interfaces for working with datasets and data loaders.

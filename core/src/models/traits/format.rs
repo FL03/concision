@@ -1,0 +1,280 @@
+/*
+    Appellation: format <module>
+    Created At: 2026.01.06:14:38:32
+    Contrib: @FL03
+*/
+/// The [`RawModelLayout`] trait defines a minimal interface for objects capable of representing
+/// the _layout_; i.e. the number of input, hidden, and output features of a neural network
+/// model containing some number of hidden layers.
+///
+/// **Note**: This trait is implemented for the 3- and 4-tuple consiting of usize elements as
+/// well as for the `[usize; 3]` and `[usize; 4]` array types. In both these instances, the
+/// elements are ordered as (input, hidden, output) for the 3-element versions, and
+/// (input, hidden, output, layers) for the 4-element versions.
+pub trait RawModelLayout {
+    /// returns the total number of input features defined for the model
+    fn input(&self) -> usize;
+    /// returns the number of hidden features for the model
+    fn hidden(&self) -> usize;
+    /// the number of output features for the model
+    fn output(&self) -> usize;
+    /// returns the number of hidden layers within the network
+    fn depth(&self) -> usize;
+
+    /// the dimension of the input layer; (input, hidden)
+    fn dim_input(&self) -> (usize, usize) {
+        (self.input(), self.hidden())
+    }
+    /// the dimension of the hidden layers; (hidden, hidden)
+    fn dim_hidden(&self) -> (usize, usize) {
+        (self.hidden(), self.hidden())
+    }
+    /// the dimension of the output layer; (hidden, output)
+    fn dim_output(&self) -> (usize, usize) {
+        (self.hidden(), self.output())
+    }
+    /// the total number of parameters in the model
+    fn size(&self) -> usize {
+        self.size_input() + self.size_hidden() + self.size_output()
+    }
+    /// the total number of input parameters in the model
+    fn size_input(&self) -> usize {
+        self.input() * self.hidden()
+    }
+    /// the total number of hidden parameters in the model
+    fn size_hidden(&self) -> usize {
+        self.hidden() * self.hidden() * self.depth()
+    }
+    /// the total number of output parameters in the model
+    fn size_output(&self) -> usize {
+        self.hidden() * self.output()
+    }
+}
+/// The [`RawModelLayoutMut`] trait defines a mutable interface for objects capable of representing
+/// the _layout_; i.e. the number of input, hidden, and output features of
+pub trait RawModelLayoutMut: RawModelLayout {
+    /// returns a mutable reference to number of the input features for the model
+    fn input_mut(&mut self) -> &mut usize;
+    /// returns a mutable reference to the number of hidden features for the model
+    fn hidden_mut(&mut self) -> &mut usize;
+    /// returns a mutable reference to the number of hidden layers for the model
+    fn layers_mut(&mut self) -> &mut usize;
+    /// returns a mutable reference to the output features for the model
+    fn output_mut(&mut self) -> &mut usize;
+
+    #[inline]
+    /// update the number of input features for the model and return a mutable reference to the
+    /// current layout.
+    fn set_input(&mut self, input: usize) -> &mut Self {
+        *self.input_mut() = input;
+        self
+    }
+    #[inline]
+    /// update the number of hidden features for the model and return a mutable reference to
+    /// the current layout.
+    fn set_hidden(&mut self, hidden: usize) -> &mut Self {
+        *self.hidden_mut() = hidden;
+        self
+    }
+    #[inline]
+    /// update the number of hidden layers for the model and return a mutable reference to
+    /// the current layout.
+    fn set_layers(&mut self, layers: usize) -> &mut Self {
+        *self.layers_mut() = layers;
+        self
+    }
+    #[inline]
+    /// update the number of output features for the model and return a mutable reference to
+    /// the current layout.
+    fn set_output(&mut self, output: usize) -> &mut Self {
+        *self.output_mut() = output;
+        self
+    }
+}
+
+/// The [`LayoutExt`] trait defines an interface for object capable of representing the
+/// _layout_; i.e. the number of input, hidden, and output features of a neural network model
+/// containing some number of hidden layers.
+pub trait LayoutExt: RawModelLayout + RawModelLayoutMut + Clone + core::fmt::Debug {}
+
+/// The [`NetworkDepth`] trait is used to define the depth/kind of a neural network model.
+pub trait NetworkDepth {
+    private!();
+
+    fn is_deep(&self) -> bool {
+        false
+    }
+}
+
+macro_rules! impl_network_depth {
+    ( #[$tgt:ident] $vis:vis $s:ident {$($name:ident $({$($rest:tt)*})?),* $(,)?}) => {
+        $(
+            impl_network_depth!(@impl #[$tgt] $vis $s $name $({$($rest)*})?);
+        )*
+    };
+    (@impl #[$tgt:ident] $vis:vis enum $name:ident $({$($rest:tt)*})?) => {
+        #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+        $vis enum $name {}
+
+        impl $tgt for $name {
+            seal!();
+
+            $($($rest)*)?
+        }
+    };
+}
+
+impl_network_depth! {
+    #[NetworkDepth]
+    pub enum {
+        Deep {
+            fn is_deep(&self) -> bool {
+                true
+            }
+        },
+        Shallow,
+    }
+}
+
+/*
+ ************* Implementations *************
+*/
+
+impl<T> RawModelLayout for &T
+where
+    T: RawModelLayout,
+{
+    fn input(&self) -> usize {
+        <T as RawModelLayout>::input(self)
+    }
+    fn hidden(&self) -> usize {
+        <T as RawModelLayout>::hidden(self)
+    }
+    fn depth(&self) -> usize {
+        <T as RawModelLayout>::depth(self)
+    }
+    fn output(&self) -> usize {
+        <T as RawModelLayout>::output(self)
+    }
+}
+
+impl<T> RawModelLayout for &mut T
+where
+    T: RawModelLayout,
+{
+    fn input(&self) -> usize {
+        <T as RawModelLayout>::input(self)
+    }
+    fn hidden(&self) -> usize {
+        <T as RawModelLayout>::hidden(self)
+    }
+    fn depth(&self) -> usize {
+        <T as RawModelLayout>::depth(self)
+    }
+    fn output(&self) -> usize {
+        <T as RawModelLayout>::output(self)
+    }
+}
+
+impl<T> LayoutExt for T where T: RawModelLayoutMut + Copy + core::fmt::Debug {}
+
+impl RawModelLayout for (usize, usize, usize) {
+    fn input(&self) -> usize {
+        self.0
+    }
+    fn hidden(&self) -> usize {
+        self.1
+    }
+    fn depth(&self) -> usize {
+        1
+    }
+    fn output(&self) -> usize {
+        self.2
+    }
+}
+
+impl RawModelLayout for (usize, usize, usize, usize) {
+    fn input(&self) -> usize {
+        self.0
+    }
+    fn hidden(&self) -> usize {
+        self.1
+    }
+    fn output(&self) -> usize {
+        self.2
+    }
+
+    fn depth(&self) -> usize {
+        self.3
+    }
+}
+
+impl RawModelLayoutMut for (usize, usize, usize, usize) {
+    fn input_mut(&mut self) -> &mut usize {
+        &mut self.0
+    }
+
+    fn hidden_mut(&mut self) -> &mut usize {
+        &mut self.1
+    }
+
+    fn layers_mut(&mut self) -> &mut usize {
+        &mut self.2
+    }
+
+    fn output_mut(&mut self) -> &mut usize {
+        &mut self.3
+    }
+}
+
+impl RawModelLayout for [usize; 3] {
+    fn input(&self) -> usize {
+        self[0]
+    }
+
+    fn hidden(&self) -> usize {
+        self[1]
+    }
+
+    fn output(&self) -> usize {
+        self[2]
+    }
+
+    fn depth(&self) -> usize {
+        1
+    }
+}
+
+impl RawModelLayout for [usize; 4] {
+    fn input(&self) -> usize {
+        self[0]
+    }
+
+    fn hidden(&self) -> usize {
+        self[1]
+    }
+
+    fn output(&self) -> usize {
+        self[2]
+    }
+
+    fn depth(&self) -> usize {
+        self[3]
+    }
+}
+
+impl RawModelLayoutMut for [usize; 4] {
+    fn input_mut(&mut self) -> &mut usize {
+        &mut self[0]
+    }
+    fn hidden_mut(&mut self) -> &mut usize {
+        &mut self[1]
+    }
+    fn layers_mut(&mut self) -> &mut usize {
+        &mut self[2]
+    }
+    fn output_mut(&mut self) -> &mut usize {
+        &mut self[3]
+    }
+}

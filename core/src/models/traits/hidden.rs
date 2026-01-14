@@ -11,7 +11,7 @@ where
     S: RawData,
     D: Dimension,
 {
-    private!();
+    private! {}
 
     fn count(&self) -> usize;
 }
@@ -22,16 +22,17 @@ where
     S: RawData,
     D: Dimension,
 {
-    private!();
+    private! {}
 }
 /// The [`DeepModelRepr`] trait for deep neural networks
 pub trait DeepModelRepr<S, D>: RawHidden<S, D>
 where
     S: RawData,
     D: Dimension,
-    Self: IntoIterator<Item = ParamsBase<S, D>>,
+    Self:
+        IntoIterator<Item = ParamsBase<S, D>> + core::ops::Index<usize, Output = ParamsBase<S, D>>,
 {
-    private!();
+    private! {}
 
     /// returns the hidden layers as a slice
     fn as_slice(&self) -> &[ParamsBase<S, D>];
@@ -51,7 +52,8 @@ where
     X: RawHidden<S, D>
         + IntoIterator<Item = ParamsBase<S, D>>
         + AsRef<[ParamsBase<S, D>]>
-        + AsMut<[ParamsBase<S, D>]>,
+        + AsMut<[ParamsBase<S, D>]>
+        + core::ops::Index<usize, Output = ParamsBase<S, D>>,
 {
     seal!();
 

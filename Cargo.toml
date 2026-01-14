@@ -19,34 +19,38 @@ categories = ["algorithms", "mathematics", "science"]
 description = "Concision is a toolkit for designing machine-learning models in Rust."
 edition = "2024"
 homepage = "https://github.com/FL03/concision/wiki"
-keywords = ["data-science", "machine-learning", "scsys", "toolkit"]
+keywords = ["data-science", "machine-learning", "toolkit"]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/concision.git"
 rust-version = "1.85.0"
-version = "0.3.0"
+version = "0.3.1"
 
 [workspace.dependencies]
-concision = { default-features = false, path = "concision", version = "0.3.0" }
+concision = { default-features = false, path = "concision", version = "0.3.1" }
 # sdk
-concision-core = { default-features = false, path = "core", version = "0.3.0" }
-concision-data = { default-features = false, path = "data", version = "0.3.0" }
-concision-derive = { default-features = false, path = "derive", version = "0.3.0" }
-concision-init = { default-features = false, path = "init", version = "0.3.0" }
-concision-macros = { default-features = false, path = "macros", version = "0.3.0" }
-concision-neural = { default-features = false, path = "neural", version = "0.3.0" }
-concision-params = { default-features = false, path = "params", version = "0.3.0" }
-concision-traits = { default-features = false, path = "traits", version = "0.3.0" }
+concision-core = { default-features = false, path = "core", version = "0.3.1" }
+concision-data = { default-features = false, path = "data", version = "0.3.1" }
+concision-derive = { default-features = false, path = "derive", version = "0.3.1" }
+concision-init = { default-features = false, path = "init", version = "0.3.1" }
+concision-macros = { default-features = false, path = "macros", version = "0.3.1" }
+concision-neural = { default-features = false, path = "neural", version = "0.3.1" }
+concision-params = { default-features = false, path = "params", version = "0.3.1" }
+concision-traits = { default-features = false, path = "traits", version = "0.3.1" }
 # custom models & extras
-concision-ext = { default-features = false, path = "ext", version = "0.3.0" }
+concision-ext = { default-features = false, path = "ext", version = "0.3.1" }
 # custom
+contained = { default-features = false, features = ["derive"], version = "0.2.2" }
+rspace = { default-features = false, features = ["macros"], version = "0.0.8" }
+rspace-traits = { default-features = false, version = "0.0.8" }
 variants = { default-features = false, features = ["derive"], version = "0.0.1" }
 # data structures
 hashbrown = { default-features = false, version = "0.16" }
 # tensors & arrays
 ndarray = { default-features = false, version = "0.17" }
 ndarray-linalg = { default-features = false, version = "0.18" }
-ndarray-stats = "0.6"
+ndarray-rand = { default-features = false, version = "0.16" }
+ndarray-stats = { version = "0.7" }
 # benchmarking
 criterion = { version = "0.8" }
 # concurrency & parallelism
@@ -64,6 +68,8 @@ num-complex = { default-features = false, version = "0.4" }
 num-integer = { default-features = false, version = "0.1" }
 num-traits = { default-features = false, version = "0.2" }
 rustfft = { version = "6" }
+# networking
+reqwest = { default-features = false, version = "0.13" }
 # random
 getrandom = { default-features = false, version = "0.3" }
 rand = { default-features = false, version = "0.9" }
@@ -86,6 +92,8 @@ lazy_static = { version = "1" }
 paste = { version = "1" }
 smart-default = "0.7"
 strum = { default-features = false, features = ["derive"], version = "0.27" }
+# WebAssembly (wasm)
+wasm-bindgen = { default-features = false, version = "0.2" }
 
 # ************* [Profiles] *************
 [profile.dev]

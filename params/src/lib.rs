@@ -13,8 +13,8 @@
 //! values. At its core, the [`ParamsBase`] object is defined as an object composed of two
 //! independent tensors:
 //!
-//! - An $`n`$ dimensional weight tensor
-//! - An $`n-1`$ dimensional bias tensor
+//! - An $n$ dimensional weight tensor
+//! - An $n-1$ dimensional bias tensor
 //!
 //! These tensors can be of any shape or size, allowing for a wide range of neural network
 //! architectures to be represented. The crate also provides various utilities and traits for
@@ -30,64 +30,60 @@
     clippy::upper_case_acronyms,
     rustdoc::redundant_explicit_links
 )]
-
+#![cfg_attr(all(feature = "nightly", feature = "alloc"), feature(allocator_api))]
+#![cfg_attr(all(feature = "nightly", feature = "autodiff"), feature(autodiff))]
+// compiler checks
+#[cfg(not(any(feature = "alloc", feature = "std")))]
+compiler_error! { "Either the \"alloc\" or \"std\" feature must be enabled for this crate." }
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
-extern crate ndarray as nd;
-
-#[cfg(all(not(feature = "alloc"), not(feature = "std")))]
-compiler_error! {
- "Either the \"alloc\" or \"std\" feature must be enabled for this crate."
-}
-
-pub mod error;
-pub mod iter;
-
-mod params_base;
-
+// macros
 #[macro_use]
 pub(crate) mod macros {
     #[macro_use]
     pub mod seal;
 }
+// public modules
+pub mod error;
+pub mod iter;
+// internal modules
+mod params_base;
 
 mod impls {
     mod impl_params;
+    mod impl_params_ext;
     mod impl_params_iter;
     mod impl_params_ops;
-
-    #[allow(deprecated)]
-    mod impl_params_deprecated;
-    #[cfg(feature = "rand")]
     mod impl_params_rand;
-    #[cfg(feature = "serde")]
+    mod impl_params_ref;
+    mod impl_params_repr;
     mod impl_params_serde;
 }
 
-pub mod traits {
-    //! Traits for working with model parameters
-    pub use self::{param::*, wnb::*};
+mod traits {
+    #[doc(inline)]
+    pub use self::{iterators::*, raw_params::*, shape::*, wnb::*};
 
-    mod param;
+    mod iterators;
+    mod raw_params;
+    mod shape;
     mod wnb;
 }
 
-mod types {
-    //! Supporting types and aliases for working with model parameters
+mod utils {
     #[doc(inline)]
-    pub use self::aliases::*;
+    pub use self::shape::*;
 
-    mod aliases;
+    mod shape;
 }
-
 // re-exports
 #[doc(inline)]
-pub use self::{error::*, params_base::ParamsBase, traits::*, types::*};
+pub use self::{error::*, params_base::*, traits::*, utils::*};
 // prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::error::ParamsError;
     pub use crate::params_base::*;
     pub use crate::traits::*;
-    pub use crate::types::*;
+    pub use crate::utils::*;
 }

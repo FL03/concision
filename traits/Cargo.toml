@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 
 [package.metadata.release]
@@ -25,9 +25,6 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
-doctest = false
-test = true
 
 [[test]]
 name = "complex"
@@ -35,12 +32,10 @@ required-features = ["complex"]
 
 [dependencies]
 # custom
-variants = { workspace = true }
+rspace-traits = { workspace = true }
 # data structures
+hashbrown = { optional = true, workspace = true }
 ndarray = { workspace = true }
-# error-handling
-anyhow = { workspace = true }
-thiserror = { workspace = true }
 # macros & utilities
 paste = { workspace = true }
 # mathematics
@@ -49,58 +44,92 @@ num-complex = { optional = true, workspace = true }
 num-integer = { workspace = true }
 num-traits = { workspace = true }
 # random
-getrandom = { optional = true, workspace = true }
-rand = { optional = true, workspace = true }
-rand_distr = { optional = true, workspace = true }
+rand_core = { optional = true, workspace = true }
+# serialization
+serde = { optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
+# wasmbindgen
+wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = ["std"]
 
 full = [
+  "default",
   "approx",
   "complex",
-  "default",
+  "hashbrown",
   "rand",
+  "serde",
 ]
 
-nightly = []
+autodiff = [
+  "nightly",
+]
 
-# ************* [FF:Dependencies] *************
+nightly = [
+  "hashbrown?/nightly",
+]
+
+# ********* [FF] Environments *********
 std = [
   "alloc",
-  "anyhow/std",
+  "hashbrown?/default",
   "ndarray/std",
   "num-complex?/std",
   "num-integer/std",
   "num-traits/std",
-  "rand?/std",
-  "rand?/std_rng",
-  "thiserror/std",
+  "rand_core?/std",
+  "rspace-traits/std",
+  "serde?/std",
 ]
 
 wasi = []
 
-wasm = ["getrandom?/wasm_js"]
-# ************* [FF:Dependencies] *************
-alloc = []
+wasm = []
 
-approx = ["dep:approx", "ndarray/approx"]
+# ********* [FF] Dependencies *********
+alloc = [
+  "hashbrown?/alloc",
+  "rspace-traits/alloc",
+  "serde?/alloc",
+]
+
+approx = [
+  "dep:approx",
+  "ndarray/approx",
+]
 
 blas = ["ndarray/blas"]
 
-complex = ["dep:num-complex"]
+complex = [
+  "dep:num-complex",
+  "rspace-traits/complex",
+]
 
-rayon = ["ndarray/rayon"]
+hashbrown = [
+  "dep:hashbrown",
+  "alloc",
+]
+
+rayon = [
+  "hashbrown?/rayon",
+  "ndarray/rayon",
+  "rspace-traits/rayon",
+]
 
 rand = [
-  "dep:rand",
-  "dep:rand_distr",
+  "dep:rand_core",
   "num-complex?/rand",
-  "rng",
+  "rspace-traits/rand",
 ]
 
-rng = [
-  "dep:getrandom",
-  "rand?/small_rng",
-  "rand?/thread_rng",
+serde = [
+  "dep:serde",
+  "dep:serde_derive",
+  "serde?/derive",
+  "hashbrown?/serde",
+  "rspace-traits/serde",
 ]
+
+wasm_bindgen = ["dep:wasm-bindgen"]

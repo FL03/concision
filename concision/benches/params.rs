@@ -4,8 +4,8 @@
 */
 extern crate concision as cnc;
 
-use cnc::init::NdInit;
-
+use cnc::Params;
+use cnc::init::NdRandom;
 use core::hint::black_box;
 use criterion::{BatchSize, BenchmarkId, Criterion};
 use ndarray::Array1;
@@ -26,13 +26,12 @@ fn bench_params_forward(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("Params::forward", n), &n, |b, &x| {
             b.iter_batched(
                 || {
-                    let params = cnc::Params::<f64>::glorot_normal((n, 64));
-                    let input = Array1::<f64>::linspace(0.0, 1.0, x);
-                    // return the configured parameters
-                    (params, input)
+                    let params = Params::<f64>::glorot_normal((n, 64));
+                    let x = Array1::<f64>::linspace(0.0, 1.0, x);
+                    (params, x)
                 },
-                |(params, input)| {
-                    params.forward(black_box(&input));
+                |(params, x)| {
+                    black_box(params.forward(&x));
                 },
                 BatchSize::SmallInput,
             );

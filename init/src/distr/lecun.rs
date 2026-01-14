@@ -10,9 +10,9 @@ use rand_distr::{Distribution, StandardNormal};
 /// [LecunNormal] is a truncated [normal](rand_distr::Normal) distribution centered at 0
 /// with a standard deviation that is calculated as:
 ///
-/// $$
-/// \sigma = {n_{in}}^{-\frac{1}{2}}
-/// $$
+/// ```math
+/// \sigma=\sqrt\frac{1}{n_{in}}
+/// ```
 ///
 /// where $`n_{in}`$ is the number of input units.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -26,19 +26,18 @@ impl LecunNormal {
     }
     /// Create a [truncated normal](TruncatedNormal) [distribution](Distribution) centered at 0;
     /// See [Self::std_dev] for the standard deviation calculations.
-    pub fn distr<F>(&self) -> crate::InitResult<TruncatedNormal<F>>
+    pub fn distr<F>(&self) -> crate::Result<TruncatedNormal<F>>
     where
         F: Float,
         StandardNormal: Distribution<F>,
     {
         TruncatedNormal::new(F::zero(), self.std_dev())
     }
-    /// Calculate the standard deviation ($`\sigma`$) of the distribution.
-    /// This is done by computing the root of the reciprocal of the number of inputs
-    /// ($`n_{in}`$) as follows:
+    /// compute the standard deviation ($`\sigma`$) of the distribution by calculating the
+    /// root of the reciprocal of the number of inputs.
     ///
     /// ```math
-    /// \sigma = {n_{in}}^{-\frac{1}{2}}
+    /// \sigma=\sqrt\frac{1}{n_{in}}
     /// ```
     pub fn std_dev<F>(&self) -> F
     where

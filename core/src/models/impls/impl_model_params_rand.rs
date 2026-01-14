@@ -6,7 +6,7 @@ use crate::models::{DeepParamsBase, ShallowParamsBase};
 
 use crate::ModelFeatures;
 use concision_init::distr as init;
-use concision_init::{NdInit, rand_distr};
+use concision_init::{NdRandom, rand_distr};
 use concision_params::ParamsBase;
 use ndarray::{DataOwned, Ix2};
 use num_traits::{Float, FromPrimitive};
@@ -18,6 +18,39 @@ impl<A, S> ShallowParamsBase<S, Ix2, A>
 where
     S: DataOwned<Elem = A>,
 {
+    /// returns a new instance of the model initialized with the given features and random
+    /// distribution
+    pub fn rand_with<G, Ds>(features: ModelFeatures, distr: G) -> Self
+    where
+        G: Fn((usize, usize)) -> Ds,
+        Ds: Clone + Distribution<A>,
+        S: DataOwned,
+    {
+        Self {
+            input: ParamsBase::rand(features.dim_input(), distr(features.dim_input())),
+            hidden: ParamsBase::rand(features.dim_hidden(), distr(features.dim_hidden())),
+            output: ParamsBase::rand(features.dim_output(), distr(features.dim_output())),
+        }
+    }
+    /// initialize the model parameters using a glorot normal distribution
+    pub fn glorot_normal(features: ModelFeatures) -> Self
+    where
+        A: Float + FromPrimitive,
+        StandardNormal: Distribution<A>,
+    {
+        Self::rand_with(features, |(rows, cols)| init::XavierNormal::new(rows, cols))
+    }
+    /// initialize the model parameters using a glorot uniform distribution
+    pub fn glorot_uniform(features: ModelFeatures) -> Self
+    where
+        A: Float + FromPrimitive + SampleUniform,
+        <A as SampleUniform>::Sampler: Clone,
+        Uniform<A>: Distribution<A>,
+    {
+        Self::rand_with(features, |(rows, cols)| {
+            init::XavierUniform::new(rows, cols).expect("failed to create distribution")
+        })
+    }
     /// consumes the controller to initialize the various parameters with random values
     pub fn init(self) -> Self
     where
@@ -36,39 +69,6 @@ where
             input,
             output,
         }
-    }
-    /// returns a new instance of the model initialized with the given features and random
-    /// distribution
-    pub fn init_rand<G, Ds>(features: ModelFeatures, distr: G) -> Self
-    where
-        G: Fn((usize, usize)) -> Ds,
-        Ds: Clone + Distribution<A>,
-        S: DataOwned,
-    {
-        Self {
-            input: ParamsBase::rand(features.dim_input(), distr(features.dim_input())),
-            hidden: ParamsBase::rand(features.dim_hidden(), distr(features.dim_hidden())),
-            output: ParamsBase::rand(features.dim_output(), distr(features.dim_output())),
-        }
-    }
-    /// initialize the model parameters using a glorot normal distribution
-    pub fn glorot_normal(features: ModelFeatures) -> Self
-    where
-        A: Float + FromPrimitive,
-        StandardNormal: Distribution<A>,
-    {
-        Self::init_rand(features, |(rows, cols)| init::XavierNormal::new(rows, cols))
-    }
-    /// initialize the model parameters using a glorot uniform distribution
-    pub fn glorot_uniform(features: ModelFeatures) -> Self
-    where
-        A: Float + FromPrimitive + SampleUniform,
-        <A as SampleUniform>::Sampler: Clone,
-        Uniform<A>: Distribution<A>,
-    {
-        Self::init_rand(features, |(rows, cols)| {
-            init::XavierUniform::new(rows, cols).expect("failed to create distribution")
-        })
     }
 }
 

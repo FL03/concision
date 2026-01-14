@@ -1,50 +1,38 @@
 /*
     Appellation: activate <module>
-    Contrib: FL03 <jo3mccain@icloud.com>
+    Created At: 2026.01.13:17:07:42
+    Contrib: @FL03
 */
-//! Activation functions for neural networks and their components. These functions are often
-//! used to introduce non-linearity into the model, allowing it to learn more complex patterns
-//! in the data.
-//!
-//! ## Overview
-//!
-//! This module works to provide a complete set of activation utilities for neural networks,
-//! manifesting in a number of traits, utilities, and other primitives used to define various
-//! approaches to activation functions.
-//!
-//! - [`HeavysideActivation`]
-//! - [`LinearActivation`]
-//! - [`SigmoidActivation`]
-//! - [`SoftmaxActivation`]
-//! - [`ReLUActivation`]
-//! - [`TanhActivation`]
-//!
+//! this module provides the [`Activate`] trait alongside additional primitives and utilities
+//! for activating neurons within a neural network.
 #[doc(inline)]
-pub use self::{traits::*, utils::*};
+pub use self::{rho::*, traits::*, utils::*};
 
-pub(crate) mod utils;
-
-pub(crate) mod traits {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    mod activate;
-    mod unary;
-
-    mod prelude {
-        #[doc(inline)]
-        pub use super::activate::*;
-        #[doc(inline)]
-        pub use super::unary::*;
-    }
-}
+pub mod rho;
 
 mod impls {
-    mod impl_binary;
-    mod impl_linear;
-    mod impl_nonlinear;
+    mod impl_activate_linear;
+    mod impl_activate_nonlinear;
+    mod impl_activator;
 }
 
+mod traits {
+    #[doc(inline)]
+    pub use self::{activate::*, ops::*};
+
+    mod activate;
+    mod ops;
+}
+
+pub mod utils {
+    #[doc(inline)]
+    pub use self::funcs::*;
+
+    mod funcs;
+}
+
+#[doc(hidden)]
+#[allow(unused_imports)]
 pub(crate) mod prelude {
     pub use super::traits::*;
     pub use super::utils::*;

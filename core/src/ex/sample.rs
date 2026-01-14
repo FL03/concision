@@ -2,26 +2,32 @@
     appellation: model <test>
     authors: @FL03
 */
-#![cfg(feature = "std")]
 use crate::activate::{ReLUActivation, SigmoidActivation};
-use crate::{
-    DeepModelParams, Error, Forward, Model, ModelFeatures, Norm, Params, StandardModelConfig, Train,
-};
+use crate::config::StandardModelConfig;
+use crate::error::Error;
+use crate::models::{DeepModelParams, ModelFeatures};
+use crate::nn::Model;
 #[cfg(feature = "rand")]
 use concision_init::{
-    NdInit,
+    NdRandom,
     rand_distr::{Distribution, StandardNormal},
 };
-
+use concision_params::Params;
+use concision_traits::{Forward, Norm, Train};
 use ndarray::prelude::*;
 use ndarray::{Data, ScalarOperand};
 use num_traits::{Float, FromPrimitive, NumAssign, Zero};
+
+#[cfg(not(feature = "tracing"))]
+use eprintln as error;
+#[cfg(feature = "tracing")]
+use tracing::error;
 
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct TestModel<T = f64> {
     pub config: StandardModelConfig<T>,
     pub features: ModelFeatures,
-    pub params: DeepModelParams<T>,
+    pub store: DeepModelParams<T>,
 }
 
 impl<T> TestModel<T> {
@@ -29,11 +35,11 @@ impl<T> TestModel<T> {
     where
         T: Clone + Zero,
     {
-        let params = DeepModelParams::zeros(features);
+        let store = DeepModelParams::zeros(features);
         TestModel {
             config,
             features,
-            params,
+            store,
         }
     }
     /// returns an immutable reference to the model configuration
@@ -45,12 +51,16 @@ impl<T> TestModel<T> {
         self.features
     }
     /// returns a reference to the model params
-    pub const fn params(&self) -> &DeepModelParams<T> {
-        &self.params
+    pub const fn store(&self) -> &DeepModelParams<T> {
+        &self.store
     }
     /// returns a mutable reference to the model params
-    pub const fn params_mut(&mut self) -> &mut DeepModelParams<T> {
-        &mut self.params
+    pub const fn store_mut(&mut self) -> &mut DeepModelParams<T> {
+        &mut self.store
+    }
+    #[cfg(not(feature = "rand"))]
+    pub fn init(self) -> Self {
+        self
     }
     #[cfg(feature = "rand")]
     /// consumes the current instance to initalize another with random parameters
@@ -60,25 +70,25 @@ impl<T> TestModel<T> {
         T: Float,
     {
         let TestModel {
-            mut params,
+            mut store,
             config,
             features,
         } = self;
-        params.set_input(Params::<T>::lecun_normal((
+        store.set_input(Params::<T>::lecun_normal((
             features.input(),
             features.hidden(),
         )));
-        for layer in params.hidden_mut() {
+        for layer in store.hidden_mut() {
             *layer = Params::<T>::lecun_normal((features.hidden(), features.hidden()));
         }
-        params.set_output(Params::<T>::lecun_normal((
+        store.set_output(Params::<T>::lecun_normal((
             features.hidden(),
             features.output(),
         )));
         TestModel {
             config,
             features,
-            params,
+            store,
         }
     }
 }
@@ -101,11 +111,11 @@ impl<T> Model<T> for TestModel<T> {
     }
 
     fn params(&self) -> &DeepModelParams<T> {
-        &self.params
+        &self.store
     }
 
     fn params_mut(&mut self) -> &mut DeepModelParams<T> {
-        &mut self.params
+        &mut self.store
     }
 }
 
@@ -121,13 +131,13 @@ where
 
     fn forward(&self, input: &ArrayBase<S, D>) -> Self::Output {
         // complete the first forward pass using the input layer
-        let mut output = self.params().input().forward(input).relu();
+        let mut output = self.store().input().forward(input).relu();
         // complete the forward pass for each hidden layer
-        for layer in self.params().hidden() {
+        for layer in self.store().hidden() {
             output = layer.forward(&output).relu();
         }
 
-        self.params().output().forward(&output).sigmoid()
+        self.store().output().forward(&output).sigmoid()
     }
 }
 
@@ -172,15 +182,15 @@ where
         let mut activations = Vec::new();
         activations.push(input.to_owned());
 
-        let mut output = self.params().input().forward_then(&input, |y| y.relu());
+        let mut output = self.store().input().forward_then(&input, |y| y.relu());
         activations.push(output.to_owned());
         // collect the activations of the hidden
-        for layer in self.params().hidden() {
+        for layer in self.store().hidden() {
             output = layer.forward(&output).relu();
             activations.push(output.to_owned());
         }
 
-        output = self.params().output().forward(&output).sigmoid();
+        output = self.store().output().forward(&output).sigmoid();
         activations.push(output.to_owned());
 
         // Calculate output layer error
@@ -192,7 +202,7 @@ where
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
 
         // Update output weights
-        self.params_mut()
+        self.store_mut()
             .output_mut()
             .backward(activations.last().unwrap(), &delta, lr);
 
@@ -202,23 +212,23 @@ where
             // Calculate error for this layer
             delta = if i == num_hidden - 1 {
                 // use the output activations for the final hidden layer
-                self.params().output().weights().dot(&delta) * activations[i + 1].relu_derivative()
+                self.store().output().weights().dot(&delta) * activations[i + 1].relu_derivative()
             } else {
                 // else; backpropagate using the previous hidden layer
-                self.params().hidden()[i + 1].weights().t().dot(&delta)
+                self.store().hidden()[i + 1].weights().t().dot(&delta)
                     * activations[i + 1].relu_derivative()
             };
             // Normalize delta to prevent exploding gradients
             delta /= delta.l2_norm();
-            self.params_mut().hidden_mut()[i].backward(&activations[i + 1], &delta, lr);
+            self.store_mut().hidden_mut()[i].backward(&activations[i + 1], &delta, lr);
         }
         /*
             The delta for the input layer is computed using the weights of the first hidden layer
             and the derivative of the activation function of the first hidden layer.
         */
-        delta = self.params().hidden()[0].weights().dot(&delta) * activations[1].relu_derivative();
+        delta = self.store().hidden()[0].weights().dot(&delta) * activations[1].relu_derivative();
         delta /= delta.l2_norm(); // Normalize the delta to prevent exploding gradients
-        self.params_mut()
+        self.store_mut()
             .input_mut()
             .backward(&activations[1], &delta, lr);
 
@@ -262,15 +272,7 @@ where
             loss += match Train::<ArrayView1<A>, ArrayView1<A>>::train(self, &x, &e) {
                 Ok(l) => l,
                 Err(err) => {
-                    #[cfg(not(feature = "tracing"))]
-                    eprintln!(
-                        "Training failed for batch {}/{}: {:?}",
-                        i + 1,
-                        batch_size,
-                        err
-                    );
-                    #[cfg(feature = "tracing")]
-                    tracing::error!(
+                    error!(
                         "Training failed for batch {}/{}: {:?}",
                         i + 1,
                         batch_size,

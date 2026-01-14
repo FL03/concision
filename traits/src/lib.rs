@@ -1,8 +1,6 @@
-/*
-    Appellation: concision-traits <library>
-    Contrib: @FL03
-*/
-//! Traits for the concicion machine learning framework
+//! Core traits defining fundamental abstractions and operations useful for neural networks.
+//!
+#![crate_type = "lib"]
 #![allow(
     clippy::missing_safety_doc,
     clippy::module_inception,
@@ -12,17 +10,16 @@
     rustdoc::redundant_explicit_links
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "nightly", feature(allocator_api))]
-#![crate_type = "lib"]
-
+#![cfg_attr(all(feature = "nightly", feature = "alloc"), feature(allocator_api))]
+#![cfg_attr(all(feature = "nightly", feature = "autodiff"), feature(autodiff))]
+// compile-time checks
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compiler_error! {
     "At least one of the \"std\" or \"alloc\" features must be enabled for the crate to compile."
 }
-
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
-extern crate ndarray as nd;
 
 #[macro_use]
 pub(crate) mod macros {
@@ -30,19 +27,21 @@ pub(crate) mod macros {
     pub mod seal;
 }
 
-pub mod error;
+mod impls {
+    mod impl_backward;
+    mod impl_forward;
+}
 
-mod apply;
 mod clip;
 mod codex;
 mod complex;
-mod container;
-mod convert;
 mod entropy;
+mod gradient;
+mod init;
 mod loss;
 mod norm;
 mod predict;
-mod propagation;
+mod propagate;
 mod rounding;
 mod store;
 mod training;
@@ -50,10 +49,10 @@ mod training;
 pub mod math {
     //! Mathematically oriented operators and functions useful in machine learning contexts.
     #[doc(inline)]
-    pub use self::{difference::*, gradient::*, roots::*, stats::*, unary::*};
+    pub use self::{linalg::*, percentages::*, roots::*, stats::*, unary::*};
 
-    mod difference;
-    mod gradient;
+    mod linalg;
+    mod percentages;
     mod roots;
     mod stats;
     mod unary;
@@ -62,51 +61,49 @@ pub mod math {
 pub mod ops {
     //! composable operators for tensor manipulations and transformations, neural networks, and
     //! more
-    #[allow(unused_imports)]
     #[doc(inline)]
-    pub use self::{binary::*, unary::*};
+    pub use self::{apply::*, fill::*, like::*, map::*, reshape::*, unary::*};
 
-    mod binary;
+    mod apply;
+    mod fill;
+    mod like;
+    mod map;
+    mod reshape;
     mod unary;
 }
 
 pub mod tensor {
     #[doc(inline)]
-    pub use self::{dimensionality::*, fill::*, like::*, linalg::*, ndtensor::*, reshape::*};
+    pub use self::{dimensionality::*, ndtensor::*, tensor_data::*};
 
     mod dimensionality;
-    mod fill;
-    mod like;
-    mod linalg;
     mod ndtensor;
-    mod reshape;
+    mod tensor_data;
 }
 
 // re-exports
 #[doc(inline)]
-pub use self::error::*;
-#[doc(inline)]
-pub use self::prelude::*;
-
+pub use self::{
+    clip::*, codex::*, complex::*, entropy::*, gradient::*, init::*, loss::*, math::*, norm::*,
+    ops::*, predict::*, propagate::*, rounding::*, store::*, tensor::*, training::*,
+};
+// prelude
 #[doc(hidden)]
 pub mod prelude {
-    pub use crate::math::*;
-    pub use crate::tensor::*;
-
-    pub use crate::apply::*;
     pub use crate::clip::*;
     pub use crate::codex::*;
-    pub use crate::container::*;
-    pub use crate::convert::*;
+    pub use crate::complex::*;
     pub use crate::entropy::*;
+    pub use crate::gradient::*;
+    pub use crate::init::*;
     pub use crate::loss::*;
+    pub use crate::math::*;
     pub use crate::norm::*;
+    pub use crate::ops::*;
     pub use crate::predict::*;
-    pub use crate::propagation::*;
+    pub use crate::propagate::*;
     pub use crate::rounding::*;
     pub use crate::store::*;
+    pub use crate::tensor::*;
     pub use crate::training::*;
-
-    #[cfg(feature = "complex")]
-    pub use crate::complex::*;
 }

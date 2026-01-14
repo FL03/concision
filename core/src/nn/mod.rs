@@ -6,47 +6,25 @@
 //! This module provides network specific implementations and traits supporting the development
 //! of neural network models.
 //!
+#[doc(inline)]
+pub use self::{layer::*, traits::*};
+
+pub mod layer;
+
+mod traits {
+    #[doc(inline)]
+    pub use self::{context::*, layer::*, model::*, neural_network::*};
+
+    mod context;
+    mod layer;
+    mod model;
+    mod neural_network;
+}
 
 pub(crate) mod prelude {
-    pub use super::{NetworkConsts, NeuralNetwork, NeuralNetworkParams};
+    pub use super::layer::*;
+    pub use super::traits::*;
 }
 
-use ndarray::{Dimension, RawData};
-
-pub trait NeuralNetworkParams<S, D, A = <S as RawData>::Elem>
-where
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-}
-
-/// The [`NeuralNetwork`] trait is used to define the network itself as well as each of its
-/// constituent parts.
-pub trait NeuralNetwork<S, D, A = <S as RawData>::Elem>
-where
-    D: Dimension,
-    S: RawData<Elem = A>,
-{
-    /// The context of the neural network defines any additional information required for its operation.
-    type Ctx;
-    /// The configuration of the neural network defines its architecture and hyperparameters.
-    type Config;
-    /// The parameters of the neural network define its weights and biases.
-    type Params<_S, _D>: NeuralNetworkParams<_S, _D, A>
-    where
-        _S: RawData<Elem = A>,
-        _D: Dimension;
-
-    /// returns a reference to the network configuration;
-    fn config(&self) -> &Self::Config;
-
-    fn params(&self) -> &Self::Params<S, D>;
-
-    fn params_mut(&mut self) -> &mut Self::Params<S, D>;
-}
-
-/// A trait defining common constants for neural networks.
-pub trait NetworkConsts {
-    const NAME: &'static str;
-    const VERSION: &'static str;
-}
+#[cfg(test)]
+mod tests {}

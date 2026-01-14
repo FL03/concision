@@ -4,9 +4,11 @@
 */
 use super::HyperParam;
 use super::{ExtendedModelConfig, ModelConfiguration, RawConfig};
+use alloc::string::{String, ToString};
 use hashbrown::DefaultHashBuilder;
 use hashbrown::hash_map::{self, HashMap};
 
+/// The [`StandardModelConfig`] struct is a standard implementation of the
 #[derive(Clone, Debug)]
 #[cfg_attr(
     feature = "serde",
@@ -16,7 +18,7 @@ use hashbrown::hash_map::{self, HashMap};
 pub struct StandardModelConfig<T> {
     pub batch_size: usize,
     pub epochs: usize,
-    pub hyperspace: HashMap<HyperParam, T>,
+    pub hyperspace: HashMap<String, T>,
 }
 
 impl<T> StandardModelConfig<T> {
@@ -44,37 +46,37 @@ impl<T> StandardModelConfig<T> {
         &mut self.epochs
     }
     /// returns a reference to the hyperparameters map
-    pub const fn hyperparameters(&self) -> &HashMap<HyperParam, T> {
+    pub const fn hyperparameters(&self) -> &HashMap<String, T> {
         &self.hyperspace
     }
     /// returns a mutable reference to the hyperparameters map
-    pub const fn hyperparameters_mut(&mut self) -> &mut HashMap<HyperParam, T> {
+    pub const fn hyperparameters_mut(&mut self) -> &mut HashMap<String, T> {
         &mut self.hyperspace
     }
     /// inserts a hyperparameter into the map, returning the previous value if it exists
-    pub fn add_parameter<P: Into<HyperParam>>(&mut self, key: P, value: T) -> Option<T> {
-        self.hyperparameters_mut().insert(key.into(), value)
+    pub fn add_parameter<K: ToString>(&mut self, key: K, value: T) -> Option<T> {
+        self.hyperparameters_mut().insert(key.to_string(), value)
     }
     /// gets a reference to a hyperparameter by key, returning None if it does not exist
-    pub fn get_parameter<Q>(&self, key: &Q) -> Option<&T>
+    pub fn get<Q>(&self, key: &Q) -> Option<&T>
     where
         Q: ?Sized + Eq + core::hash::Hash,
-        HyperParam: core::borrow::Borrow<Q>,
+        String: core::borrow::Borrow<Q>,
     {
         self.hyperparameters().get(key)
     }
     /// returns an entry for the hyperparameter, allowing for insertion or modification
-    pub fn parameter<Q>(&mut self, key: Q) -> hash_map::Entry<'_, HyperParam, T, DefaultHashBuilder>
-    where
-        Q: AsRef<str>,
-    {
-        self.hyperparameters_mut().entry(key.as_ref().into())
+    pub fn parameter<Q: ToString>(
+        &mut self,
+        key: Q,
+    ) -> hash_map::Entry<'_, String, T, DefaultHashBuilder> {
+        self.hyperparameters_mut().entry(key.to_string())
     }
     /// removes a hyperparameter from the map, returning the value if it exists
     pub fn remove_hyperparameter<Q>(&mut self, key: &Q) -> Option<T>
     where
         Q: ?Sized + core::hash::Hash + Eq,
-        HyperParam: core::borrow::Borrow<Q>,
+        String: core::borrow::Borrow<Q>,
     {
         self.hyperparameters_mut().remove(key)
     }
@@ -118,19 +120,19 @@ impl<T> StandardModelConfig<T> {
     }
     /// returns a reference to the learning rate hyperparameter, if it exists
     pub fn learning_rate(&self) -> Option<&T> {
-        self.get_parameter(&LearningRate)
+        self.get("learning_rate")
     }
     /// returns a reference to the momentum hyperparameter, if it exists
     pub fn momentum(&self) -> Option<&T> {
-        self.get_parameter(&Momentum)
+        self.get("momentum")
     }
     /// returns a reference to the decay hyperparameter, if it exists
     pub fn decay(&self) -> Option<&T> {
-        self.get_parameter(&Decay)
+        self.get("decay")
     }
     /// returns a reference to the weight decay hyperparameter, if it exists
     pub fn weight_decay(&self) -> Option<&T> {
-        self.get_parameter(&WeightDecay)
+        self.get("weight_decay")
     }
 }
 
@@ -143,6 +145,18 @@ impl<T> Default for StandardModelConfig<T> {
 unsafe impl<T> Send for StandardModelConfig<T> where T: Send {}
 
 unsafe impl<T> Sync for StandardModelConfig<T> where T: Sync {}
+
+impl<T> crate::nn::NetworkConfig<String, T> for StandardModelConfig<T> {
+    type Store = HashMap<String, T, DefaultHashBuilder>;
+
+    fn store(&self) -> &Self::Store {
+        &self.hyperspace
+    }
+
+    fn store_mut(&mut self) -> &mut Self::Store {
+        &mut self.hyperspace
+    }
+}
 
 impl<T> RawConfig for StandardModelConfig<T> {
     type Ctx = T;
@@ -185,8 +199,8 @@ impl<T> ModelConfiguration<T> for StandardModelConfig<T> {
         self.hyperparameters().contains_key(key.as_ref())
     }
 
-    fn keys(&self) -> Vec<HyperParam> {
-        self.hyperparameters().keys().cloned().collect()
+    fn keys(&self) -> Vec<&str> {
+        self.hyperparameters().keys().map(|k| k.as_str()).collect()
     }
 }
 

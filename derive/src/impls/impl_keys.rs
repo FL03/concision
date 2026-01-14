@@ -5,16 +5,20 @@
 use crate::utils::capitalize_first;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use syn::{Fields, FieldsNamed, Ident, Variant};
+use syn::{DataStruct, Fields, FieldsNamed, Ident, Variant};
 
-pub fn generate_keys(fields: &Fields, name: &Ident) -> TokenStream {
-    match fields {
-        Fields::Named(inner) => handle_named(inner, name),
+pub fn generate_keys_for_struct(
+    DataStruct { fields, .. }: &DataStruct,
+    ident: &Ident,
+) -> TokenStream {
+    let store_name = format_ident!("{}Key", ident);
+    match &fields {
+        Fields::Named(inner) => handle_named(inner, &store_name),
         _ => panic!("Only named fields are supported"),
     }
 }
 
-pub fn handle_named(fields: &FieldsNamed, name: &Ident) -> TokenStream {
+fn handle_named(fields: &FieldsNamed, name: &Ident) -> TokenStream {
     let FieldsNamed { named, .. } = fields;
     let methods = named.iter().cloned().map(|f| {
         let ident = f.ident.unwrap();

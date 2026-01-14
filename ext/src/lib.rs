@@ -2,46 +2,53 @@
     Appellation: concision-ext <library>
     Contrib: @FL03
 */
-//! An extension of the [`concision`](https://crates.io/crates/concision) library, focusing on
-//! providing additional layers and other non-essential features for building more complex
-//! neural networks and machine learning models.
+//! An extension of the [`concision`](https://docs.rs/concision) library, focusing on
+//! implementing additional layers, models, and utilities for deep learning applications.
 //!
 //! ## Features
 //!
-//! - **attention**: Enables various attention mechanisms from scaled dot-product and
-//!   multi-headed attention to FFT-based attention.
+//! - `attention`: Enables attention mechanisms commonly used in transformer architectures.
+//! - `snn`: Introduces spiking neural network components for neuromorphic computing.
 //!
-#![allow(clippy::module_inception, clippy::needless_doctest_main)]
+#![allow(
+    clippy::missing_errors_doc,
+    clippy::module_inception,
+    clippy::needless_doctest_main,
+    clippy::upper_case_acronyms
+)]
 #![cfg_attr(not(feature = "std"), no_std)]
-
+#![cfg_attr(all(feature = "nightly", feature = "alloc"), feature(allocator_api))]
+#![cfg_attr(all(feature = "nightly", feature = "autodiff"), feature(autodiff))]
+// compile-time checks
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compiler_error! {
+    "At least one of the \"std\" or \"alloc\" features must be enabled for the crate to compile."
+}
+// external crates
 #[cfg(feature = "alloc")]
 extern crate alloc;
 extern crate concision as cnc;
 
+#[macro_use]
+mod macros {
+    #[macro_use]
+    pub(crate) mod seal;
+    #[macro_use]
+    mod gsw;
+}
 #[cfg(feature = "attention")]
 pub mod attention;
-#[cfg(feature = "kan")]
-pub mod kan;
-#[cfg(feature = "s4")]
-pub mod s4;
 #[cfg(feature = "snn")]
 pub mod snn;
-#[cfg(feature = "transformer")]
-pub mod transformer;
 
 /// re-exports
 #[cfg(feature = "attention")]
-pub use self::attention::prelude::*;
+pub use self::prelude::*;
+// prelude
 #[doc(hidden)]
 pub mod prelude {
     #[cfg(feature = "attention")]
     pub use crate::attention::prelude::*;
-    #[cfg(feature = "kan")]
-    pub use crate::kan::prelude::*;
-    #[cfg(feature = "s4")]
-    pub use crate::s4::prelude::*;
     #[cfg(feature = "snn")]
     pub use crate::snn::prelude::*;
-    #[cfg(feature = "transformer")]
-    pub use crate::transformer::prelude::*;
 }

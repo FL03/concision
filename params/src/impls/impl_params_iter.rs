@@ -4,7 +4,7 @@
 */
 use crate::params_base::ParamsBase;
 
-use crate::iter::{Iter, IterMut};
+use crate::iter::{ParamsIter, ParamsIterMut};
 use ndarray::iter as nditer;
 use ndarray::{Axis, Data, DataMut, Dimension, RawData, RemoveAxis};
 
@@ -14,19 +14,19 @@ use ndarray::{Axis, Data, DataMut, Dimension, RawData, RemoveAxis};
 /// - immutable and mutable iterators over each parameter (weights and bias) respectively;
 /// - an iterator over the parameters, which zips together an axis iterator over the columns of
 ///   the weights and an iterator over the bias;
-impl<S, D, A> ParamsBase<S, D, A>
+impl<A, S, D> ParamsBase<S, D, A>
 where
     S: RawData<Elem = A>,
     D: Dimension,
 {
     /// an iterator of the parameters; the created iterator zips together an axis iterator over
     /// the columns of the weights and an iterator over the bias
-    pub fn iter(&self) -> Iter<'_, A, D>
+    pub fn iter(&self) -> ParamsIter<'_, A, D>
     where
         D: RemoveAxis,
         S: Data,
     {
-        Iter {
+        ParamsIter {
             bias: self.bias().iter(),
             weights: self.weights().axis_iter(Axis(1)),
         }
@@ -34,14 +34,14 @@ where
     /// returns a mutable iterator of the parameters, [`IterMut`], which essentially zips
     /// together a mutable axis iterator over the columns of the weights against a mutable
     /// iterator over the elements of the bias
-    pub fn iter_mut(&mut self) -> IterMut<'_, A, D>
+    pub fn iter_mut(&mut self) -> ParamsIterMut<'_, A, D>
     where
         D: RemoveAxis,
         S: DataMut,
     {
-        IterMut {
+        ParamsIterMut {
             bias: self.bias.iter_mut(),
-            weights: self.weights.axis_iter_mut(Axis(1)),
+            weights: self.weights.axis_iter_mut(Axis(0)),
         }
     }
     /// returns an iterator over the bias
@@ -71,5 +71,21 @@ where
         S: DataMut,
     {
         self.weights_mut().iter_mut()
+    }
+    /// returns an iterator over the weights along the specified axis
+    pub fn axis_iter_weights(&self, axis: Axis) -> nditer::AxisIter<'_, A, D::Smaller>
+    where
+        D: RemoveAxis,
+        S: Data,
+    {
+        self.weights().axis_iter(axis)
+    }
+    /// returns a mutable iterator over the weights along the specified axis
+    pub fn axis_iter_weights_mut(&mut self, axis: Axis) -> nditer::AxisIterMut<'_, A, D::Smaller>
+    where
+        D: RemoveAxis,
+        S: DataMut,
+    {
+        self.weights_mut().axis_iter_mut(axis)
     }
 }

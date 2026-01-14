@@ -16,7 +16,7 @@ use num_traits::Float;
 ///
 /// This implementation follows the original paper
 /// ["Attention is All You Need"](https://arxiv.org/pdf/1706.03762) by Vaswani et al.
-pub struct ScaledDotProductAttention<A, D = Ix2, S = OwnedRepr<A>>
+pub struct SDPA<A, D = Ix2, S = OwnedRepr<A>>
 where
     D: Dimension,
     S: RawData<Elem = A>,
@@ -28,7 +28,7 @@ where
     pub(crate) mask: Option<ArrayBase<S, D>>,
 }
 
-impl<A, S, D> ScaledDotProductAttention<A, D, S>
+impl<A, S, D> SDPA<A, D, S>
 where
     D: Dimension,
     S: RawData<Elem = A>,

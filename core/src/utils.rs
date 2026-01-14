@@ -5,22 +5,12 @@
 */
 //! Additional utilities for creating, manipulating, and managing tensors and models.
 #[doc(inline)]
-pub use self::prelude::*;
+pub use self::{arith::*, dropout::*, gradient::*, norm::*, pad::*, patterns::*, tensor::*};
 
 mod arith;
 mod dropout;
 mod gradient;
 mod norm;
-pub mod pad;
+mod pad;
 mod patterns;
 mod tensor;
-
-pub(crate) mod prelude {
-    pub use super::arith::*;
-    pub use super::dropout::*;
-    pub use super::gradient::*;
-    pub use super::norm::*;
-    pub use super::pad::*;
-    pub use super::patterns::*;
-    pub use super::tensor::*;
-}

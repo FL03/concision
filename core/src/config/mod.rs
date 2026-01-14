@@ -9,6 +9,8 @@ pub use self::{hyper_params::HyperParam, model_config::StandardModelConfig};
 
 pub mod hyper_params;
 pub mod model_config;
+// prelude (local)
+#[doc(hidden)]
 pub(crate) mod prelude {
     pub use super::hyper_params::HyperParam;
     pub use super::model_config::*;
@@ -41,7 +43,7 @@ pub trait ModelConfiguration<T>: RawConfig {
     where
         K: AsRef<str>;
 
-    fn keys(&self) -> Vec<HyperParam>;
+    fn keys(&self) -> Vec<&str>;
 }
 
 macro_rules! hyperparam_method {

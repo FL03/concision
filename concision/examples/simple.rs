@@ -11,9 +11,10 @@ use ndarray::prelude::*;
 
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
         .with_max_level(tracing::Level::TRACE)
         .with_target(false)
-        .without_time()
+        .with_timer(tracing_subscriber::fmt::time::uptime())
         .init();
     tracing::info!("Setting up the model...");
     // define the models features
@@ -39,10 +40,13 @@ fn main() -> anyhow::Result<()> {
     let training_input =
         Array2::from_shape_vec((1, model.features().input()), input.to_vec()).unwrap();
     let expected_output = Array2::from_elem((1, model.features().output()), 0.235);
+    let training_span = tracing::info_span!("Starting training...").entered();
     // train the model
-    for _ in 0..model.config().epochs() {
+    for e in 0..model.config().epochs() {
+        training_span.in_scope(|| tracing::trace!("Training epoch {}...", e));
         model.train(&training_input, &expected_output)?;
     }
+    drop(training_span);
     // forward the input through the model
     let output = model.predict(&input);
     tracing::info!("output: {:?}", output);

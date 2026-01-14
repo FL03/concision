@@ -3,14 +3,31 @@
     Created At: 2025.12.08:15:53:49
     Contrib: @FL03
 */
-
-use super::{LIFNeuron, SynapticEvent};
+use super::{Leaky, SynapticEvent};
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 use num_traits::{Float, FromPrimitive, NumAssign};
 
+/// Compute the minimum external current required to make a leaky integrate-and-fire neuron
+/// spike instantly
+pub fn find_min_external_current<T>(v_rest: T, v_thresh: T, resistance: T) -> T
+where
+    T: core::ops::Div<Output = T> + core::ops::Sub<Output = T>,
+{
+    (v_rest - v_thresh) / resistance
+}
+/// Compute the minimum external drive required to make a leaky integrate-and-fire neuron spike
+/// over a single time step. This is based on the analytical solution of the leaky
+/// integrate-and-fire model.
+#[inline]
+pub fn compute_min_drive<T: Float>(v_rest: T, v_th: T, tau_m: T, dt: T) -> T {
+    let exp_term = (-dt / tau_m).exp();
+    (v_th - v_rest * exp_term) / (T::one() - exp_term)
+}
+
 /// A basic method for _discovering_ the minimum external drive required to make a spiking
 /// neuron spike
+#[inline]
 pub fn sweep_for_min_drive<T>(step_size: T) -> T
 where
     T: Float + FromPrimitive + NumAssign,
@@ -22,7 +39,7 @@ where
 
     let mut i_ext = T::zero();
     loop {
-        let mut neuron = LIFNeuron::<T>::default();
+        let mut neuron = Leaky::<T>::default();
         let mut events: Vec<Vec<SynapticEvent<T>>> = vec![Vec::new(); steps + 1];
         for (t_spike, weight) in &presyn_spikes {
             let idx = (*t_spike / dt).round().to_isize().unwrap();
@@ -31,10 +48,8 @@ where
             }
         }
         let mut spiked = false;
-        for step in 0..steps {
-            for ev in &events[step] {
-                neuron.apply_spike(ev.weight);
-            }
+        for ev in events.iter().take(steps) {
+            ev.iter().for_each(|event| neuron.apply_spike(event.weight));
             let res = neuron.step(dt, i_ext);
             if res.is_spiked() {
                 spiked = true;

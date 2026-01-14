@@ -1,13 +1,14 @@
 [package]
-authors.workspace = true
 build = "build.rs"
-categories.workspace = true
 description = "this crate provides additional tools for working with datasets"
+name = "concision-data"
+
+authors.workspace = true
+categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "concision-data"
 readme.workspace = true
 repository.workspace = true
 rust-version.workspace = true
@@ -15,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 
 [package.metadata.release]
@@ -24,13 +25,6 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
-doc = true
-doctest = true
-test = true
-
-[[test]]
-name = "default"
 
 [[test]]
 name = "loader"
@@ -40,35 +34,38 @@ required-features = ["loader"]
 concision-core = { workspace = true }
 # custom
 variants = { workspace = true }
+# data-structures
+hashbrown = { optional = true, workspace = true }
 # error handling
+anyhow = { workspace = true }
 thiserror = { workspace = true }
 # mathematics
 approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
-num = { workspace = true }
 num-complex = { optional = true, workspace = true }
 num-traits = { workspace = true }
 # concurrency & parallelism
 rayon = { optional = true, workspace = true }
 # networking
-reqwest = { optional = true, version = "0.12" }
+reqwest = { optional = true, features = ["default"], workspace = true }
 # data & serialization
 serde = { optional = true, workspace = true }
+serde_derive = { optional = true, workspace = true }
 serde_json = { optional = true, workspace = true }
 # logging
 tracing = { optional = true, workspace = true }
+# WebAssembly
+wasm-bindgen = { optional = true, workspace = true }
 
 [features]
-default = [
-  "std",
-]
+default = ["std"]
 
 full = [
+  "default",
   "approx",
   "complex",
-  "default",
-  "json",
   "rand",
+  "json",
   "serde",
   "tracing",
 ]
@@ -78,6 +75,16 @@ nightly = [
 ]
 
 # ************* [FF:Features] *************
+autodiff = [
+  "nightly",
+  "concision-core/autodiff",
+]
+
+rand = [
+  "concision-core/rand",
+  "num-complex?/rand",
+]
+
 loader = [
   "json",
   "reqwest",
@@ -86,10 +93,12 @@ loader = [
 # ************* [FF:Environments] *************
 std = [
   "alloc",
+  "anyhow/std",
   "concision-core/std",
+  "hashbrown?/default",
   "ndarray/std",
   "num-complex?/std",
-  "num/std",
+  "num-traits/std",
   "serde?/std",
   "serde_json?/std",
   "tracing?/std",
@@ -102,19 +111,21 @@ wasi = [
 
 wasm = [
   "concision-core/wasm",
+  "rayon?/web_spin_lock",
 ]
 
 # ************* [FF:Dependencies] *************
 alloc = [
   "concision-core/alloc",
-  "num/alloc",
+  "hashbrown?/alloc",
   "serde?/alloc",
+  "serde_json?/alloc",
   "variants/alloc",
 ]
 
 approx = [
-  "concision-core/approx",
   "dep:approx",
+  "concision-core/approx",
   "ndarray/approx",
 ]
 
@@ -124,45 +135,52 @@ blas = [
 ]
 
 complex = [
-  "concision-core/complex",
   "dep:num-complex",
+  "concision-core/complex",
+]
+
+hashbrown = [
+  "dep:hashbrown", 
+  "alloc"
 ]
 
 json = [
   "alloc",
-  "concision-core/json",
-  "reqwest?/json",
   "serde",
   "serde_json",
+  "concision-core/json",
+  "reqwest?/json",
 ]
 
 rayon = [
-  "concision-core/rayon",
   "dep:rayon",
-]
-
-rand = [
-  "concision-core/rand",
-  "rng",
-]
-
-rng = [
-  "concision-core/rng",
+  "concision-core/rayon",
+  "hashbrown?/rayon",
 ]
 
 reqwest = ["dep:reqwest"]
 
 serde = [
-  "concision-core/serde",
   "dep:serde",
+  "dep:serde_derive",
+  "serde?/derive",
+  "concision-core/serde",
+  "hashbrown?/serde",
   "ndarray/serde",
   "num-complex?/serde",
-  "num/serde",
 ]
 
-serde_json = ["dep:serde_json"]
+serde_json = [
+  "dep:serde_json",
+  "concision-core/serde_json",
+]
 
 tracing = [
-  "concision-core/tracing",
   "dep:tracing",
+  "concision-core/tracing",
+]
+
+wasm_bindgen = [
+  "dep:wasm-bindgen",
+  "concision-core/wasm_bindgen",
 ]

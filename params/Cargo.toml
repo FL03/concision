@@ -16,7 +16,7 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = false
-features = ["full"]
+features = ["default"]
 rustc-args = ["--cfg", "docsrs"]
 
 [package.metadata.release]
@@ -25,17 +25,15 @@ tag-name = "v{{version}}"
 
 [lib]
 bench = false
-crate-type = ["cdylib", "rlib"]
-doctest = false
-test = true
 
 [dependencies]
-concision-init = { workspace = true }
+concision-init = { optional = true, workspace = true }
 concision-traits = { workspace = true }
 # custom
+rspace-traits = { workspace = true }
 variants = { workspace = true }
 # concurrency & parallelism
-rayon-core = { optional = true, workspace = true }
+rayon = { optional = true, workspace = true }
 # data & serialization
 serde = { features = ["derive"], optional = true, workspace = true }
 serde_derive = { optional = true, workspace = true }
@@ -48,114 +46,126 @@ approx = { optional = true, workspace = true }
 ndarray = { workspace = true }
 num-complex = { optional = true, workspace = true }
 num-traits = { workspace = true }
-# random
-getrandom = { default-features = false, optional = true, workspace = true }
-rand = { optional = true, workspace = true }
-rand_distr = { optional = true, workspace = true }
+# WebAssembly (wasm)
+wasm-bindgen = { optional = true, workspace = true }
 
 [features]
 default = ["std"]
 
 full = [
+  "default",
   "approx",
   "complex",
-  "default",
-  "json",
   "rand",
+  "json",
   "serde",
 ]
 
+# ********* [FF] Features *********
+autodiff = [
+  "nightly",
+  "concision-traits/autodiff"
+]
+
+json = [
+  "alloc",
+  "serde",
+  "serde_json",
+]
+
 nightly = [
-  "concision-init/nightly",
+  "concision-init?/nightly",
   "concision-traits/nightly",
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Environments *********
+
 std = [
   "alloc",
   "anyhow/std",
-  "concision-init/std",
+  "concision-init?/std",
   "concision-traits/std",
   "ndarray/std",
   "num-complex?/std",
   "num-traits/std",
-  "rand?/std",
-  "rand?/std_rng",
-  "serde/std",
+  "rspace-traits/std",
+  "serde?/std",
   "thiserror/std",
   "variants/std",
 ]
 
 wasi = [
-  "concision-init/wasi",
+  "concision-init?/wasi",
   "concision-traits/wasi",
+  "rspace-traits/wasi",
 ]
 
 wasm = [
-  "concision-init/wasm",
+  "wasm_bindgen",
+  "concision-init?/wasm",
   "concision-traits/wasm",
-  "getrandom?/wasm_js",
-  "rayon-core?/web_spin_lock",
+  "rayon?/web_spin_lock",
+  "rspace-traits/wasm",
 ]
 
-# ************* [FF:Dependencies] *************
+# ********* [FF] Dependencies *********
 
 alloc = [
-  "concision-init/alloc",
+  "concision-init?/alloc",
   "concision-traits/alloc",
+  "rspace-traits/alloc",
   "serde?/alloc",
   "serde_json?/alloc",
   "variants/alloc",
 ]
 
 approx = [
-  "concision-init/approx",
   "dep:approx",
+  "concision-init?/approx",
   "ndarray/approx",
 ]
 
 blas = [
-  "concision-init/blas",
+  "concision-init?/blas",
   "ndarray/blas",
 ]
 
 complex = [
-  "concision-init/complex",
   "dep:num-complex",
+  "concision-init?/complex",
+  "concision-traits/complex",
+  "rspace-traits/complex",
 ]
 
-json = ["alloc", "serde", "serde_json"]
-
-rand = [
-  "concision-init/rand",
+rand = [  
+  "dep:concision-init",
   "concision-traits/rand",
-  "dep:rand",
-  "dep:rand_distr",
   "num-complex?/rand",
-  "rng",
+  "rspace-traits/rand",
 ]
 
 rayon = [
-  "dep:rayon-core",
+  "dep:rayon",
   "ndarray/rayon",
-]
-
-rng = [
-  "concision-init/rng",
-  "concision-traits/rng",
-  "dep:getrandom",
-  "rand?/small_rng",
-  "rand?/thread_rng",
+  "concision-init?/rayon",
+  "rspace-traits/rayon",
 ]
 
 serde = [
-  "concision-init/serde",
   "dep:serde",
   "dep:serde_derive",
+  "concision-init?/serde",
+  "concision-traits/serde",
   "ndarray/serde",
   "num-complex?/serde",
-  "rand?/serde",
-  "rand_distr?/serde",
+  "rspace-traits/serde",
 ]
 
 serde_json = ["dep:serde_json"]
+
+wasm_bindgen = [
+  "dep:wasm-bindgen",
+  "concision-init?/wasm_bindgen",
+  "concision-traits/wasm_bindgen",
+  "rspace-traits/wasm_bindgen",
+]

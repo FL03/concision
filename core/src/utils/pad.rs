@@ -6,8 +6,6 @@ mod impl_pad;
 mod impl_pad_mode;
 mod impl_padding;
 
-pub type PadResult<T = ()> = Result<T, PadError>;
-
 /// The [`Pad`] trait defines a padding operation for tensors.
 pub trait Pad<T> {
     type Output;
@@ -92,15 +90,4 @@ pub enum PadMode<T = f64> {
     Symmetric,
     #[default]
     Wrap,
-}
-
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, thiserror::Error)]
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Deserialize, serde::Serialize),
-    serde(rename_all = "snake_case")
-)]
-pub enum PadError {
-    #[error("Inconsistent Dimensions")]
-    InconsistentDimensions,
 }

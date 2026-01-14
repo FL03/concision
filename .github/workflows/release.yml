@@ -1,4 +1,4 @@
-name: Release
+name: release
 
 on:
   release:
@@ -22,40 +22,34 @@ permissions:
   contents: write
   discussions: write
 
-env:
-  IS_DRAFT: ${{ github.event.inputs.draft || github.event.release.draft || false }}
-  IS_PRERELEASE: ${{ github.event.inputs.prerelease || github.event.release.prerelease || false }}
-
 jobs:
-  publish:
-    environment:
-      name: crates-io
-      url: https://crates.io/crates/concision
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
           repository: ${{ github.repository }}
-      - name: Publish to crates.io
+          token: ${{ github.token }}
+      - name: Dispatch & Publish to crates.io
         uses: peter-evans/repository-dispatch@v4
         with:
           event-type: cargo-publish
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
           token: ${{ github.token }}
-      - name: Create release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
+        continue-on-error: true
         with:
           append_body: false
-          draft: ${{ env.IS_DRAFT }}
-          prerelease: ${{ env.IS_PRERELEASE }}
+          draft: ${{ inputs.prerelease || github.event.release.prerelease || false }}
+          prerelease: ${{ inputs.draft || github.event.release.draft || false }}
           tag_name: ${{ github.event.release.tag_name }}
           body: |
             ${{ github.event.release.body }}
 
             ## Links
 
-            - [crates.io](https://crates.io/crates/${{ github.event.repository.name }})
-            - [docs.rs](https://docs.rs/${{ github.event.repository.name }})
+              - [Crates.io](https://crates.io/crates/${{ github.event.repository.name }})
+              - [Documentation](https://docs.rs/${{ github.event.repository.name }})

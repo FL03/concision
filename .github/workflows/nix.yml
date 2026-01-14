@@ -1,4 +1,4 @@
-name: "Nix"
+name: nix
 
 concurrency:
   cancel-in-progress: false
@@ -7,12 +7,10 @@ concurrency:
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, ready_for_review, reopened]
+    types: [auto_merge_enabled, ready_for_review]
   push:
     branches: [main, master]
-    tags: [v*.*.*, "*-nightly"]
-  release:
-    types: [created, edited]
+    tags: [latest, v*.*.*, "*-nightly"]
   repository_dispatch:
     types: [nix, nix-build]
   workflow_dispatch:
@@ -25,8 +23,7 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
       - name: Setup Nix
         uses: cachix/install-nix-action@v31
         with:

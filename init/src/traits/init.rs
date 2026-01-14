@@ -3,26 +3,31 @@
     Contrib: @FL03
 */
 
-#[cfg(feature = "rand")]
-use rand::RngCore;
-/// Initializes parameters and state from RNG and/or config.
-/// Macro will implement this to produce shaped params/state.
-pub trait Initialize<R: RngCore> {
-    type Output;
-
-    fn init_random(rng: &mut R) -> Self::Output;
-}
-
 /// A trait for creating custom initialization routines for models or other entities.
-pub trait Init {
+pub trait InitWith<F, U> {
+    type Cont<T>;
     /// consumes the current instance to initialize a new one
-    fn init(self) -> Self
+    fn init_with(f: F) -> Self::Cont<U>
     where
+        F: FnOnce() -> U,
         Self: Sized;
 }
 
-/// This trait enables models to implement custom, in-place initialization methods.
-pub trait InitInplace {
-    /// initialize the object in-place and return a mutable reference to it.
-    fn init_inplace(&mut self) -> &mut Self;
+#[cfg(feature = "rand")]
+/// The [`InitRand`] trait provides a generic interface for initializing objects using
+/// random number generators. This trait is particularly useful for types that require
+/// random initialization, such as neural network weights, biases, or other parameters.
+pub trait InitRand<R: rand::RngCore> {
+    type Output;
+    /// use the provided random number generator `rng` to initialize the object
+    fn init_random(rng: &mut R) -> Self::Output;
+}
+
+/// [`Initialize`] provides a mechanism for _initializing_ some object using a value of type
+/// `T` to produce another object.
+pub trait Initialize<T> {
+    type Output;
+    /// initializes the object using the given value, consuming the caller to produce another
+    /// object
+    fn init(self, with: T) -> Self::Output;
 }

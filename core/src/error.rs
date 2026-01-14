@@ -14,6 +14,8 @@ use alloc::{boxed::Box, string::String};
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum Error {
+    #[error("The provided batch is empty")]
+    EmptyBatch,
     #[error("Invalid model configuration")]
     InvalidModelConfig,
     #[error("The model is not supported for the given input")]
@@ -42,13 +44,10 @@ pub enum Error {
     #[error(transparent)]
     BoxError(#[from] Box<dyn core::error::Error + Send + Sync>),
     #[error(transparent)]
-    PadError(#[from] crate::utils::pad::PadError),
-    #[error(transparent)]
     ParamError(#[from] concision_params::ParamsError),
     #[error(transparent)]
+    #[cfg(feature = "concision_init")]
     InitError(#[from] concision_init::InitError),
-    #[error(transparent)]
-    TraitError(#[from] concision_traits::Error),
     #[cfg(feature = "serde")]
     #[error(transparent)]
     DeserializeError(#[from] serde::de::value::Error),
