@@ -60,7 +60,7 @@ jobs:
         run: cargo criterion -v --benches --locked --workspace --features ${{ matrix.features }} --target ${{ matrix.target }}
       - name: Upload the results
         id: artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Benchmark Report (${{ github.run_id }})
           if-no-files-found: error
