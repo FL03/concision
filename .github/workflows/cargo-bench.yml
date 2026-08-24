@@ -41,7 +41,7 @@ jobs:
       digest: ${{ steps.artifacts.outputs.artifact-digest }}
       url: ${{ steps.artifacts.outputs.artifact-url }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           repository: ${{ github.repository }}
