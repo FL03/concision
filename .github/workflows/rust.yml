@@ -40,7 +40,7 @@ jobs:
         target: [x86_64-unknown-linux-gnu]
         toolchain: [stable]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
@@ -61,7 +61,7 @@ jobs:
         target: [x86_64-unknown-linux-gnu]
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
@@ -91,7 +91,7 @@ jobs:
           - no_std
           - "alloc,nightly"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
